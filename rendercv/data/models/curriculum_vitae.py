@@ -394,7 +394,7 @@ class CurriculumVitae(RenderCVBaseModelWithExtraKeys):
         title="Email",
         description="The email address of the person.",
     )
-    photo: Optional[str] = pydantic.Field(
+    photo: Optional[Path] = pydantic.Field(
         default=None, title="Photo", description="Path to a photo of the person."
     )
     phone: Optional[pydantic_phone_numbers.PhoneNumber] = pydantic.Field(
@@ -420,6 +420,13 @@ class CurriculumVitae(RenderCVBaseModelWithExtraKeys):
         # `sections` key is preserved for RenderCV's internal use.
         alias="sections",
     )
+
+    @pydantic.field_validator("photo")
+    @classmethod
+    def photo_path(cls, value: str | Path, info: pydantic.ValidationInfo) -> Path:
+        """Cast `photo` to Path and make the path absolute"""
+        path = Path(value)
+        return path.absolute()
 
     @pydantic.field_validator("name")
     @classmethod
