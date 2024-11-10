@@ -5,7 +5,10 @@ import filecmp
 import itertools
 import pathlib
 import shutil
+import tempfile
 import typing
+from contextlib import contextmanager
+from typing import Optional, Type
 from typing import Optional
 
 import jinja2
@@ -278,19 +281,16 @@ def create_combinations_of_a_model(
 
 @pytest.fixture
 def rendercv_filled_curriculum_vitae_data_model(
-    text_entry, bullet_entry, testdata_directory_path
+    text_entry, bullet_entry, testdata_directory_path, example_cv_photo_path
 ) -> data.CurriculumVitae:
     """Return a filled CurriculumVitae data model, where each section has all possible
     combinations of entry types.
-    Photo point to a path that (probably) does not exist on machine. This simply all
-    tests that checks that the .tex files are generated as expected, since the path is always the same,
-    even across different OS
     """
     return data.CurriculumVitae(
         name="John Doe",
         location="Istanbul, Turkey",
         email="john_doe@example.com",
-        photo=pathlib.Path("/tmp/propic.jpg").as_posix(),
+        photo=example_cv_photo_path,
         phone="+905419999999",  # type: ignore
         website="https://example.com",  # type: ignore
         social_networks=[
@@ -419,6 +419,9 @@ def are_these_two_files_the_same(file1: pathlib.Path, file2: pathlib.Path) -> bo
 def run_a_function_and_check_if_output_is_the_same_as_reference(
     tmp_path: pathlib.Path,
     specific_testdata_directory_path: pathlib.Path,
+    example_cv_photo_path: pathlib.Path,
+    root_directory_path: pathlib.Path,
+    copy_path_in_a_tmp_directory_and_patch_photo_paths: typing.Callable,
 ) -> typing.Callable:
     """Run a function and check if the output is the same as the reference."""
 
@@ -427,6 +430,7 @@ def run_a_function_and_check_if_output_is_the_same_as_reference(
         reference_file_or_directory_name: str,
         output_file_name: Optional[str] = None,
         generate_reference_files_function: Optional[typing.Callable] = None,
+        patch_reference: bool = False,
         **kwargs,
     ):
         output_is_a_single_file = output_file_name is not None
