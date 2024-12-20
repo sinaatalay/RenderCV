@@ -21,7 +21,7 @@
 # many build packages like `setuptools`, `flit`, `poetry`, `hatchling`, etc. We will use
 # `hatchling`.
 requires = [
-    "hatchling==1.26.3",
+    "hatchling==1.27.0",
 ] # List of packages that are needed to build RenderCV
 
 # Python has a standard object format called build-backend object. Python standard asks
@@ -71,7 +71,7 @@ requires-python = '>=3.10'
 # is installed:
 dependencies = [
     'Jinja2==3.1.4',                # to generate LaTeX and Markdown files
-    'phonenumbers==8.13.51',        # to validate phone numbers
+    'phonenumbers==8.13.52',        # to validate phone numbers
     'email-validator==2.2.0',       # to validate email addresses
     'pydantic==2.10.3',             # to validate and parse the input file
     'pydantic-extra-types==2.10.1', # to validate some extra types
