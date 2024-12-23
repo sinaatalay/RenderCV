@@ -70,7 +70,7 @@ requires-python = '>=3.10'
 # RenderCV depends on these packages. They will be installed automatically when RenderCV
 # is installed:
 dependencies = [
-    'Jinja2==3.1.4',                # to generate LaTeX and Markdown files
+    'Jinja2==3.1.5',                # to generate LaTeX and Markdown files
     'phonenumbers==8.13.52',        # to validate phone numbers
     'email-validator==2.2.0',       # to validate email addresses
     'pydantic==2.10.3',             # to validate and parse the input file
