@@ -1,7 +1,5 @@
 # John Doe's CV
 
-![Profile photo](/Users/sina/GIT/rendercv/tests/testdata/profile_picture.png)
-
 - Phone: +90 541 999 99 99
 - Email: [john_doe@example.com](mailto:john_doe@example.com)
 - Location: Istanbul, Turkey

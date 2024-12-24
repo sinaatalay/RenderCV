@@ -1,9 +1,5 @@
 # <<cv.name>>'s CV
 
-((* if cv.photo *))
-![Profile photo](<<cv.photo.as_posix()>>)
-((* endif *))
-
 ((* if cv.phone *))
 - Phone: <<cv.phone|replace("tel:", "")|replace("-"," ")>>
 ((* endif *))
