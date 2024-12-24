@@ -4,8 +4,8 @@ field of the input file.
 """
 
 import functools
-import re
 import pathlib
+import re
 from typing import Annotated, Any, Literal, Optional, get_args
 
 import pydantic

@@ -7,7 +7,6 @@ import pathlib
 import shutil
 import typing
 import urllib.request
-
 from typing import Optional
 
 import jinja2
