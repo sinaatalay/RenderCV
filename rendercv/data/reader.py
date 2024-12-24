@@ -10,7 +10,6 @@ from typing import Optional
 import ruamel.yaml
 
 from . import models
-from .models.base import RenderCVContextModel
 
 
 def read_a_yaml_file(file_path_or_contents: pathlib.Path | str) -> dict:
@@ -68,7 +67,9 @@ def validate_input_dictionary_and_return_the_data_model(
 
     Args:
         input_dictionary: The input dictionary.
-        input_file_path: Path of the input file.
+        context: The context dictionary that is used to validate the input dictionary.
+            It's used to send the input file path with the context object, but it's not
+            required.
 
     Returns:
         The data model.

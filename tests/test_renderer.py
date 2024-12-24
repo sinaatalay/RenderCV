@@ -3,7 +3,6 @@ import math
 import os
 import pathlib
 import shutil
-import typing
 
 import jinja2
 import pytest
@@ -404,7 +403,9 @@ def test_create_a_latex_file(
         renderer.create_a_latex_file(data_model, output_directory_path)
 
     assert run_a_function_and_check_if_output_is_the_same_as_reference(
-        create_a_latex_file, reference_file_name, output_file_name, patch_reference=True
+        create_a_latex_file,
+        reference_file_name,
+        output_file_name,
     )
 
 
@@ -454,7 +455,6 @@ def test_create_a_markdown_file(
         create_a_markdown_file,
         reference_file_name,
         output_file_name,
-        patch_reference=True,
     )
 
 
@@ -594,7 +594,6 @@ def test_create_a_latex_file_and_copy_theme_files(
     assert run_a_function_and_check_if_output_is_the_same_as_reference(
         create_a_latex_file_and_copy_theme_files,
         reference_directory_name,
-        patch_reference=True,
     )
 
 
@@ -615,7 +614,6 @@ def test_render_a_pdf_from_latex(
     run_a_function_and_check_if_output_is_the_same_as_reference,
     theme_name,
     curriculum_vitae_data_model,
-    copy_path_in_a_tmp_directory_and_patch_photo_paths: typing.Callable,
 ):
     name = request.getfixturevalue(curriculum_vitae_data_model).name
     name = str(name).replace(" ", "_")
@@ -633,16 +631,11 @@ def test_render_a_pdf_from_latex(
             / reference_name
         )
 
-        with copy_path_in_a_tmp_directory_and_patch_photo_paths(
-            latex_sources_path
-        ) as latex_sources_path:
-            # copy the latex sources to the output path
-            shutil.copytree(
-                latex_sources_path, output_directory_path, dirs_exist_ok=True
-            )
+        # copy the latex sources to the output path
+        shutil.copytree(latex_sources_path, output_directory_path, dirs_exist_ok=True)
 
-            # convert the latex code to a pdf
-            renderer.render_a_pdf_from_latex(output_directory_path / f"{name}_CV.tex")
+        # convert the latex code to a pdf
+        renderer.render_a_pdf_from_latex(output_directory_path / f"{name}_CV.tex")
 
     assert run_a_function_and_check_if_output_is_the_same_as_reference(
         function=generate_pdf_file,
