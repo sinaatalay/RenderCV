@@ -1,4 +1,4 @@
-# The engine of the [RenderCV App](https://app.rendercv.com)
+# The engine of the [RenderCV App](https://rendercv.com)
 
 [![test](https://github.com/rendercv/rendercv/actions/workflows/test.yaml/badge.svg?branch=main)](https://github.com/rendercv/rendercv/actions/workflows/test.yaml)
 [![coverage](https://coverage-badge.samuelcolvin.workers.dev/rendercv/rendercv.svg)](https://coverage-badge.samuelcolvin.workers.dev/redirect/rendercv/rendercv)
