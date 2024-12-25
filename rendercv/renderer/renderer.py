@@ -96,13 +96,6 @@ def create_a_latex_file(
     latex_file_path = output_directory / latex_file_name
     latex_file_object.create_file(latex_file_path)
 
-    # Copy the profile picture to the output directory, if it exists:
-    if rendercv_data_model.cv.photo:
-        shutil.copyfile(
-            rendercv_data_model.cv.photo,
-            output_directory / rendercv_data_model.cv.photo.name,
-        )
-
     return latex_file_path
 
 
@@ -153,6 +146,13 @@ def create_a_latex_file_and_copy_theme_files(
     copy_theme_files_to_output_directory(
         rendercv_data_model.design.theme, output_directory
     )
+
+    # Copy the profile picture to the output directory, if it exists:
+    if rendercv_data_model.cv.photo:
+        shutil.copyfile(
+            rendercv_data_model.cv.photo,
+            output_directory / rendercv_data_model.cv.photo.name,
+        )
     return latex_file_path
 
 
