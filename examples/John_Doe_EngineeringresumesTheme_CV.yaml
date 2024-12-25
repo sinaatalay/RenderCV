@@ -137,3 +137,42 @@ design:
       vertical_between_name_and_connections: 5 pt
       bottom: 5 pt
       horizontal_between_connections: 10 pt
+locale_catalog:
+  phone_number_format: national
+  page_numbering_style: NAME - Page PAGE_NUMBER of TOTAL_PAGES
+  last_updated_date_style: Last updated in TODAY
+  date_style: MONTH_ABBREVIATION YEAR
+  month: month
+  months: months
+  year: year
+  years: years
+  present: present
+  to: –
+  abbreviations_for_months:
+    - Jan
+    - Feb
+    - Mar
+    - Apr
+    - May
+    - June
+    - July
+    - Aug
+    - Sept
+    - Oct
+    - Nov
+    - Dec
+  full_names_of_months:
+    - January
+    - February
+    - March
+    - April
+    - May
+    - June
+    - July
+    - August
+    - September
+    - October
+    - November
+    - December
+rendercv_settings:
+  bold_keywords: []
