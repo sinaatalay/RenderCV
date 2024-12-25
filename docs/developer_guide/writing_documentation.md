@@ -6,7 +6,7 @@ The documentation's source files are located in the [`docs`](https://github.com/
 hatch run docs:serve
 ```
 
-Once the changes are pushed to the `main` branch, the [`deploy-docs`](https://github.com/rendercv/rendercv/blob/main/.github/workflows/deploy-docs.yaml) workflow will be automatically triggered, and [docs.rendercv.com](https://docs.rendercv.com/) will be updated to the most recent version.
+Once the changes are pushed to the `main` branch, the [`deploy-docs.yaml`](https://github.com/rendercv/rendercv/blob/main/.github/workflows/deploy-docs.yaml) workflow will be automatically triggered, and [docs.rendercv.com](https://docs.rendercv.com/) will be updated to the most recent version.
 
 
 ## Updating the [`examples`](https://github.com/rendercv/rendercv/tree/main/examples) folder

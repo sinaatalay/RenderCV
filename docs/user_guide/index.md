@@ -56,7 +56,7 @@ This command will generate a directory called `rendercv_output`, which contains 
 -   $\LaTeX$ source code of the PDF file, `Your_Name_CV.tex`.
 -   Images of each page of the PDF file in PNG format, `Your_Name_CV_1.png`, `Your_Name_CV_page_2.png`, etc.
 -   The CV in Markdown format, `Your_Name_CV.md`.
--   The CV in HTML format, `Your_Name_CV.html`.
+-   The CV in HTML format, `Your_Name_CV.html`. You can open this file in a web browser and copy-paste the content to Grammarly for proofreading.
 -   Some log and auxiliary files related to the $\LaTeX$ compilation process.
 
 Please refer to the [here](cli.md#options-of-the-rendercv-render-command) for the complete list of CLI options available for the `render` command.
