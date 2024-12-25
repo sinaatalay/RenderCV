@@ -84,23 +84,11 @@
           "title": "Disable Page Numbering",
           "type": "boolean"
         },
-        "page_numbering_style": {
-          "default": "NAME - Page PAGE_NUMBER of TOTAL_PAGES",
-          "description": "The style of the page numbering. The following placeholders can be used:\n- NAME: The name of the person\n- PAGE_NUMBER: The current page number\n- TOTAL_PAGES: The total number of pages\n- TODAY: Today's month and year (April 2024)\nThe default value is NAME - Page PAGE_NUMBER of TOTAL_PAGES.",
-          "title": "Page Numbering Style",
-          "type": "string"
-        },
         "disable_last_updated_date": {
           "default": false,
           "description": "If this option is set to true, then the last updated date will not be shown in the header. The default value is false.",
           "title": "Disable Last Updated Date",
           "type": "boolean"
-        },
-        "last_updated_date_style": {
-          "default": "Last updated in TODAY",
-          "description": "The style of the last updated date. The following placeholders can be used:\n- TODAY: Today's month and year (April 2024)\nThe default value is Last updated in TODAY.",
-          "title": "Last Updated Date Style",
-          "type": "string"
         },
         "header_font_size": {
           "default": "30 pt",
@@ -212,6 +200,17 @@
           "oneOf": [
             {
               "format": "email",
+              "type": "string"
+            }
+          ]
+        },
+        "photo": {
+          "default": null,
+          "description": "Path to the photo of the person, relatie to the input file.",
+          "title": "Photo",
+          "oneOf": [
+            {
+              "format": "path",
               "type": "string"
             }
           ]
@@ -487,23 +486,11 @@
           "title": "Disable Page Numbering",
           "type": "boolean"
         },
-        "page_numbering_style": {
-          "default": "NAME - Page PAGE_NUMBER of TOTAL_PAGES",
-          "description": "The style of the page numbering. The following placeholders can be used:\n- NAME: The name of the person\n- PAGE_NUMBER: The current page number\n- TOTAL_PAGES: The total number of pages\n- TODAY: Today's month and year (April 2024)\nThe default value is NAME - Page PAGE_NUMBER of TOTAL_PAGES.",
-          "title": "Page Numbering Style",
-          "type": "string"
-        },
         "disable_last_updated_date": {
           "default": true,
           "description": "If this option is set to true, then the last updated date will not be shown in the header. The default value is true.",
           "title": "Disable Last Updated Date",
           "type": "boolean"
-        },
-        "last_updated_date_style": {
-          "default": "Last updated in TODAY",
-          "description": "The style of the last updated date. The following placeholders can be used:\n- TODAY: Today's month and year (April 2024)\nThe default value is Last updated in TODAY.",
-          "title": "Last Updated Date Style",
-          "type": "string"
         },
         "header_font_size": {
           "default": "25 pt",
@@ -911,9 +898,21 @@
             }
           ]
         },
+        "page_numbering_style": {
+          "default": "NAME - Page PAGE_NUMBER of TOTAL_PAGES",
+          "description": "The style of the page numbering. The following placeholders can be used:\n- NAME: The name of the person\n- PAGE_NUMBER: The current page number\n- TOTAL_PAGES: The total number of pages\n- TODAY: Today's date with `locale_catalog.date_style`\nThe default value is \"NAME - Page PAGE_NUMBER of TOTAL_PAGES\".",
+          "title": "Page Numbering Style",
+          "type": "string"
+        },
+        "last_updated_date_style": {
+          "default": "Last updated in TODAY",
+          "description": "The style of the last updated date. The following placeholders can be used:\n- TODAY: Today's date with `locale_catalog.date_style`\nThe default value is \"Last updated in TODAY\".",
+          "title": "Last Updated Date Style",
+          "type": "string"
+        },
         "date_style": {
           "default": "MONTH_ABBREVIATION YEAR",
-          "description": "The style of the date. The following placeholders can be used:\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe default value is \"MONTH_ABBREVIATION YEAR\".",
+          "description": "The style of the date. The following placeholders can be used:\n-FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe default value is \"MONTH_ABBREVIATION YEAR\".",
           "title": "Date Style",
           "oneOf": [
             {
@@ -1588,6 +1587,15 @@
               "$ref": "#/$defs/RenderCommandSettings"
             }
           ]
+        },
+        "bold_keywords": {
+          "default": [],
+          "description": "The keywords that will be bold in the output. The default value is an empty list.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Bold Keywords",
+          "type": "array"
         }
       },
       "title": "RenderCVSettings",
@@ -1629,7 +1637,7 @@
         },
         "output_folder_name": {
           "default": "rendercv_output",
-          "description": "The name of the folder where the output files will be saved. The following placeholders can be used:\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\n- NAME: The name of the CV owner\n- NAME_IN_SNAKE_CASE: The name of the CV owner in snake case\n- NAME_IN_LOWER_SNAKE_CASE: The name of the CV owner in lower snake case\n- NAME_IN_UPPER_SNAKE_CASE: The name of the CV owner in upper snake case\n- NAME_IN_KEBAB_CASE: The name of the CV owner in kebab case\n- NAME_IN_LOWER_KEBAB_CASE: The name of the CV owner in lower kebab case\n- NAME_IN_UPPER_KEBAB_CASE: The name of the CV owner in upper kebab case\nThe default value is an empty string.\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe default value is \"MONTH_ABBREVIATION YEAR\".\nThe default value is \"rendercv_output\".",
+          "description": "The name of the folder where the output files will be saved. The following placeholders can be used:\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\n- NAME: The name of the CV owner\n- NAME_IN_SNAKE_CASE: The name of the CV owner in snake case\n- NAME_IN_LOWER_SNAKE_CASE: The name of the CV owner in lower snake case\n- NAME_IN_UPPER_SNAKE_CASE: The name of the CV owner in upper snake case\n- NAME_IN_KEBAB_CASE: The name of the CV owner in kebab case\n- NAME_IN_LOWER_KEBAB_CASE: The name of the CV owner in lower kebab case\n- NAME_IN_UPPER_KEBAB_CASE: The name of the CV owner in upper kebab case\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe default value is \"MONTH_ABBREVIATION YEAR\".\nThe default value is \"rendercv_output\".",
           "title": "Output Folder Name",
           "type": "string"
         },
@@ -1645,7 +1653,7 @@
         },
         "pdf_path": {
           "default": null,
-          "description": "The path of the PDF file. If it is not provided, the PDF file will not be generated. The following placeholders can be used:\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\n- NAME: The name of the CV owner\n- NAME_IN_SNAKE_CASE: The name of the CV owner in snake case\n- NAME_IN_LOWER_SNAKE_CASE: The name of the CV owner in lower snake case\n- NAME_IN_UPPER_SNAKE_CASE: The name of the CV owner in upper snake case\n- NAME_IN_KEBAB_CASE: The name of the CV owner in kebab case\n- NAME_IN_LOWER_KEBAB_CASE: The name of the CV owner in lower kebab case\n- NAME_IN_UPPER_KEBAB_CASE: The name of the CV owner in upper kebab case\nThe default value is an empty string.\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe default value is \"MONTH_ABBREVIATION YEAR\".\nThe default value is null.",
+          "description": "The path of the PDF file. If it is not provided, the PDF file will not be generated. The following placeholders can be used:\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\n- NAME: The name of the CV owner\n- NAME_IN_SNAKE_CASE: The name of the CV owner in snake case\n- NAME_IN_LOWER_SNAKE_CASE: The name of the CV owner in lower snake case\n- NAME_IN_UPPER_SNAKE_CASE: The name of the CV owner in upper snake case\n- NAME_IN_KEBAB_CASE: The name of the CV owner in kebab case\n- NAME_IN_LOWER_KEBAB_CASE: The name of the CV owner in lower kebab case\n- NAME_IN_UPPER_KEBAB_CASE: The name of the CV owner in upper kebab case\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe default value is \"MONTH_ABBREVIATION YEAR\".\nThe default value is null.",
           "title": "PDF Path",
           "oneOf": [
             {
@@ -1656,7 +1664,7 @@
         },
         "latex_path": {
           "default": null,
-          "description": "The path of the LaTeX file. If it is not provided, the LaTeX file will not be generated. The following placeholders can be used:\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\n- NAME: The name of the CV owner\n- NAME_IN_SNAKE_CASE: The name of the CV owner in snake case\n- NAME_IN_LOWER_SNAKE_CASE: The name of the CV owner in lower snake case\n- NAME_IN_UPPER_SNAKE_CASE: The name of the CV owner in upper snake case\n- NAME_IN_KEBAB_CASE: The name of the CV owner in kebab case\n- NAME_IN_LOWER_KEBAB_CASE: The name of the CV owner in lower kebab case\n- NAME_IN_UPPER_KEBAB_CASE: The name of the CV owner in upper kebab case\nThe default value is an empty string.\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe default value is \"MONTH_ABBREVIATION YEAR\".\nThe default value is null.",
+          "description": "The path of the LaTeX file. If it is not provided, the LaTeX file will not be generated. The following placeholders can be used:\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\n- NAME: The name of the CV owner\n- NAME_IN_SNAKE_CASE: The name of the CV owner in snake case\n- NAME_IN_LOWER_SNAKE_CASE: The name of the CV owner in lower snake case\n- NAME_IN_UPPER_SNAKE_CASE: The name of the CV owner in upper snake case\n- NAME_IN_KEBAB_CASE: The name of the CV owner in kebab case\n- NAME_IN_LOWER_KEBAB_CASE: The name of the CV owner in lower kebab case\n- NAME_IN_UPPER_KEBAB_CASE: The name of the CV owner in upper kebab case\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe default value is \"MONTH_ABBREVIATION YEAR\".\nThe default value is null.",
           "title": "LaTeX Path",
           "oneOf": [
             {
@@ -1667,7 +1675,7 @@
         },
         "html_path": {
           "default": null,
-          "description": "The path of the HTML file. If it is not provided, the HTML file will not be generated. The following placeholders can be used:\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\n- NAME: The name of the CV owner\n- NAME_IN_SNAKE_CASE: The name of the CV owner in snake case\n- NAME_IN_LOWER_SNAKE_CASE: The name of the CV owner in lower snake case\n- NAME_IN_UPPER_SNAKE_CASE: The name of the CV owner in upper snake case\n- NAME_IN_KEBAB_CASE: The name of the CV owner in kebab case\n- NAME_IN_LOWER_KEBAB_CASE: The name of the CV owner in lower kebab case\n- NAME_IN_UPPER_KEBAB_CASE: The name of the CV owner in upper kebab case\nThe default value is an empty string.\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe default value is \"MONTH_ABBREVIATION YEAR\".\nThe default value is null.",
+          "description": "The path of the HTML file. If it is not provided, the HTML file will not be generated. The following placeholders can be used:\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\n- NAME: The name of the CV owner\n- NAME_IN_SNAKE_CASE: The name of the CV owner in snake case\n- NAME_IN_LOWER_SNAKE_CASE: The name of the CV owner in lower snake case\n- NAME_IN_UPPER_SNAKE_CASE: The name of the CV owner in upper snake case\n- NAME_IN_KEBAB_CASE: The name of the CV owner in kebab case\n- NAME_IN_LOWER_KEBAB_CASE: The name of the CV owner in lower kebab case\n- NAME_IN_UPPER_KEBAB_CASE: The name of the CV owner in upper kebab case\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe default value is \"MONTH_ABBREVIATION YEAR\".\nThe default value is null.",
           "title": "HTML Path",
           "oneOf": [
             {
@@ -1678,7 +1686,7 @@
         },
         "png_path": {
           "default": null,
-          "description": "The path of the PNG file. If it is not provided, the PNG file will not be generated. The following placeholders can be used:\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\n- NAME: The name of the CV owner\n- NAME_IN_SNAKE_CASE: The name of the CV owner in snake case\n- NAME_IN_LOWER_SNAKE_CASE: The name of the CV owner in lower snake case\n- NAME_IN_UPPER_SNAKE_CASE: The name of the CV owner in upper snake case\n- NAME_IN_KEBAB_CASE: The name of the CV owner in kebab case\n- NAME_IN_LOWER_KEBAB_CASE: The name of the CV owner in lower kebab case\n- NAME_IN_UPPER_KEBAB_CASE: The name of the CV owner in upper kebab case\nThe default value is an empty string.\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe default value is \"MONTH_ABBREVIATION YEAR\".\nThe default value is null.",
+          "description": "The path of the PNG file. If it is not provided, the PNG file will not be generated. The following placeholders can be used:\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\n- NAME: The name of the CV owner\n- NAME_IN_SNAKE_CASE: The name of the CV owner in snake case\n- NAME_IN_LOWER_SNAKE_CASE: The name of the CV owner in lower snake case\n- NAME_IN_UPPER_SNAKE_CASE: The name of the CV owner in upper snake case\n- NAME_IN_KEBAB_CASE: The name of the CV owner in kebab case\n- NAME_IN_LOWER_KEBAB_CASE: The name of the CV owner in lower kebab case\n- NAME_IN_UPPER_KEBAB_CASE: The name of the CV owner in upper kebab case\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe default value is \"MONTH_ABBREVIATION YEAR\".\nThe default value is null.",
           "title": "PNG Path",
           "oneOf": [
             {
@@ -1689,7 +1697,7 @@
         },
         "markdown_path": {
           "default": null,
-          "description": "The path of the Markdown file. If it is not provided, the Markdown file will not be generated. The following placeholders can be used:\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\n- NAME: The name of the CV owner\n- NAME_IN_SNAKE_CASE: The name of the CV owner in snake case\n- NAME_IN_LOWER_SNAKE_CASE: The name of the CV owner in lower snake case\n- NAME_IN_UPPER_SNAKE_CASE: The name of the CV owner in upper snake case\n- NAME_IN_KEBAB_CASE: The name of the CV owner in kebab case\n- NAME_IN_LOWER_KEBAB_CASE: The name of the CV owner in lower kebab case\n- NAME_IN_UPPER_KEBAB_CASE: The name of the CV owner in upper kebab case\nThe default value is an empty string.\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe default value is \"MONTH_ABBREVIATION YEAR\".\nThe default value is null.",
+          "description": "The path of the Markdown file. If it is not provided, the Markdown file will not be generated. The following placeholders can be used:\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\n- NAME: The name of the CV owner\n- NAME_IN_SNAKE_CASE: The name of the CV owner in snake case\n- NAME_IN_LOWER_SNAKE_CASE: The name of the CV owner in lower snake case\n- NAME_IN_UPPER_SNAKE_CASE: The name of the CV owner in upper snake case\n- NAME_IN_KEBAB_CASE: The name of the CV owner in kebab case\n- NAME_IN_LOWER_KEBAB_CASE: The name of the CV owner in lower kebab case\n- NAME_IN_UPPER_KEBAB_CASE: The name of the CV owner in upper kebab case\n- FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe default value is \"MONTH_ABBREVIATION YEAR\".\nThe default value is null.",
           "title": "Markdown Path",
           "oneOf": [
             {
@@ -1794,23 +1802,11 @@
           "title": "Disable Page Numbering",
           "type": "boolean"
         },
-        "page_numbering_style": {
-          "default": "NAME - Page PAGE_NUMBER of TOTAL_PAGES",
-          "description": "The style of the page numbering. The following placeholders can be used:\n- NAME: The name of the person\n- PAGE_NUMBER: The current page number\n- TOTAL_PAGES: The total number of pages\n- TODAY: Today's month and year (April 2024)\nThe default value is NAME - Page PAGE_NUMBER of TOTAL_PAGES.",
-          "title": "Page Numbering Style",
-          "type": "string"
-        },
         "disable_last_updated_date": {
           "default": false,
           "description": "If this option is set to true, then the last updated date will not be shown in the header. The default value is false.",
           "title": "Disable Last Updated Date",
           "type": "boolean"
-        },
-        "last_updated_date_style": {
-          "default": "Last updated in TODAY",
-          "description": "The style of the last updated date. The following placeholders can be used:\n- TODAY: Today's month and year (April 2024)\nThe default value is Last updated in TODAY.",
-          "title": "Last Updated Date Style",
-          "type": "string"
         },
         "header_font_size": {
           "default": "24 pt",
@@ -1955,9 +1951,7 @@
         "color": "#004f90",
         "disable_external_link_icons": false,
         "disable_page_numbering": false,
-        "page_numbering_style": "NAME - Page PAGE_NUMBER of TOTAL_PAGES",
         "disable_last_updated_date": false,
-        "last_updated_date_style": "Last updated in TODAY",
         "header_font_size": "30 pt",
         "text_alignment": "justified",
         "seperator_between_connections": "",
@@ -2019,28 +2013,56 @@
       "title": "Design"
     },
     "locale_catalog": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/LocaleCatalog"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
+      "$ref": "#/$defs/LocaleCatalog",
+      "default": {
+        "phone_number_format": "national",
+        "page_numbering_style": "NAME - Page PAGE_NUMBER of TOTAL_PAGES",
+        "last_updated_date_style": "Last updated in TODAY",
+        "date_style": "MONTH_ABBREVIATION YEAR",
+        "month": "month",
+        "months": "months",
+        "year": "year",
+        "years": "years",
+        "present": "present",
+        "to": "–",
+        "abbreviations_for_months": [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "June",
+          "July",
+          "Aug",
+          "Sept",
+          "Oct",
+          "Nov",
+          "Dec"
+        ],
+        "full_names_of_months": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December"
+        ]
+      },
       "description": "The locale catalog of the CV to allow the support of multiple languages.",
       "title": "Locale Catalog"
     },
     "rendercv_settings": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/RenderCVSettings"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
+      "$ref": "#/$defs/RenderCVSettings",
+      "default": {
+        "render_command": null,
+        "bold_keywords": []
+      },
       "description": "The settings of the RenderCV.",
       "title": "RenderCV Settings"
     }
