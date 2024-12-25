@@ -54,11 +54,14 @@ class RenderCVDataModel(RenderCVBaseModelWithoutExtraKeys):
         cls, model, info: pydantic.ValidationInfo
     ) -> Optional[RenderCVSettings]:
         """Update the paths in the RenderCV settings."""
+        global INPUT_FILE_DIRECTORY  # NOQA: PLW0603
+
         context = info.context
         if context:
-            global INPUT_FILE_DIRECTORY  # NOQA: PLW0603
             input_file_directory = context.get("input_file_directory", None)
             INPUT_FILE_DIRECTORY = input_file_directory
+        else:
+            INPUT_FILE_DIRECTORY = None
 
         return model
 
