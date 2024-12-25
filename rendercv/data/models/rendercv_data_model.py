@@ -67,8 +67,9 @@ class RenderCVDataModel(RenderCVBaseModelWithoutExtraKeys):
 
     @pydantic.field_validator("locale_catalog")
     @classmethod
-    def update_output_folder_name(cls, _) -> LocaleCatalog:
+    def update_locale_catalog(cls, _) -> LocaleCatalog:
         """Update the output folder name in the RenderCV settings."""
+        # Somehow, we need this for `test_if_local_catalog_resets` to pass.
         return LocaleCatalog()
 
 
