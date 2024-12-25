@@ -33,25 +33,11 @@ build-backend = "hatchling.build" # A build-backend object for building RenderCV
 
 [tool.hatch.build.targets.sdist]
 # In the sdist, what do we want to exclude?
-exclude = [
-    "rendercv/tinytex-release/download_and_minimize_tinytex_for_rendercv.py",
-    "rendercv/tinytex-release/.gitignore",
-    "rendercv/tinytex-release/.git",
-    ".github/",
-    ".devcontainer/",
-    # GIF files are too big:
-    "*.gif",
-]
+exclude = []
 
 [tool.hatch.build.targets.wheel]
 # In wheel, what do we want to include and exclude?
 packages = ["rendercv"]
-exclude = [
-    "rendercv/tinytex-release/download_and_minimize_tinytex_for_rendercv.py",
-    "rendercv/tinytex-release/.gitignore",
-    "rendercv/tinytex-release/.git",
-    "rendercv/tinytex-release/README.md",
-]
 
 [tool.hatch.version]
 # We will use hatchling to generate the version number of RenderCV. It will go to the
@@ -143,23 +129,21 @@ dependencies = [
     "time-machine==2.15.0", # to select an arbitrary date and time for testing
     "pypdf==4.3.1",         # to read PDF files
 ]
-[tool.hatch.envs.default.extra-scripts]
-pip = "{env:HATCH_UV} pip {args}"
 [tool.hatch.envs.default.scripts]
 # Hatch allows us to define scripts that can be run in the activated virtual environment
 # with `hatch run ENV_NAME:SCRIPT_NAME`.
 # Format all the code in the `rendercv` package with `black`:
 format = "ruff check --fix && ruff format && black rendercv docs tests" # hatch run format
 # Lint the code in the `rendercv` package with `ruff`:
-lint = "ruff check rendercv tests" # hatch run lint
+lint = "ruff check" # hatch run lint
 # Check types in the `rendercv` package with `pyright`:
-check-types = "pyright rendercv && pyright tests" # hatch run check-types
+check-types = "pyright rendercv tests" # hatch run check-types
 # Run pre-commit checks:
 precommit = "pre-commit run --all-files" # hatch run pre-commit
 # Run the tests:
 test = "pytest" # hatch run test
 # Run the tests and generate the coverage report as HTML:
-test-and-report = "coverage run -m pytest && pytest -k \"test_watcher\" && coverage combine && coverage report && coverage html --show-contexts" # hatch run test-and-report
+test-and-report = "coverage run -m pytest && coverage combine && coverage report && coverage html --show-contexts" # hatch run test-and-report
 
 [tool.hatch.envs.test]
 template = "default"
@@ -177,8 +161,6 @@ dependencies = [
     "pillow==10.4.0",              # lock the dependency of pdfCropMargins
     "mkdocs-macros-plugin==1.0.5", # to be able to have dynamic content in the documentation
 ]
-[tool.hatch.envs.docs.extra-scripts]
-pip = "{env:HATCH_UV} pip {args}"
 [tool.hatch.envs.docs.scripts]
 # Build the documentation with `mkdocs`:
 build = "mkdocs build --clean --strict" # hatch run docs:build
@@ -203,8 +185,6 @@ update-entry-figures = "python docs/update_entry_figures.py" # hatch run docs:up
 
 
 [tool.ruff]
-exclude = ["tinytex-release"]
-output-format = "github"
 line-length = 88
 
 [tool.ruff.format]
@@ -249,15 +229,10 @@ preview = true # to allow enable-unstable-feature
 enable-unstable-feature = [
     "string_processing",
 ] # to break strings into multiple lines
-exclude = "tinytex-release" # don't format the files in this folder
-
-[tool.isort]
-profile = "black"
 
 [tool.pyright]
 reportIncompatibleVariableOverride = false # disable this error type
 reportIncompatibleMethodOverride = false   # disable this error type
-ignore = ["**/tinytex-release/"]
 
 [tool.coverage.run]
 source = ['rendercv']             # The source to measure during execution
