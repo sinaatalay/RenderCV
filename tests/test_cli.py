@@ -1025,3 +1025,35 @@ def test_read_and_construct_the_input(
             assert (field in input_dict) == locals()[
                 field
             ], f"{field} is in dict: {field in input_dict}, expected: {locals()[field]}"
+
+
+def test_make_given_keywords_bold_in_a_dictionary():
+    dictionary = {
+        "name": "John Doe",
+        "email": ["John Doe"],
+        "test": {
+            "test": "John Doe",
+        },
+    }
+    keywords = ["John"]
+    bolded_dictionary = utilities.make_given_keywords_bold_in_a_dictionary(
+        dictionary, keywords
+    )
+    assert bolded_dictionary["name"] == "**John** Doe"
+    assert bolded_dictionary["email"] == ["**John** Doe"]
+    assert bolded_dictionary["test"]["test"] == "**John** Doe"
+
+
+def test_bold_keywords(input_file_path, tmp_path):
+    input_file_path.write_text(
+        "cv:\n  sections:\n    education:\n      - test\nrendercv_settings:\n "
+        " bold_keywords:\n    - test"
+    )
+    run_render_command(
+        input_file_path,
+        tmp_path,
+    )
+    latex_file_path = tmp_path / "rendercv_output" / "None_CV.tex"
+    latex_content = latex_file_path.read_text()
+
+    assert "\\textbf{test}" in latex_content

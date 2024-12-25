@@ -564,6 +564,24 @@ def test_sections(
         assert len(section.entries) == 2
 
 
+def test_section_with_different_entry_types(
+    education_entry,
+    experience_entry,
+):
+    input = {
+        "name": "John Doe",
+        "sections": {
+            "arbitrary_title": [
+                education_entry,
+                experience_entry,
+            ],
+        },
+    }
+
+    with pytest.raises(pydantic.ValidationError):
+        data.CurriculumVitae(**input)
+
+
 def test_sections_with_invalid_entries():
     input = {"name": "John Doe", "sections": {}}
     input["sections"]["section_title"] = [

@@ -207,3 +207,11 @@ class RenderCVSettings(RenderCVBaseModelWithoutExtraKeys):
             " the input file."
         ),
     )
+    bold_keywords: list[str] = pydantic.Field(
+        default=[],
+        title="Bold Keywords",
+        description=(
+            "The keywords that will be bold in the output. The default value is an"
+            " empty list."
+        ),
+    )
