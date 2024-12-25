@@ -21,12 +21,12 @@ file_path_placeholder_description = (
     " NAME_IN_UPPER_SNAKE_CASE: The name of the CV owner in upper snake case\n-"
     " NAME_IN_KEBAB_CASE: The name of the CV owner in kebab case\n-"
     " NAME_IN_LOWER_KEBAB_CASE: The name of the CV owner in lower kebab case\n-"
-    " NAME_IN_UPPER_KEBAB_CASE: The name of the CV owner in upper kebab case\nThe"
-    " default value is an empty string.\n- FULL_MONTH_NAME: Full name of the month\n-"
-    " MONTH_ABBREVIATION: Abbreviation of the month\n- MONTH: Month as a number\n-"
-    " MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a number\n-"
-    " YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe default value is"
-    ' "MONTH_ABBREVIATION YEAR".\nThe default value is null.'
+    " NAME_IN_UPPER_KEBAB_CASE: The name of the CV owner in upper kebab case\n-"
+    " FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION: Abbreviation of"
+    " the month\n- MONTH: Month as a number\n- MONTH_IN_TWO_DIGITS: Month as a number"
+    " in two digits\n- YEAR: Year as a number\n- YEAR_IN_TWO_DIGITS: Year as a number"
+    ' in two digits\nThe default value is "MONTH_ABBREVIATION YEAR".\nThe default value'
+    " is null."
 )
 
 file_path_placeholder_description_without_default = (

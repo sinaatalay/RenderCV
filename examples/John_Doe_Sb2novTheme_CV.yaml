@@ -111,9 +111,7 @@ design:
   color: '#004f90'
   disable_external_link_icons: false
   disable_page_numbering: false
-  page_numbering_style: NAME - Page PAGE_NUMBER of TOTAL_PAGES
   disable_last_updated_date: false
-  last_updated_date_style: Last updated in TODAY
   header_font_size: 24 pt
   text_alignment: justified
   seperator_between_connections: ''

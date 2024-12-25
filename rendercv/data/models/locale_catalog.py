@@ -16,6 +16,8 @@ class LocaleCatalog(RenderCVBaseModelWithoutExtraKeys):
     updates the `locale_catalog` dictionary.
     """
 
+    model_config = pydantic.ConfigDict(validate_default=True)
+
     phone_number_format: Optional[Literal["national", "international", "E164"]] = (
         pydantic.Field(
             default="national",
@@ -27,16 +29,36 @@ class LocaleCatalog(RenderCVBaseModelWithoutExtraKeys):
             ),
         )
     )
+    page_numbering_style: str = pydantic.Field(
+        default="NAME - Page PAGE_NUMBER of TOTAL_PAGES",
+        title="Page Numbering Style",
+        description=(
+            "The style of the page numbering. The following placeholders can be"
+            " used:\n- NAME: The name of the person\n- PAGE_NUMBER: The current page"
+            " number\n- TOTAL_PAGES: The total number of pages\n- TODAY: Today's date"
+            ' with `locale_catalog.date_style`\nThe default value is "NAME -'
+            ' Page PAGE_NUMBER of TOTAL_PAGES".'
+        ),
+    )
+    last_updated_date_style: str = pydantic.Field(
+        default="Last updated in TODAY",
+        title="Last Updated Date Style",
+        description=(
+            "The style of the last updated date. The following placeholders can be"
+            " used:\n- TODAY: Today's date with `locale_catalog.date_style`\nThe"
+            ' default value is "Last updated in TODAY".'
+        ),
+    )
     date_style: Optional[str] = pydantic.Field(
         default="MONTH_ABBREVIATION YEAR",
         title="Date Style",
         description=(
-            "The style of the date. The following placeholders can be used:\n-"
-            " FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION:"
+            "The style of the date. The following placeholders can be"
+            " used:\n-FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION:"
             " Abbreviation of the month\n- MONTH: Month as a number\n-"
             " MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a"
-            " number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe default"
-            ' value is "MONTH_ABBREVIATION YEAR".'
+            " number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe"
+            ' default value is "MONTH_ABBREVIATION YEAR".'
         ),
     )
     month: Optional[str] = pydantic.Field(

@@ -281,9 +281,7 @@ design:
   color: blue
   disable_external_link_icons: false
   disable_last_updated_date: false
-  last_updated_date_style: Last updated in TODAY
   disable_page_numbering: false
-  page_numbering_style: NAME - Page PAGE_NUMBER of TOTAL_PAGES
   font: Source Sans 3
   font_size: 10pt
   header_font_size: "30 pt"
@@ -325,7 +323,9 @@ Here is an example:
 locale_catalog:
   phone_number_format: national # (1)!
   date_style: "MONTH_ABBREVIATION YEAR" # (2)!
-  abbreviations_for_months: # (3)!
+  last_updated_date_style: Last updated in TODAY # (3)!
+  page_numbering_style: NAME - Page PAGE_NUMBER of TOTAL_PAGES # (4)!
+  abbreviations_for_months: 
     - Jan
     - Feb
     - Mar
@@ -338,7 +338,7 @@ locale_catalog:
     - Oct
     - Nov
     - Dec
-  full_names_of_months: # (4)!
+  full_names_of_months: 
     - January
     - February
     - March
@@ -351,24 +351,18 @@ locale_catalog:
     - October
     - November
     - December
-  month: month      # (5)!
-  months: months    # (6)!
-  year: year        # (7)!
-  years: years      # (8)! 
-  present: present  # (9)!    
-  to: to            # (10)! 
+  month: month      
+  months: months    
+  year: year        
+  years: years      
+  present: present   
+  to: to            
 ```
 
 1. The available phone number formats are: `national`, `international`, and `E164`.
 2. The `MONTH_ABBREVIATION` and `YEAR` are placeholders. The available placeholders are: `FULL_MONTH_NAME`, `MONTH_ABBREVIATION`, `MONTH`, `MONTH_IN_TWO_DIGITS`, `YEAR`, and `YEAR_IN_TWO_DIGITS`.
-3. The translation of the month abbreviations.
-4. The translation of the full month names.
-5. The translation of the word "month".
-6. The translation of the word "months".
-7. The translation of the word "year".
-8. The translation of the word "years".
-9. The translation of the word "present".
-10. The translation of the word "to".
+3. The available placeholders are: `TODAY`, which prints the today's date with `locale_catalog.date_style`.
+4. The available placeholders are: `NAME`, `PAGE_NUMBER`, `TOTAL_PAGES`, and `TODAY`.
 
 ## "`rendercv_settings`" field
 
