@@ -43,4 +43,6 @@ jobs:
 
   call_update_files_workflow:
     name: Update files
+    needs:
+      - publish
     uses: ./.github/workflows/update-files.yaml
