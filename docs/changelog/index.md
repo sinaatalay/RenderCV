@@ -62,7 +62,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- `rendercv_settings` field has been added to the YAML input file. For details, see [here](https://docs.rendercv.com/user_guide/structure_of_the_yaml_input_file/#rendercv_settings-field). It will be extended in the future.
+- `rendercv_settings` field has been added to the YAML input file. For details, see [here](../user_guide/structure_of_the_yaml_input_file.md#rendercv_settings-field). It will be extended in the future.
 
 
 ## [1.13] - July 23, 2024
@@ -71,8 +71,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- Arbitrary keys are now allowed in the `cv` field. For details, see [here](https://docs.rendercv.com/user_guide/structure_of_the_yaml_input_file/#using-arbitrary-keys).
-- Two new fields have been added to the `locale_catalog` field: `phone_number_format` and `date_style` ([#130](https://github.com/rendercv/rendercv/issues/130)). For details, see [here](../user_guide/structure_of_the_yaml_input_file#locale_catalog-field).
+- Arbitrary keys are now allowed in the `cv` field. For details, see [here](../user_guide/structure_of_the_yaml_input_file.md#using-arbitrary-keys).
+- Two new fields have been added to the `locale_catalog` field: `phone_number_format` and `date_style` ([#130](https://github.com/rendercv/rendercv/issues/130)). For details, see [here](../user_guide/structure_of_the_yaml_input_file.md#locale_catalog-field).
 
 ### Changed
 
@@ -90,7 +90,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- Arbitrary keys are now allowed in entry types. Users can use these keys in their templates. For details, see the [documentation](https://docs.rendercv.com/user_guide/structure_of_the_yaml_input_file/#using-arbitrary-keys).
+- Arbitrary keys are now allowed in entry types. Users can use these keys in their templates. For details, see the [documentation](../user_guide/structure_of_the_yaml_input_file.md#using-arbitrary-keys).
 - The `locale_catalog.full_names_of_months` field has been added to the data model ([#111](https://github.com/rendercv/rendercv/issues/111)).
 - The `TODAY` placeholder can be used in the `design.page_numbering_style` field now.
 
@@ -154,7 +154,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- RenderCV is now a multilingual tool. English strings can be overridden with `locale_catalog` section in the YAML input file ([#26](https://github.com/rendercv/rendercv/issues/26), [#20](https://github.com/rendercv/rendercv/pull/20)). See the [documentation](user_guide/structure_of_the_yaml_input_file.md#locale_catalog-field) for more information.
+- RenderCV is now a multilingual tool. English strings can be overridden with `locale_catalog` section in the YAML input file ([#26](https://github.com/rendercv/rendercv/issues/26), [#20](https://github.com/rendercv/rendercv/pull/20)). See the [documentation](../user_guide/structure_of_the_yaml_input_file.md#locale_catalog-field) for more information.
 - PNG files for each page can be generated now ([#57](https://github.com/rendercv/rendercv/issues/57)).
 - `rendercv new` command now generates Markdown and $\LaTeX$ source files in addition to the YAML input file so that the default templates can be modified easily.
 - A new CLI command has been added, `rendercv create-theme`, to allow users to create their own themes easily.

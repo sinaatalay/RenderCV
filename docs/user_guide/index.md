@@ -35,7 +35,7 @@ This command will create the following files:
 
     This directory contains the templates of RenderCV's default Markdown template. You can update its contents to tweak the Markdown and HTML output of the CV.
 
-Please refer to the [here](cli.md#options-of-the-rendercv-new-command) for the complete list of CLI options available for the `new` command.
+Please refer to the [here](cli.md#rendercv-new-command) for the complete list of CLI options available for the `new` command.
 
 ## Structure of the YAML input file
 
@@ -59,7 +59,7 @@ This command will generate a directory called `rendercv_output`, which contains 
 -   The CV in HTML format, `Your_Name_CV.html`. You can open this file in a web browser and copy-paste the content to Grammarly for proofreading.
 -   Some log and auxiliary files related to the $\LaTeX$ compilation process.
 
-Please refer to the [here](cli.md#options-of-the-rendercv-render-command) for the complete list of CLI options available for the `render` command.
+Please refer to the [here](cli.md#rendercv-render-command) for the complete list of CLI options available for the `render` command.
 
 ### Overriding built-in themes
 
@@ -180,4 +180,4 @@ RenderCV will then parse your custom design options from the YAML input. You can
 ((* endif *))
 ```
 
-Please refer [here](cli.md#options-of-the-rendercv-create-theme-command) for the complete list of CLI options available for the `create-theme` command.
+Please refer [here](cli.md#rendercv-create-theme-command) for the complete list of CLI options available for the `create-theme` command.

@@ -96,7 +96,7 @@ These commands are defined in the [`pyproject.toml`](https://github.com/rendercv
     ```bash
     hatch run docs:update-examples
     ```
-- Update figures of the entry types in the "[Structure of the YAML Input File](https://docs.rendercv.com/user_guide/structure_of_the_yaml_input_file/)"
+- Update figures of the entry types in the "[Structure of the YAML Input File](../user_guide/structure_of_the_yaml_input_file.md)"
     ```bash
     hatch run docs:update-entry-figures
     ```

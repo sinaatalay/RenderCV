@@ -372,7 +372,7 @@ locale_catalog:
 
 ## "`rendercv_settings`" field
 
-The `rendercv_settings` field contains RenderCV settings. We plan to add more settings soon, such as the ability to bold specific words and disable sections. Currently, it only includes the `render_command` field, which contains all the CLI options of the [`rendercv render`](./cli.md#options-of-the-rendercv-render-command) command, as shown below. If CLI arguments are provided, they will override the values in the YAML file. All the fields are optional.
+The `rendercv_settings` field contains RenderCV settings. We plan to add more settings soon, such as the ability to bold specific words and disable sections. Currently, it only includes the `render_command` field, which contains all the CLI options of the [`rendercv render`](./cli.md#rendercv-render-command) command, as shown below. If CLI arguments are provided, they will override the values in the YAML file. All the fields are optional.
 ```yaml
 rendercv_settings:
   render_command:
