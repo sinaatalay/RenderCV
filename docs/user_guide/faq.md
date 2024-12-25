@@ -6,6 +6,8 @@ You can use [jsonresume-to-rendercv](https://github.com/guruor/jsonresume-to-ren
 
 ## How to use it with Docker?
 
+RenderCV's Docker image is available [on Docker Hub](https://hub.docker.com/r/rendercv/rendercv).
+
 If you have Docker installed, you can use RenderCV without installing anything else. Run the command below to open a Docker container with RenderCV installed.
 
 ```bash
