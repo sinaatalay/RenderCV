@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-[Click here to see the unreleased changes.](https://github.com/rendercv/rendercv/compare/v1.16...HEAD)
+[Click here to see the unreleased changes.](https://github.com/rendercv/rendercv/compare/v1.17...HEAD)
 
 <!--
 ### Added
@@ -16,6 +16,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 ### Removed
 -->
+## [1.17] - December 25, 2024
+
+> **Full Changelog**: [v1.16...v1.17]
+
+### Added
+- `cv.photo` field has been added to the YAML input file. It allows users to add a photo to their CVs ([#193](https://github.com/rendercv/rendercv/pull/193)).
+- `rendercv_settings.bold_keywords` field has been added to the YAML input file. It allows users to make specific keywords automatically bold in the rendered CV ([#144](https://github.com/rendercv/rendercv/issues/144)).
+- `markdown_to_latex` filter has been added to Jinja templates ([#269](https://github.com/rendercv/rendercv/pull/269)).
+
+### Changed
+- `design.last_updated_date_style` and `design.page_numbering_style` fields are moved to `locale_catalog.last_updated_date_style` and `locale_catalog.page_numbering_style` fields, respectively ([#270](https://github.com/rendercv/rendercv/pull/270)).
+
 ## [1.16] - December 10, 2024
 
 > **Full Changelog**: [v1.15...v1.16]
@@ -427,6 +439,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 The first release of RenderCV.
 
+[v1.16...v1.17]: https://github.com/rendercv/rendercv/compare/v1.16...v1.17
 [v1.15...v1.16]: https://github.com/rendercv/rendercv/compare/v1.15...v1.16
 [v1.14...v1.15]: https://github.com/rendercv/rendercv/compare/v1.14...v1.15
 [v1.13...v1.14]: https://github.com/rendercv/rendercv/compare/v1.13...v1.14
@@ -452,6 +465,7 @@ The first release of RenderCV.
 [v0.3...v0.4]: https://github.com/rendercv/rendercv/compare/v0.3...v0.4
 [v0.2...v0.3]: https://github.com/rendercv/rendercv/compare/v0.2...v0.3
 [v0.1...v0.2]: https://github.com/rendercv/rendercv/compare/v0.1...v0.2
+[1.17]: https://github.com/rendercv/rendercv/releases/tag/v1.17
 [1.16]: https://github.com/rendercv/rendercv/releases/tag/v1.16
 [1.15]: https://github.com/rendercv/rendercv/releases/tag/v1.15
 [1.14]: https://github.com/rendercv/rendercv/releases/tag/v1.14
