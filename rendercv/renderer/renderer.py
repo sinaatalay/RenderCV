@@ -7,12 +7,11 @@ import importlib.resources
 import pathlib
 import re
 import shutil
-import subprocess
-import sys
 from typing import Optional
 
 import fitz
 import markdown
+import rendercv_tinytex
 
 from .. import data
 from . import templater
@@ -167,139 +166,7 @@ def render_a_pdf_from_latex(
     Returns:
         The path to the rendered PDF file.
     """
-    # check if the file exists:
-    if not latex_file_path.is_file():
-        message = f"The file {latex_file_path} doesn't exist!"
-        raise FileNotFoundError(message)
-
-    if local_latex_command:
-        executable = local_latex_command
-
-        # check if the command is working:
-        try:
-            subprocess.run(
-                [executable, "--version"],
-                stdout=subprocess.DEVNULL,  # don't capture the output
-                stderr=subprocess.DEVNULL,  # don't capture the error
-                check=True,
-            )
-        except FileNotFoundError as e:
-            message = (
-                f"{executable} isn't installed! Please install LaTeX and try again (or"
-                " don't use the [bright_black]--use-local-latex-command[/bright_black]"
-                " option)."
-            )
-            raise FileNotFoundError(message) from e
-    else:
-        tinytex_binaries_directory = (
-            pathlib.Path(__file__).parent / "tinytex-release" / "TinyTeX" / "bin"
-        )
-
-        executables = {
-            "win32": tinytex_binaries_directory / "windows" / "pdflatex.exe",
-            "linux": tinytex_binaries_directory / "x86_64-linux" / "pdflatex",
-            "darwin": tinytex_binaries_directory / "universal-darwin" / "pdflatex",
-        }
-
-        if sys.platform not in executables:
-            message = f"TinyTeX doesn't support the platform {sys.platform}!"
-            raise OSError(message)
-
-        executable = executables[sys.platform]
-
-        # check if the executable exists:
-        if not executable.is_file():
-            message = (
-                f"The TinyTeX executable ({executable}) doesn't exist! If you are"
-                " cloning the repository, make sure to clone it recursively to get the"
-                " TinyTeX binaries. See the developer guide for more information."
-            )
-            raise FileNotFoundError(message)
-
-    # Before running LaTeX, make sure the PDF file is not open in another program,
-    # that wouldn't allow LaTeX to write to it. Remove the PDF file if it exists,
-    # if it's not removable, then raise an error:
-    pdf_file_path = latex_file_path.with_suffix(".pdf")
-    if pdf_file_path.is_file():
-        try:
-            pdf_file_path.unlink()
-        except PermissionError as e:
-            message = (
-                f"The PDF file {pdf_file_path} is open in another program and doesn't"
-                " allow RenderCV to rewrite it. Please close the PDF file."
-            )
-            raise RuntimeError(message) from e
-
-    # Run LaTeX to render the PDF:
-    command = [
-        executable,
-        str(latex_file_path.absolute()),
-    ]
-    with subprocess.Popen(
-        command,
-        cwd=latex_file_path.parent,
-        stdout=subprocess.PIPE,  # capture the output
-        stderr=subprocess.DEVNULL,  # don't capture the error
-        stdin=subprocess.DEVNULL,  # don't allow LaTeX to ask for user input
-    ) as latex_process:
-        output = latex_process.communicate()  # wait for the process to finish
-        if latex_process.returncode != 0:
-            latex_file_path_log = latex_file_path.with_suffix(".log").read_text()
-
-            if local_latex_command:
-                message = (
-                    f"The local LaTeX command {local_latex_command} couldn't render"
-                    " this LaTeX file into a PDF. Check out the log file"
-                    f" {latex_file_path.with_suffix('.log')} in the output directory"
-                    " for more information. It is printed below:\n\n"
-                )
-
-                message = message + latex_file_path_log
-                raise RuntimeError(message)
-
-            message = (
-                "RenderCV's built-in TinyTeX binaries couldn't render this LaTeX"
-                " file into a PDF. This could be caused by one of two"
-                " reasons:\n\n1- The theme templates might have been updated in a"
-                " way RenderCV's TinyTeX cannot render. RenderCV's TinyTeX is"
-                " minified to keep the package size small. As a result, it doesn't"
-                " function like a general-purpose LaTeX distribution.\n2- Special"
-                " characters, like Greek or Chinese letters, that are not"
-                " compatible with the fonts used or RenderCV's TinyTeX might have"
-                " been used.\n\nHowever, this issue can be resolved by using your"
-                " own LaTeX distribution instead of the built-in TinyTeX. This can"
-                " be done with the '--use-local-latex-command' option, as shown"
-                " below:\n\nrendercv render --use-local-latex-command lualatex"
-                " John_Doe_CV.yaml\n\nIf you ensure that the generated LaTeX file"
-                " can be compiled by your local LaTeX distribution, RenderCV will"
-                " work successfully. You can debug the generated LaTeX file in"
-                " your LaTeX editor to resolve any bugs. Then, you can start using"
-                " RenderCV with your local LaTeX distribution.\n\nIf you can't"
-                " solve the problem, please open an issue on GitHub. Also, to see"
-                " the error, check out the log file"
-                f" {latex_file_path.with_suffix('.log')} in the output directory."
-                " It is printed below:\n\n"
-            )
-            message = message + latex_file_path_log
-            raise RuntimeError(message)
-
-        try:
-            output = output[0].decode("utf-8")
-        except UnicodeDecodeError:
-            output = output[0].decode("latin-1")
-
-        if "Rerun to get" in output:
-            # Run TinyTeX again to get the references right:
-            subprocess.run(
-                command,
-                cwd=latex_file_path.parent,
-                stdout=subprocess.DEVNULL,  # don't capture the output
-                stderr=subprocess.DEVNULL,  # don't capture the error
-                stdin=subprocess.DEVNULL,  # don't allow TinyTeX to ask for user input
-                check=True,
-            )
-
-    return pdf_file_path
+    return rendercv_tinytex.run_latex(latex_file_path, local_latex_command)
 
 
 def render_pngs_from_pdf(pdf_file_path: pathlib.Path) -> list[pathlib.Path]:
