@@ -70,6 +70,7 @@ requires-python = '>=3.10'
 # RenderCV depends on these packages. They will be installed automatically when RenderCV
 # is installed:
 dependencies = [
+    'rendercv-tinytex==0.2.0',      # to render LaTeX files with TinyTeX
     'Jinja2==3.1.5',                # to generate LaTeX and Markdown files
     'phonenumbers==8.13.52',        # to validate phone numbers
     'email-validator==2.2.0',       # to validate email addresses
