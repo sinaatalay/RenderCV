@@ -15,7 +15,7 @@ from .design import RenderCVDesign
 from .locale_catalog import LocaleCatalog
 from .rendercv_settings import RenderCVSettings
 
-INPUT_FILE_DIRECTORY: pathlib.Path
+INPUT_FILE_DIRECTORY: Optional[pathlib.Path] = None
 
 
 class RenderCVDataModel(RenderCVBaseModelWithoutExtraKeys):
@@ -48,23 +48,22 @@ class RenderCVDataModel(RenderCVBaseModelWithoutExtraKeys):
         description="The settings of the RenderCV.",
     )
 
-    @pydantic.field_validator("cv")
+    @pydantic.model_validator(mode="before")
     @classmethod
     def update_paths(
-        cls, rendercv_settings, info: pydantic.ValidationInfo
+        cls, model, info: pydantic.ValidationInfo
     ) -> Optional[RenderCVSettings]:
         """Update the paths in the RenderCV settings."""
-        context = info.context
         global INPUT_FILE_DIRECTORY  # NOQA: PLW0603
+
+        context = info.context
         if context:
-            input_file_directory = context.get(
-                "input_file_directory", pathlib.Path.cwd()
-            )
+            input_file_directory = context.get("input_file_directory", None)
             INPUT_FILE_DIRECTORY = input_file_directory
         else:
-            INPUT_FILE_DIRECTORY = pathlib.Path.cwd()
+            INPUT_FILE_DIRECTORY = None
 
-        return rendercv_settings
+        return model
 
     @pydantic.field_validator("locale_catalog")
     @classmethod

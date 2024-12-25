@@ -82,7 +82,7 @@ def create_a_latex_file(
     Returns:
         The path to the generated $\\LaTeX$ file.
     """
-    # create output directory if it doesn't exist:
+    # Create output directory if it doesn't exist:
     if not output_directory.is_dir():
         output_directory.mkdir(parents=True)
 
@@ -146,6 +146,13 @@ def create_a_latex_file_and_copy_theme_files(
     copy_theme_files_to_output_directory(
         rendercv_data_model.design.theme, output_directory
     )
+
+    # Copy the profile picture to the output directory, if it exists:
+    if rendercv_data_model.cv.photo:
+        shutil.copyfile(
+            rendercv_data_model.cv.photo,
+            output_directory / rendercv_data_model.cv.photo.name,
+        )
     return latex_file_path
 
 
