@@ -92,7 +92,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Arbitrary keys are now allowed in entry types. Users can use these keys in their templates. For details, see the [documentation](../user_guide/structure_of_the_yaml_input_file.md#using-arbitrary-keys).
 - The `locale_catalog.full_names_of_months` field has been added to the data model ([#111](https://github.com/rendercv/rendercv/issues/111)).
-- The `TODAY` placeholder can be used in the `design.page_numbering_style` field now.
+- The `TODAY` placeholder can be used in the `locale_catalog.page_numbering_style` field now.
 
 ### Changed
 

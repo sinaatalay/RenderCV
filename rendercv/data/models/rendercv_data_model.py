@@ -35,15 +35,15 @@ class RenderCVDataModel(RenderCVBaseModelWithoutExtraKeys):
             "The design information of the CV. The default is the classic theme."
         ),
     )
-    locale_catalog: Optional[LocaleCatalog] = pydantic.Field(
-        default=None,
+    locale_catalog: LocaleCatalog = pydantic.Field(
+        default=LocaleCatalog(),
         title="Locale Catalog",
         description=(
             "The locale catalog of the CV to allow the support of multiple languages."
         ),
     )
-    rendercv_settings: Optional[RenderCVSettings] = pydantic.Field(
-        default=None,
+    rendercv_settings: RenderCVSettings = pydantic.Field(
+        default=RenderCVSettings(),
         title="RenderCV Settings",
         description="The settings of the RenderCV.",
     )
@@ -67,15 +67,9 @@ class RenderCVDataModel(RenderCVBaseModelWithoutExtraKeys):
 
     @pydantic.field_validator("locale_catalog")
     @classmethod
-    def initialize_locale_catalog(
-        cls, locale_catalog: Optional[LocaleCatalog]
-    ) -> Optional[LocaleCatalog]:
-        """Even if the locale catalog is not provided, initialize it with the default
-        values."""
-        if locale_catalog is None:
-            LocaleCatalog()
-
-        return locale_catalog
+    def update_output_folder_name(cls, _) -> LocaleCatalog:
+        """Update the output folder name in the RenderCV settings."""
+        return LocaleCatalog()
 
 
 rendercv_data_model_fields = tuple(RenderCVDataModel.model_fields.keys())
