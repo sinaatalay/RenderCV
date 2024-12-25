@@ -336,7 +336,7 @@ def make_given_keywords_bold_in_a_dictionary(
                         new_dictionary[key][i] = (
                             make_given_keywords_bold_in_a_dictionary(item, keywords)
                         )
-    return dictionary
+    return new_dictionary
 
 
 def run_rendercv_with_printer(
