@@ -11,7 +11,7 @@ _The engine of the [RenderCV App](https://rendercv.com)_
 
 </div>
 
-`rendercv` is a Python package with a command-line interface (CLI) that allows you to version-control your CV as source code.
+RenderCV engine is a Python package with a command-line interface (CLI) that allows you to version-control your CV as source code.
 
 RenderCV engine's focus is to provide these three features:
 
@@ -61,11 +61,11 @@ RenderCV comes with a JSON Schema so that the YAML input file can be filled out 
 
 ## Quick Start Guide
 
-RenderCV is very easy to install (`pip install rendercv`) and easy to use (`rendercv new "John Doe"`). Follow the [user guide](https://docs.rendercv.com/user_guide) to get started.
+RenderCV engine is very easy to install (`pip install rendercv`) and easy to use (`rendercv new "John Doe"`). Follow the [user guide](https://docs.rendercv.com/user_guide) to get started.
 
 ## Motivation
 
-We are trying to create a purpose-built app for CVs and resumes that is available on mobile and web. This Python project is the foundation of that app. Check out [our blog post](https://rendercv.com/rendercv-latex-cv-framework/) to learn more about why one would use such an app.
+We are developing a purpose-built app for writing CVs and resumes that will be available on mobile and web. This Python project is the foundation of that app. Check out [our blog post](https://rendercv.com/rendercv-latex-cv-framework/) to learn more about why one would use such an app.
 
 ## Contributing
 

@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 ### Removed
 -->
-## [1.16] - 2024-12-10
+## [1.16] - December 10, 2024
 
 > **Full Changelog**: [v1.15...v1.16]
 
@@ -25,7 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `rendercv render` command has been fixed for Python 3.10 and 3.11 ([#249](https://github.com/rendercv/rendercv/pull/249), [#250](https://github.com/rendercv/rendercv/issues/250)).
 
 
-## [1.15] - 2024-12-09
+## [1.15] - December 9, 2024
 
 > **Full Changelog**: [v1.14...v1.15]
 
@@ -56,7 +56,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 -   `PublicationEntry`'s `url` field's $\LaTeX$ character escaping issues have been fixed ([#236](https://github.com/rendercv/rendercv/issues/236)).
 
 
-## [1.14] - 2024-09-07
+## [1.14] - September 7, 2024
 
 > **Full Changelog**: [v1.13...v1.14]
 
@@ -65,14 +65,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `rendercv_settings` field has been added to the YAML input file. For details, see [here](https://docs.rendercv.com/user_guide/structure_of_the_yaml_input_file/#rendercv_settings-field). It will be extended in the future.
 
 
-## [1.13] - 2024-07-23
+## [1.13] - July 23, 2024
 
 > **Full Changelog**: [v1.12...v1.13]
 
 ### Added
 
 - Arbitrary keys are now allowed in the `cv` field. For details, see [here](https://docs.rendercv.com/user_guide/structure_of_the_yaml_input_file/#using-arbitrary-keys).
-- Two new fields have been added to the `locale_catalog` field: `phone_number_format` and `date_style` ([#130](https://github.com/rendercv/rendercv/issues/130)). For details, see [here](http://127.0.0.1:8000/user_guide/structure_of_the_yaml_input_file/#locale_catalog-field).
+- Two new fields have been added to the `locale_catalog` field: `phone_number_format` and `date_style` ([#130](https://github.com/rendercv/rendercv/issues/130)). For details, see [here](../user_guide/structure_of_the_yaml_input_file#locale_catalog-field).
 
 ### Changed
 
@@ -84,7 +84,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The data model overriding in CLI has been fixed.
 - The `url` field is now shown in the `PublicationEntry` ([#128](https://github.com/rendercv/rendercv/issues/128)).
 
-## [1.12] - 2024-07-16
+## [1.12] - July 16, 2024
 
 > **Full Changelog**: [v1.11...v1.12]
 
@@ -103,7 +103,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The `TODAY` placeholder in `design.last_updated_style` field is localized with the new `locale_catalog.full_names_of_months` field ([#111](https://github.com/rendercv/rendercv/issues/111))
 - Rendering Markdown links with special characters has been fixed ([#112](https://github.com/rendercv/rendercv/issues/112)).
 
-## [1.11] - 2024-06-19
+## [1.11] - June 19, 2024
 
 > **Full Changelog**: [v1.10...v1.11]
 
@@ -134,7 +134,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - `Twitter` has been removed as a social network type ([#109](https://github.com/rendercv/rendercv/issues/109)).
 
-## [1.10] - 2024-05-25
+## [1.10] - May 25, 2024
 
 > **Full Changelog**: [v1.9...v1.10]
 
@@ -148,7 +148,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Authors in `PublicationEntry` are now displayed correctly in `engineeringresumes` and `sb2nov` themes.
 - `justify-with-no-hyphenation` text alignment has been fixed.
 
-## [1.9] - 2024-05-19
+## [1.9] - May 19, 2024
 
 > **Full Changelog**: [v1.8...v1.9]
 
@@ -189,7 +189,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - $\LaTeX$ templates have been polished.
 - Bugs related to the special characters in email addresses have been fixed ([#64](https://github.com/rendercv/rendercv/issues/64)).
 
-## [1.8] - 2024-04-16
+## [1.8] - April 16, 2024
 
 > **Full Changelog**: [v1.7...v1.8]
 
@@ -212,7 +212,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The `education_degree_width` option of the `classic` theme has been fixed.
 - Lualatex and xelatex rendering problems have been fixed ([#52](https://github.com/rendercv/rendercv/issues/52)).
 
-## [1.7] - 2024-04-08
+## [1.7] - April 8, 2024
 
 > **Full Changelog**: [v1.6...v1.7]
 
@@ -227,7 +227,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Highlights can now be broken into multiple pages in the `classic` theme ([#47](https://github.com/rendercv/rendercv/issues/47)).
 - Some JSON Schema bugs have been fixed.
 
-## [1.6] - 2024-03-31
+## [1.6] - March 31, 2024
 
 > **Full Changelog**: [v1.5...v1.6]
 
@@ -246,7 +246,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Decoding issues have been fixed ([#29](https://github.com/rendercv/rendercv/issues/29)).
 - Classic theme's `ExperienceEntry` has been fixed ([#49](https://github.com/rendercv/rendercv/issues/49)).
 
-## [1.5] - 2024-03-27
+## [1.5] - March 27, 2024
 
 > **Full Changelog**: [v1.4...v1.5]
 
@@ -266,7 +266,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The `sb2nov` theme's `PublicationEntry` without `journal` and `doi` fields is now rendered correctly.
 - The `sb2nov` theme's `OneLineEntry`'s colon issue has been fixed.
 
-## [1.4] - 2024-03-10
+## [1.4] - March 10, 2024
 
 > **Full Changelog**: [v1.3...v1.4]
 
@@ -281,7 +281,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `moderncv`'s `TextEntries` don't have bullet points anymore.
 - `sb2nov`'s `TextEntries` don't have bullet points anymore.
 
-## [1.3] - 2024-03-09
+## [1.3] - March 9, 2024
 
 > **Full Changelog**: [v1.2...v1.3]
 
@@ -300,7 +300,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - The `journal` is now displayed in the `PublicationEntry` of the `sb2nov` theme.
 
-## [1.2] - 2024-02-27
+## [1.2] - February 27, 2024
 
 > **Full Changelog**: [v1.1...v1.2]
 
@@ -312,7 +312,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - A bug where an email with special characters caused a $\LaTeX$ error has been fixed.
 - The Unicode error when `rendercv new` is called with a name containing special characters has been fixed.
 
-## [1.1] - 2024-02-25
+## [1.1] - February 25, 2024
 
 > **Full Changelog**: [v0.10...v1.1]
 
@@ -335,7 +335,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The reference has been rewritten.
 - The build system has been changed from `setuptools` to `hatchling`.
 
-## [0.10] - 2023-11-29
+## [0.10] - November 29, 2023
 
 > **Full Changelog**: [v0.9...v0.10]
 
@@ -343,7 +343,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Author highlighting issue has been fixed in `PublicationEntry`.
 
-## [0.9] - 2023-11-29
+## [0.9] - November 29, 2023
 
 > **Full Changelog**: [v0.8...v0.9]
 
@@ -354,7 +354,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Header options (margins and header font size) have been added.
 - The `university_projects` field has been added.
 
-## [0.8] - 2023-11-17
+## [0.8] - November 17, 2023
 
 > **Full Changelog**: [v0.7...v0.8]
 
@@ -362,7 +362,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - YYYY date issue has been solved ([#5](https://github.com/rendercv/rendercv/issues/5)).
 
-## [0.7] - 2023-11-03
+## [0.7] - November 3, 2023
 
 > **Full Changelog**: [v0.6...v0.7]
 
@@ -374,7 +374,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - The error messages for custom sections have been fixed.
 
-## [0.6] - 2023-10-28
+## [0.6] - October 28, 2023
 
 > **Full Changelog**: [v0.5...v0.6]
 
@@ -386,7 +386,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - DOI validation bug has been fixed by [@LabAsim](https://github.com/LabAsim) in [#3](https://github.com/rendercv/rendercv/pull/3)/
 
-## [0.5] - 2023-10-27
+## [0.5] - October 27, 2023
 
 > **Full Changelog**: [v0.4...v0.5]
 
@@ -398,7 +398,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Special $\LaTeX$ characters' escaping has been fixed.
 
-## [0.4] - 2023-10-22
+## [0.4] - October 22, 2023
 
 > **Full Changelog**: [v0.3...v0.4]
 
@@ -406,7 +406,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - CLI has been improved for more intuitive validation error messages.
 
-## [0.3] - 2023-10-20
+## [0.3] - October 20, 2023
 
 > **Full Changelog**: [v0.2...v0.3]
 
@@ -415,7 +415,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The colors of the CLI output have been fixed.
 - Encoding problems have been fixed.
 
-## [0.2] - 2023-10-17
+## [0.2] - October 17, 2023
 
 > **Full Changelog**: [v0.1...v0.2]
 
@@ -423,7 +423,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - MacOS compatibility issues have been fixed.
 
-## [0.1] - 2023-10-15
+## [0.1] - October 15, 2023
 
 The first release of RenderCV.
 

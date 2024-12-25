@@ -6,7 +6,7 @@
 [![pypi-version](https://img.shields.io/pypi/v/rendercv?label=PyPI%20version&color=rgb(0%2C79%2C144))](https://pypi.python.org/pypi/rendercv)
 [![pypi-downloads](https://img.shields.io/pepy/dt/rendercv?label=PyPI%20downloads&color=rgb(0%2C%2079%2C%20144))](https://pypistats.org/packages/rendercv)
 
-This is the documentation for the open-source engine of the RenderCV App. It's a Python package with a command-line interface (CLI) that allows you to version-control your CV as source code.
+RenderCV engine is a Python package with a command-line interface (CLI) that allows you to version-control your CV as source code.
 
 RenderCV engine's focus is to provide these three features:
 
@@ -27,7 +27,8 @@ cv:
       - This is a type of entry, TextEntry—just a plain string.
       - You may have as many entries as you want under a section.
       - RenderCV offers a variety of entry types such as TextEntry,
-        BulletEntry, EducationEntry, ExperienceEntry, and more!
+        BulletEntry, EducationEntry, ExperienceEntry, NormalEntry,
+        OneLineEntry, PublicationEntry.
       - Each entry type has its own set of attributes and different
         looks.
     my_education_section:
@@ -37,11 +38,10 @@ cv:
         start_date: 2024-09
         end_date: 2029-05
         highlights:
-          - 'GPA: 3.9/4.0 ([Transcript](https://example.com))'
-          - '**Coursework:** Structural Analysis, Thermodynamics,
-            Heat Transfer'
-    experience:
-      ...
+          - "GPA: 3.9/4.0 ([Transcript](https://example.com))"
+          - "**Coursework:** Structural Analysis, Thermodynamics,
+            Heat Transfer"
+    experience: ...
 ```
 
 Then, it produces one of these PDFs with its corresponding $\LaTeX$ code, Markdown file, HTML file, and images as PNGs. Click on the images below to preview PDF files.
@@ -54,14 +54,13 @@ RenderCV comes with a JSON Schema so that the YAML input file can be filled out 
 
 ![JSON Schema of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/schema.gif)
 
-It also validates the input file. If there are any problems, it tells users where the problems are and how they can fix them.
+## Quick Start Guide
 
-![CLI of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/cli.gif)
+RenderCV engine is very easy to install (`pip install rendercv`) and easy to use (`rendercv new "John Doe"`). Follow the [user guide](https://docs.rendercv.com/user_guide) to get started.
 
-## Getting Started
+## Motivation
 
-RenderCV is very easy to install (`pip install rendercv`) and easy to use (`rendercv new "John Doe"`). Follow the [user guide](https://docs.rendercv.com/user_guide) to get started.
-
+We are developing a purpose-built app for writing CVs and resumes that will be available on mobile and web. This Python project is the foundation of that app. Check out [our blog post](https://rendercv.com/rendercv-latex-cv-framework/) to learn more about why one would use such an app.
 
 ## Contributing
 
