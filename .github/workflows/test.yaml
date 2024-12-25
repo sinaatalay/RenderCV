@@ -3,9 +3,11 @@ name: Test
 # GitHub events that triggers the workflow:
 on:
   push:
-    branches: ["main", "dev"]
+    branches:
+      - "*"
   pull_request:
-    branches: ["main", "dev"]
+    branches:
+      - "*"
   workflow_call: # to make the workflow triggerable from other workflows (publish-to-pypi.yaml)
   workflow_dispatch: # to make the workflow triggerable manually
 
@@ -31,7 +33,7 @@ jobs:
 
       - name: Test
         run: hatch run test.py${{ matrix.python-version }}:test-and-report
-    
+
       - name: Rename the coverage file
         run: mv .coverage .coverage.${{ matrix.python-version }}.${{ matrix.os }}
 

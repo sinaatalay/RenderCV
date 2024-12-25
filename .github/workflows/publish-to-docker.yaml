@@ -6,7 +6,7 @@ on:
     types:
       - published
   workflow_dispatch: # to make the workflow triggerable manually
-  
+
 jobs:
   call_tests_workflow:
     name: Test
