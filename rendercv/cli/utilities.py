@@ -401,9 +401,9 @@ def run_rendercv_with_printer(
 
         render_command_settings: data.models.RenderCommandSettings = (
             data_model.rendercv_settings.render_command  # type: ignore
-        )  # type: ignore
+        )
         output_directory = (
-            working_directory / render_command_settings.output_folder_name  # type: ignore
+            working_directory / render_command_settings.output_folder_name
         )
 
         progress.finish_the_current_step()

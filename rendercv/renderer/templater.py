@@ -7,6 +7,7 @@ object.
 import copy
 import pathlib
 import re
+from collections.abc import Callable
 from datetime import date as Date
 from typing import Any, Literal, Optional
 
@@ -16,10 +17,10 @@ from .. import data
 
 
 class TemplatedFile:
-    """This class is a base class for `LaTeXFile` and `MarkdownFile` classes. It
-    contains the common methods and attributes for both classes. These classes are used
-    to generate the $\\LaTeX$ and Markdown files with the data model and Jinja2
-    templates.
+    """This class is a base class for `LaTeXFile`, `TypstFile`, and `MarkdownFile`
+    classes. It contains the common methods and attributes for both classes. These
+    classes are used to generate the $\\LaTeX$ and Markdown files with the data model
+    and Jinja2 templates.
 
     Args:
         data_model: The data model.
@@ -91,7 +92,7 @@ class TemplatedFile:
 
 class LaTeXFile(TemplatedFile):
     """This class represents a $\\LaTeX$ file. It generates the $\\LaTeX$ code with the
-    data model and Jinja2 templates. It inherits from the `TemplatedFile` class.
+    data model and Jinja2 templates.
     """
 
     def __init__(
@@ -192,11 +193,114 @@ class LaTeXFile(TemplatedFile):
         file_path.write_text(self.get_full_code(), encoding="utf-8")
 
 
+class TypstFile(TemplatedFile):
+    """This class represents a Typst file. It generates the Typst code with the
+    data model and Jinja2 templates.
+    """
+
+    def __init__(
+        self,
+        data_model: data.RenderCVDataModel,
+        environment: jinja2.Environment,
+    ):
+        typst_file_data_model = copy.deepcopy(data_model)
+
+        if typst_file_data_model.cv.sections_input is not None:
+            transformed_sections = transform_markdown_sections_to_latex_sections(
+                typst_file_data_model.cv.sections_input
+            )
+            typst_file_data_model.cv.sections_input = transformed_sections
+
+        super().__init__(typst_file_data_model, environment)
+
+    def render_templates(self) -> tuple[str, str, list[tuple[str, list[str], str]]]:
+        """Render and return all the templates for the $\\LaTeX$ file.
+
+        Returns:
+            The preamble, header, and sections of the $\\LaTeX$ file.
+        """
+        # Template the preamble, header, and sections:
+        preamble = self.template("Preamble")
+        header = self.template("Header")
+        sections: list[tuple[str, list[str], str]] = []
+        for section in self.cv.sections:
+            section_beginning = self.template(
+                "SectionBeginning",
+                section_title=escape_latex_characters(section.title),
+                entry_type=section.entry_type,
+            )
+            entries: list[str] = []
+            for i, entry in enumerate(section.entries):
+                is_first_entry = i == 0
+
+                entries.append(
+                    self.template(
+                        section.entry_type,
+                        entry=entry,
+                        section_title=section.title,
+                        entry_type=section.entry_type,
+                        is_first_entry=is_first_entry,
+                    )
+                )
+            section_ending = self.template(
+                "SectionEnding",
+                section_title=section.title,
+                entry_type=section.entry_type,
+            )
+            sections.append((section_beginning, entries, section_ending))
+
+        return preamble, header, sections
+
+    def template(
+        self,
+        template_name: str,
+        entry: Optional[data.Entry] = None,
+        **kwargs,
+    ) -> str:
+        """Template one of the files in the `themes` directory.
+
+        Args:
+            template_name: The name of the template file.
+            entry: The data model of the entry.
+
+        Returns:
+            The templated file.
+        """
+        result = super().template(
+            self.design.theme,
+            template_name,
+            "tex",
+            entry,
+            **kwargs,
+        )
+
+        return revert_nested_latex_style_commands(result)
+
+    def get_full_code(self) -> str:
+        """Get the $\\LaTeX$ code of the file.
+
+        Returns:
+            The $\\LaTeX$ code.
+        """
+        preamble, header, sections = self.render_templates()
+        latex_code: str = super().get_full_code(
+            "main.j2.tex",
+            preamble=preamble,
+            header=header,
+            sections=sections,
+        )
+        return latex_code
+
+    def create_file(self, file_path: pathlib.Path):
+        """Write the $\\LaTeX$ code to a file."""
+        file_path.write_text(self.get_full_code(), encoding="utf-8")
+
+
 class MarkdownFile(TemplatedFile):
     """This class represents a Markdown file. It generates the Markdown code with the
-    data model and Jinja2 templates. It inherits from the `TemplatedFile` class.
-    Markdown files are generated to produce an HTML which can be copy-pasted to
-    [Grammarly](https://app.grammarly.com/) for proofreading.
+    data model and Jinja2 templates. Markdown files are generated to produce an HTML
+    which can be copy-pasted to [Grammarly](https://app.grammarly.com/) for
+    proofreading.
     """
 
     def render_templates(self) -> tuple[str, list[tuple[str, list[str]]]]:
@@ -310,7 +414,27 @@ def revert_nested_latex_style_commands(latex_string: str) -> str:
     return latex_string
 
 
-def escape_latex_characters(latex_string: str) -> str:
+def escape_typst_characters(string: str) -> str:
+    """Escape Typst characters in a string by adding a backslash before them.
+
+    Example:
+        ```python
+        escape_typst_characters("This is a # string.")
+        ```
+        returns
+        `"This is a \\# string."`
+
+    Args:
+        string: The string to escape.
+
+    Returns:
+        The escaped string.
+    """
+
+    return string
+
+
+def escape_latex_characters(string: str) -> str:
     """Escape $\\LaTeX$ characters in a string by adding a backslash before them.
 
     Example:
@@ -321,7 +445,7 @@ def escape_latex_characters(latex_string: str) -> str:
         `"This is a \\# string."`
 
     Args:
-        latex_string: The string to escape.
+        string: The string to escape.
 
     Returns:
         The escaped string.
@@ -344,7 +468,7 @@ def escape_latex_characters(latex_string: str) -> str:
 
     # Don't escape urls as hyperref package will do it automatically:
     # Find all the links in the sentence:
-    links = re.findall(r"\[(.*?)\]\((.*?)\)", latex_string)
+    links = re.findall(r"\[(.*?)\]\((.*?)\)", string)
 
     # Replace the links with a dummy string and save links with escaped characters:
     new_links = []
@@ -354,17 +478,17 @@ def escape_latex_characters(latex_string: str) -> str:
         url = link[1]
 
         original_link = f"[{placeholder}]({url})"
-        latex_string = latex_string.replace(original_link, f"!!-link{i}-!!")
+        string = string.replace(original_link, f"!!-link{i}-!!")
 
         new_link = f"[{escaped_placeholder}]({url})"
         new_links.append(new_link)
 
     # If there are equations in the sentence, don't escape the special characters:
     # Find all the equations in the sentence:
-    equations = re.findall(r"(\$\$.*?\$\$)", latex_string)
+    equations = re.findall(r"(\$\$.*?\$\$)", string)
     new_equations = []
     for i, equation in enumerate(equations):
-        latex_string = latex_string.replace(equation, f"!!-equation{i}-!!")
+        string = string.replace(equation, f"!!-equation{i}-!!")
 
         # Keep only one dollar sign for inline equations:
         new_equation = equation.replace("$$", "$")
@@ -372,27 +496,80 @@ def escape_latex_characters(latex_string: str) -> str:
 
     # Don't touch latex commands:
     # Find all the latex commands in the sentence:
-    latex_commands = re.findall(r"\\[a-zA-Z]+\{.*?\}", latex_string)
+    latex_commands = re.findall(r"\\[a-zA-Z]+\{.*?\}", string)
     for i, latex_command in enumerate(latex_commands):
-        latex_string = latex_string.replace(latex_command, f"!!-latex{i}-!!")
+        string = string.replace(latex_command, f"!!-latex{i}-!!")
 
     # Loop through the letters of the sentence and if you find an escape character,
     # replace it with its LaTeX equivalent:
-    latex_string = latex_string.translate(translation_map)
+    string = string.translate(translation_map)
 
     # Replace !!-link{i}-!!" with the original urls:
     for i, new_link in enumerate(new_links):
-        latex_string = latex_string.replace(f"!!-link{i}-!!", new_link)
+        string = string.replace(f"!!-link{i}-!!", new_link)
 
     # Replace !!-equation{i}-!!" with the original equations:
     for i, new_equation in enumerate(new_equations):
-        latex_string = latex_string.replace(f"!!-equation{i}-!!", new_equation)
+        string = string.replace(f"!!-equation{i}-!!", new_equation)
 
     # Replace !!-latex{i}-!!" with the original latex commands:
     for i, latex_command in enumerate(latex_commands):
-        latex_string = latex_string.replace(f"!!-latex{i}-!!", latex_command)
+        string = string.replace(f"!!-latex{i}-!!", latex_command)
 
-    return latex_string
+    return string
+
+
+def markdown_to_typst(markdown_string: str) -> str:
+    """Convert a Markdown string to Typst.
+
+    Example:
+        ```python
+        markdown_to_typst(
+            "This is a **bold** text with an [*italic link*](https://google.com)."
+        )
+        ```
+
+        returns
+
+        `"This is a *bold* text with an #link("https://google.com")[_italic link_]."`
+
+    Args:
+        markdown_string: The Markdown string to convert.
+
+    Returns:
+        The Typst string.
+    """
+    # convert links
+    links = re.findall(r"\[([^\]\[]*)\]\((.*?)\)", markdown_string)
+    if links is not None:
+        for link in links:
+            link_text = link[0]
+            link_url = link[1]
+
+            old_link_string = f"[{link_text}]({link_url})"
+            new_link_string = "\\href{" + link_url + "}{" + link_text + "}"
+
+            markdown_string = markdown_string.replace(old_link_string, new_link_string)
+
+    # convert bold
+    bolds = re.findall(r"\*\*(.+?)\*\*", markdown_string)
+    if bolds is not None:
+        for bold_text in bolds:
+            old_bold_text = f"**{bold_text}**"
+            new_bold_text = "\\textbf{" + bold_text + "}"
+
+            markdown_string = markdown_string.replace(old_bold_text, new_bold_text)
+
+    # convert italic
+    italics = re.findall(r"\*(.+?)\*", markdown_string)
+    if italics is not None:
+        for italic_text in italics:
+            old_italic_text = f"*{italic_text}*"
+            new_italic_text = "\\textit{" + italic_text + "}"
+
+            markdown_string = markdown_string.replace(old_italic_text, new_italic_text)
+
+    return markdown_string
 
 
 def markdown_to_latex(markdown_string: str) -> str:
@@ -448,17 +625,59 @@ def markdown_to_latex(markdown_string: str) -> str:
 
             markdown_string = markdown_string.replace(old_italic_text, new_italic_text)
 
-    # convert code
-    # not supported by rendercv currently
-    # codes = re.findall(r"`([^`]*)`", markdown_string)
-    # if codes is not None:
-    #     for code_text in codes:
-    #         old_code_text = f"`{code_text}`"
-    #         new_code_text = "\\texttt{" + code_text + "}"
-
-    #         markdown_string = markdown_string.replace(old_code_text, new_code_text)
-
     return markdown_string
+
+
+def transform_markdown_sections_to_something_else_sections(
+    sections: dict[str, data.SectionContents],
+    functions_to_apply: list[Callable],
+):
+    """
+    Recursively loop through sections and update all the strings by applying the
+    `functions_to_apply` functions, given as an argument.
+
+    Args:
+        sections: Sections with Markdown strings.
+        function_to_apply: Functions to apply to the strings.
+
+    Returns:
+        Sections with updated strings.
+    """
+
+    def apply_functions_to_string(string: str):
+        for function in functions_to_apply:
+            string = function(string)
+        return string
+
+    for key, value in sections.items():
+        # loop through the list and apply markdown_to_latex and escape_latex_characters
+        # to each item:
+        transformed_list = []
+        for entry in value:
+            if isinstance(entry, str):
+                # Then it means it's a TextEntry.
+                result = apply_functions_to_string(entry)
+                transformed_list.append(result)
+            else:
+                # Then it means it's one of the other entries.
+                fields_to_skip = ["doi"]
+                entry_as_dict = entry.model_dump()
+                for entry_key, inner_value in entry_as_dict.items():
+                    if entry_key in fields_to_skip:
+                        continue
+                    if isinstance(inner_value, str):
+                        result = apply_functions_to_string(inner_value)
+                        setattr(entry, entry_key, result)
+                    elif isinstance(inner_value, list):
+                        for j, item in enumerate(inner_value):
+                            if isinstance(item, str):
+                                inner_value[j] = apply_functions_to_string(item)
+                        setattr(entry, entry_key, inner_value)
+                transformed_list.append(entry)
+
+        sections[key] = transformed_list
+
+    return sections
 
 
 def transform_markdown_sections_to_latex_sections(
@@ -475,37 +694,29 @@ def transform_markdown_sections_to_latex_sections(
     Returns:
         Sections with $\\LaTeX$ strings.
     """
-    for key, value in sections.items():
-        # loop through the list and apply markdown_to_latex and escape_latex_characters
-        # to each item:
-        transformed_list = []
-        for entry in value:
-            if isinstance(entry, str):
-                # Then it means it's a TextEntry.
-                result = markdown_to_latex(escape_latex_characters(entry))
-                transformed_list.append(result)
-            else:
-                # Then it means it's one of the other entries.
-                fields_to_skip = ["doi"]
-                entry_as_dict = entry.model_dump()
-                for entry_key, inner_value in entry_as_dict.items():
-                    if entry_key in fields_to_skip:
-                        continue
-                    if isinstance(inner_value, str):
-                        result = markdown_to_latex(escape_latex_characters(inner_value))
-                        setattr(entry, entry_key, result)
-                    elif isinstance(inner_value, list):
-                        for j, item in enumerate(inner_value):
-                            if isinstance(item, str):
-                                inner_value[j] = markdown_to_latex(
-                                    escape_latex_characters(item)
-                                )
-                        setattr(entry, entry_key, inner_value)
-                transformed_list.append(entry)
+    return transform_markdown_sections_to_something_else_sections(
+        sections,
+        [escape_latex_characters, markdown_to_latex],
+    )
 
-        sections[key] = transformed_list
 
-    return sections
+def transform_markdown_sections_to_typst_sections(
+    sections: dict[str, data.SectionContents],
+) -> Optional[dict[str, data.SectionContents]]:
+    """
+    Recursively loop through sections and convert all the Markdown strings (user input
+    is in Markdown format) to Typst strings.
+
+    Args:
+        sections: Sections with Markdown strings.
+
+    Returns:
+        Sections with Typst strings.
+    """
+    return transform_markdown_sections_to_something_else_sections(
+        sections,
+        [markdown_to_typst, escape_typst_characters],
+    )
 
 
 def replace_placeholders_with_actual_values(
