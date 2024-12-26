@@ -637,7 +637,7 @@ def test_render_a_pdf_from_latex(
         shutil.copytree(latex_sources_path, output_directory_path, dirs_exist_ok=True)
 
         # convert the latex code to a pdf
-        renderer.render_a_pdf_from_latex(output_directory_path / f"{name}_CV.tex")
+        renderer.render_a_pdf_from_latex_or_typst(output_directory_path / f"{name}_CV.tex")
 
     assert run_a_function_and_check_if_output_is_the_same_as_reference(
         function=generate_pdf_file,
@@ -649,7 +649,7 @@ def test_render_a_pdf_from_latex(
 def test_render_pdf_from_latex_nonexistent_latex_file():
     file_path = pathlib.Path("file_doesnt_exist.tex")
     with pytest.raises(FileNotFoundError):
-        renderer.render_a_pdf_from_latex(file_path)
+        renderer.render_a_pdf_from_latex_or_typst(file_path)
 
 
 @pytest.mark.parametrize(
@@ -775,7 +775,7 @@ def test_render_pdf_invalid_latex_file(tmp_path):
     latex_file_path.write_text("Invalid LaTeX code")
 
     with pytest.raises(RuntimeError):
-        renderer.render_a_pdf_from_latex(latex_file_path)
+        renderer.render_a_pdf_from_latex_or_typst(latex_file_path)
 
 
 @pytest.mark.parametrize(

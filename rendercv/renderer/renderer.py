@@ -11,7 +11,7 @@ from typing import Optional
 
 import fitz
 import markdown
-import rendercv_tinytex
+import typst
 
 from .. import data
 from . import templater
@@ -189,8 +189,8 @@ def create_a_latex_or_typst_file_and_copy_theme_files(
     return file_path
 
 
-def render_a_pdf_from_latex(
-    latex_file_path: pathlib.Path, local_latex_command: Optional[str] = None
+def render_a_pdf_from_latex_or_typst(
+    file_path: pathlib.Path, local_latex_command: Optional[str] = None
 ) -> pathlib.Path:
     """Run TinyTeX with the given $\\LaTeX$ file to render the PDF.
 
@@ -200,7 +200,26 @@ def render_a_pdf_from_latex(
     Returns:
         The path to the rendered PDF file.
     """
-    return rendercv_tinytex.run_latex(latex_file_path, local_latex_command)
+    if file_path.suffix == ".tex":
+        try:
+            import rendercv_tinytex
+        except Exception as e:
+            message = (
+                "If you want to use LaTeX themes, please install rendercv like"
+                " this:\n\npip install rendercv[latex]"
+            )
+            raise ModuleNotFoundError(message) from e
+
+        return rendercv_tinytex.run_latex(file_path, local_latex_command)
+
+    elif file_path.suffix == ".typ":  # NOQA: RET505
+        pdf_output_path = file_path.with_suffix(".pdf")
+        typst.compile(input=file_path, output=pdf_output_path)
+        return pdf_output_path
+
+    else:
+        message = "Only *.tex and *.typ files are supported!"
+        raise ValueError(message)
 
 
 def render_pngs_from_pdf(pdf_file_path: pathlib.Path) -> list[pathlib.Path]:

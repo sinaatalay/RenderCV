@@ -425,7 +425,7 @@ def run_rendercv_with_printer(
 
         progress.start_a_step("Rendering the LaTeX file to a PDF")
 
-        pdf_file_path_in_output_folder = renderer.render_a_pdf_from_latex(
+        pdf_file_path_in_output_folder = renderer.render_a_pdf_from_latex_or_typst(
             latex_file_path_in_output_folder,
             render_command_settings.use_local_latex_command,
         )

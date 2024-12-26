@@ -166,7 +166,7 @@ def generate_entry_figures():
                         data_model, temporary_directory_path
                     )
                 )
-                pdf_file_path = renderer.render_a_pdf_from_latex(latex_file_path)
+                pdf_file_path = renderer.render_a_pdf_from_latex_or_typst(latex_file_path)
 
                 # Prepare output directory and file path
                 output_directory = image_assets_directory / theme
