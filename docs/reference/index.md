@@ -46,8 +46,9 @@ flowchart TD
     - [`renderer.py`](renderer/renderer.md) module contains the necessary functions for rendering $\\LaTeX$, PDF, Markdown, HTML, and PNG files from the data model.
     - [`templater.py`](renderer/templater.md) module contains the necessary classes and functions for templating the $\\LaTeX$ and Markdown files from the data model.
 - [`themes`](themes/index.md) package contains the built-in themes of RenderCV.
-    - [`common_options.py`](themes/common_options.md) module contains some standard data models for design options.
-    - [`classic`](themes/classic.md) package contains the `classic` theme templates and data models for its design options.
-    - [`engineeringresumes`](themes/engineeringresumes.md) package contains the `engineeringresumes` theme templates and data models for its design options.
-    - [`sb2nov`](themes/sb2nov.md) package contains the `sb2nov` theme templates and data models for its design options.
-    - [`moderncv`](themes/moderncv.md) package contains the `moderncv` theme templates and data models for its design options.
+    - [`common_options_latex_themes.py`](themes/common_options_latex_themes.md) module contains some standard data models for $\LaTeX$ themes' design options
+    - [`common_options_typst_themes.py`](themes/common_options_typst_themes.md) module contains some standard data models for Typst themes' design options.
+    - [`classic_latex`](themes/classic_latex.md) package contains the `classic_latex` theme templates and data models for its design options.
+    - [`engineeringresumes_latex`](themes/engineeringresumes_latex.md) package contains the `engineeringresumes_latex` theme templates and data models for its design options.
+    - [`sb2nov_latex`](themes/sb2nov_latex.md) package contains the `sb2nov_latex` theme templates and data models for its design options.
+    - [`moderncv_latex`](themes/moderncv_latex.md) package contains the `moderncv_latex` theme templates and data models for its design options.

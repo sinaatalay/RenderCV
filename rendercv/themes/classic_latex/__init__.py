@@ -2,7 +2,7 @@ from typing import Literal
 
 import pydantic
 
-from rendercv.themes.common_options import (
+from rendercv.themes.common_options_latex_themes import (
     EntryAreaMargins,
     LaTeXDimension,
     Margins,

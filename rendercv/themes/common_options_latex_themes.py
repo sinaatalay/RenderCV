@@ -1,7 +1,7 @@
 """
-The `rendercv.themes.common_options` module contains the standard data models for the
-design options. To avoid code duplication, the themes are encouraged to inherit from
-these data models.
+The `rendercv.themes.common_options_latex_themes` module contains the standard data
+models for the $\\LaTeX$ themes' design options. To avoid code duplication, the themes
+are encouraged to inherit from these data models.
 """
 
 from typing import Annotated, Literal
@@ -264,7 +264,7 @@ class ThemeOptions(RenderCVBaseModelWithoutExtraKeys):
         title="Text Alignment",
         description="The alignment of the text. The default value is justified.",
     )
-    separator_between_connections: str = pydantic.Field(
+    seperator_between_connections: str = pydantic.Field(
         default="",
         title="Seperator Between Connections",
         description=(

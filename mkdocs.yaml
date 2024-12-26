@@ -89,11 +89,12 @@ nav:
           - templater.py: reference/renderer/templater.md
       - themes:
           - themes: reference/themes/index.md
-          - common_options.py: reference/themes/common_options.md
-          - classic: reference/themes/classic.md
-          - engineeringresumes: reference/themes/engineeringresumes.md
-          - sb2nov: reference/themes/sb2nov.md
-          - moderncv: reference/themes/moderncv.md
+          - common_options_latex_themes.py: reference/themes/common_options_latex_themes.md
+          - common_options_typst_themes.py: reference/themes/common_options_typst_themes.md
+          - classic_latex: reference/themes/classic_latex.md
+          - engineeringresumes_latex: reference/themes/engineeringresumes_latex.md
+          - sb2nov_latex: reference/themes/sb2nov_latex.md
+          - moderncv_latex: reference/themes/moderncv_latex.md
   - Changelog:
       - Changelog: changelog/index.md
 

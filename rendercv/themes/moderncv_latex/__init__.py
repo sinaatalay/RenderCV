@@ -3,7 +3,7 @@ from typing import Literal
 import pydantic
 
 from rendercv.data.models.base import RenderCVBaseModelWithoutExtraKeys
-from rendercv.themes.common_options import LaTeXDimension
+from rendercv.themes.common_options_latex_themes import LaTeXDimension
 
 
 class Moderncv_latexThemeOptions(RenderCVBaseModelWithoutExtraKeys):

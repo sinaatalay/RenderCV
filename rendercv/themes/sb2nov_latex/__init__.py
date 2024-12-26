@@ -2,7 +2,7 @@ from typing import Literal
 
 import pydantic
 
-from rendercv.themes.common_options import LaTeXDimension, ThemeOptions
+from rendercv.themes.common_options_latex_themes import LaTeXDimension, ThemeOptions
 
 
 class Sb2nov_latexThemeOptions(ThemeOptions):
