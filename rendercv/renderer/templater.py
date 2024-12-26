@@ -206,7 +206,7 @@ class TypstFile(TemplatedFile):
         typst_file_data_model = copy.deepcopy(data_model)
 
         if typst_file_data_model.cv.sections_input is not None:
-            transformed_sections = transform_markdown_sections_to_latex_sections(
+            transformed_sections = transform_markdown_sections_to_typst_sections(
                 typst_file_data_model.cv.sections_input
             )
             typst_file_data_model.cv.sections_input = transformed_sections
@@ -226,7 +226,7 @@ class TypstFile(TemplatedFile):
         for section in self.cv.sections:
             section_beginning = self.template(
                 "SectionBeginning",
-                section_title=escape_latex_characters(section.title),
+                section_title=escape_typst_characters(section.title),
                 entry_type=section.entry_type,
             )
             entries: list[str] = []
@@ -269,7 +269,7 @@ class TypstFile(TemplatedFile):
         result = super().template(
             self.design.theme,
             template_name,
-            "tex",
+            "typ",
             entry,
             **kwargs,
         )
@@ -284,7 +284,7 @@ class TypstFile(TemplatedFile):
         """
         preamble, header, sections = self.render_templates()
         latex_code: str = super().get_full_code(
-            "main.j2.tex",
+            "main.j2.typ",
             preamble=preamble,
             header=header,
             sections=sections,
@@ -715,7 +715,7 @@ def transform_markdown_sections_to_typst_sections(
     """
     return transform_markdown_sections_to_something_else_sections(
         sections,
-        [markdown_to_typst, escape_typst_characters],
+        [escape_typst_characters, markdown_to_typst],
     )
 
 
