@@ -86,16 +86,49 @@ def create_a_latex_or_typst_file(
         output_directory.mkdir(parents=True)
 
     jinja2_environment = templater.setup_jinja2_environment()
-    latex_file_object = templater.LaTeXFile(
-        rendercv_data_model,
-        jinja2_environment,
-    )
 
-    latex_file_name = f"{str(rendercv_data_model.cv.name).replace(' ', '_')}_CV.tex"
-    latex_file_path = output_directory / latex_file_name
-    latex_file_object.create_file(latex_file_path)
+    def setup_for_latex():
+        file_object = templater.LaTeXFile(
+            rendercv_data_model,
+            jinja2_environment,
+        )
+        file_name = f"{str(rendercv_data_model.cv.name).replace(' ', '_')}_CV.tex"
+        return file_object, file_name
 
-    return latex_file_path
+    def setup_for_typst():
+        file_object = templater.TypstFile(
+            rendercv_data_model,
+            jinja2_environment,
+        )
+        file_name = f"{str(rendercv_data_model.cv.name).replace(' ', '_')}_CV.typ"
+        return file_object, file_name
+
+    if rendercv_data_model.design.theme in data.available_latex_themes:
+        file_object, file_name = setup_for_latex()
+    elif rendercv_data_model.design.theme in data.available_typst_themes:
+        file_object, file_name = setup_for_typst()
+    else:
+        # Then, it is a custom theme. Detect the type from the file extension:
+        theme_directory = pathlib.Path.cwd() / rendercv_data_model.design.theme
+        latex_preamble = theme_directory / "Preamble.j2.tex"
+        typst_preamble = theme_directory / "Preamble.j2.typ"
+        if latex_preamble.is_file():
+            file_object, file_name = setup_for_latex()
+
+        elif typst_preamble.is_file():
+            file_object, file_name = setup_for_typst()
+
+        else:
+            message = (
+                f"The theme {rendercv_data_model.design.theme} doesn't have a"
+                " Preamble.j2.tex or Preamble.j2.typ file!"
+            )
+            raise ValueError(message)
+
+    file_path = output_directory / file_name
+    file_object.create_file(file_path)
+
+    return file_path
 
 
 def create_a_markdown_file(
@@ -141,9 +174,7 @@ def create_a_latex_or_typst_file_and_copy_theme_files(
     Returns:
         The path to the rendered $\\LaTeX$ file.
     """
-    latex_file_path = create_a_latex_or_typst_file(
-        rendercv_data_model, output_directory
-    )
+    file_path = create_a_latex_or_typst_file(rendercv_data_model, output_directory)
     copy_theme_files_to_output_directory(
         rendercv_data_model.design.theme, output_directory
     )
@@ -154,7 +185,8 @@ def create_a_latex_or_typst_file_and_copy_theme_files(
             rendercv_data_model.cv.photo,
             output_directory / rendercv_data_model.cv.photo.name,
         )
-    return latex_file_path
+
+    return file_path
 
 
 def render_a_pdf_from_latex(

@@ -94,21 +94,22 @@ def validate_design_options(
 
     # check if all the necessary files are provided in the custom theme folder:
     required_entry_files = [
-        entry_type_name + ".j2.tex" for entry_type_name in available_entry_type_names
+        entry_type_name + ".j2" for entry_type_name in available_entry_type_names
     ]
     required_files = [
-        "SectionBeginning.j2.tex",  # section beginning template
-        "SectionEnding.j2.tex",  # section ending template
-        "Preamble.j2.tex",  # preamble template
-        "Header.j2.tex",  # header template
+        "SectionBeginning.j2",  # section beginning template
+        "SectionEnding.j2",  # section ending template
+        "Preamble.j2",  # preamble template
+        "Header.j2",  # header template
         *required_entry_files,
     ]
 
     for file in required_files:
-        file_path = custom_theme_folder / file
-        if not file_path.exists():
+        latex_file_path = custom_theme_folder / f"{file}.tex"
+        typst_file_path = custom_theme_folder / f"{file}.typ"
+        if not latex_file_path.exists() and not typst_file_path.exists():
             message = (
-                f"You provided a custom theme, but the file `{file}` is not"
+                f"You provided a custom theme, but the file `{file}.typ/tex` is not"
                 f" found in the folder `{custom_theme_folder}`."
             )
             raise ValueError(
