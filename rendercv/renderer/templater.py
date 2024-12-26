@@ -631,14 +631,14 @@ def markdown_to_latex(markdown_string: str) -> str:
 def transform_markdown_sections_to_something_else_sections(
     sections: dict[str, data.SectionContents],
     functions_to_apply: list[Callable],
-):
+) -> Optional[dict[str, data.SectionContents]]:
     """
     Recursively loop through sections and update all the strings by applying the
     `functions_to_apply` functions, given as an argument.
 
     Args:
         sections: Sections with Markdown strings.
-        function_to_apply: Functions to apply to the strings.
+        functions_to_apply: Functions to apply to the strings.
 
     Returns:
         Sections with updated strings.
