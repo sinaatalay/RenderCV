@@ -708,11 +708,11 @@ def test_render_html_from_markdown_nonexistent_markdown_file():
 def test_render_pngs_from_pdf_single_page(
     run_a_function_and_check_if_output_is_the_same_as_reference,
 ):
-    output_file_name = "classic_empty_1.png"
-    reference_file_name = "classic_empty.png"
+    output_file_name = "classic_latex_empty_1.png"
+    reference_file_name = "classic_latex_empty.png"
 
     def generate_pngs(output_directory_path, reference_file_or_directory_path):
-        pdf_file_name = "classic_empty.pdf"
+        pdf_file_name = "classic_latex_empty.pdf"
 
         pdf_path = (
             reference_file_or_directory_path.parent.parent
@@ -739,7 +739,7 @@ def test_render_pngs_from_pdf(
     reference_directory_name = "pngs"
 
     def generate_pngs(output_directory_path, reference_file_or_directory_path):
-        pdf_file_name = "classic_filled.pdf"
+        pdf_file_name = "classic_latex_filled.pdf"
 
         pdf_path = (
             reference_file_or_directory_path.parent.parent
