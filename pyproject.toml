@@ -56,7 +56,6 @@ requires-python = '>=3.10'
 # RenderCV depends on these packages. They will be installed automatically when RenderCV
 # is installed:
 dependencies = [
-    'rendercv-tinytex==0.2.0',      # to render LaTeX files with TinyTeX
     'Jinja2==3.1.5',                # to generate LaTeX and Markdown files
     'phonenumbers==8.13.52',        # to validate phone numbers
     'email-validator==2.2.0',       # to validate email addresses
@@ -67,6 +66,7 @@ dependencies = [
     "markdown==3.7",                # to convert Markdown to HTML
     "PyMuPDF==1.24.14",             # to convert PDF files to images
     "watchdog==6.0.0",              # to poll files for updates
+    "typst==0.12.2",                # to render PDF from Typst source files
 ]
 classifiers = [
     "Intended Audience :: Science/Research",
@@ -81,6 +81,11 @@ classifiers = [
     "Operating System :: OS Independent",
 ] # go to https://pypi.org/classifiers/ to see all classifiers
 dynamic = ["version"] # We will use hatchling to generate the version number
+
+[project.optional-dependencies]
+latex = [
+    'rendercv-tinytex==0.2.0', # to render LaTeX files with TinyTeX
+]
 
 [project.urls]
 # Here, we can specify the URLs related to RenderCV. They will be listed under the
