@@ -3,10 +3,10 @@ The `rendercv.themes` package contains all the built-in templates and the design
 models for the themes.
 """
 
-from .classic import ClassicThemeOptions
-from .engineeringresumes import EngineeringresumesThemeOptions
-from .moderncv import ModerncvThemeOptions
-from .sb2nov import Sb2novThemeOptions
+from .classic_latex import ClassicThemeOptions
+from .engineeringresumes_latex import EngineeringresumesThemeOptions
+from .moderncv_latex import ModerncvThemeOptions
+from .sb2nov_latex import Sb2novThemeOptions
 
 __all__ = [
     "ClassicThemeOptions",
