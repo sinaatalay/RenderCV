@@ -57,6 +57,14 @@ This page lists the available commands and options of the RenderCV CLI.
 
 ## `rendercv render` command
 
+- `#!bash --watch` or `#!bash -w`
+
+    Watches the input YAML file for changes and automatically renders if there is any change.
+
+    ```bash
+    rendercv render "Full_Name_CV.yaml" --watch
+    ```
+
 - `#!bash --use-local-latex-command "LATEX_COMMAND"` or `#!bash -use "LATEX_COMMAND"`
 
     Generates the CV with the local $\LaTeX$ installation, i.e., runs `LATEX_COMMAND`. By default, RenderCV uses its own TinyTeX distribution.
