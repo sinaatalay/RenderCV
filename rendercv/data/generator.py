@@ -33,7 +33,7 @@ def dictionary_to_yaml(dictionary: dict) -> str:
 
 
 def create_a_sample_data_model(
-    name: str = "John Doe", theme: str = "classic"
+    name: str = "John Doe", theme: str = "classic_latex"
 ) -> models.RenderCVDataModel:
     """Return a sample data model for new users to start with.
 

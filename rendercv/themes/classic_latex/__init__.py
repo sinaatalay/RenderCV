@@ -33,10 +33,10 @@ class MarginsForClassic(Margins):
     )
 
 
-class ClassicThemeOptions(ThemeOptions):
+class Classic_latexThemeOptions(ThemeOptions):
     """This class is the data model of the theme options for the `classic` theme."""
 
-    theme: Literal["classic"]
+    theme: Literal["classic_latex"]
     font: Literal[
         "Latin Modern Serif",
         "Latin Modern Sans Serif",

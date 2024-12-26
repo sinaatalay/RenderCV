@@ -6,12 +6,12 @@ from rendercv.data.models.base import RenderCVBaseModelWithoutExtraKeys
 from rendercv.themes.common_options import LaTeXDimension
 
 
-class ModerncvThemeOptions(RenderCVBaseModelWithoutExtraKeys):
+class Moderncv_latexThemeOptions(RenderCVBaseModelWithoutExtraKeys):
     """This class is the data model of the theme options for the `moderncv` theme."""
 
     model_config = pydantic.ConfigDict(extra="forbid")
 
-    theme: Literal["moderncv"]
+    theme: Literal["moderncv_latex"]
     font_size: Literal["10pt", "11pt", "12pt"] = pydantic.Field(
         default="10pt",
         title="Font Size",

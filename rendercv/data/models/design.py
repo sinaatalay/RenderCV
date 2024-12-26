@@ -12,10 +12,10 @@ from typing import Annotated, Any
 import pydantic
 
 from ...themes import (
-    ClassicThemeOptions,
-    EngineeringresumesThemeOptions,
-    ModerncvThemeOptions,
-    Sb2novThemeOptions,
+    Classic_latexThemeOptions,
+    Engineeringresumes_latexThemeOptions,
+    Moderncv_latexThemeOptions,
+    Sb2nov_latexThemeOptions,
 )
 from . import entry_types
 from .base import RenderCVBaseModelWithoutExtraKeys
@@ -176,10 +176,10 @@ def validate_design_options(
 # the theme field, thanks to Pydantic's discriminator feature.
 # See https://docs.pydantic.dev/2.7/concepts/fields/#discriminator for more information
 RenderCVBuiltinDesign = Annotated[
-    ClassicThemeOptions
-    | ModerncvThemeOptions
-    | Sb2novThemeOptions
-    | EngineeringresumesThemeOptions,
+    Classic_latexThemeOptions
+    | Moderncv_latexThemeOptions
+    | Sb2nov_latexThemeOptions
+    | Engineeringresumes_latexThemeOptions,
     pydantic.Field(discriminator="theme"),
 ]
 
@@ -200,10 +200,10 @@ RenderCVDesign = Annotated[
 
 
 available_theme_options = {
-    "classic": ClassicThemeOptions,
-    "moderncv": ModerncvThemeOptions,
-    "sb2nov": Sb2novThemeOptions,
-    "engineeringresumes": EngineeringresumesThemeOptions,
+    "classic_latex": Classic_latexThemeOptions,
+    "moderncv_latex": Moderncv_latexThemeOptions,
+    "sb2nov_latex": Sb2nov_latexThemeOptions,
+    "engineeringresumes_latex": Engineeringresumes_latexThemeOptions,
 }
 
 available_themes = list(available_theme_options.keys())

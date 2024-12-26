@@ -94,12 +94,12 @@ class MarginsForEngineeringresumes(Margins):
     )
 
 
-class EngineeringresumesThemeOptions(ThemeOptions):
+class Engineeringresumes_latexThemeOptions(ThemeOptions):
     """This class is the data model of the theme options for the `engineeringresumes`
     theme.
     """
 
-    theme: Literal["engineeringresumes"]
+    theme: Literal["engineeringresumes_latex"]
     font: Literal[
         "Latin Modern Serif",
         "Latin Modern Sans Serif",

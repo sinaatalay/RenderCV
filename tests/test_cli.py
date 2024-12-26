@@ -420,7 +420,7 @@ def test_render_command_with_invalid_arguments(
         ("--cv.location", "Test City"),
         ("--cv.sections.test_section.0", "Testing overriding TextEntry."),
         ("--cv.sections.nonexistent", '["this is a textentry for test"]'),
-        ("--design.theme", "sb2nov"),
+        ("--design.theme", "sb2nov_latex"),
         ("--cv.sections", '{"test_title": ["testentry"]}'),
     ],
 )
@@ -458,12 +458,12 @@ def test_new_command(tmp_path):
     result = runner.invoke(cli.app, ["new", "Jahn Doe"])
 
     markdown_source_files_path = tmp_path / "markdown"
-    theme_source_files_path = tmp_path / "classic"
+    theme_source_files_path = tmp_path / "classic_latex"
     input_file_path = tmp_path / "Jahn_Doe_CV.yaml"
 
     assert "Jahn_Doe_CV.yaml" in result.stdout
     assert "markdown" in result.stdout
-    assert "classic" in result.stdout
+    assert "classic_latex" in result.stdout
 
     assert markdown_source_files_path.exists()
     assert theme_source_files_path.exists()
@@ -482,7 +482,7 @@ def test_new_command_with_invalid_theme(tmp_path):
 @pytest.mark.parametrize(
     ("option", "folder_name"),
     [
-        ("--dont-create-theme-source-files", "classic"),
+        ("--dont-create-theme-source-files", "classic_latex"),
         ("--dont-create-markdown-source-files", "markdown"),
     ],
 )
@@ -525,7 +525,7 @@ def test_new_command_with_only_input_file(tmp_path):
     [
         "Jahn_Doe_CV.yaml",
         "markdown",
-        "classic",
+        "classic_latex",
     ],
 )
 def test_new_command_with_existing_files(tmp_path, file_or_folder_name):
@@ -629,9 +629,7 @@ def test_custom_theme_in_a_different_path(tmp_path, input_file_path):
     # copy the input file to the new folder:
     input_file_path = shutil.copy(input_file_path, tmp_path / "new_folder")
 
-    result = runner.invoke(
-        cli.app, ["create-theme", "newtheme", "--based-on", "classic"]
-    )
+    result = runner.invoke(cli.app, ["create-theme", "newtheme"])
 
     new_theme_source_files_path = tmp_path / "new_folder" / "newtheme"
 

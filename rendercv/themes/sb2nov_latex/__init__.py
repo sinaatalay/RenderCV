@@ -5,10 +5,10 @@ import pydantic
 from rendercv.themes.common_options import LaTeXDimension, ThemeOptions
 
 
-class Sb2novThemeOptions(ThemeOptions):
+class Sb2nov_latexThemeOptions(ThemeOptions):
     """This class is the data model of the theme options for the `sb2nov` theme."""
 
-    theme: Literal["sb2nov"]
+    theme: Literal["sb2nov_latex"]
     font: Literal[
         "Latin Modern Serif",
         "Latin Modern Sans Serif",
