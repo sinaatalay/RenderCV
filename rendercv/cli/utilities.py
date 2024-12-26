@@ -411,7 +411,7 @@ def run_rendercv_with_printer(
         progress.start_a_step("Generating the LaTeX file")
 
         latex_file_path_in_output_folder = (
-            renderer.create_a_latex_file_and_copy_theme_files(
+            renderer.create_a_latex_or_typst_file_and_copy_theme_files(
                 data_model, output_directory
             )
         )

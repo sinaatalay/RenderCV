@@ -207,3 +207,8 @@ available_theme_options = {
 }
 
 available_themes = list(available_theme_options.keys())
+
+available_latex_themes = [theme for theme in available_themes if "latex" in theme]
+available_typst_themes = [
+    theme for theme in available_themes if theme not in available_latex_themes
+]

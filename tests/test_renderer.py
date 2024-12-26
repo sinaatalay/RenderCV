@@ -400,7 +400,7 @@ def test_create_a_latex_file(
     )
 
     def create_a_latex_file(output_directory_path, _):
-        renderer.create_a_latex_file(data_model, output_directory_path)
+        renderer.create_a_latex_or_typst_file(data_model, output_directory_path)
 
     assert run_a_function_and_check_if_output_is_the_same_as_reference(
         create_a_latex_file,
@@ -414,7 +414,9 @@ def test_if_create_a_latex_file_can_create_a_new_directory(
 ):
     new_directory = tmp_path / "new_directory"
 
-    latex_file_path = renderer.create_a_latex_file(rendercv_data_model, new_directory)
+    latex_file_path = renderer.create_a_latex_or_typst_file(
+        rendercv_data_model, new_directory
+    )
 
     assert latex_file_path.exists()
 
@@ -587,7 +589,7 @@ def test_create_a_latex_file_and_copy_theme_files(
     )
 
     def create_a_latex_file_and_copy_theme_files(output_directory_path, _):
-        renderer.create_a_latex_file_and_copy_theme_files(
+        renderer.create_a_latex_or_typst_file_and_copy_theme_files(
             data_model, output_directory_path
         )
 

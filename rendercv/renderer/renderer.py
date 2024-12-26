@@ -68,18 +68,18 @@ def copy_theme_files_to_output_directory(
                 )
 
 
-def create_a_latex_file(
+def create_a_latex_or_typst_file(
     rendercv_data_model: data.RenderCVDataModel, output_directory: pathlib.Path
 ) -> pathlib.Path:
-    """Render the $\\LaTeX$ file with the given data model and write it to the output
-    directory.
+    """Create a $\\LaTeX$ or Typst file (depending on the theme) with the given data
+    model and write it to the output directory.
 
     Args:
         rendercv_data_model: The data model.
         output_directory: Path to the output directory.
 
     Returns:
-        The path to the generated $\\LaTeX$ file.
+        The path to the generated $\\LaTeX$ or Typst file.
     """
     # Create output directory if it doesn't exist:
     if not output_directory.is_dir():
@@ -128,7 +128,7 @@ def create_a_markdown_file(
     return markdown_file_path
 
 
-def create_a_latex_file_and_copy_theme_files(
+def create_a_latex_or_typst_file_and_copy_theme_files(
     rendercv_data_model: data.RenderCVDataModel, output_directory: pathlib.Path
 ) -> pathlib.Path:
     """Render the $\\LaTeX$ file with the given data model in the output directory and
@@ -141,7 +141,9 @@ def create_a_latex_file_and_copy_theme_files(
     Returns:
         The path to the rendered $\\LaTeX$ file.
     """
-    latex_file_path = create_a_latex_file(rendercv_data_model, output_directory)
+    latex_file_path = create_a_latex_or_typst_file(
+        rendercv_data_model, output_directory
+    )
     copy_theme_files_to_output_directory(
         rendercv_data_model.design.theme, output_directory
     )

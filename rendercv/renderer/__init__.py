@@ -11,8 +11,8 @@ The PDF files are rendered into PNG files with `PyMuPDF`/`fitz` package.
 """
 
 from .renderer import (
-    create_a_latex_file,
-    create_a_latex_file_and_copy_theme_files,
+    create_a_latex_or_typst_file,
+    create_a_latex_or_typst_file_and_copy_theme_files,
     create_a_markdown_file,
     render_a_pdf_from_latex,
     render_an_html_from_markdown,
@@ -20,8 +20,8 @@ from .renderer import (
 )
 
 __all__ = [
-    "create_a_latex_file",
-    "create_a_latex_file_and_copy_theme_files",
+    "create_a_latex_or_typst_file",
+    "create_a_latex_or_typst_file_and_copy_theme_files",
     "create_a_markdown_file",
     "render_a_pdf_from_latex",
     "render_an_html_from_markdown",
