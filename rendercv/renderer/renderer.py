@@ -47,7 +47,7 @@ def copy_theme_files_to_output_directory(
             raise FileNotFoundError(message)
 
     for theme_file in theme_directory_path.iterdir():
-        dont_copy_files_with_these_extensions = [".j2.tex", ".py"]
+        dont_copy_files_with_these_extensions = [".j2.tex", ".py", ".j2.typ"]
         # theme_file.suffix returns the latest part of the file name after the last dot.
         # But we need the latest part of the file name after the first dot:
         try:

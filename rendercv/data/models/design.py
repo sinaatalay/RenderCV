@@ -13,6 +13,7 @@ import pydantic
 
 from ...themes import (
     Classic_latexThemeOptions,
+    ClassicThemeOptions,
     Engineeringresumes_latexThemeOptions,
     Moderncv_latexThemeOptions,
     Sb2nov_latexThemeOptions,
@@ -201,6 +202,7 @@ RenderCVDesign = Annotated[
 
 
 available_theme_options = {
+    "classic": ClassicThemeOptions,
     "classic_latex": Classic_latexThemeOptions,
     "moderncv_latex": Moderncv_latexThemeOptions,
     "sb2nov_latex": Sb2nov_latexThemeOptions,

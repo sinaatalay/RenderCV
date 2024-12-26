@@ -180,13 +180,13 @@ class LaTeXFile(TemplatedFile):
             The $\\LaTeX$ code.
         """
         preamble, header, sections = self.render_templates()
-        latex_code: str = super().get_full_code(
+        code: str = super().get_full_code(
             "main.j2.tex",
             preamble=preamble,
             header=header,
             sections=sections,
         )
-        return latex_code
+        return code
 
     def create_file(self, file_path: pathlib.Path):
         """Write the $\\LaTeX$ code to a file."""
@@ -283,13 +283,13 @@ class TypstFile(TemplatedFile):
             The $\\LaTeX$ code.
         """
         preamble, header, sections = self.render_templates()
-        latex_code: str = super().get_full_code(
+        code: str = super().get_full_code(
             "main.j2.typ",
             preamble=preamble,
             header=header,
             sections=sections,
         )
-        return latex_code
+        return code
 
     def create_file(self, file_path: pathlib.Path):
         """Write the $\\LaTeX$ code to a file."""
@@ -365,12 +365,12 @@ class MarkdownFile(TemplatedFile):
             The Markdown code.
         """
         header, sections = self.render_templates()
-        markdown_code: str = super().get_full_code(
+        code: str = super().get_full_code(
             "main.j2.md",
             header=header,
             sections=sections,
         )
-        return markdown_code
+        return code
 
     def create_file(self, file_path: pathlib.Path):
         """Write the Markdown code to a file."""

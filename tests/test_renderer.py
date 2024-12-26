@@ -637,7 +637,9 @@ def test_render_a_pdf_from_latex(
         shutil.copytree(latex_sources_path, output_directory_path, dirs_exist_ok=True)
 
         # convert the latex code to a pdf
-        renderer.render_a_pdf_from_latex_or_typst(output_directory_path / f"{name}_CV.tex")
+        renderer.render_a_pdf_from_latex_or_typst(
+            output_directory_path / f"{name}_CV.tex"
+        )
 
     assert run_a_function_and_check_if_output_is_the_same_as_reference(
         function=generate_pdf_file,
