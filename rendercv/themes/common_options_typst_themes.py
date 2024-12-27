@@ -11,258 +11,231 @@ import pydantic_extra_types.color as pydantic_color
 
 from ..data.models.base import RenderCVBaseModelWithoutExtraKeys
 
-# Create a custom type called LaTeXDimension that accepts only strings in a specified
+# Create a custom type called TypstDimension that accepts only strings in a specified
 # format.
 # This type is used to validate the dimension fields in the design data.
 # See https://docs.pydantic.dev/2.5/concepts/types/#custom-types for more information
 # about custom types.
-LaTeXDimension = Annotated[
+TypstDimension = Annotated[
     str,
     pydantic.Field(
-        pattern=r"\d+\.?\d* *(cm|in|pt|mm|ex|em)",
+        pattern=r"\d+\.?\d*(cm|in|pt|mm|ex|em)",
     ),
 ]
 
 
-class PageMargins(RenderCVBaseModelWithoutExtraKeys):
-    """This class is a data model for the page margins."""
+class ValidateDefaultsModel(RenderCVBaseModelWithoutExtraKeys):
+    model_config = pydantic.ConfigDict(validate_default=True)
 
-    top: LaTeXDimension = pydantic.Field(
-        default="2 cm",
-        title="Top Margin",
-        description="The top margin of the page with units. The default value is 2 cm.",
+
+class Page(ValidateDefaultsModel):
+    size: Literal[
+        "a0",
+        "a1",
+        "a2",
+        "a3",
+        "a4",
+        "a5",
+        "a6",
+        "a7",
+        "a8",
+        "us-letter",
+        "us-legal",
+        "us-executive",
+        "us-gov-letter",
+        "us-gov-legal",
+        "us-business-card",
+        "presentation-16-9",
+        "presentation-4-3",
+    ] = pydantic.Field(
+        default="us-letter",
+        title="Page Size",
+        description='The page size of the CV. The default value is "us-letter".',
     )
-    bottom: LaTeXDimension = pydantic.Field(
-        default="2 cm",
+
+    top_margin: TypstDimension = pydantic.Field(
+        default="2cm",
+        title="Top Margin",
+        description=(
+            'The top margin of the page with units. The default value is "2cm".'
+        ),
+    )
+    bottom_margin: TypstDimension = pydantic.Field(
+        default="2cm",
         title="Bottom Margin",
         description=(
-            "The bottom margin of the page with units. The default value is 2 cm."
+            'The bottom margin of the page with units. The default value is "2cm".'
         ),
     )
-    left: LaTeXDimension = pydantic.Field(
-        default="2 cm",
+    left_margin: TypstDimension = pydantic.Field(
+        default="2cm",
         title="Left Margin",
         description=(
-            "The left margin of the page with units. The default value is 2 cm."
+            'The left margin of the page with units. The default value is "2cm".'
         ),
     )
-    right: LaTeXDimension = pydantic.Field(
-        default="2 cm",
+    right_margin: TypstDimension = pydantic.Field(
+        default="2cm",
         title="Right Margin",
         description=(
-            "The right margin of the page with units. The default value is 2 cm."
+            'The right margin of the page with units. The default value is "2cm".'
         ),
     )
-
-
-class SectionTitleMargins(RenderCVBaseModelWithoutExtraKeys):
-    """This class is a data model for the section title margins."""
-
-    top: LaTeXDimension = pydantic.Field(
-        default="0.3 cm",
-        title="Top Margin",
-        description="The top margin of section titles. The default value is 0.3 cm.",
-    )
-    bottom: LaTeXDimension = pydantic.Field(
-        default="0.2 cm",
-        title="Bottom Margin",
-        description="The bottom margin of section titles. The default value is 0.3 cm.",
-    )
-
-
-class EntryAreaMargins(RenderCVBaseModelWithoutExtraKeys):
-    """This class is a data model for the entry area margins."""
-
-    left_and_right: LaTeXDimension = pydantic.Field(
-        default="0.2 cm",
-        title="Left Margin",
-        description="The left margin of entry areas. The default value is 0.2 cm.",
-    )
-
-    vertical_between: LaTeXDimension = pydantic.Field(
-        default="0.2 cm",
-        title="Vertical Margin Between Entry Areas",
+    show_page_numbering: bool = pydantic.Field(
+        default=True,
+        title="Show Page Numbering",
         description=(
-            "The vertical margin between entry areas. The default value is 0.2 cm."
+            "If this option is set to true, then the page numbering will be shown in"
+            ' the footer. The default value is "true".'
         ),
     )
-
-    date_and_location_width: LaTeXDimension = pydantic.Field(
-        default="4.5 cm",
-        title="Date and Location Column Width",
+    show_last_updated_date: bool = pydantic.Field(
+        default=True,
+        title="Show Last Updated Date",
         description=(
-            "The width of the date and location column. The default value is 4.5 cm."
+            "If this option is set to true, then the last updated date will be shown in"
+            ' the top right corner of the CV. The default value is "true".'
         ),
     )
 
 
-class HighlightsAreaMargins(RenderCVBaseModelWithoutExtraKeys):
-    """This class is a data model for the highlights area margins."""
+color_common_description = (
+    "\nThe color can be specified either with their name"
+    " (https://www.w3.org/TR/SVG11/types.html#ColorKeywords), hexadecimal value, RGB"
+    " value, or HSL value."
+)
+color_common_examples = ["Black", "7fffd4", "rgb(0,79,144)", "hsl(270, 60%, 70%)"]
 
-    top: LaTeXDimension = pydantic.Field(
-        default="0.10 cm",
-        title="Top Margin",
-        description="The top margin of highlights areas. The default value is 0.10 cm.",
-    )
-    left: LaTeXDimension = pydantic.Field(
-        default="0.4 cm",
-        title="Left Margin",
-        description="The left margin of highlights areas. The default value is 0.4 cm.",
-    )
-    vertical_between_bullet_points: LaTeXDimension = pydantic.Field(
-        default="0.10 cm",
-        title="Vertical Margin Between Bullet Points",
+
+class Colors(ValidateDefaultsModel):
+    name: pydantic_color.Color = pydantic.Field(
+        default="rgb(0,79,144)",  # type: ignore
+        title="Color of Name",
         description=(
-            "The vertical margin between bullet points. The default value is 0.10 cm."
+            "The color of the name in the header."
+            + color_common_description
+            + '\nThe default value is "rgb(0,79,144)".'
+        ),
+        examples=color_common_examples,
+    )
+    connections: pydantic_color.Color = pydantic.Field(
+        default="rgb(0,79,144)",  # type: ignore
+        title="Color of Connections",
+        description=(
+            "The color of the connections in the header."
+            + color_common_description
+            + '\nThe default value is "rgb(0,79,144)".'
+        ),
+        examples=color_common_examples,
+    )
+    section_titles: pydantic_color.Color = pydantic.Field(
+        default="rgb(0,79,144)",  # type: ignore
+        title="Color of Section Titles",
+        description=(
+            "The color of the section titles."
+            + color_common_description
+            + '\nThe default value is "rgb(0,79,144)".'
+        ),
+        examples=color_common_examples,
+    )
+    links: pydantic_color.Color = pydantic.Field(
+        default="rgb(0,79,144)",  # type: ignore
+        title="Color of Links",
+        description=(
+            "The color of the links."
+            + color_common_description
+            + '\nThe default value is "rgb(0,79,144)".'
+        ),
+        examples=color_common_examples,
+    )
+    last_updated_date_and_page_numbering: pydantic_color.Color = pydantic.Field(
+        default="rgb(128,128,128)",  # type: ignore
+        title="Color of Last Updated Date and Page Numbering",
+        description=(
+            "The color of the last updated date and page numbering."
+            + color_common_description
+            + '\nThe default value is "rgb(128,128,128)".'
+        ),
+        examples=color_common_examples,
+    )
+
+
+class Text(ValidateDefaultsModel):
+    font_size: TypstDimension = pydantic.Field(
+        default="10pt",
+        title="Font Size",
+        description='The font size of the CV. The default value is "10pt".',
+    )
+    leading: TypstDimension = pydantic.Field(
+        default="1.2em",
+        title="Leading",
+        description=(
+            "The vertical space between adjacent lines of text. The default value is"
+            ' "1.2em".'
         ),
     )
 
 
-class HeaderMargins(RenderCVBaseModelWithoutExtraKeys):
-    """This class is a data model for the header margins."""
+class Links(ValidateDefaultsModel):
+    underline: bool = pydantic.Field(
+        default=False,
+        title="Underline Links",
+        description=(
+            "If this option is set to true, then the links will be underlined. The"
+            ' default value is "false".'
+        ),
+    )
+    use_external_link_icon: bool = pydantic.Field(
+        default=True,
+        title="Use External Link Icon",
+        description=(
+            "If this option is set to true, then the external link icon will be shown"
+            ' next to the links. The default value is "true".'
+        ),
+    )
 
-    vertical_between_name_and_connections: LaTeXDimension = pydantic.Field(
-        default="0.3 cm",
+
+class Header(ValidateDefaultsModel):
+    name_font_size: TypstDimension = pydantic.Field(
+        default="30pt",
+        title="Name Font Size",
+        description=(
+            'The font size of the name in the header. The default value is "30pt".'
+        ),
+    )
+    name_bold: bool = pydantic.Field(
+        default=True,
+        title="Bold Name",
+        description=(
+            "If this option is set to true, then the name in the header will be bold."
+            ' The default value is "true".'
+        ),
+    )
+    vertical_space_between_name_and_connections: TypstDimension = pydantic.Field(
+        default="0.3cm",
         title="Vertical Margin Between the Name and Connections",
         description=(
             "The vertical margin between the name of the person and the connections."
-            " The default value is 0.3 cm."
+            ' The default value is "0.3cm".'
         ),
     )
-    bottom: LaTeXDimension = pydantic.Field(
-        default="0.3 cm",
-        title="Bottom Margin",
-        description=(
-            "The bottom margin of the header, i.e., the vertical margin between the"
-            " connections and the first section title. The default value is 0.3 cm."
-        ),
+    vertical_space_between_connections_and_first_section: TypstDimension = (
+        pydantic.Field(
+            default="0.3cm",
+            title="Vertical Margin Between Connections and First Section",
+            description=(
+                "The vertical margin between the connections and the first section"
+                ' title. The default value is "0.3cm".'
+            ),
+        )
     )
-    horizontal_between_connections: LaTeXDimension = pydantic.Field(
-        default="0.5 cm",
+    horizontal_space_between_connections: TypstDimension = pydantic.Field(
+        default="0.5cm",
         title="Space Between Connections",
         description=(
             "The space between the connections (like phone, email, and website). The"
-            " default value is 0.5 cm."
+            ' default value is "0.5cm".'
         ),
-    )
-
-
-class Margins(RenderCVBaseModelWithoutExtraKeys):
-    """This class is a data model for the margins."""
-
-    page: PageMargins = pydantic.Field(
-        default=PageMargins(),
-        title="Page Margins",
-        description="Page margins.",
-    )
-    section_title: SectionTitleMargins = pydantic.Field(
-        default=SectionTitleMargins(),
-        title="Section Title Margins",
-        description="Section title margins.",
-    )
-    entry_area: EntryAreaMargins = pydantic.Field(
-        default=EntryAreaMargins(),
-        title="Entry Area Margins",
-        description="Entry area margins.",
-    )
-    highlights_area: HighlightsAreaMargins = pydantic.Field(
-        default=HighlightsAreaMargins(),
-        title="Highlights Area Margins",
-        description="Highlights area margins.",
-    )
-    header: HeaderMargins = pydantic.Field(
-        default=HeaderMargins(),
-        title="Header Margins",
-        description="Header margins.",
-    )
-
-
-class ThemeOptions(RenderCVBaseModelWithoutExtraKeys):
-    """This class is a generic data model for the theme options. The themes are
-    encouraged to inherit from this data model and add their own options, to avoid code
-    duplication.
-    """
-
-    model_config = pydantic.ConfigDict(extra="forbid")
-
-    theme: Literal["tobeoverwritten"]
-
-    font: Literal[
-        "Latin Modern Serif",
-        "Latin Modern Sans Serif",
-        "Latin Modern Mono",
-        "Source Sans 3",
-        "Charter",
-    ] = pydantic.Field(
-        default="Latin Modern Serif",
-        title="Font",
-        description=(
-            "The font family of the CV. The default value is Latin Modern Serif."
-        ),
-    )
-    font_size: Literal["10pt", "11pt", "12pt"] = pydantic.Field(
-        default="10pt",
-        title="Font Size",
-        description="The font size of the CV. The default value is 10pt.",
-    )
-    page_size: Literal["a4paper", "letterpaper"] = pydantic.Field(
-        default="letterpaper",
-        title="Page Size",
-        description=(
-            "The page size of the CV. It can be a4paper or letterpaper. The default"
-            " value is letterpaper."
-        ),
-    )
-    color: pydantic_color.Color = pydantic.Field(
-        default="rgb(0,79,144)",  # type: ignore
-        validate_default=True,
-        title="Primary Color",
-        description=(
-            "The primary color of the theme. \nThe color can be specified either with"
-            " their name (https://www.w3.org/TR/SVG11/types.html#ColorKeywords),"
-            " hexadecimal value, RGB value, or HSL value. The default value is"
-            " rgb(0,79,144)."
-        ),
-        examples=["Black", "7fffd4", "rgb(0,79,144)", "hsl(270, 60%, 70%)"],
-    )
-    disable_external_link_icons: bool = pydantic.Field(
-        default=False,
-        title="Disable External Link Icons",
-        description=(
-            "If this option is set to true, then the external link icons will not be"
-            " shown next to the links. The default value is false."
-        ),
-    )
-    disable_page_numbering: bool = pydantic.Field(
-        default=False,
-        title="Disable Page Numbering",
-        description=(
-            "If this option is set to true, then the page numbering will not be shown."
-            " The default value is false."
-        ),
-    )
-    disable_last_updated_date: bool = pydantic.Field(
-        default=False,
-        title="Disable Last Updated Date",
-        description=(
-            "If this option is set to true, then the last updated date will not be"
-            " shown in the header. The default value is false."
-        ),
-    )
-    header_font_size: LaTeXDimension = pydantic.Field(
-        default="30 pt",
-        title="Header Font Size",
-        description=(
-            "The font size of the header (the name of the person). The default value is"
-            " 30 pt."
-        ),
-    )
-    text_alignment: Literal[
-        "left-aligned", "justified", "justified-with-no-hyphenation"
-    ] = pydantic.Field(
-        default="justified",
-        title="Text Alignment",
-        description="The alignment of the text. The default value is justified.",
     )
     separator_between_connections: str = pydantic.Field(
         default="",
@@ -277,11 +250,90 @@ class ThemeOptions(RenderCVBaseModelWithoutExtraKeys):
         title="Use Icons for Connections",
         description=(
             "If this option is set to true, then icons will be used for the connections"
-            " in the header. The default value is true."
+            ' in the header. The default value is "true".'
         ),
     )
-    margins: Margins = pydantic.Field(
-        default=Margins(),
-        title="Margins",
-        description="Page, section title, entry field, and highlights field margins.",
+    alignment: Literal["left", "center", "right"] = pydantic.Field(
+        default="center",
+        title="Alignment of the Header",
+        description='The alignment of the header. The default value is "center".',
+    )
+
+
+class SectionTitles(ValidateDefaultsModel):
+    font_size: TypstDimension = pydantic.Field(
+        default="1.2em",
+        title="Font Size",
+        description=(
+            'The font size of the section titles. The default value is "1.2em".'
+        ),
+    )
+    bold: bool = pydantic.Field(
+        default=True,
+        title="Bold Section Titles",
+        description=(
+            "If this option is set to true, then the section titles will be bold. The"
+            ' default value is "true".'
+        ),
+    )
+    line_type: Literal["partial", "full", "none"] = pydantic.Field(
+        default="partial",
+        title="Line Type",
+        description='The line type of the section titles. The default value is "full".',
+    )
+    line_thicknes: TypstDimension = pydantic.Field(
+        default="0.5pt",
+        title="Line Thickness",
+        description=(
+            "The thickness of the line under the section titles. The default value is"
+            ' "0.5pt".'
+        ),
+    )
+    vertical_space_above: TypstDimension = pydantic.Field(
+        default="0.3cm",
+        title="Vertical Space Above Section Titles",
+        description=(
+            'The vertical space above the section titles. The default value is "0.3cm".'
+        ),
+    )
+    vertical_space_below: TypstDimension = pydantic.Field(
+        default="0.2cm",
+        title="Vertical Space Below Section Titles",
+        description=(
+            'The vertical space below the section titles. The default value is "0.2cm".'
+        ),
+    )
+
+
+class Highlights(ValidateDefaultsModel):
+    left_margin: TypstDimension = pydantic.Field(
+        default="0.4cm",
+        title="Left Margin",
+        description='The left margin of the highlights. The default value is "0.4cm".',
+    )
+    horizontal_space_between_bullet_and_highlight: TypstDimension = pydantic.Field(
+        default="0.5em",
+        title="Horizontal Space Between Bullet and Highlight",
+        description=(
+            "The horizontal space between the bullet and the highlight. The default"
+            ' value is "0.5em".'
+        ),
+    )
+
+
+class Entries(ValidateDefaultsModel):
+    vertical_space_between_entries: TypstDimension = pydantic.Field(
+        default="0.2cm",
+        title="Vertical Space Between Entries",
+        description=(
+            'The vertical space between the entries. The default value is "0.2cm".'
+        ),
+    )
+    allow_page_break_in_entries: bool = pydantic.Field(
+        default=True,
+        title="Allow Page Break in Entries",
+        description=(
+            'If this option is set to "true", then a page break will be allowed in the'
+            ' entries. The default value is "true".'
+        ),
     )
