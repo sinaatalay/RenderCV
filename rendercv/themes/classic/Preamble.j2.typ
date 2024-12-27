@@ -1,98 +1,166 @@
-%% start of file `template.tex'.
-%% Copyright 2006-2015 Xavier Danaux (xdanaux@gmail.com), 2020-2022 moderncv maintainers (github.com/moderncv).
-%
-% This work may be distributed and/or modified under the
-% conditions of the LaTeX Project Public License version 1.3c,
-% available at http://www.latex-project.org/lppl/.
+#import "@preview/fontawesome:0.5.0": fa-icon
 
-\documentclass[<<design.font_size>>,<<design.page_size>>,sans]{moderncv}        % possible options include font size ('10pt', '11pt' and '12pt'), paper size ('a4paper', 'letterpaper', 'a5paper', 'legalpaper', 'executivepaper' and 'landscape') and font family ('sans' and 'roman')
+#let rendercv(
+  name: none,
+  accent-color: gray,
+  date: datetime.today(),
+  paper: "us-letter",
+  page_numbering_style: "1 of 1",
+  section-title-line-type: "partial",
+  disable-last-updated-date: false,
+  disable-connections-icon: false,
+  last-updated-date-style: "Last updated in " + datetime.today().display(),
+  last-updated-date-and-page-numbering-color: gray,
+  disable-external-link-icon: false,
+  font-size: 10pt,
+  leading: 1.2em,
+  section-title-font-scale: 1.2em,
+  header-font-size: 30pt,
+  header-font-weight: 700,
+  header-color: blue,
+  section-title-font-weight: 400,
+  section-title-line-thickness: 0.5pt,
+  margin-highlights-area-left-space: 0.5in,
+  margin-highlights-area-space-between-bullet-and-highlight: 0.5em,
+  margin-vertical-space-between-name-and-connections: 0.5cm,
+  margin-vertical-space-between-connections-and-body: 0.5cm,
+  margin-vertical-space-between-entries: 0.5cm,
+  margin-section-title-bottom: 0.5cm,
+  margin-page-top: 0.5in,
+  margin-page-bottom: 0.5in,
+  margin-page-left: 0.5in,
+  margin-page-right: 0.5in,
+  body,
+) = {
+  // Metadata:
+  let pdf-author
+  if name == none {
+    pdf-author = "Anonymous"
+  } else {
+    pdf-author = name
+  }
+  set document(author: pdf-author, title: pdf-author + "'s CV", date: date)
 
-% moderncv themes
-\moderncvstyle{classic}                            % style options are 'casual' (default), 'classic', 'banking', 'oldstyle' and 'fancy'
-\moderncvcolor{<<design.color>>}                               % color options 'black', 'blue' (default), 'burgundy', 'green', 'grey', 'orange', 'purple' and 'red'
-%\renewcommand{\familydefault}{\sfdefault}         % to set the default font; use '\sfdefault' for the default sans serif font, '\rmdefault' for the default roman one, or any tex font name
-((* if design.disable_page_numbers *))
-\nopagenumbers{}
-((* endif *))
+  // Page settings:
+  set page(
+    margin: (
+      top: margin-page-top,
+      bottom: margin-page-bottom,
+      left: margin-page-left,
+      right: margin-page-right,
+    ),
+    paper: paper,
+    numbering: page_numbering_style,
+    footer-descent: 0% - 0.3em + margin-page-bottom / 2,
+  )
 
-\usepackage{amsmath} % for math
+  // Text settings:
+  set text(
+    font: "Noto Sans Batak",
+    size: font-size,
+    lang: "en", // TODO
+    // Disable ligatures for better ATS compatibility:
+    ligatures: true,
+  )
 
-% adjust the page margins
-\usepackage[scale=<<design.content_scale>>]{geometry}
-\setlength{\hintscolumnwidth}{<<design.date_width>>}                % if you want to change the width of the column with the dates
-%\setlength{\makecvheadnamewidth}{10cm}            % for the 'classic' style, if you want to force the width allocated to your name and avoid line breaks. be careful though, the length is normally calculated to avoid any overlap with your personal info; use this at your own typographical risks...
+  // Paragraph settings:
+  set par(spacing: margin-vertical-space-between-entries, leading: leading)
 
-% font loading
-% for luatex and xetex, do not use inputenc and fontenc
-% see https://tex.stackexchange.com/a/496643
-\ifxetexorluatex
-  \usepackage{fontspec}
-  \usepackage{unicode-math}
-  \defaultfontfeatures{Ligatures=TeX}
-  \setmainfont{Latin Modern Roman}
-  \setsansfont{Latin Modern Sans}
-  \setmonofont{Latin Modern Mono}
-  \setmathfont{Latin Modern Math} 
-\else
-  \usepackage[T1]{fontenc}
-  \usepackage{lmodern}
-\fi
+  // Highlights (bullets) settings:
+  show list: set list(
+    indent: margin-highlights-area-left-space,
+    body-indent: margin-highlights-area-space-between-bullet-and-highlight,
+  )
 
-% document language
-\usepackage[english]{babel}  % FIXME: using spanish breaks moderncv
+  // Main heading settings:
+  show heading.where(level: 1): it => [
+    #set align(center)
+    #set text(
+      weight: header-font-weight,
+      size: header-font-size,
+      fill: header-color,
+    )
+    #it.body
+    // Vertical space after the name
+    #v(margin-vertical-space-between-name-and-connections)
+  ]
 
-% personal data
-\name{<<cv.name>>}{}
-((* if cv.label *))
-\title{<<cv.label>>}                               % optional, remove / comment the line if not wanted
-((* endif *))
-% \familyname{}
-((* if cv.location *))
-\address{<<cv.location>>}{}
-((* endif *))
-((* if cv.phone *))
-\phone[mobile]{<<cv.phone|replace("tel:", "")|replace("-"," ")>>}
-((* endif *))
-((* if cv.email *))
-\email{<<cv.email|escape_latex_characters>>}
-((* endif *))
-((* if cv.website *))
-\homepage{<<cv.website|replace("https://", "")|reverse|replace("/", "", 1)|reverse>>}
-((* endif *))
+  show heading.where(level: 2): it => [
+    #set align(left)
+    #set text(size: (section-title-font-scale / 1.2), weight: section-title-font-weight)
 
-((* if cv.social_networks *))
-    ((* for network in cv.social_networks *))
-\social[<<network.network|lower()|replace(" ", "")>>]{<<network.username>>}
-    ((* endfor *))
-((* endif *))
-% Social icons
-% \social[linkedin]{john.doe}                        % optional, remove / comment the line if not wanted
-% \social[xing]{john\_doe}                           % optional, remove / comment the line if not wanted
-% \social[twitter]{ji\_doe}                          % optional, remove / comment the line if not wanted
-% \social[github]{jdoe}                              % optional, remove / comment the line if not wanted
-% \social[gitlab]{jdoe}                              % optional, remove / comment the line if not wanted
-% \social[stackoverflow]{0000000/johndoe}            % optional, remove / comment the line if not wanted
-% \social[bitbucket]{jdoe}                           % optional, remove / comment the line if not wanted
-% \social[skype]{jdoe}                               % optional, remove / comment the line if not wanted
-% \social[orcid]{0000-0000-000-000}                  % optional, remove / comment the line if not wanted
-% \social[researchgate]{jdoe}                        % optional, remove / comment the line if not wanted
-% \social[researcherid]{jdoe}                        % optional, remove / comment the line if not wanted
-% \social[telegram]{jdoe}                            % optional, remove / comment the line if not wanted
-% \social[whatsapp]{12345678901}                     % optional, remove / comment the line if not wanted
-% \social[signal]{12345678901}                       % optional, remove / comment the line if not wanted
-% \social[matrix]{@johndoe:matrix.org}               % optional, remove / comment the line if not wanted
-% \social[googlescholar]{googlescholarid}            % optional, remove / comment the line if not wanted
+    #if true [
+      #it.body
+    ] else [
+      #smallcaps(it.body)
+    ]
+    #if section-title-line-type == "partial" [
+      #box(width: 1fr, height: section-title-line-thickness, fill: rgb(accent-color))
+    ] else if section-title-line-type == "full" [
+      #v(-0.45cm)
+      #line(length: 100%, stroke: section-title-line-thickness)
+    ]
+    // Vertical space after the section title
+    #v(margin-section-title-bottom)
+  ]
 
-% new command for cventry (this is done to allow users unbold or unitalicize the text in the cventry command)
-\renewcommand*{\cventry}[6][.25em]{%
-  \cvitem[#1]{#2}{%
-    #3%
-    \ifthenelse{\equal{#4}{}}{}{, #4}%
-    \ifthenelse{\equal{#5}{}}{}{, #5}%
-    \ifthenelse{\equal{#6}{}}{}{, #6}%
+  // Links:
+  show link: it => [
+    #set text(fill: blue)
+    #underline(it.body)
+    #if not disable-external-link-icon [
+      #box(
+        fa-icon("external-link-alt", size: 0.6em),
+        height: auto,
+        baseline: -10%,
+      )
+    ]
+  ]
+
+  // Last updated date text:
+  if disable-last-updated-date {
+    place(
+      top + right,
+      dy: 0pt,
+      text(last-updated-date-style, fill: last-updated-date-and-page-numbering-color),
+    )
+  }
+
+  body
+}
+
+#let connection(url, text_url, icon: "") = {
+  if icon != "" {
+    return link(url)[#text_url]
+  } else {
+    return link(url)[#icon + " " + text_url]
   }
 }
 
-((* if cv.photo *))
-\photo[3cm][1pt]{<<cv.photo.name>>}
-((* endif *))
+#let three-col-entry(
+  left-column-width: length,
+  right-column-width: length,
+  left-content: "",
+  middle-content: "",
+  right-content: "",
+) = [
+  #grid(
+    columns: (left-column-width, 1fr, right-column-width),
+    column-gutter: 0in,
+    align: (left, left, right),
+    left-content, middle-content, right-content,
+  )
+]
+
+#let two-col-entry(
+  left-column-width: 1fr,
+  right-column-width: 1fr,
+  left-content: "",
+  right-content: "",
+) = [
+  #grid(
+    columns: (left-column-width, right-column-width),
+    column-gutter: 0in,
+    left-content, right-content,
+  )
+]

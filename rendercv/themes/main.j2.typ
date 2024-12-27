@@ -1,3 +1,5 @@
+<<preamble>>
+
 <<header>>
 
 ((* for section_beginning, entries, section_ending in sections *))
