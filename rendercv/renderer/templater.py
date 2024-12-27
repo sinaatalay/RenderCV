@@ -547,7 +547,7 @@ def markdown_to_typst(markdown_string: str) -> str:
             link_url = link[1]
 
             old_link_string = f"[{link_text}]({link_url})"
-            new_link_string = "\\href{" + link_url + "}{" + link_text + "}"
+            new_link_string = f'#link("{link_url}")[{link_text}]'
 
             markdown_string = markdown_string.replace(old_link_string, new_link_string)
 
@@ -556,7 +556,7 @@ def markdown_to_typst(markdown_string: str) -> str:
     if bolds is not None:
         for bold_text in bolds:
             old_bold_text = f"**{bold_text}**"
-            new_bold_text = "\\textbf{" + bold_text + "}"
+            new_bold_text = f"*{bold_text}*"
 
             markdown_string = markdown_string.replace(old_bold_text, new_bold_text)
 
@@ -565,7 +565,7 @@ def markdown_to_typst(markdown_string: str) -> str:
     if italics is not None:
         for italic_text in italics:
             old_italic_text = f"*{italic_text}*"
-            new_italic_text = "\\textit{" + italic_text + "}"
+            new_italic_text = f"_{italic_text}_"
 
             markdown_string = markdown_string.replace(old_italic_text, new_italic_text)
 
@@ -612,7 +612,7 @@ def markdown_to_latex(markdown_string: str) -> str:
     if bolds is not None:
         for bold_text in bolds:
             old_bold_text = f"**{bold_text}**"
-            new_bold_text = "\\textbf{" + bold_text + "}"
+            new_bold_text = f"\\textbf{" + bold_text + "}"
 
             markdown_string = markdown_string.replace(old_bold_text, new_bold_text)
 
