@@ -414,57 +414,26 @@ def revert_nested_latex_style_commands(latex_string: str) -> str:
     return latex_string
 
 
-def escape_typst_characters(string: str) -> str:
-    """Escape Typst characters in a string by adding a backslash before them.
+def escape_characters(string: str, escape_dictionary: dict[str, str]) -> str:
+    """Escape characters in a string by using `escape_dictionary`, where keys are
+    characters to escape and values are their escaped versions.
 
     Example:
         ```python
-        escape_typst_characters("This is a # string.")
+        escape_characters("This is a # string.", {"#": "\\#"})
         ```
         returns
         `"This is a \\# string."`
 
     Args:
         string: The string to escape.
+        escape_dictionary: The dictionary of escape characters.
 
     Returns:
         The escaped string.
     """
 
-    return string
-
-
-def escape_latex_characters(string: str) -> str:
-    """Escape $\\LaTeX$ characters in a string by adding a backslash before them.
-
-    Example:
-        ```python
-        escape_latex_characters("This is a # string.")
-        ```
-        returns
-        `"This is a \\# string."`
-
-    Args:
-        string: The string to escape.
-
-    Returns:
-        The escaped string.
-    """
-
-    # Dictionary of escape characters:
-    escape_characters = {
-        "{": "\\{",
-        "}": "\\}",
-        # "\\": "\\textbackslash{}",
-        "#": "\\#",
-        "%": "\\%",
-        "&": "\\&",
-        "~": "\\textasciitilde{}",
-        "$": "\\$",
-        "_": "\\_",
-        "^": "\\textasciicircum{}",
-    }
-    translation_map = str.maketrans(escape_characters)
+    translation_map = str.maketrans(escape_dictionary)
 
     # Don't escape urls as hyperref package will do it automatically:
     # Find all the links in the sentence:
@@ -517,6 +486,68 @@ def escape_latex_characters(string: str) -> str:
         string = string.replace(f"!!-latex{i}-!!", latex_command)
 
     return string
+
+
+def escape_typst_characters(string: str) -> str:
+    """Escape Typst characters in a string by adding a backslash before them.
+
+    Example:
+        ```python
+        escape_typst_characters("This is a # string.")
+        ```
+        returns
+        `"This is a \\# string."`
+
+    Args:
+        string: The string to escape.
+
+    Returns:
+        The escaped string.
+    """
+    escape_dictionary = {
+        "[": "\\[",
+        "]": "\\]",
+        "\\": "\\\\",
+        '"': '\\"',
+        "#": "\\#",
+        "$": "\\$",
+    }
+
+    return escape_characters(string, escape_dictionary)
+
+
+def escape_latex_characters(string: str) -> str:
+    """Escape $\\LaTeX$ characters in a string by adding a backslash before them.
+
+    Example:
+        ```python
+        escape_latex_characters("This is a # string.")
+        ```
+        returns
+        `"This is a \\# string."`
+
+    Args:
+        string: The string to escape.
+
+    Returns:
+        The escaped string.
+    """
+
+    # Dictionary of escape characters:
+    escape_dictionary = {
+        "{": "\\{",
+        "}": "\\}",
+        # "\\": "\\textbackslash{}",
+        "#": "\\#",
+        "%": "\\%",
+        "&": "\\&",
+        "~": "\\textasciitilde{}",
+        "$": "\\$",
+        "_": "\\_",
+        "^": "\\textasciicircum{}",
+    }
+
+    return escape_characters(string, escape_dictionary)
 
 
 def markdown_to_typst(markdown_string: str) -> str:
@@ -612,7 +643,7 @@ def markdown_to_latex(markdown_string: str) -> str:
     if bolds is not None:
         for bold_text in bolds:
             old_bold_text = f"**{bold_text}**"
-            new_bold_text = f"\\textbf{" + bold_text + "}"
+            new_bold_text = "\\textbf{" + bold_text + "}"
 
             markdown_string = markdown_string.replace(old_bold_text, new_bold_text)
 
