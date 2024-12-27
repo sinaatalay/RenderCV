@@ -1,9 +1,23 @@
-== <<entry.name>>
+((* if section_title in design.show_timespan_in *))
+    ((* set date_and_location_strings = [entry.location, entry.date_string, entry.time_span_string]|select("!=", "") *))
+((* else *))
+    ((* set date_and_location_strings = [entry.location, entry.date_string]|select("!=", "") *))
+((* endif *))
 
-((* if entry.date_string *))- <<entry.date_string>>
+((* if entry.date_string or entry.location *))
+#two-col-entry(
+  right-column-width: 2.5cm,
+  left-content: [
 ((* endif *))
-((* if entry.location *))- <<entry.location>>
-((* endif *))
+    *<<entry.name>>*, <<entry.position>>
+    
 ((* for item in entry.highlights *))
-- <<item>>
+    - <<item>>
 ((* endfor *))
+((* if entry.date_string or entry.location *))
+  ],
+  right-content: [
+    <<date_and_location_strings|join("\n\n")>>
+  ],
+)
+((* endif *))

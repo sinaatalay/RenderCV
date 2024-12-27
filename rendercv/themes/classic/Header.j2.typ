@@ -10,7 +10,7 @@
   disable-external-link-icon: false,
   font-size: 10pt,
   leading: 1.2em,
-  section-title-font-scale: 1.2em,
+  section-title-font-scale: 10pt,
   header-font-size: 30pt,
   header-font-weight: 700,
   header-color: blue,

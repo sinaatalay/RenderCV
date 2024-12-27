@@ -87,7 +87,8 @@
 
   show heading.where(level: 2): it => [
     #set align(left)
-    #set text(size: (section-title-font-scale / 1.2), weight: section-title-font-weight)
+    #set text(size: (1em / 1.2)) // reset
+    #set text(size: (section-title-font-scale), weight: section-title-font-weight)
 
     #if true [
       #it.body
@@ -138,8 +139,8 @@
 }
 
 #let three-col-entry(
-  left-column-width: length,
-  right-column-width: length,
+  left-column-width: 1fr,
+  right-column-width: 1fr,
   left-content: "",
   middle-content: "",
   right-content: "",
