@@ -582,13 +582,23 @@ def markdown_to_typst(markdown_string: str) -> str:
 
             markdown_string = markdown_string.replace(old_link_string, new_link_string)
 
+    # convert bold and italic:
+    bold_and_italics = re.findall(r"\*\*\*(.+?)\*\*\*", markdown_string)
+    if bold_and_italics is not None:
+        for bold_and_italic_text in bold_and_italics:
+            old_bold_and_italic_text = f"***{bold_and_italic_text}***"
+            new_bold_and_italic_text = f"RENDERCV_ONE_STARRENDERCV_ONE_UNDERSCORE{bold_and_italic_text}RENDERCV_ONE_UNDERSCORERENDERCV_ONE_STAR"
+
+            markdown_string = markdown_string.replace(
+                old_bold_and_italic_text, new_bold_and_italic_text
+            )
+
     # convert bold
     bolds = re.findall(r"\*\*(.+?)\*\*", markdown_string)
     if bolds is not None:
         for bold_text in bolds:
             old_bold_text = f"**{bold_text}**"
-            new_bold_text = f"*{bold_text}*"
-
+            new_bold_text = f"RENDERCV_ONE_STAR{bold_text}RENDERCV_ONE_STAR"
             markdown_string = markdown_string.replace(old_bold_text, new_bold_text)
 
     # convert italic
@@ -600,7 +610,9 @@ def markdown_to_typst(markdown_string: str) -> str:
 
             markdown_string = markdown_string.replace(old_italic_text, new_italic_text)
 
-    return markdown_string
+    return markdown_string.replace("RENDERCV_ONE_STAR", "*").replace(
+        "RENDERCV_ONE_UNDERSCORE", "_"
+    )
 
 
 def markdown_to_latex(markdown_string: str) -> str:

@@ -164,6 +164,29 @@ def test_markdown_to_latex(markdown_string, expected_latex_string):
     assert templater.markdown_to_latex(markdown_string) == expected_latex_string
 
 
+@pytest.mark.parametrize(
+    ("markdown_string", "expected_latex_string"),
+    [
+        ("My Text", "My Text"),
+        ("**My** Text", "*My* Text"),
+        ("*My* Text", "_My_ Text"),
+        ("***My*** Text", "*_My_* Text"),
+        ("[My](https://myurl.com) Text", '#link("https://myurl.com")[My] Text'),
+        ("`My` Text", "`My` Text"),
+        (
+            "[**My** *Text* ***Is*** `Here`](https://myurl.com)",
+            '#link("https://myurl.com")[*My* _Text_ *_Is_* `Here`]',
+        ),
+        (
+            "Some other *** tests, which should be tricky* to parse!**",
+            "Some other *_ tests, which should be tricky_ to parse!*",
+        ),
+    ],
+)
+def test_markdown_to_typst(markdown_string, expected_latex_string):
+    assert templater.markdown_to_typst(markdown_string) == expected_latex_string
+
+
 def test_transform_markdown_sections_to_latex_sections(rendercv_data_model):
     new_data_model = copy.deepcopy(rendercv_data_model)
     new_sections_input = templater.transform_markdown_sections_to_latex_sections(
