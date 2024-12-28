@@ -511,6 +511,7 @@ def escape_typst_characters(string: str) -> str:
         '"': '\\"',
         "#": "\\#",
         "$": "\\$",
+        "@": "\\@",
     }
 
     return escape_characters(string, escape_dictionary)
@@ -1075,7 +1076,9 @@ def setup_jinja2_environment() -> jinja2.Environment:
             get_an_item_with_a_specific_attribute_value
         )
         environment.filters["escape_latex_characters"] = escape_latex_characters
+        environment.filters["escape_typst_characters"] = escape_typst_characters
         environment.filters["markdown_to_latex"] = markdown_to_latex
+        environment.filters["markdown_to_typst"] = markdown_to_typst
 
         jinja2_environment = environment
     else:

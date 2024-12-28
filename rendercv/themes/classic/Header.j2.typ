@@ -1,16 +1,24 @@
-#show: rendercv.with(
-  name: "<<cv.name>>",
-  paper: "<<design.page.size>>",
-)
-
-
 = <<cv.name>>
-
 
 // Print connections:
 #context {
   let connections = (
-    connection("url", "text_url", icon: "icon"),
+((* for connection in cv.connections *))
+  [((*- if connection["url"] -*))
+  #link("<<connection["url"]>>")[
+  ((*- endif -*))
+  ((*- if design.header.use_icons_for_connections -*))
+      #fa-icon("<<connection["typst_icon"]>>", size: 0.9em) #h(0.05cm)
+  ((*- endif -*))
+  ((*- if connection["url"] -*))
+      <<connection["clean_url"]|escape_typst_characters>>
+  ((*- else -*))
+      <<connection["placeholder"]|escape_typst_characters>>
+  ((*- endif -*))
+  ((*- if connection["url"] -*))
+  ]
+  ((*- endif -*))],
+((* endfor *))
   )
 
   let list-of-connections = ()
