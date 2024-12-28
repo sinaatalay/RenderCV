@@ -12,80 +12,74 @@
 
 #let rendercv(
   name: "<<cv.name>>",
-  paper: "<<design.page.size>>",
-  page-numbering-style: "<<locale_catalog.page_numbering_style|replace_placeholders_with_actual_values(page_numbering_style_placeholders)>>",
-  section-title-line-type: "<<design.section_titles.line_type>>",
-  show-last-updated-date: <<design.page.show_last_updated_date|lower>>,
-  use-icons-for-connections: <<design.header.use_icons_for_connections|lower>>,
-  last-updated-date-style: "<<locale_catalog.last_updated_date_style|replace_placeholders_with_actual_values(last_updated_date_style_placeholders)>>",
-  last-updated-date-and-page-numbering-color: <<design.colors.last_updated_date_and_page_numbering.as_rgb()>>,
-  use-external-link-icon: <<design.links.use_external_link_icon|lower>>,
-  font-size: <<design.text.font_size>>,
-  leading: <<design.text.leading>>,
-  header-font-size: <<design.header.name_font_size>>,
-  header-font-bold: <<design.header.name_bold|lower>>,
-  header-color: <<design.colors.name.as_rgb()>>,
-  section-title-font-size: <<design.section_titles.font_size>>,
-  section-titles-color: <<design.colors.section_titles.as_rgb()>>,
-  section-title-bold: <<design.section_titles.bold|lower>>,
-  section-title-line-thickness: <<design.section_titles.line_thickness>>,
-  margin-highlights-area-left-space: <<design.highlights.left_margin>>,
-  margin-highlights-area-space-between-bullet-and-highlight: <<design.highlights.horizontal_space_between_bullet_and_highlight>>,
-  margin-vertical-space-between-name-and-connections: <<design.header.vertical_space_between_name_and_connections>>,
-  margin-vertical-space-between-connections-and-body: <<design.header.vertical_space_between_connections_and_first_section>>,
-  margin-vertical-space-between-entries: <<design.entries.vertical_space_between_entries>>,
-  margin-section-title-bottom: <<design.section_titles.vertical_space_below>>,
-  margin-page-top: <<design.page.top_margin>>,
-  margin-page-bottom: <<design.page.bottom_margin>>,
-  margin-page-left: <<design.page.left_margin>>,
-  margin-page-right: <<design.page.right_margin>>,
+  design-page-size: "<<design.page.size>>",
+  locale-catalog-page-numbering-style: "<<locale_catalog.page_numbering_style|replace_placeholders_with_actual_values(page_numbering_style_placeholders)>>",
+  locale-catalog-last-updated-date-style: "<<locale_catalog.last_updated_date_style|replace_placeholders_with_actual_values(last_updated_date_style_placeholders)>>",
+  design-section-titles-line-type: "<<design.section_titles.line_type>>",
+  design-page-show-last-updated-date: <<design.page.show_last_updated_date|lower>>,
+  design-header-use-icons-for-connections: <<design.header.use_icons_for_connections|lower>>,
+  design-colors-last-updated-date-and-page-numbering: <<design.colors.last_updated_date_and_page_numbering.as_rgb()>>,
+  design-links-use-external-link-icon: <<design.links.use_external_link_icon|lower>>,
+  design-text-font-size: <<design.text.font_size>>,
+  design-text-leading: <<design.text.design-text-leading>>,
+  design-header-name-font-size: <<design.header.name_font_size>>,
+  design-header-name-bold: <<design.header.name_bold|lower>>,
+  design-colors-name: <<design.colors.name.as_rgb()>>,
+  design-section-titles-font-size: <<design.section_titles.font_size>>,
+  design-colors-section-titles: <<design.colors.section_titles.as_rgb()>>,
+  design-section-titles-bold: <<design.section_titles.bold|lower>>,
+  design-section-titles-line-thickness: <<design.section_titles.line_thickness>>,
+  design-highlights-left-margin: <<design.highlights.left_margin>>,
+  design-highlights-horizontal-space-between-bullet-and-highlights: <<design.highlights.horizontal_space_between_bullet_and_highlight>>,
+  design-header-vertical-space-between-name-and-connections: <<design.header.vertical_space_between_name_and_connections>>,
+  design-header-vertical-space-between-connections-and-first-section: <<design.header.vertical_space_between_connections_and_first_section>>,
+  design-entries-vertical-space-between-entries: <<design.entries.vertical_space_between_entries>>,
+  design-section-titles-vertical-space-below: <<design.section_titles.vertical_space_below>>,
+  design-page-top-margin: <<design.page.top_margin>>,
+  design-page-bottom-margin: <<design.page.bottom_margin>>,
+  design-page-left-margin: <<design.page.left_margin>>,
+  design-page-right-margin: <<design.page.right_margin>>,
 
   date: datetime.today(),
   body,
 ) = {
   // Metadata:
-  let pdf-author
-  if name == none {
-    pdf-author = "Anonymous"
-  } else {
-    pdf-author = name
-  }
-  set document(author: pdf-author, title: pdf-author + "'s CV", date: date)
+  set document(author: name, title: name + "'s CV", date: date)
 
   // Page settings:
   set page(
     margin: (
-      top: margin-page-top,
-      bottom: margin-page-bottom,
-      left: margin-page-left,
-      right: margin-page-right,
+      top: design-page-top-margin,
+      bottom: design-page-bottom-margin,
+      left: design-page-left-margin,
+      right: design-page-right-margin,
     ),
-    paper: paper,
-    numbering: page-numbering-style,
-    footer-descent: 0% - 0.3em + margin-page-bottom / 2,
+    paper: design-page-size,
+    numbering: locale-catalog-page-numbering-style,
+    footer-descent: 0% - 0.3em + design-page-bottom-margin / 2,
   )
 
   // Text settings:
   set text(
     font: "Charter",
-    size: font-size,
+    size: design-text-font-size,
     lang: "en", // TODO
     // Disable ligatures for better ATS compatibility:
     ligatures: true,
   )
 
   // Paragraph settings:
-  set par(spacing: margin-vertical-space-between-entries, leading: leading)
+  set par(spacing: design-entries-vertical-space-between-entries, design-text-leading: design-text-leading)
 
   // Highlights (bullets) settings:
   show list: set list(
-    indent: margin-highlights-area-left-space,
-    body-indent: margin-highlights-area-space-between-bullet-and-highlight,
+    indent: design-highlights-left-margin,
+    body-indent: design-highlights-horizontal-space-between-bullet-and-highlights,
   )
 
   // Main heading settings:
   let header-font-weight
-  if header-font-bold {
+  if design-header-name-bold {
     header-font-weight = 700
   } else {
     header-font-weight = 400
@@ -94,16 +88,16 @@
     #set align(center)
     #set text(
       weight: header-font-weight,
-      size: header-font-size,
-      fill: header-color,
+      size: design-header-name-font-size,
+      fill: design-colors-name,
     )
     #it.body
     // Vertical space after the name
-    #v(margin-vertical-space-between-name-and-connections)
+    #v(design-header-vertical-space-between-name-and-connections)
   ]
 
   let section-title-font-weight
-  if section-title-bold {
+  if design-section-titles-bold {
     section-title-font-weight = 700
   } else {
     section-title-font-weight = 400
@@ -112,28 +106,28 @@
   show heading.where(level: 2): it => [
     #set align(left)
     #set text(size: (1em / 1.2)) // reset
-    #set text(size: (section-title-font-size), weight: section-title-font-weight)
+    #set text(size: (design-section-titles-font-size), weight: section-title-font-weight)
 
     #if true [
       #it.body
     ] else [
       #smallcaps(it.body)
     ]
-    #if section-title-line-type == "partial" [
-      #box(width: 1fr, height: section-title-line-thickness, fill: <<design.colors.section_titles.as_rgb()>>)
-    ] else if section-title-line-type == "full" [
+    #if design-section-titles-line-type == "partial" [
+      #box(width: 1fr, height: design-section-titles-line-thickness, fill: <<design.colors.section_titles.as_rgb()>>)
+    ] else if design-section-titles-line-type == "full" [
       #v(-0.45cm)
-      #line(length: 100%, stroke: section-title-line-thickness)
+      #line(length: 100%, stroke: design-section-titles-line-thickness)
     ]
     // Vertical space after the section title
-    #v(margin-section-title-bottom)
+    #v(design-section-titles-vertical-space-below)
   ]
 
   // Links:
   show link: it => [
     #set text(fill: blue)
     #underline(it.body)
-    #if not use-external-link-icon [
+    #if not design-links-use-external-link-icon [
       #box(
         fa-icon("external-link-alt", size: 0.6em),
         height: auto,
@@ -143,11 +137,11 @@
   ]
 
   // Last updated date text:
-  if show-last-updated-date {
+  if design-page-show-last-updated-date {
     place(
       top + right,
       dy: 0pt,
-      text(last-updated-date-style, fill: last-updated-date-and-page-numbering-color),
+      text(locale-catalog-last-updated-date-style, fill: design-colors-last-updated-date-and-page-numbering),
     )
   }
 
