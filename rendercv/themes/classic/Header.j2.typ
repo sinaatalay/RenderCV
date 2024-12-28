@@ -1,43 +1,22 @@
 = <<cv.name>>
 
 // Print connections:
-#context {
-  let connections = (
+#let connections-list = (
 ((* for connection in cv.connections *))
   [((*- if connection["url"] -*))
-  #link("<<connection["url"]>>")[
+  #box(link("<<connection["url"]>>")[
   ((*- endif -*))
   ((*- if design.header.use_icons_for_connections -*))
-      #fa-icon("<<connection["typst_icon"]>>", size: 0.9em) #h(0.05cm)
+    #fa-icon("<<connection["typst_icon"]>>", size: 0.9em) #h(0.05cm)
   ((*- endif -*))
   ((*- if connection["url"] -*))
-      <<connection["clean_url"]|escape_typst_characters>>
+    <<connection["clean_url"]|escape_typst_characters>>
   ((*- else -*))
-      <<connection["placeholder"]|escape_typst_characters>>
+    <<connection["placeholder"]|escape_typst_characters>>
   ((*- endif -*))
   ((*- if connection["url"] -*))
-  ]
+  ])
   ((*- endif -*))],
 ((* endfor *))
-  )
-
-  let list-of-connections = ()
-  let m = 0
-  let separator = h(0.5cm, weak: true) + " | " + h(0.5cm, weak: true)
-  while (m <= connections.len() - 1) {
-    let n = m + 1
-    while (
-      measure(connections.slice(m, n).join(separator)).width < page.width - 0.5in - 0.5in
-    ) {
-      n = n + 1
-      if n > connections.len() {
-        break
-      }
-    }
-    list-of-connections.push(connections.slice(m, n - 1).join(separator))
-    m = n
-  }
-
-  align(list-of-connections.join(linebreak()), center)
-  v(1.33cm)
-}
+)
+#connections(connections-list)

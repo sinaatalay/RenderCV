@@ -146,13 +146,34 @@
   )
 }
 
+#let connections(connections-list) = context {
+  let list-of-connections = ()
+  let separator = h(0.5cm, weak: true) + " | " + h(0.5cm, weak: true)
+  let starting-index = 0
+  while (starting-index < connections-list.len()) {
+    let left-sum-right-margin
+    if type(page.margin) == "dictionary" {
+      left-sum-right-margin = page.margin.left + page.margin.right
+    } else {
+      left-sum-right-margin = page.margin * 2
+    }
 
-#let connection(url, text_url, icon: "") = {
-  if icon != "" {
-    return link(url)[#text_url]
-  } else {
-    return link(url)[#icon + " " + text_url]
+    let ending-index = starting-index + 1
+    while (
+      measure(connections-list.slice(starting-index, ending-index).join(separator)).width
+        < page.width - left-sum-right-margin
+    ) {
+      ending-index = ending-index + 1
+      if ending-index > connections-list.len() {
+        break
+      }
+    }
+    list-of-connections.push(connections-list.slice(starting-index, ending-index - 1).join(separator))
+    starting-index = ending-index
   }
+
+  align(list-of-connections.join(linebreak()), center)
+  v(1.33cm)
 }
 
 #let three-col-entry(
