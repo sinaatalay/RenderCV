@@ -8,7 +8,7 @@ from typing import Optional
 
 import pydantic
 
-from ...themes import Classic_latexThemeOptions
+from ...themes import ClassicThemeOptions
 from .base import RenderCVBaseModelWithoutExtraKeys
 from .curriculum_vitae import CurriculumVitae
 from .design import RenderCVDesign
@@ -29,7 +29,7 @@ class RenderCVDataModel(RenderCVBaseModelWithoutExtraKeys):
         description="The data of the CV.",
     )
     design: RenderCVDesign = pydantic.Field(
-        default=Classic_latexThemeOptions(theme="classic_latex"),
+        default=ClassicThemeOptions(theme="classic"),
         title="Design",
         description=(
             "The design information of the CV. The default is the classic theme."

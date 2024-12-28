@@ -220,7 +220,7 @@ def cli_command_new(
                 f" {', '.join(data.available_themes)})"
             )
         ),
-    ] = "classic_latex",
+    ] = "classic",
     dont_create_theme_source_files: Annotated[
         bool,
         typer.Option(
@@ -310,7 +310,7 @@ def cli_command_create_theme(
                 f" themes are: {', '.join(data.available_themes)})"
             )
         ),
-    ] = "classic_latex",
+    ] = "classic",
 ):
     """Create a custom theme based on an existing theme"""
     if based_on not in data.available_themes:

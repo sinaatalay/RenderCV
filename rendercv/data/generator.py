@@ -33,7 +33,7 @@ def dictionary_to_yaml(dictionary: dict) -> str:
 
 
 def create_a_sample_data_model(
-    name: str = "John Doe", theme: str = "classic_latex"
+    name: str = "John Doe", theme: str = "classic"
 ) -> models.RenderCVDataModel:
     """Return a sample data model for new users to start with.
 
@@ -69,7 +69,7 @@ def create_a_sample_data_model(
 def create_a_sample_yaml_input_file(
     input_file_path: Optional[pathlib.Path] = None,
     name: str = "John Doe",
-    theme: str = "classic_latex",
+    theme: str = "classic",
 ) -> str:
     """Create a sample YAML input file and return it as a string. If the input file path
     is provided, then also save the contents to the file.
