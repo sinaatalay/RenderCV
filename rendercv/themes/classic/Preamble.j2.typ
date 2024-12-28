@@ -56,7 +56,7 @@
 
   // Text settings:
   set text(
-    font: "Noto Sans Batak",
+    font: "Charter",
     size: font-size,
     lang: "en", // TODO
     // Disable ligatures for better ATS compatibility:

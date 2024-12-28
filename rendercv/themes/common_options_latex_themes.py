@@ -25,8 +25,6 @@ LaTeXDimension = Annotated[
 
 
 class PageMargins(RenderCVBaseModelWithoutExtraKeys):
-    """This class is a data model for the page margins."""
-
     top: LaTeXDimension = pydantic.Field(
         default="2 cm",
         title="Top Margin",
@@ -56,8 +54,6 @@ class PageMargins(RenderCVBaseModelWithoutExtraKeys):
 
 
 class SectionTitleMargins(RenderCVBaseModelWithoutExtraKeys):
-    """This class is a data model for the section title margins."""
-
     top: LaTeXDimension = pydantic.Field(
         default="0.3 cm",
         title="Top Margin",
@@ -71,8 +67,6 @@ class SectionTitleMargins(RenderCVBaseModelWithoutExtraKeys):
 
 
 class EntryAreaMargins(RenderCVBaseModelWithoutExtraKeys):
-    """This class is a data model for the entry area margins."""
-
     left_and_right: LaTeXDimension = pydantic.Field(
         default="0.2 cm",
         title="Left Margin",
@@ -97,8 +91,6 @@ class EntryAreaMargins(RenderCVBaseModelWithoutExtraKeys):
 
 
 class HighlightsAreaMargins(RenderCVBaseModelWithoutExtraKeys):
-    """This class is a data model for the highlights area margins."""
-
     top: LaTeXDimension = pydantic.Field(
         default="0.10 cm",
         title="Top Margin",
@@ -119,8 +111,6 @@ class HighlightsAreaMargins(RenderCVBaseModelWithoutExtraKeys):
 
 
 class HeaderMargins(RenderCVBaseModelWithoutExtraKeys):
-    """This class is a data model for the header margins."""
-
     vertical_between_name_and_connections: LaTeXDimension = pydantic.Field(
         default="0.3 cm",
         title="Vertical Margin Between the Name and Connections",
@@ -148,8 +138,6 @@ class HeaderMargins(RenderCVBaseModelWithoutExtraKeys):
 
 
 class Margins(RenderCVBaseModelWithoutExtraKeys):
-    """This class is a data model for the margins."""
-
     page: PageMargins = pydantic.Field(
         default=PageMargins(),
         title="Page Margins",
@@ -178,13 +166,6 @@ class Margins(RenderCVBaseModelWithoutExtraKeys):
 
 
 class ThemeOptions(RenderCVBaseModelWithoutExtraKeys):
-    """This class is a generic data model for the theme options. The themes are
-    encouraged to inherit from this data model and add their own options, to avoid code
-    duplication.
-    """
-
-    model_config = pydantic.ConfigDict(extra="forbid")
-
     theme: Literal["tobeoverwritten"]
 
     font: Literal[

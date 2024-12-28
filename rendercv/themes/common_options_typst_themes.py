@@ -24,11 +24,7 @@ TypstDimension = Annotated[
 ]
 
 
-class ValidateDefaultsModel(RenderCVBaseModelWithoutExtraKeys):
-    model_config = pydantic.ConfigDict(validate_default=True)
-
-
-class Page(ValidateDefaultsModel):
+class Page(RenderCVBaseModelWithoutExtraKeys):
     size: Literal[
         "a0",
         "a1",
@@ -107,7 +103,17 @@ color_common_description = (
 color_common_examples = ["Black", "7fffd4", "rgb(0,79,144)", "hsl(270, 60%, 70%)"]
 
 
-class Colors(ValidateDefaultsModel):
+class Colors(RenderCVBaseModelWithoutExtraKeys):
+    text: pydantic_color.Color = pydantic.Field(
+        default="rgb(0,0,0)",  # type: ignore
+        title="Color of Text",
+        description=(
+            "The color of the text in the CV."
+            + color_common_description
+            + '\nThe default value is "rgb(0,0,0)".'
+        ),
+        examples=color_common_examples,
+    )
     name: pydantic_color.Color = pydantic.Field(
         default="rgb(0,79,144)",  # type: ignore
         title="Color of Name",
@@ -160,7 +166,18 @@ class Colors(ValidateDefaultsModel):
     )
 
 
-class Text(ValidateDefaultsModel):
+class Text(RenderCVBaseModelWithoutExtraKeys):
+    font_family: Literal[
+        "Libertinus Serif",
+        "New Computer Modern",
+    ] = pydantic.Field(
+        default="Libertinus Serif",
+        title="Font Family",
+        description=(
+            'The font family of the CV. The default value is "Libertinus Serif".'
+        ),
+    )
+
     font_size: TypstDimension = pydantic.Field(
         default="10pt",
         title="Font Size",
@@ -176,7 +193,7 @@ class Text(ValidateDefaultsModel):
     )
 
 
-class Links(ValidateDefaultsModel):
+class Links(RenderCVBaseModelWithoutExtraKeys):
     underline: bool = pydantic.Field(
         default=False,
         title="Underline Links",
@@ -195,7 +212,7 @@ class Links(ValidateDefaultsModel):
     )
 
 
-class Header(ValidateDefaultsModel):
+class Header(RenderCVBaseModelWithoutExtraKeys):
     name_font_size: TypstDimension = pydantic.Field(
         default="30pt",
         title="Name Font Size",
@@ -260,7 +277,7 @@ class Header(ValidateDefaultsModel):
     )
 
 
-class SectionTitles(ValidateDefaultsModel):
+class SectionTitles(RenderCVBaseModelWithoutExtraKeys):
     font_size: TypstDimension = pydantic.Field(
         default="1.2em",
         title="Font Size",
@@ -305,7 +322,7 @@ class SectionTitles(ValidateDefaultsModel):
     )
 
 
-class Highlights(ValidateDefaultsModel):
+class Highlights(RenderCVBaseModelWithoutExtraKeys):
     left_margin: TypstDimension = pydantic.Field(
         default="0.4cm",
         title="Left Margin",
@@ -321,7 +338,7 @@ class Highlights(ValidateDefaultsModel):
     )
 
 
-class Entries(ValidateDefaultsModel):
+class Entries(RenderCVBaseModelWithoutExtraKeys):
     vertical_space_between_entries: TypstDimension = pydantic.Field(
         default="0.2cm",
         title="Vertical Space Between Entries",
@@ -336,4 +353,37 @@ class Entries(ValidateDefaultsModel):
             'If this option is set to "true", then a page break will be allowed in the'
             ' entries. The default value is "true".'
         ),
+    )
+
+
+class ThemeOptions(RenderCVBaseModelWithoutExtraKeys):
+    page: Page = pydantic.Field(
+        default=Page(),
+        title="Page",
+        description="Options related to the page.",
+    )
+    colors: Colors = pydantic.Field(
+        default=Colors(),
+        title="Colors",
+        description="Color used throughout the CV.",
+    )
+    text: Text = pydantic.Field(
+        default=Text(),
+        title="Text",
+        description="Options related to text.",
+    )
+    links: Links = pydantic.Field(
+        default=Links(),
+        title="Links",
+        description="Options related to links.",
+    )
+    header: Header = pydantic.Field(
+        default=Header(),
+        title="Headers",
+        description="Options related to the header.",
+    )
+    section_titles: SectionTitles = pydantic.Field(
+        default=SectionTitles(),
+        title="Section Titles",
+        description="Options related to the section titles.",
     )
