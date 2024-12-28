@@ -177,7 +177,6 @@ class Text(RenderCVBaseModelWithoutExtraKeys):
             'The font family of the CV. The default value is "Libertinus Serif".'
         ),
     )
-
     font_size: TypstDimension = pydantic.Field(
         default="10pt",
         title="Font Size",
@@ -298,7 +297,7 @@ class SectionTitles(RenderCVBaseModelWithoutExtraKeys):
         title="Line Type",
         description='The line type of the section titles. The default value is "full".',
     )
-    line_thicknes: TypstDimension = pydantic.Field(
+    line_thickness: TypstDimension = pydantic.Field(
         default="0.5pt",
         title="Line Thickness",
         description=(
@@ -357,6 +356,8 @@ class Entries(RenderCVBaseModelWithoutExtraKeys):
 
 
 class ThemeOptions(RenderCVBaseModelWithoutExtraKeys):
+    theme: Literal["tobeoverwritten"]
+
     page: Page = pydantic.Field(
         default=Page(),
         title="Page",
@@ -386,4 +387,14 @@ class ThemeOptions(RenderCVBaseModelWithoutExtraKeys):
         default=SectionTitles(),
         title="Section Titles",
         description="Options related to the section titles.",
+    )
+    entries: Entries = pydantic.Field(
+        default=Entries(),
+        title="Entries",
+        description="Options related to the entries.",
+    )
+    highlights: Highlights = pydantic.Field(
+        default=Highlights(),
+        title="Highlights",
+        description="Options related to the highlights.",
     )

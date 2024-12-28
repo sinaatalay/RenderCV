@@ -1,35 +1,46 @@
 #import "@preview/fontawesome:0.5.0": fa-icon
 
+((* set page_numbering_style_placeholders = {
+    "NAME": cv.name,
+    "PAGE_NUMBER": "1",
+    "TOTAL_PAGES": "1",
+    "TODAY": today
+} *))
+((* set last_updated_date_style_placeholders = {
+    "TODAY": today,
+} *))
+
 #let rendercv(
-  name: none,
-  accent-color: gray,
+  name: "<<cv.name>>",
+  paper: "<<design.page.size>>",
+  page-numbering-style: "<<locale_catalog.page_numbering_style|replace_placeholders_with_actual_values(page_numbering_style_placeholders)>>",
+  section-title-line-type: "<<design.section_titles.line_type>>",
+  show-last-updated-date: <<design.page.show_last_updated_date|lower>>,
+  use-icons-for-connections: <<design.header.use_icons_for_connections|lower>>,
+  last-updated-date-style: "<<locale_catalog.last_updated_date_style|replace_placeholders_with_actual_values(last_updated_date_style_placeholders)>>",
+  last-updated-date-and-page-numbering-color: <<design.colors.last_updated_date_and_page_numbering.as_rgb()>>,
+  use-external-link-icon: <<design.links.use_external_link_icon|lower>>,
+  font-size: <<design.text.font_size>>,
+  leading: <<design.text.leading>>,
+  header-font-size: <<design.header.name_font_size>>,
+  header-font-bold: <<design.header.name_bold|lower>>,
+  header-color: <<design.colors.name.as_rgb()>>,
+  section-title-font-size: <<design.section_titles.font_size>>,
+  section-titles-color: <<design.colors.section_titles.as_rgb()>>,
+  section-title-bold: <<design.section_titles.bold|lower>>,
+  section-title-line-thickness: <<design.section_titles.line_thickness>>,
+  margin-highlights-area-left-space: <<design.highlights.left_margin>>,
+  margin-highlights-area-space-between-bullet-and-highlight: <<design.highlights.horizontal_space_between_bullet_and_highlight>>,
+  margin-vertical-space-between-name-and-connections: <<design.header.vertical_space_between_name_and_connections>>,
+  margin-vertical-space-between-connections-and-body: <<design.header.vertical_space_between_connections_and_first_section>>,
+  margin-vertical-space-between-entries: <<design.entries.vertical_space_between_entries>>,
+  margin-section-title-bottom: <<design.section_titles.vertical_space_below>>,
+  margin-page-top: <<design.page.top_margin>>,
+  margin-page-bottom: <<design.page.bottom_margin>>,
+  margin-page-left: <<design.page.left_margin>>,
+  margin-page-right: <<design.page.right_margin>>,
+
   date: datetime.today(),
-  paper: "us-letter",
-  page_numbering_style: "1 of 1",
-  section-title-line-type: "partial",
-  disable-last-updated-date: false,
-  disable-connections-icon: false,
-  last-updated-date-style: "Last updated in " + datetime.today().display(),
-  last-updated-date-and-page-numbering-color: gray,
-  disable-external-link-icon: false,
-  font-size: 10pt,
-  leading: 1.2em,
-  section-title-font-scale: 1.2em,
-  header-font-size: 30pt,
-  header-font-weight: 700,
-  header-color: blue,
-  section-title-font-weight: 400,
-  section-title-line-thickness: 0.5pt,
-  margin-highlights-area-left-space: 0.5in,
-  margin-highlights-area-space-between-bullet-and-highlight: 0.5em,
-  margin-vertical-space-between-name-and-connections: 0.5cm,
-  margin-vertical-space-between-connections-and-body: 0.5cm,
-  margin-vertical-space-between-entries: 0.5cm,
-  margin-section-title-bottom: 0.5cm,
-  margin-page-top: 0.5in,
-  margin-page-bottom: 0.5in,
-  margin-page-left: 0.5in,
-  margin-page-right: 0.5in,
   body,
 ) = {
   // Metadata:
@@ -50,7 +61,7 @@
       right: margin-page-right,
     ),
     paper: paper,
-    numbering: page_numbering_style,
+    numbering: page-numbering-style,
     footer-descent: 0% - 0.3em + margin-page-bottom / 2,
   )
 
@@ -73,6 +84,12 @@
   )
 
   // Main heading settings:
+  let header-font-weight
+  if header-font-bold {
+    header-font-weight = 700
+  } else {
+    header-font-weight = 400
+  }
   show heading.where(level: 1): it => [
     #set align(center)
     #set text(
@@ -85,10 +102,17 @@
     #v(margin-vertical-space-between-name-and-connections)
   ]
 
+  let section-title-font-weight
+  if section-title-bold {
+    section-title-font-weight = 700
+  } else {
+    section-title-font-weight = 400
+  }
+
   show heading.where(level: 2): it => [
     #set align(left)
     #set text(size: (1em / 1.2)) // reset
-    #set text(size: (section-title-font-scale), weight: section-title-font-weight)
+    #set text(size: (section-title-font-size), weight: section-title-font-weight)
 
     #if true [
       #it.body
@@ -96,7 +120,7 @@
       #smallcaps(it.body)
     ]
     #if section-title-line-type == "partial" [
-      #box(width: 1fr, height: section-title-line-thickness, fill: rgb(accent-color))
+      #box(width: 1fr, height: section-title-line-thickness, fill: <<design.colors.section_titles.as_rgb()>>)
     ] else if section-title-line-type == "full" [
       #v(-0.45cm)
       #line(length: 100%, stroke: section-title-line-thickness)
@@ -109,7 +133,7 @@
   show link: it => [
     #set text(fill: blue)
     #underline(it.body)
-    #if not disable-external-link-icon [
+    #if not use-external-link-icon [
       #box(
         fa-icon("external-link-alt", size: 0.6em),
         height: auto,
@@ -119,7 +143,7 @@
   ]
 
   // Last updated date text:
-  if disable-last-updated-date {
+  if show-last-updated-date {
     place(
       top + right,
       dy: 0pt,
