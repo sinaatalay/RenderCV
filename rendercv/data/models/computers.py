@@ -35,11 +35,12 @@ def format_phone_number(phone_number: str) -> str:
     """
 
     format = LOCALE_CATALOG["phone_number_format"].upper()  # type: ignore
-
+    format = "E164"
     parsed_number = phonenumbers.parse(phone_number, None)
-    return phonenumbers.format_number(
+    ret = phonenumbers.format_number(
         parsed_number, getattr(phonenumbers.PhoneNumberFormat, format)
     )
+    return ret
 
 
 def format_date(date: Date, date_style: Optional[str] = None) -> str:
