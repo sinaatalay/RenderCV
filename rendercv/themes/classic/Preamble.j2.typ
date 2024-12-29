@@ -1,5 +1,5 @@
 
-((* set page_numbering_style_placeholders = {
+((* set page_numbering_template_placeholders = {
     "NAME": cv.name,
     "PAGE_NUMBER": "\" + str(here().page()) + \"",
     "TOTAL_PAGES": "\" + str(counter(page).final().first()) + \"",
@@ -11,7 +11,7 @@
 #import "@preview/fontawesome:0.5.0": fa-icon
 
 #let name = "<<cv.name>>"
-#let locale-catalog-page-numbering-style = context { "<<locale_catalog.page_numbering_style|replace_placeholders_with_actual_values(page_numbering_style_placeholders)>>" }
+#let locale-catalog-page-numbering-style = context { "<<locale_catalog.page_numbering_template|replace_placeholders_with_actual_values(page_numbering_template_placeholders)>>" }
 #let locale-catalog-last-updated-date-style = "<<locale_catalog.last_updated_date_template|replace_placeholders_with_actual_values(last_updated_date_template_placeholders)>>"
 #let locale-catalog-language = "<<locale_catalog.language>>"
 #let design-page-size = "<<design.page.size>>"
@@ -108,7 +108,7 @@
   ligatures: true,
 )
 #set par(
-  spacing: design-text-leading,
+  spacing: 0pt,
   leading: design-text-leading,
   justify: justify,
 )
@@ -268,7 +268,7 @@
       columns: (left-column-width, 1fr, right-column-width),
       column-gutter: design-entries-horizontal-space-between-columns,
       align: (left, left, right),
-      left-content, middle-content, right-content,
+      left-content, middle-content, ([#set par(spacing: design-text-leading); #right-content]),
     ),
     inset: (
       left: design-entries-left-and-right-margin,
@@ -289,7 +289,7 @@
       columns: (left-column-width, right-column-width),
       column-gutter: design-entries-horizontal-space-between-columns,
       align: (left, right),
-      left-content, right-content,
+      left-content, ([#set par(spacing: design-text-leading); #right-content]),
     ),
     inset: (
       left: design-entries-left-and-right-margin,

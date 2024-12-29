@@ -9,24 +9,14 @@
   two-col-entry(
     left-content: [
   ((* endif *))
-      *<<entry.title>>*
-
-      #v(design-highlights-top-margin)
-
-      <<entry.authors|join(", ")>>
-
-      #v(design-highlights-vertical-space-between-highlights)
-
-      ((* if entry.doi -*))
-      #link("<<entry.doi_url>>")[<<entry.doi>>]
-      ((* elif entry.url -*))
-      #link("<<entry.url>>")[<<entry.clean_url>>]
+      #set par(spacing: design-highlights-vertical-space-between-highlights)
+      ((* if not (entry.doi or entry.url)*))
+      <<first_column_without_url>>
+      ((*- elif not entry.journal -*))
+      <<first_column_without_journal>>
+      ((*- else -*))
+      <<first_column>>
       ((*- endif -*))
-      ((*- if (entry.doi or entry.url) and entry.journal *)) (((* endif -*))
-      ((*- if entry.journal -*))
-      <<entry.journal>>
-      ((*- endif -*))
-      ((*- if (entry.doi or entry.url) and entry.journal *)))((* endif *))
   ((* if entry.date_string *))
     ],
     right-content: [

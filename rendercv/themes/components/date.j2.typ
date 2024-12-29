@@ -1,0 +1,1 @@
+<<entry.date_string>>

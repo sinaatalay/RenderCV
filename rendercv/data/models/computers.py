@@ -42,7 +42,7 @@ def format_phone_number(phone_number: str) -> str:
     )
 
 
-def format_date(date: Date, date_style: Optional[str] = None) -> str:
+def format_date(date: Date, date_template: Optional[str] = None) -> str:
     """Formats a `Date` object to a string in the following format: "Jan 2021". The
     month names are taken from the `locale_catalog` dictionary from the
     `rendercv.data_models.models` module.
@@ -57,7 +57,7 @@ def format_date(date: Date, date_style: Optional[str] = None) -> str:
 
     Args:
         date: The date to format.
-        date_style: The style of the date string. If not provided, the default date
+        date_template: The template of the date string. If not provided, the default date
             style from the `locale_catalog` dictionary will be used.
 
     Returns:
@@ -77,15 +77,15 @@ def format_date(date: Date, date_style: Optional[str] = None) -> str:
         "MONTH": str(month),
         "YEAR": str(year),
     }
-    if date_style is None:
-        date_style = LOCALE_CATALOG["date_style"]  # type: ignore
+    if date_template is None:
+        date_template = LOCALE_CATALOG["date_template"]  # type: ignore
 
-    assert isinstance(date_style, str)
+    assert isinstance(date_template, str)
 
     for placeholder, value in placeholders.items():
-        date_style = date_style.replace(placeholder, value)  # type: ignore
+        date_template = date_template.replace(placeholder, value)  # type: ignore
 
-    return date_style
+    return date_template
 
 
 def replace_placeholders(value: str) -> str:

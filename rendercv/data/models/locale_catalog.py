@@ -36,31 +36,31 @@ class LocaleCatalog(RenderCVBaseModelWithoutExtraKeys):
             ),
         )
     )
-    page_numbering_style: str = pydantic.Field(
+    page_numbering_template: str = pydantic.Field(
         default="NAME - Page PAGE_NUMBER of TOTAL_PAGES",
-        title="Page Numbering Style",
+        title="Page Numbering Template",
         description=(
-            "The style of the page numbering. The following placeholders can be"
+            "The template of the page numbering. The following placeholders can be"
             " used:\n- NAME: The name of the person\n- PAGE_NUMBER: The current page"
             " number\n- TOTAL_PAGES: The total number of pages\n- TODAY: Today's date"
-            ' with `locale_catalog.date_style`\nThe default value is "NAME -'
+            ' with `locale_catalog.date_template`\nThe default value is "NAME -'
             ' Page PAGE_NUMBER of TOTAL_PAGES".'
         ),
     )
     last_updated_date_template: str = pydantic.Field(
         default="Last updated in TODAY",
-        title="Last Updated Date Style",
+        title="Last Updated Date Template",
         description=(
-            "The style of the last updated date. The following placeholders can be"
-            " used:\n- TODAY: Today's date with `locale_catalog.date_style`\nThe"
+            "The template of the last updated date. The following placeholders can be"
+            " used:\n- TODAY: Today's date with `locale_catalog.date_template`\nThe"
             ' default value is "Last updated in TODAY".'
         ),
     )
-    date_style: Optional[str] = pydantic.Field(
+    date_template: Optional[str] = pydantic.Field(
         default="MONTH_ABBREVIATION YEAR",
-        title="Date Style",
+        title="Date Template",
         description=(
-            "The style of the date. The following placeholders can be"
+            "The template of the date. The following placeholders can be"
             " used:\n-FULL_MONTH_NAME: Full name of the month\n- MONTH_ABBREVIATION:"
             " Abbreviation of the month\n- MONTH: Month as a number\n-"
             " MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a"
@@ -154,7 +154,7 @@ class LocaleCatalog(RenderCVBaseModelWithoutExtraKeys):
         "to",
         "full_names_of_months",
         "phone_number_format",
-        "date_style",
+        "date_template",
     )
     @classmethod
     def update_locale_catalog(cls, value: str, info: pydantic.ValidationInfo) -> str:

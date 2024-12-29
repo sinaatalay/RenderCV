@@ -1,27 +1,17 @@
-((* if section_title in design.theme_specific.show_timespan_in *))
-    ((* set date_and_location_strings = [entry.location, entry.date_string, entry.time_span_string]|select("!=", "") *))
-((* else *))
-    ((* set date_and_location_strings = [entry.location, entry.date_string]|select("!=", "") *))
-((* endif *))
 #block(
+  ((* if degree_column *))
   three-col-entry(
-    left-column-width: design-theme-specific-education-degree-width,
+    left-column-width: 1cm,
     left-content: [*<<entry.degree>>*],
-    middle-content: [
-      *<<entry.institution>>*, <<entry.area>>
-      
-  ((* for item in entry.highlights *))
-    ((* if loop.first *))
-      #v(design-highlights-top-margin)
-
-      #highlights(
-    ((* endif *))
-        [<<item>>],
-  ((* endfor *))
-      )
+    middle-content: [<<first_column>>],
+  ((* else *))
+  two-col-entry(
+    left-content: [
+      <<first_column>>
     ],
+  ((* endif *))
     right-content: [
-      <<date_and_location_strings|join("\n\n")>>
+      <<second_column>>
     ],
   ),
   breakable: design-entries-allow-page-break-in-entries,

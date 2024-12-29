@@ -229,8 +229,124 @@ class TypstFile(TemplatedFile):
                 section_title=escape_typst_characters(section.title),
                 entry_type=section.entry_type,
             )
+
+            first_column = None
+            first_column_without_journal = None
+            first_column_without_url = None
+            second_column = None
+            template = None
+            degree_column = None
+
+            if (
+                section.entry_type == "EducationEntry"
+                and hasattr(self.design, "templates")
+                and hasattr(self.design.templates, "education_entry")
+            ):
+                first_column = (
+                    self.design.templates.education_entry.first_column_template
+                )
+                second_column = (
+                    self.design.templates.education_entry.second_column_template
+                )
+                degree_column = self.design.templates.education_entry.degree_column
+
+            elif (
+                section.entry_type == "ExperienceEntry"
+                and hasattr(self.design, "templates")
+                and hasattr(self.design.templates, "experience_entry")
+            ):
+                first_column = (
+                    self.design.templates.experience_entry.first_column_template
+                )
+                second_column = (
+                    self.design.templates.experience_entry.second_column_template
+                )
+
+            elif (
+                section.entry_type == "OneLineEntry"
+                and hasattr(self.design, "templates")
+                and hasattr(self.design.templates, "one_line_entry")
+            ):
+                template = self.design.templates.one_line_entry.template
+
+            elif (
+                section.entry_type == "PublicationEntry"
+                and hasattr(self.design, "templates")
+                and hasattr(self.design.templates, "publication_entry")
+            ):
+                first_column = (
+                    self.design.templates.publication_entry.first_column_template
+                )
+                first_column_without_journal = (
+                    self.design.templates.publication_entry.first_column_template_without_journal
+                )
+                first_column_without_url = (
+                    self.design.templates.publication_entry.first_column_template_without_url
+                )
+            elif (
+                section.entry_type == "NormalEntry"
+                and hasattr(self.design, "templates")
+                and hasattr(self.design.templates, "normal_entry")
+            ):
+                first_column = self.design.templates.normal_entry.first_column_template
+                second_column = (
+                    self.design.templates.normal_entry.second_column_template
+                )
+
             entries: list[str] = []
             for i, entry in enumerate(section.entries):
+                # Prepare placeholders:
+                placeholders = {}
+                placeholder_values = [
+                    "DEGREE",
+                    "INSTITUTION",
+                    "AREA",
+                    "SUMMARY",
+                    "HIGHLIGHTS",
+                    "POSITION",
+                    "COMPANY",
+                    "DATE",
+                    "LOCATION",
+                    "TITLE",
+                    "AUTHORS",
+                    "JOURNAL",
+                    "URL",
+                    "LABEL",
+                    "DETAILS",
+                    "NAME",
+                ]
+
+                for placeholder_value in placeholder_values:
+                    placeholders[placeholder_value] = super().template(
+                        "components", placeholder_value.lower(), "typ", entry
+                    )
+
+                new_first_column = None
+                new_second_column = None
+                new_first_column_without_journal = None
+                new_first_column_without_url = None
+                new_template = None
+
+                if first_column is not None:
+                    new_first_column = input_template_to_typst(
+                        first_column, placeholders
+                    )
+
+                if second_column is not None:
+                    new_second_column = input_template_to_typst(
+                        second_column, placeholders
+                    )
+                if first_column_without_journal is not None:
+                    new_first_column_without_journal = input_template_to_typst(
+                        first_column_without_journal, placeholders
+                    )
+                if first_column_without_url is not None:
+                    new_first_column_without_url = input_template_to_typst(
+                        first_column_without_url, placeholders
+                    )
+                if template is not None:
+                    new_template = input_template_to_typst(template, placeholders)
+
                 is_first_entry = i == 0
 
                 entries.append(
@@ -240,6 +356,12 @@ class TypstFile(TemplatedFile):
                         section_title=section.title,
                         entry_type=section.entry_type,
                         is_first_entry=is_first_entry,
+                        first_column=new_first_column,
+                        first_column_without_url=new_first_column_without_url,
+                        first_column_without_journal=new_first_column_without_journal,
+                        second_column=new_second_column,
+                        template=new_template,
+                        degree_column=degree_column,
                     )
                 )
             section_ending = self.template(
@@ -375,6 +497,30 @@ class MarkdownFile(TemplatedFile):
     def create_file(self, file_path: pathlib.Path):
         """Write the Markdown code to a file."""
         file_path.write_text(self.get_full_code(), encoding="utf-8")
+
+
+def input_template_to_typst(
+    input_template: str, placeholders: dict[str, Optional[str]]
+) -> str:
+    """Convert an input template to Typst.
+
+    Args:
+        input_template: The input template.
+        placeholders: The placeholders and their values.
+
+    Returns:
+        Typst string.
+    """
+    return (
+        replace_placeholders_with_actual_values(
+            markdown_to_typst(input_template), placeholders
+        )
+        .replace("\n***None***", "")
+        .replace("\n**None**", "")
+        .replace("\n*None*", "")
+        .replace("\nNone", "")
+        .replace("None", "")
+    ).replace("\n", "\n\n")
 
 
 def revert_nested_latex_style_commands(latex_string: str) -> str:

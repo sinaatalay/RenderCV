@@ -1,5 +1,5 @@
 #block(
-  [*<<entry.label>>:* <<entry.details>>],
+  [<<template>>],
   breakable: design-entries-allow-page-break-in-entries,
   inset: (
     left: design-entries-left-and-right-margin,

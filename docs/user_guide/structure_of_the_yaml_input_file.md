@@ -322,9 +322,9 @@ Here is an example:
 ```yaml
 locale_catalog:
   phone_number_format: national # (1)!
-  date_style: "MONTH_ABBREVIATION YEAR" # (2)!
+  date_template: "MONTH_ABBREVIATION YEAR" # (2)!
   last_updated_date_template: Last updated in TODAY # (3)!
-  page_numbering_style: NAME - Page PAGE_NUMBER of TOTAL_PAGES # (4)!
+  page_numbering_template: NAME - Page PAGE_NUMBER of TOTAL_PAGES # (4)!
   abbreviations_for_months: 
     - Jan
     - Feb
@@ -361,7 +361,7 @@ locale_catalog:
 
 1. The available phone number formats are: `national`, `international`, and `E164`.
 2. The `MONTH_ABBREVIATION` and `YEAR` are placeholders. The available placeholders are: `FULL_MONTH_NAME`, `MONTH_ABBREVIATION`, `MONTH`, `MONTH_IN_TWO_DIGITS`, `YEAR`, and `YEAR_IN_TWO_DIGITS`.
-3. The available placeholders are: `TODAY`, which prints the today's date with `locale_catalog.date_style`.
+3. The available placeholders are: `TODAY`, which prints the today's date with `locale_catalog.date_template`.
 4. The available placeholders are: `NAME`, `PAGE_NUMBER`, `TOTAL_PAGES`, and `TODAY`.
 
 ## "`rendercv_settings`" field

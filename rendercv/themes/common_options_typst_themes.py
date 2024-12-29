@@ -188,11 +188,11 @@ class Text(RenderCVBaseModelWithoutExtraKeys):
         description='The font size of the CV. The default value is "10pt".',
     )
     leading: TypstDimension = pydantic.Field(
-        default="0.25em",
+        default="0.8em",
         title="Leading",
         description=(
             "The vertical space between adjacent lines of text. The default value is"
-            ' "0.25em".'
+            ' "0.8em".'
         ),
     )
     alignment: Literal["left", "justified", "justified-with-no-hyphenation"] = (
@@ -350,10 +350,10 @@ class Highlights(RenderCVBaseModelWithoutExtraKeys):
         description='The left margin of the highlights. The default value is "0.4cm".',
     )
     vertical_space_between_highlights: TypstDimension = pydantic.Field(
-        default="0.1cm",
+        default="0.4cm",
         title="Vertical Space Between Highlights",
         description=(
-            'The vertical space between the highlights. The default value is "0.1cm".'
+            'The vertical space between the highlights. The default value is "0.4cm".'
         ),
     )
     horizontal_space_between_bullet_and_highlight: TypstDimension = pydantic.Field(
@@ -363,30 +363,6 @@ class Highlights(RenderCVBaseModelWithoutExtraKeys):
             "The horizontal space between the bullet and the highlight. The default"
             ' value is "0.5em".'
         ),
-    )
-
-
-class EducationEntry(RenderCVBaseModelWithoutExtraKeys):
-    pass
-
-
-class ExperienceEntry(RenderCVBaseModelWithoutExtraKeys):
-    pass
-
-
-class PublicationsEntry(RenderCVBaseModelWithoutExtraKeys):
-    pass
-
-
-class NormalEntry(RenderCVBaseModelWithoutExtraKeys):
-    pass
-
-
-class OneLineEntry(RenderCVBaseModelWithoutExtraKeys):
-    template: str = pydantic.Field(
-        default="*LABEL:* VALUE",
-        title="Template",
-        description="The template of the one-line entry.",
     )
 
 
@@ -431,6 +407,112 @@ class Entries(RenderCVBaseModelWithoutExtraKeys):
     )
 
 
+class EntryBase(RenderCVBaseModelWithoutExtraKeys):
+    second_column_template: str = pydantic.Field(
+        default="LOCATION\nDATE",
+        title="Second Column",
+        description="The content of the second column.",
+    )
+
+
+class PublicationEntry(EntryBase):
+    first_column_template: str = pydantic.Field(
+        default="*TITLE*\n*AUTHORS*\n*URL* (JOURNAL)",
+        title="First Column",
+        description="The content of the first column.",
+    )
+    first_column_template_without_journal: str = pydantic.Field(
+        default="*TITLE*\n*AUTHORS*\n*URL*",
+        title="First Column Without Journal",
+        description="The content of the first column without the journal.",
+    )
+    first_column_template_without_url: str = pydantic.Field(
+        default="*TITLE*\n*AUTHORS*\nJOURNAL",
+        title="First Column Without URL",
+        description="The content of the first column without the URL.",
+    )
+
+
+class EducationEntryBase(RenderCVBaseModelWithoutExtraKeys):
+    first_column_template: str = pydantic.Field(
+        default="*INSTITUTION*, AREA\nSUMMARY\nHIGHLIGHTS",
+        title="First Column",
+        description="The content of the first column.",
+    )
+    degree_column: bool = pydantic.Field(
+        default=True,
+        title="Show Degree Column",
+        description=(
+            "If this option is set to true, then the degree will be shown in the"
+            " education entries. The default value is true."
+        ),
+    )
+
+
+class EducationEntry(EducationEntryBase, EntryBase):
+    pass
+
+
+class NormalEntryBase(RenderCVBaseModelWithoutExtraKeys):
+    first_column_template: str = pydantic.Field(
+        default="**NAME**\nSUMMARY\nHIGHLIGHTS",
+        title="First Column",
+        description="The content of the first column.",
+    )
+
+
+class NormalEntry(NormalEntryBase, EntryBase):
+    pass
+
+
+class ExperienceEntryBase(RenderCVBaseModelWithoutExtraKeys):
+    first_column_template: str = pydantic.Field(
+        default="**COMPANY**, POSITION\nSUMMARY\nHIGHLIGHTS",
+        title="First Column",
+        description="The content of the first column.",
+    )
+
+
+class ExperienceEntry(ExperienceEntryBase, EntryBase):
+    pass
+
+
+class OneLineEntry(RenderCVBaseModelWithoutExtraKeys):
+    template: str = pydantic.Field(
+        default="**LABEL:** DETAILS",
+        title="Template",
+        description="The template of the one-line entry.",
+    )
+
+
+class Templates(RenderCVBaseModelWithoutExtraKeys):
+    one_line_entry: OneLineEntry = pydantic.Field(
+        default=OneLineEntry(),
+        title="One-Line Entry",
+        description="Options related to one-line entries.",
+    )
+    education_entry: EducationEntry = pydantic.Field(
+        default=EducationEntry(),
+        title="Education Entry",
+        description="Options related to education entries.",
+    )
+    normal_entry: NormalEntry = pydantic.Field(
+        default=NormalEntry(),
+        title="Normal Entry",
+        description="Options related to normal entries.",
+    )
+    experience_entry: ExperienceEntry = pydantic.Field(
+        default=ExperienceEntry(),
+        title="Experience Entry",
+        description="Options related to experience entries.",
+    )
+    publication_entry: PublicationEntry = pydantic.Field(
+        default=PublicationEntry(),
+        title="Publication Entry",
+        description="Options related to publication entries.",
+    )
+
+
 class ThemeOptions(RenderCVBaseModelWithoutExtraKeys):
     theme: Literal["tobeoverwritten"]
     page: Page = pydantic.Field(
@@ -463,13 +545,18 @@ class ThemeOptions(RenderCVBaseModelWithoutExtraKeys):
         title="Section Titles",
         description="Options related to the section titles.",
     )
+    highlights: Highlights = pydantic.Field(
+        default=Highlights(),
+        title="Highlights",
+        description="Options related to the highlights.",
+    )
     entries: Entries = pydantic.Field(
         default=Entries(),
         title="Entries",
         description="Options related to the entries.",
     )
-    highlights: Highlights = pydantic.Field(
-        default=Highlights(),
-        title="Highlights",
-        description="Options related to the highlights.",
+    templates: Templates = pydantic.Field(
+        default=Templates(),
+        title="Templates",
+        description="Options related to the templates.",
     )

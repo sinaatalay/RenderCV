@@ -70,7 +70,7 @@
 ((* if design.disable_page_numbering *))
 \pagenumbering{gobble} % no page numbering
 ((* else *))
-((* set page_numbering_style_placeholders = {
+((* set page_numbering_template_placeholders = {
     "NAME": cv.name,
     "PAGE_NUMBER": "\\thepage{}",
     "TOTAL_PAGES": "\pageref*{LastPage}",
@@ -79,7 +79,7 @@
 \makeatletter
 \let\ps@customFooterStyle\ps@plain % Copy the plain style to customFooterStyle
 \patchcmd{\ps@customFooterStyle}{\thepage}{
-    \color{gray}\textit{\small <<locale_catalog.page_numbering_style|replace_placeholders_with_actual_values(page_numbering_style_placeholders)>>}
+    \color{gray}\textit{\small <<locale_catalog.page_numbering_template|replace_placeholders_with_actual_values(page_numbering_template_placeholders)>>}
 }{}{} % replace number by desired string
 \makeatother
 \pagestyle{customFooterStyle}
