@@ -245,7 +245,7 @@ class ThemeOptions(RenderCVBaseModelWithoutExtraKeys):
         title="Text Alignment",
         description="The alignment of the text. The default value is justified.",
     )
-    seperator_between_connections: str = pydantic.Field(
+    separator_between_connections: str = pydantic.Field(
         default="",
         title="Seperator Between Connections",
         description=(

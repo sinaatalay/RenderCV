@@ -7,6 +7,9 @@
 
     ((* for entry in entries *))
 <<entry>>
+      ((* if not loop.last *))
+#v(design-entries-vertical-space-between-entries)
+      ((* endif *))
     ((* endfor *))
 
 <<section_ending>>

@@ -12,6 +12,9 @@
     *<<entry.company>>*, <<entry.position>>
     
 ((* for item in entry.highlights *))
+  ((* if loop.first *))
+    #v(design-highlights-top-margin)
+  ((* endif *))
     - <<item>>
 ((* endfor *))
 ((* if entry.date_string or entry.location *))

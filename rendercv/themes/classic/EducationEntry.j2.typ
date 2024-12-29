@@ -5,13 +5,16 @@
 ((* endif *))
 
 #three-col-entry(
-  left-column-width: 1.5cm,
+  left-column-width: design-theme-specific-education-degree-width,
   right-column-width: 2.5cm,
   left-content: [*<<entry.degree>>*],
   middle-content: [
     *<<entry.institution>>*, <<entry.area>>
     
 ((* for item in entry.highlights *))
+  ((* if loop.first *))
+    #v(design-highlights-top-margin)
+  ((* endif *))
     - <<item>>
 ((* endfor *))
   ],

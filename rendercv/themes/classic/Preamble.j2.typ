@@ -1,8 +1,8 @@
 
 ((* set page_numbering_style_placeholders = {
     "NAME": cv.name,
-    "PAGE_NUMBER": "1",
-    "TOTAL_PAGES": "1",
+    "PAGE_NUMBER": "\" + str(here().page()) + \"",
+    "TOTAL_PAGES": "\" + str(counter(page).final().first()) + \"",
     "TODAY": today
 } *))
 ((* set last_updated_date_style_placeholders = {
@@ -11,35 +11,50 @@
 #import "@preview/fontawesome:0.5.0": fa-icon
 
 #let name = "<<cv.name>>"
-#let locale-catalog-page-numbering-style = "<<locale_catalog.page_numbering_style|replace_placeholders_with_actual_values(page_numbering_style_placeholders)>>"
+#let locale-catalog-page-numbering-style = context { "<<locale_catalog.page_numbering_style|replace_placeholders_with_actual_values(page_numbering_style_placeholders)>>" }
 #let locale-catalog-last-updated-date-style = "<<locale_catalog.last_updated_date_style|replace_placeholders_with_actual_values(last_updated_date_style_placeholders)>>"
 #let design-page-size = "<<design.page.size>>"
-#let design-section-titles-line-type = "<<design.section_titles.line_type>>"
-#let design-page-show-last-updated-date = <<design.page.show_last_updated_date|lower>>
-#let design-header-use-icons-for-connections = <<design.header.use_icons_for_connections|lower>>
+#let design-section-titles-font-size = <<design.section_titles.font_size>>
+#let design-colors-text = <<design.colors.text.as_rgb()>>
+#let design-colors-section-titles = <<design.colors.section_titles.as_rgb()>>
 #let design-colors-last-updated-date-and-page-numbering = <<design.colors.last_updated_date_and_page_numbering.as_rgb()>>
+#let design-colors-name = <<design.colors.name.as_rgb()>>
+#let design-colors-connections = <<design.colors.connections.as_rgb()>>
+#let design-colors-links = <<design.colors.links.as_rgb()>>
+#let design-section-titles-bold = <<design.section_titles.bold|lower>>
+#let design-section-titles-line-thickness = <<design.section_titles.line_thickness>>
+#let design-section-titles-font-size = <<design.section_titles.font_size>>
+#let design-section-titles-line-type = "<<design.section_titles.line_type>>"
+#let design-section-titles-vertical-space-above = <<design.section_titles.vertical_space_above>>
+#let design-section-titles-vertical-space-below = <<design.section_titles.vertical_space_below>>
+#let design-page-show-last-updated-date = <<design.page.show_last_updated_date|lower>>
 #let design-links-use-external-link-icon = <<design.links.use_external_link_icon|lower>>
 #let design-text-font-size = <<design.text.font_size>>
 #let design-text-leading = <<design.text.leading>>
+#let design-text-paragraph-spacing = <<design.text.paragraph_spacing>>
+#let design-text-font-family = "<<design.text.font_family>>"
+#let design-text-alignment = "<<design.text.alignment>>"
+#let design-header-use-icons-for-connections = <<design.header.use_icons_for_connections|lower>>
 #let design-header-name-font-size = <<design.header.name_font_size>>
 #let design-header-name-bold = <<design.header.name_bold|lower>>
-#let design-colors-name = <<design.colors.name.as_rgb()>>
-#let design-section-titles-font-size = <<design.section_titles.font_size>>
-#let design-colors-section-titles = <<design.colors.section_titles.as_rgb()>>
-#let design-section-titles-bold = <<design.section_titles.bold|lower>>
-#let design-section-titles-line-thickness = <<design.section_titles.line_thickness>>
-#let design-highlights-left-margin = <<design.highlights.left_margin>>
-#let design-highlights-horizontal-space-between-bullet-and-highlights = <<design.highlights.horizontal_space_between_bullet_and_highlight>>
 #let design-header-vertical-space-between-name-and-connections = <<design.header.vertical_space_between_name_and_connections>>
 #let design-header-vertical-space-between-connections-and-first-section = <<design.header.vertical_space_between_connections_and_first_section>>
 #let design-header-use-icons-for-connections = <<design.header.use_icons_for_connections|lower>>
+#let design-header-horizontal-space-between-connections = <<design.header.horizontal_space_between_connections>>
+#let design-header-separator-between-connections = "<<design.header.separator_between_connections>>"
+#let design-header-alignment = <<design.header.alignment>>
+#let design-highlights-bullet = "<<design.highlights.bullet>>"
+#let design-highlights-top-margin = <<design.highlights.top_margin>>
+#let design-highlights-left-margin = <<design.highlights.left_margin>>
+#let design-highlights-vertical-space-between-higlights = <<design.highlights.vertical_space_between_highlights>>
+#let design-highlights-horizontal-space-between-bullet-and-highlights = <<design.highlights.horizontal_space_between_bullet_and_highlight>>
 #let design-entries-vertical-space-between-entries = <<design.entries.vertical_space_between_entries>>
-#let design-section-titles-vertical-space-below = <<design.section_titles.vertical_space_below>>
 #let design-page-top-margin = <<design.page.top_margin>>
 #let design-page-bottom-margin = <<design.page.bottom_margin>>
 #let design-page-left-margin = <<design.page.left_margin>>
 #let design-page-right-margin = <<design.page.right_margin>>
 #let design-links-underline = <<design.links.underline|lower>>
+#let design-theme-specific-education-degree-width = <<design.theme_specific.education_degree_width>>
 #let date = datetime.today()
 
 // Metadata:
@@ -54,23 +69,41 @@
     right: design-page-right-margin,
   ),
   paper: design-page-size,
-  numbering: locale-catalog-page-numbering-style,
+  footer: align(center, locale-catalog-page-numbering-style),
   footer-descent: 0% - 0.3em + design-page-bottom-margin / 2,
 )
 // Text settings:
+#let justify
+#let hyphenate
+#if design-text-alignment == "justified" {
+  justify = true
+  hyphenate = true
+} else if design-text-alignment == "left" {
+  justify = false
+  hyphenate = false
+} else if design-text-alignment == "justified-with-no-hyphenation" {
+  justify = false
+  hyphenate = true
+}
 #set text(
-  font: "Charter",
+  font: design-text-font-family,
   size: design-text-font-size,
   lang: "en", // TODO
+  hyphenate: hyphenate,
+  fill: design-colors-text,
   // Disable ligatures for better ATS compatibility:
   ligatures: true,
 )
-
-// Paragraph settings:
-#set par(spacing: design-entries-vertical-space-between-entries, leading: design-text-leading)
+#set par(
+  spacing: design-text-paragraph-spacing,
+  leading: design-text-leading,
+  justify: justify,
+)
 
 // Highlights (bullets) settings:
 #show list: set list(
+  marker: design-highlights-bullet,
+  spacing: design-highlights-vertical-space-between-higlights,
   indent: design-highlights-left-margin,
   body-indent: design-highlights-horizontal-space-between-bullet-and-highlights,
 )
@@ -83,7 +116,7 @@
   header-font-weight = 400
 }
 #show heading.where(level: 1): it => [
-  #set align(center)
+  #set align(design-header-alignment)
   #set text(
     weight: header-font-weight,
     size: design-header-name-font-size,
@@ -109,7 +142,8 @@
     weight: section-title-font-weight,
     fill: design-colors-section-titles,
   )
-
+  // Vertical space above the section title
+  #v(design-section-titles-vertical-space-above)
   #if true [
     #it.body
   ] else [
@@ -118,7 +152,7 @@
   #if design-section-titles-line-type == "partial" [
     #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
   ] else if design-section-titles-line-type == "full" [
-    #v(-0.45cm)
+    #v(-0.8em)
     #line(length: 100%, stroke: design-section-titles-line-thickness)
   ]
   // Vertical space after the section title
@@ -129,20 +163,9 @@
 // Links:
 #let original-link = link
 #let link(url, body) = {
-  body = [
-    #set text(fill: blue)
-    #if design-links-underline [
-      #set text(underline: true)
-    ]
-    #body
-    #if design-links-use-external-link-icon [
-      #box(
-        fa-icon("external-link", size: 0.8em),
-        height: auto,
-        baseline: -10%,
-      )
-    ]
-  ]
+  body = [#if design-links-underline [#underline(body)] else [#body]]
+  body = [#if design-links-use-external-link-icon [#body #box(fa-icon("external-link", size: 0.7em), baseline: -10%)] else [#body]]
+  body = [#set text(fill: design-colors-links);#body]
   original-link(url, body)
 }
 
@@ -150,14 +173,14 @@
 #if design-page-show-last-updated-date {
   place(
     top + right,
-    dy: 0pt,
+    dy: -design-page-top-margin / 2,
     text(locale-catalog-last-updated-date-style, fill: design-colors-last-updated-date-and-page-numbering),
   )
 }
 
 #let connections(connections-list) = context {
   let list-of-connections = ()
-  let separator = h(0.5cm, weak: true) + " | " + h(0.5cm, weak: true)
+  let separator = h(design-header-horizontal-space-between-connections/2, weak: true) + design-header-separator-between-connections + h(design-header-horizontal-space-between-connections/2, weak: true)
   let starting-index = 0
   while (starting-index < connections-list.len()) {
     let left-sum-right-margin
@@ -180,9 +203,9 @@
     list-of-connections.push(connections-list.slice(starting-index, ending-index - 1).join(separator))
     starting-index = ending-index
   }
-
-  align(list-of-connections.join(linebreak()), center)
-  v(1.33cm)
+  set text(fill: design-colors-connections)
+  align(list-of-connections.join(linebreak()), design-header-alignment)
+  v(design-header-vertical-space-between-connections-and-first-section - design-section-titles-vertical-space-above)
 }
 
 #let three-col-entry(
