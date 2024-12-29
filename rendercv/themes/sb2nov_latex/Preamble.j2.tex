@@ -162,7 +162,7 @@
     \endonecolentry
 } % new environment for headers with profile pictures
 
-((* set last_updated_date_style_placeholders = {
+((* set last_updated_date_template_placeholders = {
     "TODAY": today,
 } *))
 \newcommand{\placelastupdatedtext}{% \placetextbox{<horizontal pos>}{<vertical pos>}{<stuff>}
@@ -171,7 +171,7 @@
         \LenToUnit{\paperwidth-<<design.margins.page.right>>-<<design.margins.entry_area.left_and_right>>+0.05cm},
         \LenToUnit{\paperheight-<<design.margins.page.top|divide_length_by(2)>>}
     ){\vtop{{\null}\makebox[0pt][c]{
-        \small\color{gray}\textit{<<locale_catalog.last_updated_date_style|replace_placeholders_with_actual_values(last_updated_date_style_placeholders)>>}\hspace{\widthof{<<locale_catalog.last_updated_date_style|replace_placeholders_with_actual_values(last_updated_date_style_placeholders)>>}}
+        \small\color{gray}\textit{<<locale_catalog.last_updated_date_template|replace_placeholders_with_actual_values(last_updated_date_template_placeholders)>>}\hspace{\widthof{<<locale_catalog.last_updated_date_template|replace_placeholders_with_actual_values(last_updated_date_template_placeholders)>>}}
     }}}%
   }%
 }%

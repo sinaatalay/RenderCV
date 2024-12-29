@@ -323,7 +323,7 @@ Here is an example:
 locale_catalog:
   phone_number_format: national # (1)!
   date_style: "MONTH_ABBREVIATION YEAR" # (2)!
-  last_updated_date_style: Last updated in TODAY # (3)!
+  last_updated_date_template: Last updated in TODAY # (3)!
   page_numbering_style: NAME - Page PAGE_NUMBER of TOTAL_PAGES # (4)!
   abbreviations_for_months: 
     - Jan

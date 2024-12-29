@@ -366,6 +366,30 @@ class Highlights(RenderCVBaseModelWithoutExtraKeys):
     )
 
 
+class EducationEntry(RenderCVBaseModelWithoutExtraKeys):
+    pass
+
+
+class ExperienceEntry(RenderCVBaseModelWithoutExtraKeys):
+    pass
+
+
+class PublicationsEntry(RenderCVBaseModelWithoutExtraKeys):
+    pass
+
+
+class NormalEntry(RenderCVBaseModelWithoutExtraKeys):
+    pass
+
+
+class OneLineEntry(RenderCVBaseModelWithoutExtraKeys):
+    template: str = pydantic.Field(
+        default="*LABEL:* VALUE",
+        title="Template",
+        description="The template of the one-line entry.",
+    )
+
+
 class Entries(RenderCVBaseModelWithoutExtraKeys):
     date_and_location_width: TypstDimension = pydantic.Field(
         default="4.5cm",

@@ -5,14 +5,14 @@
     "TOTAL_PAGES": "\" + str(counter(page).final().first()) + \"",
     "TODAY": today
 } *))
-((* set last_updated_date_style_placeholders = {
+((* set last_updated_date_template_placeholders = {
     "TODAY": today,
 } *))
 #import "@preview/fontawesome:0.5.0": fa-icon
 
 #let name = "<<cv.name>>"
 #let locale-catalog-page-numbering-style = context { "<<locale_catalog.page_numbering_style|replace_placeholders_with_actual_values(page_numbering_style_placeholders)>>" }
-#let locale-catalog-last-updated-date-style = "<<locale_catalog.last_updated_date_style|replace_placeholders_with_actual_values(last_updated_date_style_placeholders)>>"
+#let locale-catalog-last-updated-date-style = "<<locale_catalog.last_updated_date_template|replace_placeholders_with_actual_values(last_updated_date_template_placeholders)>>"
 #let locale-catalog-language = "<<locale_catalog.language>>"
 #let design-page-size = "<<design.page.size>>"
 #let design-section-titles-font-size = <<design.section_titles.font_size>>

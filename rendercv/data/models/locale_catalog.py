@@ -47,7 +47,7 @@ class LocaleCatalog(RenderCVBaseModelWithoutExtraKeys):
             ' Page PAGE_NUMBER of TOTAL_PAGES".'
         ),
     )
-    last_updated_date_style: str = pydantic.Field(
+    last_updated_date_template: str = pydantic.Field(
         default="Last updated in TODAY",
         title="Last Updated Date Style",
         description=(
