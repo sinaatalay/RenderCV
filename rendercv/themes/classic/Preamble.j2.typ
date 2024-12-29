@@ -30,7 +30,6 @@
 #let design-links-use-external-link-icon = <<design.links.use_external_link_icon|lower>>
 #let design-text-font-size = <<design.text.font_size>>
 #let design-text-leading = <<design.text.leading>>
-#let design-text-paragraph-spacing = <<design.text.paragraph_spacing>>
 #let design-text-font-family = "<<design.text.font_family>>"
 #let design-text-alignment = "<<design.text.alignment>>"
 #let design-header-use-icons-for-connections = <<design.header.use_icons_for_connections|lower>>
@@ -103,7 +102,7 @@
   ligatures: true,
 )
 #set par(
-  spacing: design-text-paragraph-spacing,
+  spacing: design-text-leading,
   leading: design-text-leading,
   justify: justify,
 )
@@ -152,7 +151,7 @@
   )
 
   // Vertical space above the section title
-  #v(design-section-titles-vertical-space-above - design-text-paragraph-spacing * 0.95, weak: true)
+  #v(design-section-titles-vertical-space-above, weak: true)
   #block(breakable: false, [
   #box([
     #if true [
@@ -170,7 +169,7 @@
   ]+ v(1em))
   #v(-1em)
   // Vertical space after the section title
-  #v(design-section-titles-vertical-space-below - design-text-paragraph-spacing * 0.95)
+  #v(design-section-titles-vertical-space-below)
 ]
 
 // Links:

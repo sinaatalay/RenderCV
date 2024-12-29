@@ -11,7 +11,11 @@
   ((* endif *))
       *<<entry.title>>*
 
+      #v(design-highlights-top-margin)
+
       <<entry.authors|join(", ")>>
+
+      #v(design-highlights-vertical-space-between-higlights)
 
       ((* if entry.doi -*))
       #link("<<entry.doi_url>>")[<<entry.doi>>]

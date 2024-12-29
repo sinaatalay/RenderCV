@@ -178,7 +178,8 @@ def validate_design_options(
 # the theme field, thanks to Pydantic's discriminator feature.
 # See https://docs.pydantic.dev/2.7/concepts/fields/#discriminator for more information
 RenderCVBuiltinDesign = Annotated[
-    Classic_latexThemeOptions
+    ClassicThemeOptions
+    | Classic_latexThemeOptions
     | Moderncv_latexThemeOptions
     | Sb2nov_latexThemeOptions
     | Engineeringresumes_latexThemeOptions,

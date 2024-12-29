@@ -182,13 +182,6 @@ class Text(RenderCVBaseModelWithoutExtraKeys):
         title="Font Size",
         description='The font size of the CV. The default value is "10pt".',
     )
-    paragraph_spacing: TypstDimension = pydantic.Field(
-        default="0.5em",
-        title="Paragraph Spacing",
-        description=(
-            'The vertical space between paragraphs. The default value is "0.5em".'
-        ),
-    )
     leading: TypstDimension = pydantic.Field(
         default="0.25em",
         title="Leading",
