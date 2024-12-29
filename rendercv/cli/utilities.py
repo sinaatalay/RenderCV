@@ -441,8 +441,8 @@ def run_rendercv_with_printer(
         if not render_command_settings.dont_generate_png:
             progress.start_a_step("Rendering PNG files from the PDF")
 
-            png_file_paths_in_output_folder = renderer.render_pngs_from_pdf(
-                pdf_file_path_in_output_folder
+            png_file_paths_in_output_folder = renderer.render_pngs_from_typst(
+                latex_file_path_in_output_folder
             )
             if render_command_settings.png_path:
                 copy_files(

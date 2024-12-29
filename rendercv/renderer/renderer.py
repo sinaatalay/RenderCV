@@ -9,10 +9,9 @@ import re
 import shutil
 from typing import Optional
 
-import fitz
 import markdown
-import typst
 import rendercv_fonts
+import typst
 
 from .. import data
 from . import templater
@@ -194,6 +193,17 @@ typst_compiler: Optional[typst.Compiler] = None
 typst_file_path: pathlib.Path
 
 
+def setup_typst_compiler(file_path: pathlib.Path) -> typst.Compiler:
+    global typst_compiler, typst_file_path  # NOQA: PLW0603
+    if typst_compiler is None or typst_file_path != file_path:
+        typst_compiler = typst.Compiler(
+            file_path, font_paths=rendercv_fonts.paths_to_font_folders
+        )
+        typst_file_path = file_path
+
+    return typst_compiler
+
+
 def render_a_pdf_from_latex_or_typst(
     file_path: pathlib.Path, local_latex_command: Optional[str] = None
 ) -> pathlib.Path:
@@ -217,17 +227,38 @@ def render_a_pdf_from_latex_or_typst(
 
         return rendercv_tinytex.run_latex(file_path, local_latex_command)
 
-    global typst_compiler, typst_file_path  # NOQA: PLW0603
-    if typst_compiler is None or typst_file_path != file_path:
-        typst_compiler = typst.Compiler(
-            file_path, font_paths=rendercv_fonts.paths_to_font_folders
-        )
-        typst_file_path = file_path
+    typst_compiler = setup_typst_compiler(file_path)
 
     pdf_output_path = file_path.with_suffix(".pdf")
     typst_compiler.compile(output=pdf_output_path, format="pdf")
 
     return pdf_output_path
+
+
+def render_pngs_from_typst(
+    file_path: pathlib.Path, ppi: float = 600
+) -> list[pathlib.Path]:
+    """Run Typst with the given Typst file to render the PNG files.
+
+    Args:
+        file_path: The path to the Typst file.
+        output_directory: Path to the output directory.
+        ppi: Pixels per inch for PNG output, defaults to 600.
+
+    Returns:
+        Paths to the rendered PNG files.
+    """
+    typst_compiler = setup_typst_compiler(file_path)
+    output_path = file_path.parent / (file_path.stem + "_{p}.png")
+    output = typst_compiler.compile(format="png", ppi=ppi, output=output_path)
+
+    if isinstance(output, list):
+        return [
+            output_path.parent / output_path.name.format(p=i)
+            for i in range(len(output))
+        ]
+
+    return [output_path.parent / output_path.name.format(p=1)]
 
 
 def render_pngs_from_pdf(pdf_file_path: pathlib.Path) -> list[pathlib.Path]:
@@ -239,6 +270,15 @@ def render_pngs_from_pdf(pdf_file_path: pathlib.Path) -> list[pathlib.Path]:
     Returns:
         The paths to the rendered PNG files.
     """
+    try:
+        import fitz  # type: ignore
+    except Exception as e:
+        message = (
+            "If you want to convert PDF files to PNG, please install rendercv like"
+            " this:\n\npip install rendercv[latex]"
+        )
+        raise ModuleNotFoundError(message) from e
+
     # check if the file exists:
     if not pdf_file_path.is_file():
         message = f"The file {pdf_file_path} doesn't exist!"

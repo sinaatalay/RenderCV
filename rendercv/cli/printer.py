@@ -40,7 +40,6 @@ class LiveProgressReporter(rich.live.Live):
                 elapsed = task.finished_time if task.finished else task.elapsed
                 assert elapsed is not None
                 elapsed = elapsed * 1000  # Convert to milliseconds
-                elapsed = round(elapsed, -1)  # Round to nearest 10ms
                 delta = f"{elapsed:.0f} ms"
                 return rich.text.Text(str(delta), style="progress.elapsed")
 
