@@ -190,6 +190,11 @@ class Text(RenderCVBaseModelWithoutExtraKeys):
             ' "1.2em".'
         ),
     )
+    alignment: Literal["left", "center", "right", "justify"] = pydantic.Field(
+        default="justify",
+        title="Alignment of Text",
+        description='The alignment of the text. The default value is "justify".',
+    )
 
 
 class Links(RenderCVBaseModelWithoutExtraKeys):

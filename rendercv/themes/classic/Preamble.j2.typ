@@ -39,6 +39,7 @@
 #let design-page-bottom-margin = <<design.page.bottom_margin>>
 #let design-page-left-margin = <<design.page.left_margin>>
 #let design-page-right-margin = <<design.page.right_margin>>
+#let design-links-underline = <<design.links.underline|lower>>
 #let date = datetime.today()
 
 // Metadata:
@@ -125,17 +126,25 @@
 ]
 
 // Links:
-#show link: it => [
-  #set text(fill: blue)
-  #underline(it.body)
-  #if design-links-use-external-link-icon [
-    #box(
-      fa-icon("external-link-alt", size: 0.6em),
-      height: auto,
-      baseline: -10%,
-    )
+// Links:
+#let original-link = link
+#let link(url, body) = {
+  body = [
+    #set text(fill: blue)
+    #if design-links-underline [
+      #set text(underline: true)
+    ]
+    #body
+    #if design-links-use-external-link-icon [
+      #box(
+        fa-icon("external-link", size: 0.8em),
+        height: auto,
+        baseline: -10%,
+      )
+    ]
   ]
-]
+  original-link(url, body)
+}
 
 // Last updated date text:
 #if design-page-show-last-updated-date {
