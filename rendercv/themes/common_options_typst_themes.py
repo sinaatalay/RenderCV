@@ -170,12 +170,17 @@ class Text(RenderCVBaseModelWithoutExtraKeys):
     font_family: Literal[
         "Libertinus Serif",
         "New Computer Modern",
+        "DejaVu Sans Mono",
+        "Source Sans 3",
+        "Roboto",
+        "Open Sans",
+        "Ubuntu",
+        "Noto Sans",
+        "Mukta",
     ] = pydantic.Field(
-        default="Libertinus Serif",
+        default="Source Sans 3",
         title="Font Family",
-        description=(
-            'The font family of the CV. The default value is "Libertinus Serif".'
-        ),
+        description='The font family of the CV. The default value is "Source Sans 3".',
     )
     font_size: TypstDimension = pydantic.Field(
         default="10pt",
@@ -235,20 +240,20 @@ class Header(RenderCVBaseModelWithoutExtraKeys):
         ),
     )
     vertical_space_between_name_and_connections: TypstDimension = pydantic.Field(
-        default="0.3cm",
+        default="0.55cm",
         title="Vertical Margin Between the Name and Connections",
         description=(
             "The vertical margin between the name of the person and the connections."
-            ' The default value is "0.3cm".'
+            ' The default value is "0.55cm".'
         ),
     )
     vertical_space_between_connections_and_first_section: TypstDimension = (
         pydantic.Field(
-            default="0.3cm",
+            default="0.55cm",
             title="Vertical Margin Between Connections and First Section",
             description=(
                 "The vertical margin between the connections and the first section"
-                ' title. The default value is "0.3cm".'
+                ' title. The default value is "0.55cm".'
             ),
         )
     )
@@ -285,10 +290,10 @@ class Header(RenderCVBaseModelWithoutExtraKeys):
 
 class SectionTitles(RenderCVBaseModelWithoutExtraKeys):
     font_size: TypstDimension = pydantic.Field(
-        default="1.2em",
+        default="1.4em",
         title="Font Size",
         description=(
-            'The font size of the section titles. The default value is "1.2em".'
+            'The font size of the section titles. The default value is "1.4em".'
         ),
     )
     bold: bool = pydantic.Field(
@@ -313,17 +318,17 @@ class SectionTitles(RenderCVBaseModelWithoutExtraKeys):
         ),
     )
     vertical_space_above: TypstDimension = pydantic.Field(
-        default="0.3cm",
+        default="0.5cm",
         title="Vertical Space Above Section Titles",
         description=(
-            'The vertical space above the section titles. The default value is "0.3cm".'
+            'The vertical space above the section titles. The default value is "0.5cm".'
         ),
     )
     vertical_space_below: TypstDimension = pydantic.Field(
-        default="0.2cm",
+        default="0.3cm",
         title="Vertical Space Below Section Titles",
         description=(
-            'The vertical space below the section titles. The default value is "0.2cm".'
+            'The vertical space below the section titles. The default value is "0.3cm".'
         ),
     )
 
@@ -335,9 +340,9 @@ class Highlights(RenderCVBaseModelWithoutExtraKeys):
         description='The bullet used for the highlights. The default value is "•".',
     )
     top_margin: TypstDimension = pydantic.Field(
-        default="0.2cm",
+        default="0.1cm",
         title="Top Margin",
-        description='The top margin of the highlights. The default value is "0.2cm".',
+        description='The top margin of the highlights. The default value is "0.1cm".',
     )
     left_margin: TypstDimension = pydantic.Field(
         default="0.4cm",
@@ -345,10 +350,10 @@ class Highlights(RenderCVBaseModelWithoutExtraKeys):
         description='The left margin of the highlights. The default value is "0.4cm".',
     )
     vertical_space_between_highlights: TypstDimension = pydantic.Field(
-        default="0.2cm",
+        default="0.1cm",
         title="Vertical Space Between Highlights",
         description=(
-            'The vertical space between the highlights. The default value is "0.2cm".'
+            'The vertical space between the highlights. The default value is "0.1cm".'
         ),
     )
     horizontal_space_between_bullet_and_highlight: TypstDimension = pydantic.Field(
@@ -363,11 +368,11 @@ class Highlights(RenderCVBaseModelWithoutExtraKeys):
 
 class Entries(RenderCVBaseModelWithoutExtraKeys):
     date_and_location_width: TypstDimension = pydantic.Field(
-        default="3cm",
+        default="4.5cm",
         title="Width of Date and Location",
         description=(
             "The width of the date and location in the entries. The default value is"
-            ' "3cm".'
+            ' "4.5cm".'
         ),
     )
     left_and_right_margin: TypstDimension = pydantic.Field(

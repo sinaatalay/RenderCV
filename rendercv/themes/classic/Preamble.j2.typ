@@ -75,7 +75,11 @@
   ),
   paper: design-page-size,
   footer: if design-page-show-page-numbering {
-    text(fill: design-colors-last-updated-date-and-page-numbering, align(center, locale-catalog-page-numbering-style))
+    text(
+      fill: design-colors-last-updated-date-and-page-numbering,
+      align(center, [_#locale-catalog-page-numbering-style _]),
+      size: 0.9em,
+    )
   } else {
     none
   },
@@ -180,12 +184,11 @@
           #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
         ]
       ])
-    ]
-      + v(1em),
+    ] + v(1em),
   )
   #v(-1em)
   // Vertical space after the section title
-  #v(design-section-titles-vertical-space-below)
+  #v(design-section-titles-vertical-space-below - 0.5em)
 ]
 
 // Links:
@@ -207,7 +210,11 @@
     top + right,
     dy: -design-page-top-margin / 2,
     dx: -design-entries-left-and-right-margin,
-    text(locale-catalog-last-updated-date-style, fill: design-colors-last-updated-date-and-page-numbering),
+    text(
+      [_#locale-catalog-last-updated-date-style _],
+      fill: design-colors-last-updated-date-and-page-numbering,
+      size: 0.9em,
+    ),
   )
 }
 
@@ -224,7 +231,7 @@
     if type(page.margin) == "dictionary" {
       left-sum-right-margin = page.margin.left + page.margin.right
     } else {
-      left-sum-right-margin = page.margin * 2
+      left-sum-right-margin = page.margin * 4
     }
 
     let ending-index = starting-index + 1
@@ -237,10 +244,14 @@
         break
       }
     }
-    list-of-connections.push(connections-list.slice(starting-index, ending-index - 1).join(separator))
+    if ending-index > connections-list.len() {
+      ending-index = connections-list.len()
+    }
+    list-of-connections.push(connections-list.slice(starting-index, ending-index).join(separator))
     starting-index = ending-index
   }
   set text(fill: design-colors-connections)
+  set par(leading: design-text-leading*1.7, justify: false)
   align(list-of-connections.join(linebreak()), design-header-alignment)
   v(design-header-vertical-space-between-connections-and-first-section - design-section-titles-vertical-space-above)
 }

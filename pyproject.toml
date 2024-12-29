@@ -68,6 +68,7 @@ dependencies = [
     "PyMuPDF==1.24.14",             # to convert PDF files to images
     "watchdog==6.0.0",              # to poll files for updates
     "typst==0.12.2",                # to render PDF from Typst source files
+    "rendercv-fonts==0.1.0",        # some font files for RenderCV
 ]
 classifiers = [
     "Intended Audience :: Science/Research",
@@ -124,6 +125,7 @@ rendercv = 'rendercv.cli:app'
 installer = "uv"
 python = "3.13"
 # Dependencies to be installed in the `default` virtual environment.
+features = ["latex"]
 dependencies = [
     "ruff",                 # to lint and format the code
     "black",                # to format the code

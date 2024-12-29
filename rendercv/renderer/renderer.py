@@ -12,6 +12,7 @@ from typing import Optional
 import fitz
 import markdown
 import typst
+import rendercv_fonts
 
 from .. import data
 from . import templater
@@ -218,7 +219,9 @@ def render_a_pdf_from_latex_or_typst(
 
     global typst_compiler, typst_file_path  # NOQA: PLW0603
     if typst_compiler is None or typst_file_path != file_path:
-        typst_compiler = typst.Compiler(file_path)
+        typst_compiler = typst.Compiler(
+            file_path, font_paths=rendercv_fonts.paths_to_font_folders
+        )
         typst_file_path = file_path
 
     pdf_output_path = file_path.with_suffix(".pdf")
