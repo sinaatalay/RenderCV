@@ -269,7 +269,7 @@ class Header(RenderCVBaseModelWithoutExtraKeys):
     )
     separator_between_connections: str = pydantic.Field(
         default="",
-        title="Seperator Between Connections",
+        title="Separator Between Connections",
         description=(
             "The separator between the connections in the header. The default value is"
             " empty string."
