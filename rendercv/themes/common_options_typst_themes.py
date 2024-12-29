@@ -370,6 +370,13 @@ class Entries(RenderCVBaseModelWithoutExtraKeys):
             ' "3cm".'
         ),
     )
+    left_and_right_margin: TypstDimension = pydantic.Field(
+        default="0.5cm",
+        title="Left and Right Margin",
+        description=(
+            "The left and right margin of the entries. The default value is 0.5cm."
+        ),
+    )
     horizontal_space_between_columns: TypstDimension = pydantic.Field(
         default="0cm",
         title="Horizontal Space Between Columns",

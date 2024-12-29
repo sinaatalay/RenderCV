@@ -13,6 +13,7 @@
 #let name = "<<cv.name>>"
 #let locale-catalog-page-numbering-style = context { "<<locale_catalog.page_numbering_style|replace_placeholders_with_actual_values(page_numbering_style_placeholders)>>" }
 #let locale-catalog-last-updated-date-style = "<<locale_catalog.last_updated_date_style|replace_placeholders_with_actual_values(last_updated_date_style_placeholders)>>"
+#let locale-catalog-language = "<<locale_catalog.language>>"
 #let design-page-size = "<<design.page.size>>"
 #let design-section-titles-font-size = <<design.section_titles.font_size>>
 #let design-colors-text = <<design.colors.text.as_rgb()>>
@@ -44,12 +45,13 @@
 #let design-highlights-bullet = "<<design.highlights.bullet>>"
 #let design-highlights-top-margin = <<design.highlights.top_margin>>
 #let design-highlights-left-margin = <<design.highlights.left_margin>>
-#let design-highlights-vertical-space-between-higlights = <<design.highlights.vertical_space_between_highlights>>
+#let design-highlights-vertical-space-between-highlights = <<design.highlights.vertical_space_between_highlights>>
 #let design-highlights-horizontal-space-between-bullet-and-highlights = <<design.highlights.horizontal_space_between_bullet_and_highlight>>
 #let design-entries-vertical-space-between-entries = <<design.entries.vertical_space_between_entries>>
 #let design-entries-date-and-location-width = <<design.entries.date_and_location_width>>
 #let design-entries-allow-page-break-in-entries = <<design.entries.allow_page_break_in_entries|lower>>
 #let design-entries-horizontal-space-between-columns = <<design.entries.horizontal_space_between_columns>>
+#let design-entries-left-and-right-margin = <<design.entries.left_and_right_margin>>
 #let design-page-top-margin = <<design.page.top_margin>>
 #let design-page-bottom-margin = <<design.page.bottom_margin>>
 #let design-page-left-margin = <<design.page.left_margin>>
@@ -95,7 +97,7 @@
 #set text(
   font: design-text-font-family,
   size: design-text-font-size,
-  lang: "en", // TODO
+  lang: locale-catalog-language,
   hyphenate: hyphenate,
   fill: design-colors-text,
   // Disable ligatures for better ATS compatibility:
@@ -107,11 +109,20 @@
   justify: justify,
 )
 
-// Highlights (bullets) settings:
+// Highlights settings:
+#let highlights(..content) = {
+  list(
+    ..content,
+    marker: design-highlights-bullet,
+    spacing: design-highlights-vertical-space-between-highlights,
+    indent: design-highlights-left-margin,
+    body-indent: design-highlights-horizontal-space-between-bullet-and-highlights,
+  )
+}
 #show list: set list(
   marker: design-highlights-bullet,
-  spacing: design-highlights-vertical-space-between-higlights,
-  indent: design-highlights-left-margin,
+  spacing: design-entries-vertical-space-between-entries,
+  indent: 0pt,
   body-indent: design-highlights-horizontal-space-between-bullet-and-highlights,
 )
 
@@ -129,6 +140,7 @@
     size: design-header-name-font-size,
     fill: design-colors-name,
   )
+  #set par(spacing: 0pt)
   #it.body
   // Vertical space after the name
   #v(design-header-vertical-space-between-name-and-connections)
@@ -152,21 +164,25 @@
 
   // Vertical space above the section title
   #v(design-section-titles-vertical-space-above, weak: true)
-  #block(breakable: false, [
-  #box([
-    #if true [
-      #it.body
-    ] else [
-      #smallcaps(it.body)
+  #block(
+    breakable: false,
+    [
+      #box([
+        #if true [
+          #it.body
+        ] else [
+          #smallcaps(it.body)
+        ]
+        #if design-section-titles-line-type == "partial" [
+          #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
+        ] else if design-section-titles-line-type == "full" [
+          #v(-design-text-leading * 0.6)
+          #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
+        ]
+      ])
     ]
-    #if design-section-titles-line-type == "partial" [
-      #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
-    ] else if design-section-titles-line-type == "full" [
-      #v(-0.8em)
-      #line(length: 100%, stroke: design-section-titles-line-thickness + design-colors-section-titles)
-    ]
-  ])
-  ]+ v(1em))
+      + v(1em),
+  )
   #v(-1em)
   // Vertical space after the section title
   #v(design-section-titles-vertical-space-below)
@@ -177,7 +193,10 @@
 #let original-link = link
 #let link(url, body) = {
   body = [#if design-links-underline [#underline(body)] else [#body]]
-  body = [#if design-links-use-external-link-icon [#body #box(fa-icon("external-link", size: 0.7em), baseline: -10%)] else [#body]]
+  body = [#if design-links-use-external-link-icon [#body #box(
+        fa-icon("external-link", size: 0.7em),
+        baseline: -10%,
+      )] else [#body]]
   body = [#set text(fill: design-colors-links);#body]
   original-link(url, body)
 }
@@ -187,13 +206,18 @@
   place(
     top + right,
     dy: -design-page-top-margin / 2,
+    dx: -design-entries-left-and-right-margin,
     text(locale-catalog-last-updated-date-style, fill: design-colors-last-updated-date-and-page-numbering),
   )
 }
 
 #let connections(connections-list) = context {
   let list-of-connections = ()
-  let separator = h(design-header-horizontal-space-between-connections/2, weak: true) + design-header-separator-between-connections + h(design-header-horizontal-space-between-connections/2, weak: true)
+  let separator = (
+    h(design-header-horizontal-space-between-connections / 2, weak: true)
+      + design-header-separator-between-connections
+      + h(design-header-horizontal-space-between-connections / 2, weak: true)
+  )
   let starting-index = 0
   while (starting-index < connections-list.len()) {
     let left-sum-right-margin
@@ -228,11 +252,18 @@
   middle-content: "",
   right-content: "",
 ) = [
-  #grid(
-    columns: (left-column-width, 1fr, right-column-width),
-    column-gutter: design-entries-horizontal-space-between-columns,
-    align: (left, left, right),
-    left-content, middle-content, right-content,
+  #block(
+    grid(
+      columns: (left-column-width, 1fr, right-column-width),
+      column-gutter: design-entries-horizontal-space-between-columns,
+      align: (left, left, right),
+      left-content, middle-content, right-content,
+    ),
+    inset: (
+      left: design-entries-left-and-right-margin,
+      right: design-entries-left-and-right-margin,
+    ),
+    breakable: true,
   )
 ]
 
@@ -242,10 +273,17 @@
   left-content: "",
   right-content: "",
 ) = [
-    #grid(
+  #block(
+    grid(
       columns: (left-column-width, right-column-width),
       column-gutter: design-entries-horizontal-space-between-columns,
       align: (left, right),
       left-content, right-content,
-    )
+    ),
+    inset: (
+      left: design-entries-left-and-right-margin,
+      right: design-entries-left-and-right-margin,
+    ),
+    breakable: true,
+  )
 ]

@@ -7,6 +7,7 @@ from typing import Annotated, Literal, Optional
 
 import annotated_types as at
 import pydantic
+import pydantic_extra_types.language_code
 
 from .base import RenderCVBaseModelWithoutExtraKeys
 
@@ -16,6 +17,14 @@ class LocaleCatalog(RenderCVBaseModelWithoutExtraKeys):
     updates the `locale_catalog` dictionary.
     """
 
+    language: pydantic_extra_types.language_code.LanguageAlpha2 = pydantic.Field(
+        default="en",  # type: ignore
+        title="Language",
+        description=(
+            "The language as an ISO 639 alpha-2 code. It is used for hyphenation"
+            " patterns."
+        ),
+    )
     phone_number_format: Optional[Literal["national", "international", "E164"]] = (
         pydantic.Field(
             default="national",

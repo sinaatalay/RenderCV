@@ -13,9 +13,12 @@
   ((* for item in entry.highlights *))
     ((* if loop.first *))
       #v(design-highlights-top-margin)
+
+      #highlights(
     ((* endif *))
-      - <<item>>
+        [<<item>>],
   ((* endfor *))
+      )
     ],
     right-content: [
       <<date_and_location_strings|join("\n\n")>>

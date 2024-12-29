@@ -14,9 +14,12 @@
   ((* for item in entry.highlights *))
     ((* if loop.first *))
       #v(design-highlights-top-margin)
+
+      #highlights(
     ((* endif *))
-      - <<item>>
+        [<<item>>],
   ((* endfor *))
+      )
   ((* if entry.date_string or entry.location *))
     ],
     right-content: [

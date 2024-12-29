@@ -15,7 +15,7 @@
 
       <<entry.authors|join(", ")>>
 
-      #v(design-highlights-vertical-space-between-higlights)
+      #v(design-highlights-vertical-space-between-highlights)
 
       ((* if entry.doi -*))
       #link("<<entry.doi_url>>")[<<entry.doi>>]
