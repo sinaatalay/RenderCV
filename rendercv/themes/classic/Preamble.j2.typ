@@ -27,7 +27,6 @@
 #let design-section-titles-line-type = "<<design.section_titles.line_type>>"
 #let design-section-titles-vertical-space-above = <<design.section_titles.vertical_space_above>>
 #let design-section-titles-vertical-space-below = <<design.section_titles.vertical_space_below>>
-#let design-page-show-last-updated-date = <<design.page.show_last_updated_date|lower>>
 #let design-links-use-external-link-icon = <<design.links.use_external_link_icon|lower>>
 #let design-text-font-size = <<design.text.font_size>>
 #let design-text-leading = <<design.text.leading>>
@@ -56,6 +55,8 @@
 #let design-page-bottom-margin = <<design.page.bottom_margin>>
 #let design-page-left-margin = <<design.page.left_margin>>
 #let design-page-right-margin = <<design.page.right_margin>>
+#let design-page-show-last-updated-date = <<design.page.show_last_updated_date|lower>>
+#let design-page-show-page-numbering = <<design.page.show_page_numbering|lower>>
 #let design-links-underline = <<design.links.underline|lower>>
 #let design-theme-specific-education-degree-width = <<design.theme_specific.education_degree_width>>
 #let date = datetime.today()
@@ -72,7 +73,11 @@
     right: design-page-right-margin,
   ),
   paper: design-page-size,
-  footer: text(fill: design-colors-last-updated-date-and-page-numbering, align(center, locale-catalog-page-numbering-style)),
+  footer: if design-page-show-page-numbering {
+    text(fill: design-colors-last-updated-date-and-page-numbering, align(center, locale-catalog-page-numbering-style))
+  } else {
+    none
+  },
   footer-descent: 0% - 0.3em + design-page-bottom-margin / 2,
 )
 // Text settings:
@@ -145,21 +150,27 @@
     weight: section-title-font-weight,
     fill: design-colors-section-titles,
   )
+
   // Vertical space above the section title
-  #v(design-section-titles-vertical-space-above)
-  #if true [
-    #it.body
-  ] else [
-    #smallcaps(it.body)
-  ]
-  #if design-section-titles-line-type == "partial" [
-    #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
-  ] else if design-section-titles-line-type == "full" [
-    #v(-0.8em)
-    #line(length: 100%, stroke: design-section-titles-line-thickness)
-  ]
+  #v(design-section-titles-vertical-space-above - design-text-paragraph-spacing * 0.95, weak: true)
+  #block(breakable: false, [
+  #box([
+    #if true [
+      #it.body
+    ] else [
+      #smallcaps(it.body)
+    ]
+    #if design-section-titles-line-type == "partial" [
+      #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
+    ] else if design-section-titles-line-type == "full" [
+      #v(-0.8em)
+      #line(length: 100%, stroke: design-section-titles-line-thickness + design-colors-section-titles)
+    ]
+  ])
+  ]+ v(1em))
+  #v(-1em)
   // Vertical space after the section title
-  #v(design-section-titles-vertical-space-below)
+  #v(design-section-titles-vertical-space-below - design-text-paragraph-spacing * 0.95)
 ]
 
 // Links:
@@ -232,10 +243,10 @@
   left-content: "",
   right-content: "",
 ) = [
-  #grid(
-    columns: (left-column-width, right-column-width),
-    column-gutter: design-entries-horizontal-space-between-columns,
-    align: (left, right),
-    left-content, right-content,
-  )
+    #grid(
+      columns: (left-column-width, right-column-width),
+      column-gutter: design-entries-horizontal-space-between-columns,
+      align: (left, right),
+      left-content, right-content,
+    )
 ]
