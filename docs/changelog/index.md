@@ -39,7 +39,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `markdown_to_latex` filter has been added to Jinja templates ([#269](https://github.com/rendercv/rendercv/pull/269)).
 
 ### Changed
-- `design.last_updated_date_template` and `design.page_numbering_style` fields are moved to `locale_catalog.last_updated_date_template` and `locale_catalog.page_numbering_style` fields, respectively ([#270](https://github.com/rendercv/rendercv/pull/270)).
+- `design.last_updated_date_style` and `design.page_numbering_style` fields are moved to `locale_catalog.last_updated_date_style` and `locale_catalog.page_numbering_style` fields, respectively ([#270](https://github.com/rendercv/rendercv/pull/270)).
 
 ## [1.16] - December 10, 2024
 
