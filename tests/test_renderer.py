@@ -168,18 +168,18 @@ def test_markdown_to_latex(markdown_string, expected_latex_string):
     ("markdown_string", "expected_latex_string"),
     [
         ("My Text", "My Text"),
-        ("**My** Text", "*My* Text"),
-        ("*My* Text", "_My_ Text"),
-        ("***My*** Text", "*_My_* Text"),
+        ("**My** Text", "[*My*] Text"),
+        ("*My* Text", "[_My_] Text"),
+        ("***My*** Text", "[*_My_*] Text"),
         ("[My](https://myurl.com) Text", '#link("https://myurl.com")[My] Text'),
         ("`My` Text", "`My` Text"),
         (
             "[**My** *Text* ***Is*** `Here`](https://myurl.com)",
-            '#link("https://myurl.com")[*My* _Text_ *_Is_* `Here`]',
+            '#link("https://myurl.com")[[*My*] [_Text_] [*_Is_*] `Here`]',
         ),
         (
             "Some other *** tests, which should be tricky* to parse!**",
-            "Some other *_ tests, which should be tricky_ to parse!*",
+            "Some other [*[_ tests, which should be tricky_] to parse!*]",
         ),
     ],
 )

@@ -6,7 +6,6 @@
 
 #three-col-entry(
   left-column-width: design-theme-specific-education-degree-width,
-  right-column-width: 2.5cm,
   left-content: [*<<entry.degree>>*],
   middle-content: [
     *<<entry.institution>>*, <<entry.area>>

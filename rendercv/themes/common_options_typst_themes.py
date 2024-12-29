@@ -369,6 +369,22 @@ class Highlights(RenderCVBaseModelWithoutExtraKeys):
 
 
 class Entries(RenderCVBaseModelWithoutExtraKeys):
+    date_and_location_width: TypstDimension = pydantic.Field(
+        default="3cm",
+        title="Width of Date and Location",
+        description=(
+            "The width of the date and location in the entries. The default value is"
+            ' "3cm".'
+        ),
+    )
+    horizontal_space_between_columns: TypstDimension = pydantic.Field(
+        default="0cm",
+        title="Horizontal Space Between Columns",
+        description=(
+            "The horizontal space between the columns in the entries. The default value"
+            ' is "0cm".'
+        ),
+    )
     vertical_space_between_entries: TypstDimension = pydantic.Field(
         default="0.2cm",
         title="Vertical Space Between Entries",

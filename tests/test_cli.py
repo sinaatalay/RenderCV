@@ -1030,7 +1030,7 @@ def test_make_given_keywords_bold_in_a_dictionary():
         "name": "John Doe",
         "email": ["John Doe"],
         "test": {
-            "test": "John Doe",
+            "test": "John Doe Johnn",
         },
     }
     keywords = ["John"]
@@ -1039,7 +1039,7 @@ def test_make_given_keywords_bold_in_a_dictionary():
     )
     assert bolded_dictionary["name"] == "**John** Doe"
     assert bolded_dictionary["email"] == ["**John** Doe"]
-    assert bolded_dictionary["test"]["test"] == "**John** Doe"
+    assert bolded_dictionary["test"]["test"] == "**John** Doe Johnn"
 
 
 def test_bold_keywords(input_file_path, tmp_path):

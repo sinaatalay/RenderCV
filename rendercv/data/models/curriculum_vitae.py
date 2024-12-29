@@ -464,7 +464,7 @@ class CurriculumVitae(RenderCVBaseModelWithExtraKeys):
         if self.location is not None:
             connections.append(
                 {
-                    "typst_icon": "map-marker",
+                    "typst_icon": "location-dot",
                     "latex_icon": "\\faMapMarker*",
                     "url": None,
                     "clean_url": None,

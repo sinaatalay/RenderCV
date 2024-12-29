@@ -49,6 +49,9 @@
 #let design-highlights-vertical-space-between-higlights = <<design.highlights.vertical_space_between_highlights>>
 #let design-highlights-horizontal-space-between-bullet-and-highlights = <<design.highlights.horizontal_space_between_bullet_and_highlight>>
 #let design-entries-vertical-space-between-entries = <<design.entries.vertical_space_between_entries>>
+#let design-entries-date-and-location-width = <<design.entries.date_and_location_width>>
+#let design-entries-allow-page-break-in-entries = <<design.entries.allow_page_break_in_entries|lower>>
+#let design-entries-horizontal-space-between-columns = <<design.entries.horizontal_space_between_columns>>
 #let design-page-top-margin = <<design.page.top_margin>>
 #let design-page-bottom-margin = <<design.page.bottom_margin>>
 #let design-page-left-margin = <<design.page.left_margin>>
@@ -69,7 +72,7 @@
     right: design-page-right-margin,
   ),
   paper: design-page-size,
-  footer: align(center, locale-catalog-page-numbering-style),
+  footer: text(fill: design-colors-last-updated-date-and-page-numbering, align(center, locale-catalog-page-numbering-style)),
   footer-descent: 0% - 0.3em + design-page-bottom-margin / 2,
 )
 // Text settings:
@@ -210,14 +213,14 @@
 
 #let three-col-entry(
   left-column-width: 1fr,
-  right-column-width: 1fr,
+  right-column-width: design-entries-date-and-location-width,
   left-content: "",
   middle-content: "",
   right-content: "",
 ) = [
   #grid(
     columns: (left-column-width, 1fr, right-column-width),
-    column-gutter: 0in,
+    column-gutter: design-entries-horizontal-space-between-columns,
     align: (left, left, right),
     left-content, middle-content, right-content,
   )
@@ -225,13 +228,14 @@
 
 #let two-col-entry(
   left-column-width: 1fr,
-  right-column-width: 1fr,
+  right-column-width: design-entries-date-and-location-width,
   left-content: "",
   right-content: "",
 ) = [
   #grid(
     columns: (left-column-width, right-column-width),
-    column-gutter: 0in,
+    column-gutter: design-entries-horizontal-space-between-columns,
+    align: (left, right),
     left-content, right-content,
   )
 ]

@@ -6,7 +6,6 @@
 
 ((* if entry.date_string or entry.location *))
 #two-col-entry(
-  right-column-width: 2.5cm,
   left-content: [
 ((* endif *))
     *<<entry.company>>*, <<entry.position>>

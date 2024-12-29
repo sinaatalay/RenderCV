@@ -323,7 +323,8 @@ def make_given_keywords_bold_in_a_dictionary(
     for keyword in keywords:
         for key, value in dictionary.items():
             if isinstance(value, str):
-                new_dictionary[key] = value.replace(keyword, f"**{keyword}**")
+                # Find all occurrences of the keyword as a whole word in the value:
+                new_dictionary[key] = re.sub(rf"\b{keyword}\b", f"**{keyword}**", value)
             elif isinstance(value, dict):
                 new_dictionary[key] = make_given_keywords_bold_in_a_dictionary(
                     value, keywords

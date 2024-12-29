@@ -189,6 +189,10 @@ def create_a_latex_or_typst_file_and_copy_theme_files(
     return file_path
 
 
+typst_compiler: Optional[typst.Compiler] = None
+typst_file_path: pathlib.Path
+
+
 def render_a_pdf_from_latex_or_typst(
     file_path: pathlib.Path, local_latex_command: Optional[str] = None
 ) -> pathlib.Path:
@@ -212,14 +216,15 @@ def render_a_pdf_from_latex_or_typst(
 
         return rendercv_tinytex.run_latex(file_path, local_latex_command)
 
-    elif file_path.suffix == ".typ":  # NOQA: RET505
-        pdf_output_path = file_path.with_suffix(".pdf")
-        typst.compile(input=file_path, output=pdf_output_path)
-        return pdf_output_path
+    global typst_compiler, typst_file_path  # NOQA: PLW0603
+    if typst_compiler is None or typst_file_path != file_path:
+        typst_compiler = typst.Compiler(file_path)
+        typst_file_path = file_path
 
-    else:
-        message = "Only *.tex and *.typ files are supported!"
-        raise ValueError(message)
+    pdf_output_path = file_path.with_suffix(".pdf")
+    typst_compiler.compile(output=pdf_output_path, format="pdf")
+
+    return pdf_output_path
 
 
 def render_pngs_from_pdf(pdf_file_path: pathlib.Path) -> list[pathlib.Path]:
