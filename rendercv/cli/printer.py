@@ -38,7 +38,9 @@ class LiveProgressReporter(rich.live.Live):
         class TimeElapsedColumn(rich.progress.ProgressColumn):
             def render(self, task: "rich.progress.Task") -> rich.text.Text:
                 elapsed = task.finished_time if task.finished else task.elapsed
-                delta = f"{elapsed:.1f} s"
+                assert elapsed is not None
+                elapsed = elapsed * 1000  # convert to milliseconds
+                delta = f"{elapsed:.0f} ms"
                 return rich.text.Text(str(delta), style="progress.elapsed")
 
         self.step_progress = rich.progress.Progress(
