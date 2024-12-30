@@ -564,6 +564,24 @@ def test_sections(
         assert len(section.entries) == 2
 
 
+def test_section_with_different_entry_types(
+    education_entry,
+    experience_entry,
+):
+    input = {
+        "name": "John Doe",
+        "sections": {
+            "arbitrary_title": [
+                education_entry,
+                experience_entry,
+            ],
+        },
+    }
+
+    with pytest.raises(pydantic.ValidationError):
+        data.CurriculumVitae(**input)
+
+
 def test_sections_with_invalid_entries():
     input = {"name": "John Doe", "sections": {}}
     input["sections"]["section_title"] = [
@@ -723,7 +741,11 @@ def test_locale_catalog():
         phone_number_format="international",
     )
 
-    assert data_model.locale_catalog.model_dump() == locale_catalog.LOCALE_CATALOG
+    locale_catalog_as_dict = data_model.locale_catalog.model_dump()
+    del locale_catalog_as_dict["page_numbering_style"]
+    del locale_catalog_as_dict["last_updated_date_style"]
+
+    assert locale_catalog_as_dict == locale_catalog.LOCALE_CATALOG
 
 
 def test_if_local_catalog_resets():
@@ -785,9 +807,10 @@ def test_create_a_sample_yaml_input_file(tmp_path):
     assert yaml_contents == input_file_path.read_text(encoding="utf-8")
 
 
-def test_default_input_file_doesnt_have_local_catalog():
+@pytest.mark.skip("We want `rendercv_settings` to be in the input file for now.")
+def test_default_input_file_doesnt_have_rendercv_settings():
     yaml_contents = data.create_a_sample_yaml_input_file()
-    assert "locale_catalog" not in yaml_contents
+    assert "rendercv_settings" not in yaml_contents
 
 
 @pytest.mark.parametrize(

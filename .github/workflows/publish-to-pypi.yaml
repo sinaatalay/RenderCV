@@ -13,7 +13,8 @@ jobs:
 
   publish:
     name: Publish to PyPI
-    needs: [call_tests_workflow]
+    needs:
+      - call_tests_workflow
     runs-on: ubuntu-latest
     environment: release
 
@@ -42,4 +43,6 @@ jobs:
 
   call_update_files_workflow:
     name: Update files
+    needs:
+      - publish
     uses: ./.github/workflows/update-files.yaml

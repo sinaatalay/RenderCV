@@ -2,7 +2,7 @@
 
 This page lists the available commands and options of the RenderCV CLI.
 
-## Options of the `rendercv` command
+## `rendercv` command
 
 - `#!bash --version` or `#!bash -v`
 
@@ -20,7 +20,7 @@ This page lists the available commands and options of the RenderCV CLI.
     rendercv --help
     ```
 
-## Options of the `rendercv new` command
+## `rendercv new` command
 
 - `#!bash --theme "THEME_NAME"`
 
@@ -55,7 +55,15 @@ This page lists the available commands and options of the RenderCV CLI.
     ```
 
 
-## Options of the `rendercv render` command
+## `rendercv render` command
+
+- `#!bash --watch` or `#!bash -w`
+
+    Watches the input YAML file for changes and automatically renders if there is any change.
+
+    ```bash
+    rendercv render "Full_Name_CV.yaml" --watch
+    ```
 
 - `#!bash --use-local-latex-command "LATEX_COMMAND"` or `#!bash -use "LATEX_COMMAND"`
 
@@ -136,6 +144,29 @@ This page lists the available commands and options of the RenderCV CLI.
     ```bash
     rendercv render "Full_Name_CV.yaml" --dont-generate-png
     ```
+- `#!bash --design design.yaml`
+   
+    Uses the given design file for the `design` field of the input YAML file.
+
+    ```bash
+    rendercv render "Full_Name_CV.yaml" --design "design.yaml"
+    ```
+
+- `#!bash --locale-catalog locale_catalog.yaml`
+   
+    Uses the given locale catalog file for the `locale_catalog` field of the input YAML file.
+
+    ```bash
+    rendercv render "Full_Name_CV.yaml" --locale-catalog "locale_catalog.yaml"
+    ```
+
+- `#!bash --rendercv-settings rendercv_settings.yaml`
+   
+    Uses the given RenderCV settings file for the `rendercv_settings` field of the input YAML file.
+
+    ```bash
+    rendercv render "Full_Name_CV.yaml" --rendercv-settings "rendercv_settings.yaml"
+    ```
 
 - `#!bash --ANY.LOCATION.IN.THE.YAML.FILE "VALUE"`
 
@@ -159,7 +190,7 @@ This page lists the available commands and options of the RenderCV CLI.
     rendercv render --help
     ```
 
-## Options of the `rendercv create-theme` command
+## `rendercv create-theme` command
 
 - `#!bash --based-on "THEME_NAME"`
 

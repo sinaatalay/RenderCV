@@ -90,7 +90,7 @@ def format_date(date: Date, date_style: Optional[str] = None) -> str:
 
 def replace_placeholders(value: str) -> str:
     """Replaces the placeholders in a string with the corresponding values."""
-    name = curriculum_vitae["name"]  # Curriculum Vitae owner's name
+    name = curriculum_vitae.get("name", "None")
     full_month_names = LOCALE_CATALOG["full_names_of_months"]
     short_month_names = LOCALE_CATALOG["abbreviations_for_months"]
 

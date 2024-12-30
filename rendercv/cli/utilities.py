@@ -307,6 +307,38 @@ def update_render_command_settings_of_the_input_file(
     return input_file_as_a_dict
 
 
+def make_given_keywords_bold_in_a_dictionary(
+    dictionary: dict, keywords: list[str]
+) -> dict:
+    """Iterate over the dictionary recursively and make the given keywords bold.
+
+    Args:
+        dictionary: The dictionary to make the keywords bold.
+        keywords: The keywords to make bold.
+
+    Returns:
+        The dictionary with the given keywords bold.
+    """
+    new_dictionary = dictionary.copy()
+    for keyword in keywords:
+        for key, value in dictionary.items():
+            if isinstance(value, str):
+                new_dictionary[key] = value.replace(keyword, f"**{keyword}**")
+            elif isinstance(value, dict):
+                new_dictionary[key] = make_given_keywords_bold_in_a_dictionary(
+                    value, keywords
+                )
+            elif isinstance(value, list):
+                for i, item in enumerate(value):
+                    if isinstance(item, str):
+                        new_dictionary[key][i] = item.replace(keyword, f"**{keyword}**")
+                    elif isinstance(item, dict):
+                        new_dictionary[key][i] = (
+                            make_given_keywords_bold_in_a_dictionary(item, keywords)
+                        )
+    return new_dictionary
+
+
 def run_rendercv_with_printer(
     input_file_as_a_dict: dict,
     working_directory: pathlib.Path,
@@ -349,6 +381,17 @@ def run_rendercv_with_printer(
             input_file_as_a_dict,
             context={"input_file_directory": input_file_path.parent},
         )
+
+        # If the `bold_keywords` field is provided in the `rendercv_settings`, make the
+        # given keywords bold in the `cv.sections` field:
+        if data_model.rendercv_settings and data_model.rendercv_settings.bold_keywords:
+            cv_field_as_dictionary = data_model.cv.model_dump(by_alias=True)
+            new_sections_field = make_given_keywords_bold_in_a_dictionary(
+                cv_field_as_dictionary["sections"],
+                data_model.rendercv_settings.bold_keywords,
+            )
+            cv_field_as_dictionary["sections"] = new_sections_field
+            data_model.cv = data.models.CurriculumVitae(**cv_field_as_dictionary)
 
         # Change the current working directory to the input file's directory (because
         # the template overrides are looked up in the current working directory). The

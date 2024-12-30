@@ -2,64 +2,45 @@
 
 All contributions to RenderCV are welcome!
 
-The source code is thoroughly documented and well-commented, making it an enjoyable read and easy to understand. A detailed documentation of the source code is available in the [reference](../reference/index.md).
+The source code is thoroughly documented and well-commented, making it an enjoyable read and easy to understand. A detailed documentation of the source code is available in the [API reference](../reference/index.md).
 
 
 ## Getting Started
 
-There are two ways of developing RenderCV: locally or with GitHub Codespaces.
+There are two ways of developing RenderCV: [locally](#develop-locally) or [with GitHub Codespaces](#develop-with-github-codespaces).
 
 ### Develop Locally
 
-1. Ensure that you have Python version 3.10 or higher.
-2. Install [Hatch](https://hatch.pypa.io/latest/), as it is the project manager for RenderCV. The installation guide for Hatch can be found [here](https://hatch.pypa.io/latest/install/#installation).
-3. Clone the repository recursively (because TinyTeX is being used as a submodule) with the following command.
-    ```bash
-    git clone --recursive https://github.com/rendercv/rendercv.git
+1. Install [Hatch](https://hatch.pypa.io/latest/). The installation guide for Hatch can be found [here](https://hatch.pypa.io/latest/install/#installation).
+   
+    Hatch is a Python project manager. It mainly allows you to define the virtual environments you need in [`pyproject.toml`](https://github.com/rendercv/rendercv/blob/main/pyproject.toml). Then, it takes care of the rest. Also, you don't need to install Python. Hatch will install it when you follow the steps below.
+
+2. Clone the repository.
     ```
-4. Go to the `rendercv` directory.
-    ```bash
+    git clone https://github.com/rendercv/rendercv.git
+    ```
+3. Go to the `rendercv` directory.
+    ```
     cd rendercv
     ```
-5. RenderCV uses three virtual environments:
-    -  `default`: For the development and testing. It contains packages like [Ruff](https://github.com/astral-sh/ruff), [Black](https://github.com/psf/black), [pytest](https://github.com/pytest-dev/pytest) etc.
-    -  `test`: It's the same as the `default` environment, but it's created with Python 3.10, 3.11, 3.12, and 3.13 for testing.
-    -  `docs`: For building the documentation.
+4. Start using one of the virtual environments by activating it in the terminal.
 
-    Create the virtual environments with the following commands.
-
+    Default development environment with Python 3.13:
     ```bash
-    hatch env create default
-    hatch env create test
-    hatch env create docs
+    hatch shell default
     ```
 
-6. To use the virtual environments, either
+    The same environment, but with Python 3.10 (or 3.11, 3.12, 3.13):
+    ```bash
+    hatch shell test.py3.10
+    ```
 
-    - Activate one of the virtual environments with one of the following commands.
-        ```bash
-        hatch shell default
-        ```
+5. Finally, activate the virtual environment in your integrated development environment (IDE). In Visual Studio Code:
 
-        ```bash
-        hatch shell docs
-        ```
+    - Press `Ctrl+Shift+P`.
+    - Type `Python: Select Interpreter`.
+    - Select one of the virtual environments created by Hatch.
 
-        ```bash
-        hatch shell test.py3.13
-        ```
-
-    - Select one of the virtual environments in your Integrated Development Environment (IDE).
-
-        === "Visual Studio Code"
-
-            - Press `Ctrl+Shift+P`.
-            - Type `Python: Select Interpreter`.
-            - Select one of the virtual environments created by Hatch.
-
-        === "Other"
-
-            To be added.
 
 ### Develop with GitHub Codespaces
 
@@ -95,15 +76,11 @@ These commands are defined in the [`pyproject.toml`](https://github.com/rendercv
     ```bash
     hatch run test
     ```
-- Run the tests with Python 3.10, 3.11, 3.12, and 3.13
-    ```bash
-    hatch run test:test
-    ```
-- Run the tests with Python 3.13 and generate a coverage report
+- Run the tests with Python 3.13 and generate the coverage report
     ```bash
     hatch run test-and-report
     ```
-- Start the development server for the documentation
+- Preview the documentation as you write it
     ```bash
     hatch run docs:serve
     ```
@@ -119,7 +96,7 @@ These commands are defined in the [`pyproject.toml`](https://github.com/rendercv
     ```bash
     hatch run docs:update-examples
     ```
-- Update figures of the entry types in the "[Structure of the YAML Input File](https://docs.rendercv.com/user_guide/structure_of_the_yaml_input_file/)"
+- Update figures of the entry types in the "[Structure of the YAML Input File](../user_guide/structure_of_the_yaml_input_file.md)"
     ```bash
     hatch run docs:update-entry-figures
     ```

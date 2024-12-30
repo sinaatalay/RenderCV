@@ -1,7 +1,7 @@
-site_name: RenderCV
-site_description: LaTeX CV generator engine from a YAML input file.
+site_name: RenderCV Engine
+site_description: A CLI tool to version-control CVs and resumes as code
 site_author: Sina Atalay
-copyright: Copyright &copy; 2023 - 2024 Sina Atalay
+copyright: Copyright &copy; 2023 - 2024 RenderCV
 site_url: https://docs.rendercv.com
 repo_url: https://github.com/rendercv/rendercv
 repo_name: rendercv/rendercv
@@ -9,6 +9,7 @@ edit_uri: edit/main/docs/
 
 theme:
   name: material
+  logo: assets/images/icon.svg
   language: en
   custom_dir: docs/overrides
   palette:
@@ -93,7 +94,8 @@ nav:
           - engineeringresumes: reference/themes/engineeringresumes.md
           - sb2nov: reference/themes/sb2nov.md
           - moderncv: reference/themes/moderncv.md
-  - Changelog: changelog.md
+  - Changelog:
+      - Changelog: changelog/index.md
 
 markdown_extensions:
   # see https://facelessuser.github.io/pymdown-extensions/extensions/inlinehilite/ for more pymdownx info
@@ -143,3 +145,8 @@ extra:
   analytics:
     provider: google
     property: G-7D7Y8D5Q4W
+  social:
+    - icon: material/github
+      link: https://github.com/rendercv
+    - icon: material/linkedin
+      link: https://www.linkedin.com/company/rendercv/

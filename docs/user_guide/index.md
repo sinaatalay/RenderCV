@@ -14,7 +14,7 @@ This page provides everything you need to know about the usage of RenderCV.
 pip install rendercv
 ```
 
-## Getting started with the `new` command
+## Getting started
 
 To get started, navigate to the directory where you want to create your CV and run the command below to create the input files.
 
@@ -25,7 +25,7 @@ This command will create the following files:
 
 -   A YAML input file called `Your_Name_CV.yaml`.
 
-    This file contains the content and design options of your CV.
+    This file contains the content and design options of your CV. A detailed explanation of the structure of the YAML input file is provided [here](structure_of_the_yaml_input_file.md).
 
 -   A directory called `classic`.
 
@@ -35,16 +35,12 @@ This command will create the following files:
 
     This directory contains the templates of RenderCV's default Markdown template. You can update its contents to tweak the Markdown and HTML output of the CV.
 
-Please refer to the [here](cli.md#options-of-the-rendercv-new-command) for the complete list of CLI options available for the `new` command.
+!!! info    
+    Refer to the [here](cli.md#rendercv-new-command) for the complete list of CLI options available for the `new` command.
 
-## Structure of the YAML input file
+Then, open the `Your_Name_CV.yaml` file in your favorite text editor and fill it with your information. See the [structure of the YAML input file](structure_of_the_yaml_input_file.md) for more information about the YAML input file.
 
-The YAML input file contains the content and design options of your CV. A detailed explanation of the structure of the YAML input file is provided [here](structure_of_the_yaml_input_file.md).
-
-
-## Rendering the CV with the `render` command
-
-To render a YAML input file, run the command below.
+Finally, render the YAML input file to generate your CV.
 
 ```bash
 rendercv render "Your_Name_CV.yaml"
@@ -56,12 +52,13 @@ This command will generate a directory called `rendercv_output`, which contains 
 -   $\LaTeX$ source code of the PDF file, `Your_Name_CV.tex`.
 -   Images of each page of the PDF file in PNG format, `Your_Name_CV_1.png`, `Your_Name_CV_page_2.png`, etc.
 -   The CV in Markdown format, `Your_Name_CV.md`.
--   The CV in HTML format, `Your_Name_CV.html`.
+-   The CV in HTML format, `Your_Name_CV.html`. You can open this file in a web browser and copy-paste the content to Grammarly for proofreading.
 -   Some log and auxiliary files related to the $\LaTeX$ compilation process.
 
-Please refer to the [here](cli.md#options-of-the-rendercv-render-command) for the complete list of CLI options available for the `render` command.
+!!! info
+    Refer to the [here](cli.md#rendercv-render-command) for the complete list of CLI options available for the `render` command.
 
-### Overriding built-in themes
+## Overriding built-in themes
 
 If the theme and Markdown templates are found in the directory, they will override the default built-in theme and Markdown templates. You don't need to provide all the files; you can just provide the ones you want to override.
 
@@ -180,4 +177,5 @@ RenderCV will then parse your custom design options from the YAML input. You can
 ((* endif *))
 ```
 
-Please refer [here](cli.md#options-of-the-rendercv-create-theme-command) for the complete list of CLI options available for the `create-theme` command.
+!!! info
+    Refer [here](cli.md#rendercv-create-theme-command) for the complete list of CLI options available for the `create-theme` command.

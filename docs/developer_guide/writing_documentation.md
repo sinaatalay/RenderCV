@@ -6,7 +6,7 @@ The documentation's source files are located in the [`docs`](https://github.com/
 hatch run docs:serve
 ```
 
-Once the changes are pushed to the `main` branch, the [`deploy-docs`](https://github.com/rendercv/rendercv/blob/main/.github/workflows/deploy-docs.yaml) workflow will be automatically triggered, and [docs.rendercv.com](https://docs.rendercv.com/) will be updated to the most recent version.
+Once the changes are pushed to the `main` branch, the [`deploy-docs.yaml`](https://github.com/rendercv/rendercv/blob/main/.github/workflows/deploy-docs.yaml) workflow will be automatically triggered, and [docs.rendercv.com](https://docs.rendercv.com/) will be updated to the most recent version.
 
 
 ## Updating the [`examples`](https://github.com/rendercv/rendercv/tree/main/examples) folder
@@ -23,9 +23,9 @@ hatch run docs:update-examples
 
 Once a new release is created on GitHub, the [`publish-to-pypi.yaml`](https://github.com/rendercv/rendercv/blob/main/.github/workflows/publish-to-pypi.yaml) workflow will be automatically triggered, and the `examples` folder will be updated to the most recent version.
 
-## Updating figures of the entry types in the "[Structure of the YAML Input File](https://docs.rendercv.com/user_guide/structure_of_the_yaml_input_file/)"
+## Updating figures of the entry types in the "[Structure of the YAML Input File](../user_guide/structure_of_the_yaml_input_file.md)"
 
-There are example figures for each entry type for each theme in the "[Structure of the YAML Input File](https://docs.rendercv.com/user_guide/structure_of_the_yaml_input_file/)" page.
+There are example figures for each entry type for each theme in the "[Structure of the YAML Input File](../user_guide/structure_of_the_yaml_input_file.md)" page.
 
 The figures are generated using [`docs/update_entry_figures.py`](https://github.com/rendercv/rendercv/blob/main/docs/update_entry_figures.py). 
 

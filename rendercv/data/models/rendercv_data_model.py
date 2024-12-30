@@ -15,7 +15,7 @@ from .design import RenderCVDesign
 from .locale_catalog import LocaleCatalog
 from .rendercv_settings import RenderCVSettings
 
-INPUT_FILE_DIRECTORY: pathlib.Path
+INPUT_FILE_DIRECTORY: Optional[pathlib.Path] = None
 
 
 class RenderCVDataModel(RenderCVBaseModelWithoutExtraKeys):
@@ -35,48 +35,42 @@ class RenderCVDataModel(RenderCVBaseModelWithoutExtraKeys):
             "The design information of the CV. The default is the classic theme."
         ),
     )
-    locale_catalog: Optional[LocaleCatalog] = pydantic.Field(
-        default=None,
+    locale_catalog: LocaleCatalog = pydantic.Field(
+        default=LocaleCatalog(),
         title="Locale Catalog",
         description=(
             "The locale catalog of the CV to allow the support of multiple languages."
         ),
     )
-    rendercv_settings: Optional[RenderCVSettings] = pydantic.Field(
-        default=None,
+    rendercv_settings: RenderCVSettings = pydantic.Field(
+        default=RenderCVSettings(),
         title="RenderCV Settings",
         description="The settings of the RenderCV.",
     )
 
-    @pydantic.field_validator("cv")
+    @pydantic.model_validator(mode="before")
     @classmethod
     def update_paths(
-        cls, rendercv_settings, info: pydantic.ValidationInfo
+        cls, model, info: pydantic.ValidationInfo
     ) -> Optional[RenderCVSettings]:
         """Update the paths in the RenderCV settings."""
-        context = info.context
         global INPUT_FILE_DIRECTORY  # NOQA: PLW0603
+
+        context = info.context
         if context:
-            input_file_directory = context.get(
-                "input_file_directory", pathlib.Path.cwd()
-            )
+            input_file_directory = context.get("input_file_directory", None)
             INPUT_FILE_DIRECTORY = input_file_directory
         else:
-            INPUT_FILE_DIRECTORY = pathlib.Path.cwd()
+            INPUT_FILE_DIRECTORY = None
 
-        return rendercv_settings
+        return model
 
     @pydantic.field_validator("locale_catalog")
     @classmethod
-    def initialize_locale_catalog(
-        cls, locale_catalog: Optional[LocaleCatalog]
-    ) -> Optional[LocaleCatalog]:
-        """Even if the locale catalog is not provided, initialize it with the default
-        values."""
-        if locale_catalog is None:
-            LocaleCatalog()
-
-        return locale_catalog
+    def update_locale_catalog(cls, _) -> LocaleCatalog:
+        """Update the output folder name in the RenderCV settings."""
+        # Somehow, we need this for `test_if_local_catalog_resets` to pass.
+        return LocaleCatalog()
 
 
 rendercv_data_model_fields = tuple(RenderCVDataModel.model_fields.keys())

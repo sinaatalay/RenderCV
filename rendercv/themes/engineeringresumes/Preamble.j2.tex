@@ -34,7 +34,6 @@
 \usepackage{ifthen} % for conditional statements
 \usepackage{needspace} % for avoiding page brake right after the section title
 \usepackage{iftex} % check if engine is pdflatex, xetex or luatex
-
 % Ensure that generate pdf is machine readable/ATS parsable:
 \ifPDFTeX
     \input{glyphtounicode}
@@ -43,9 +42,7 @@
     \usepackage[utf8]{inputenc}
     \usepackage{lmodern}
 \fi
-
 ((* if design.font == "Latin Modern Serif" *))
-
 ((* elif design.font == "Latin Modern Sans Serif" *))
 \renewcommand{\familydefault}{\sfdefault}
 ((* elif design.font == "Latin Modern Mono" *))
@@ -55,6 +52,7 @@
 ((* elif design.font == "Charter" *))
 \usepackage{charter}
 ((* endif *))
+\usepackage{graphicx} % for the profile picture
 
 % Some settings:
 ((* if design.text_alignment == "justified-with-no-hyphenation" *))
@@ -81,7 +79,7 @@
 \makeatletter
 \let\ps@customFooterStyle\ps@plain % Copy the plain style to customFooterStyle
 \patchcmd{\ps@customFooterStyle}{\thepage}{
-    \color{gray}\textit{\small <<design.page_numbering_style|replace_placeholders_with_actual_values(page_numbering_style_placeholders)>>}
+    \color{gray}\textit{\small <<locale_catalog.page_numbering_style|replace_placeholders_with_actual_values(page_numbering_style_placeholders)>>}
 }{}{} % replace number by desired string
 \makeatother
 \pagestyle{customFooterStyle}
@@ -174,10 +172,21 @@
         \LenToUnit{\paperwidth-<<design.margins.page.right>>-<<design.margins.entry_area.left_and_right>>+0.05cm},
         \LenToUnit{\paperheight-<<design.margins.page.top|divide_length_by(2)>>}
     ){\vtop{{\null}\makebox[0pt][c]{
-        \small\color{gray}\textit{<<design.last_updated_date_style|replace_placeholders_with_actual_values(last_updated_date_style_placeholders)>>}\hspace{\widthof{<<design.last_updated_date_style|replace_placeholders_with_actual_values(last_updated_date_style_placeholders)>>}}
+        \small\color{gray}\textit{<<locale_catalog.last_updated_date_style|replace_placeholders_with_actual_values(last_updated_date_style_placeholders)>>}\hspace{\widthof{<<locale_catalog.last_updated_date_style|replace_placeholders_with_actual_values(last_updated_date_style_placeholders)>>}}
     }}}%
   }%
 }%
+
+\newenvironment{twocolheadercontainer}[2][]{
+    \onecolentry
+    \def\secondColumn{#2}
+    \setcolumnwidth{\fill, 0.2\linewidth}
+    \begin{paracol}{2}
+}{
+    \switchcolumn \raggedleft \secondColumn
+    \end{paracol}
+    \endonecolentry
+} % new environment for headers with profile pictures
 
 % save the original href command in a new command:
 \let\hrefWithoutArrow\href

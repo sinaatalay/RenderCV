@@ -23,7 +23,7 @@ rendercv_settings:
 
 - The `cv` field is mandatory. It contains the **content of the CV**.
 - The `design` field is optional. It contains the **design options of the CV**. If you don't provide a `design` field, RenderCV will use the default design options with the `classic` theme.
-- The `locale_catalog` field is optional. You can provide translations for some of the strings used in the CV, for example, month abbreviations. RenderCV will use English strings if you don't provide a `locale_catalog` field.
+- The `locale_catalog` field is optional. You can provide translations for some of the strings used in the CV, for example, month abbreviations. RenderCV will use the default English strings if you don't provide a `locale_catalog` field.
 - The `rendercv_settings` field is optional. It contains the **settings of RenderCV** (output paths, etc.). If you don't provide a `rendercv_settings` field, RenderCV will use the default settings.
 
 !!! tip
@@ -263,7 +263,7 @@ cv:
 
 ## "`design`" field
 
-The `cv` field of the input contains your content, and the `design` field contains your design options. The `design` field starts with a theme name. Currently, the available themes are: {{available_themes}}. However, custom themes can also be used (see [here](index.md#creating-custom-themes-with-the-create-theme-command)).
+The `design` field contains your theme selection and its options. Currently, the available themes are: {{available_themes}}. However, custom themes can also be used (see [here](index.md#creating-custom-themes-with-the-create-theme-command)).
 
 ```yaml
 design:
@@ -281,9 +281,7 @@ design:
   color: blue
   disable_external_link_icons: false
   disable_last_updated_date: false
-  last_updated_date_style: Last updated in TODAY
   disable_page_numbering: false
-  page_numbering_style: NAME - Page PAGE_NUMBER of TOTAL_PAGES
   font: Source Sans 3
   font_size: 10pt
   header_font_size: "30 pt"
@@ -325,7 +323,9 @@ Here is an example:
 locale_catalog:
   phone_number_format: national # (1)!
   date_style: "MONTH_ABBREVIATION YEAR" # (2)!
-  abbreviations_for_months: # translation of the month abbreviations
+  last_updated_date_style: Last updated in TODAY # (3)!
+  page_numbering_style: NAME - Page PAGE_NUMBER of TOTAL_PAGES # (4)!
+  abbreviations_for_months: 
     - Jan
     - Feb
     - Mar
@@ -338,7 +338,7 @@ locale_catalog:
     - Oct
     - Nov
     - Dec
-  full_names_of_months: # translation of the full month names
+  full_names_of_months: 
     - January
     - February
     - March
@@ -351,20 +351,22 @@ locale_catalog:
     - October
     - November
     - December
-  month: month      # translation of the word "month"
-  months: months    # translation of the word "months"
-  year: year        # translation of the word "year"
-  years: years      # translation of the word "years"
-  present: present  # translation of the word "present"
-  to: to            # translation of the word "to"
+  month: month      
+  months: months    
+  year: year        
+  years: years      
+  present: present   
+  to: to            
 ```
 
 1. The available phone number formats are: `national`, `international`, and `E164`.
 2. The `MONTH_ABBREVIATION` and `YEAR` are placeholders. The available placeholders are: `FULL_MONTH_NAME`, `MONTH_ABBREVIATION`, `MONTH`, `MONTH_IN_TWO_DIGITS`, `YEAR`, and `YEAR_IN_TWO_DIGITS`.
+3. The available placeholders are: `TODAY`, which prints the today's date with `locale_catalog.date_style`.
+4. The available placeholders are: `NAME`, `PAGE_NUMBER`, `TOTAL_PAGES`, and `TODAY`.
 
 ## "`rendercv_settings`" field
 
-The `rendercv_settings` field contains RenderCV settings. We plan to add more settings soon, such as the ability to bold specific words and disable sections. Currently, it only includes the `render_command` field, which contains all the CLI options of the [`rendercv render`](./cli.md#options-of-the-rendercv-render-command) command, as shown below. If CLI arguments are provided, they will override the values in the YAML file. All the fields are optional.
+The `rendercv_settings` field contains RenderCV settings. We plan to add more settings soon, such as the ability to bold specific words and disable sections. Currently, it only includes the `render_command` field, which contains all the CLI options of the [`rendercv render`](./cli.md#rendercv-render-command) command, as shown below. If CLI arguments are provided, they will override the values in the YAML file. All the fields are optional.
 ```yaml
 rendercv_settings:
   render_command:
@@ -372,11 +374,10 @@ rendercv_settings:
     pdf_path: NAME_IN_SNAKE_CASE_CV.pdf # (1)!
     latex_path: NAME_IN_LOWER_SNAKE_CASE_cv.tex
     html_path: NAME_IN_KEBAB_CASE_CV.html
-    markdown_path: null # (2)!
+    markdown_path: NAME.md
     dont_generate_html: false 
     dont_generate_markdown: false 
     dont_generate_png: false 
 ```
 
 1. `NAME_IN_SNAKE_CASE` is a placeholder. The available placeholders are: `NAME_IN_SNAKE_CASE`, `NAME_IN_LOWER_SNAKE_CASE`, `NAME_IN_UPPER_SNAKE_CASE`, `NAME_IN_KEBAB_CASE`, `NAME_IN_LOWER_KEBAB_CASE`, `NAME_IN_UPPER_KEBAB_CASE`, `NAME`, `FULL_MONTH_NAME`, `MONTH_ABBREVIATION`, `MONTH`, `MONTH_IN_TWO_DIGITS`, `YEAR`, and `YEAR_IN_TWO_DIGITS`.
-2. When the `markdown_path` field is set to `null`, RenderCV will not copy the Markdown file from the output folder to another location. See the [CLI documentation](./cli.md#options-of-the-rendercv-render-command) for more information.
