@@ -744,6 +744,7 @@ def test_locale_catalog():
     locale_catalog_as_dict = data_model.locale_catalog.model_dump()
     del locale_catalog_as_dict["page_numbering_template"]
     del locale_catalog_as_dict["last_updated_date_template"]
+    del locale_catalog_as_dict["language"]
 
     assert locale_catalog_as_dict == locale_catalog.LOCALE_CATALOG
 

@@ -19,9 +19,18 @@ folder_name_dictionary = {
 
 
 def test_latex_file_class(tmp_path, rendercv_data_model, jinja2_environment):
+    rendercv_data_model.design = data.models.design.Classic_latexThemeOptions(
+        theme="classic_latex"
+    )
     latex_file = templater.LaTeXFile(rendercv_data_model, jinja2_environment)
     latex_file.get_full_code()
     latex_file.create_file(tmp_path / "test.tex")
+
+
+def test_typst_file_class(tmp_path, rendercv_data_model, jinja2_environment):
+    typst_file = templater.TypstFile(rendercv_data_model, jinja2_environment)
+    typst_file.get_full_code()
+    typst_file.create_file(tmp_path / "test.typ")
 
 
 @pytest.mark.parametrize(
@@ -416,11 +425,13 @@ def test_create_a_latex_file(
         cv=cv_data_model,
         design={"theme": theme_name},
     )
-
-    output_file_name = f"{str(cv_data_model.name).replace(' ', '_')}_CV.tex"
+    output_file_name = f"{str(cv_data_model.name).replace(' ', '_')}_CV.typ"
     reference_file_name = (
-        f"{theme_name}_{folder_name_dictionary[curriculum_vitae_data_model]}.tex"
+        f"{theme_name}_{folder_name_dictionary[curriculum_vitae_data_model]}.typ"
     )
+    if theme_name in data.available_latex_themes:
+        output_file_name = output_file_name.replace(".typ", ".tex")
+        reference_file_name = reference_file_name.replace(".typ", ".tex")
 
     def create_a_latex_file(output_directory_path, _):
         renderer.create_a_latex_or_typst_file(data_model, output_directory_path)
@@ -649,6 +660,11 @@ def test_render_a_pdf_from_latex(
     )
     reference_file_name = f"{reference_name}.pdf"
 
+    file_name = f"{name}_CV.typ"
+
+    if theme_name in data.available_latex_themes:
+        file_name = file_name.replace(".typ", ".tex")
+
     def generate_pdf_file(output_directory_path, reference_file_or_directory_path):
         latex_sources_path = (
             reference_file_or_directory_path.parent.parent
@@ -660,9 +676,7 @@ def test_render_a_pdf_from_latex(
         shutil.copytree(latex_sources_path, output_directory_path, dirs_exist_ok=True)
 
         # convert the latex code to a pdf
-        renderer.render_a_pdf_from_latex_or_typst(
-            output_directory_path / f"{name}_CV.tex"
-        )
+        renderer.render_a_pdf_from_latex_or_typst(output_directory_path / file_name)
 
     assert run_a_function_and_check_if_output_is_the_same_as_reference(
         function=generate_pdf_file,
