@@ -2,16 +2,16 @@
   ((* if degree_column *))
   three-col-entry(
     left-column-width: 1cm,
-    left-content: [*<<entry.degree>>*],
-    middle-content: [<<first_column>>],
+    left-content: [<<degree_column>>],
+    middle-content: [<<first_column_template>>],
   ((* else *))
   two-col-entry(
     left-content: [
-      <<first_column>>
+      <<first_column_template>>
     ],
   ((* endif *))
     right-content: [
-      <<second_column>>
+      <<second_column_template>>
     ],
   ),
   breakable: design-entries-allow-page-break-in-entries,

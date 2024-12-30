@@ -229,69 +229,48 @@ class TypstFile(TemplatedFile):
                 section_title=escape_typst_characters(section.title),
                 entry_type=section.entry_type,
             )
+            # This dictionary contains the locations of templates in the data model
+            # for each entry type:
+            entry_specific_templates = {
+                "EducationEntry": [
+                    ("entry_types", "education_entry", "first_column_template"),
+                    ("entry_types", "education_entry", "second_column_template"),
+                    ("entry_types", "education_entry", "degree_column_template"),
+                ],
+                "ExperienceEntry": [
+                    ("entry_types", "experience_entry", "first_column_template"),
+                    ("entry_types", "experience_entry", "second_column_template"),
+                ],
+                "OneLineEntry": [("entry_types", "one_line_entry", "template")],
+                "PublicationEntry": [
+                    ("entry_types", "publication_entry", "first_column_template"),
+                    (
+                        "entry_types",
+                        "publication_entry",
+                        "first_column_template_without_journal",
+                    ),
+                    (
+                        "entry_types",
+                        "publication_entry",
+                        "first_column_template_without_url",
+                    ),
+                ],
+                "NormalEntry": [
+                    ("entry_types", "normal_entry", "first_column_template"),
+                    ("entry_types", "normal_entry", "second_column_template"),
+                ],
+                "TextEntry": [],
+                "BulletEntry": [],
+            }
 
-            first_column = None
-            first_column_without_journal = None
-            first_column_without_url = None
-            second_column = None
-            template = None
-            degree_column = None
-
-            if (
-                section.entry_type == "EducationEntry"
-                and hasattr(self.design, "templates")
-                and hasattr(self.design.templates, "education_entry")
-            ):
-                first_column = (
-                    self.design.templates.education_entry.first_column_template
+            templates = {
+                location[-1]: getattr(
+                    getattr(getattr(self.design, location[0], None), location[1], None),
+                    location[2],
+                    None,
                 )
-                second_column = (
-                    self.design.templates.education_entry.second_column_template
-                )
-                degree_column = self.design.templates.education_entry.degree_column
-
-            elif (
-                section.entry_type == "ExperienceEntry"
-                and hasattr(self.design, "templates")
-                and hasattr(self.design.templates, "experience_entry")
-            ):
-                first_column = (
-                    self.design.templates.experience_entry.first_column_template
-                )
-                second_column = (
-                    self.design.templates.experience_entry.second_column_template
-                )
-
-            elif (
-                section.entry_type == "OneLineEntry"
-                and hasattr(self.design, "templates")
-                and hasattr(self.design.templates, "one_line_entry")
-            ):
-                template = self.design.templates.one_line_entry.template
-
-            elif (
-                section.entry_type == "PublicationEntry"
-                and hasattr(self.design, "templates")
-                and hasattr(self.design.templates, "publication_entry")
-            ):
-                first_column = (
-                    self.design.templates.publication_entry.first_column_template
-                )
-                first_column_without_journal = (
-                    self.design.templates.publication_entry.first_column_template_without_journal
-                )
-                first_column_without_url = (
-                    self.design.templates.publication_entry.first_column_template_without_url
-                )
-            elif (
-                section.entry_type == "NormalEntry"
-                and hasattr(self.design, "templates")
-                and hasattr(self.design.templates, "normal_entry")
-            ):
-                first_column = self.design.templates.normal_entry.first_column_template
-                second_column = (
-                    self.design.templates.normal_entry.second_column_template
-                )
+                for location in entry_specific_templates[section.entry_type]
+            }
 
             entries: list[str] = []
             for i, entry in enumerate(section.entries):
@@ -321,47 +300,54 @@ class TypstFile(TemplatedFile):
                         "components", placeholder_value.lower(), "typ", entry
                     )
 
-                new_first_column = None
-                new_second_column = None
-                new_first_column_without_journal = None
-                new_first_column_without_url = None
-                new_template = None
-
-                if first_column is not None:
-                    new_first_column = input_template_to_typst(
-                        first_column, placeholders
-                    )
-
-                if second_column is not None:
-                    new_second_column = input_template_to_typst(
-                        second_column, placeholders
-                    )
-                if first_column_without_journal is not None:
-                    new_first_column_without_journal = input_template_to_typst(
-                        first_column_without_journal, placeholders
-                    )
-                if first_column_without_url is not None:
-                    new_first_column_without_url = input_template_to_typst(
-                        first_column_without_url, placeholders
-                    )
-                if template is not None:
-                    new_template = input_template_to_typst(template, placeholders)
-
-                is_first_entry = i == 0
-
                 entries.append(
                     self.template(
                         section.entry_type,
                         entry=entry,
                         section_title=section.title,
                         entry_type=section.entry_type,
-                        is_first_entry=is_first_entry,
-                        first_column=new_first_column,
-                        first_column_without_url=new_first_column_without_url,
-                        first_column_without_journal=new_first_column_without_journal,
-                        second_column=new_second_column,
-                        template=new_template,
-                        degree_column=degree_column,
+                        is_first_entry=i == 0,
+                        first_column_template=(
+                            input_template_to_typst(
+                                templates["first_column_template"], placeholders
+                            )
+                            if templates.get("first_column_template")
+                            else None
+                        ),
+                        first_column_template_without_url=(
+                            input_template_to_typst(
+                                templates["first_column_without_url"], placeholders
+                            )
+                            if templates.get("first_column_without_url")
+                            else None
+                        ),
+                        first_column_template_without_journal=(
+                            input_template_to_typst(
+                                templates["first_column_template_without_journal"],
+                                placeholders,
+                            )
+                            if templates.get("first_column_template_without_journal")
+                            else None
+                        ),
+                        second_column_template=(
+                            input_template_to_typst(
+                                templates["second_column_template"], placeholders
+                            )
+                            if templates.get("second_column_template")
+                            else None
+                        ),
+                        template=(
+                            input_template_to_typst(templates["template"], placeholders)
+                            if templates.get("template")
+                            else None
+                        ),
+                        degree_column_template=(
+                            input_template_to_typst(
+                                templates["degree_column_template"], placeholders
+                            )
+                            if templates.get("degree_column_template")
+                            else None
+                        ),
                     )
                 )
             section_ending = self.template(

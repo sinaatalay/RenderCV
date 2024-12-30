@@ -3,11 +3,11 @@
   two-col-entry(
     left-content: [
   ((* endif *))
-      <<first_column>>
+      <<first_column_template>>
   ((* if entry.date_string or entry.location *))
     ],
     right-content: [
-      <<second_column>>
+      <<second_column_template>>
     ],
   )
   ((* endif *)),

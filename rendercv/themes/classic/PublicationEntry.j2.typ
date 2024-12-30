@@ -11,11 +11,11 @@
   ((* endif *))
       #set par(spacing: design-highlights-vertical-space-between-highlights)
       ((* if not (entry.doi or entry.url)*))
-      <<first_column_without_url>>
+      <<first_column_template_without_url>>
       ((*- elif not entry.journal -*))
-      <<first_column_without_journal>>
+      <<first_column_template_without_journal>>
       ((*- else -*))
-      <<first_column>>
+      <<first_column_template>>
       ((*- endif -*))
   ((* if entry.date_string *))
     ],

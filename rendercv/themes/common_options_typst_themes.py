@@ -4,7 +4,7 @@ models for the Typst themes' design options. To avoid code duplication, the them
 are encouraged to inherit from these data models.
 """
 
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Optional
 
 import pydantic
 import pydantic_extra_types.color as pydantic_color
@@ -439,12 +439,12 @@ class EducationEntryBase(RenderCVBaseModelWithoutExtraKeys):
         title="First Column",
         description="The content of the first column.",
     )
-    degree_column: bool = pydantic.Field(
-        default=True,
-        title="Show Degree Column",
+    degree_column_template: Optional[str] = pydantic.Field(
+        default="**DEGREE**",
+        title="Template of the Degree Column",
         description=(
-            "If this option is set to true, then the degree will be shown in the"
-            " education entries. The default value is true."
+            "If given, a degree column will be added to the education entry. The"
+            ' default value is "**DEGREE**".'
         ),
     )
 
@@ -485,7 +485,7 @@ class OneLineEntry(RenderCVBaseModelWithoutExtraKeys):
     )
 
 
-class Templates(RenderCVBaseModelWithoutExtraKeys):
+class EntryTypes(RenderCVBaseModelWithoutExtraKeys):
     one_line_entry: OneLineEntry = pydantic.Field(
         default=OneLineEntry(),
         title="One-Line Entry",
@@ -555,8 +555,8 @@ class ThemeOptions(RenderCVBaseModelWithoutExtraKeys):
         title="Entries",
         description="Options related to the entries.",
     )
-    templates: Templates = pydantic.Field(
-        default=Templates(),
+    entry_types: EntryTypes = pydantic.Field(
+        default=EntryTypes(),
         title="Templates",
         description="Options related to the templates.",
     )
