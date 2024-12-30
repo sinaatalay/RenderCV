@@ -128,10 +128,12 @@ def bullet_entry() -> dict[str, str]:
     """Return a sample bullet entry."""
     return copy.deepcopy(bullet_entry_dictionary)
 
+
 @pytest.fixture
 def reference_entry() -> dict[str, str]:
     """Return a sample reference entry."""
     return copy.deepcopy(reference_entry_dictionary)
+
 
 @pytest.fixture
 def text_entry() -> str:
