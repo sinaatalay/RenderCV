@@ -32,8 +32,8 @@ requires = [
 build-backend = "hatchling.build" # A build-backend object for building RenderCV
 
 [tool.hatch.build.targets.sdist]
-# In the sdist, what do we want to exclude?
-exclude = []
+# In the sdist, what do we want to exclude? Gif files are huge.
+exclude = ["*.gif"]
 
 [tool.hatch.build.targets.wheel]
 # In wheel, what do we want to include and exclude?
@@ -87,7 +87,6 @@ dynamic = ["version"] # We will use hatchling to generate the version number
 latex = [
     'rendercv-tinytex==0.2.0', # to render LaTeX files with TinyTeX
     "PyMuPDF==1.24.14",        # to convert PDF files to images
-
 ]
 
 [project.urls]
