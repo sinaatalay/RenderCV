@@ -504,7 +504,7 @@ class CurriculumVitae(RenderCVBaseModelWithExtraKeys):
             )
 
         if self.social_networks is not None:
-            typst_icon_dictionary = {
+            icon_dictionary = {
                 "LinkedIn": "linkedin",
                 "GitHub": "github",
                 "GitLab": "gitlab",
@@ -520,7 +520,7 @@ class CurriculumVitae(RenderCVBaseModelWithExtraKeys):
             for social_network in self.social_networks:
                 clean_url = computers.make_a_url_clean(social_network.url)
                 connection = {
-                    "typst_icon": typst_icon_dictionary[social_network.network],
+                    "typst_icon": icon_dictionary[social_network.network],
                     "url": social_network.url,
                     "clean_url": clean_url,
                     "placeholder": social_network.username,
