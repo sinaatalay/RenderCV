@@ -114,7 +114,7 @@ design:
   disable_last_updated_date: true
   header_font_size: 25 pt
   text_alignment: left-aligned
-  seperator_between_connections: $|$
+  separator_between_connections: $|$
   use_icons_for_connections: false
   margins:
     page:

@@ -114,7 +114,7 @@ design:
   disable_last_updated_date: false
   header_font_size: 30 pt
   text_alignment: justified
-  seperator_between_connections: ''
+  separator_between_connections: ''
   use_icons_for_connections: true
   margins:
     page:
