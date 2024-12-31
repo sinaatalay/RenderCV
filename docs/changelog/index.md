@@ -16,6 +16,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 ### Removed
 -->
+
+## [1.18] - January 1, 2025
+
+> **Full Changelog**: [v1.17...v1.18]
+
+### Changed
+
+- `design.seperator_between_connections` field has been renamed to `design.separator_between_connections` ([#282](https://github.com/rendercv/rendercv/issues/277)).
+
+### Fixed
+
+- `locale_catalog` field has been fixed ([#282](https://github.com/rendercv/rendercv/issues/275)).
+
 ## [1.17] - December 25, 2024
 
 > **Full Changelog**: [v1.16...v1.17]
@@ -439,6 +452,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 The first release of RenderCV.
 
+[v1.17...v1.18]: https://github.com/rendercv/rendercv/compare/v1.17...v1.18
 [v1.16...v1.17]: https://github.com/rendercv/rendercv/compare/v1.16...v1.17
 [v1.15...v1.16]: https://github.com/rendercv/rendercv/compare/v1.15...v1.16
 [v1.14...v1.15]: https://github.com/rendercv/rendercv/compare/v1.14...v1.15
@@ -465,6 +479,7 @@ The first release of RenderCV.
 [v0.3...v0.4]: https://github.com/rendercv/rendercv/compare/v0.3...v0.4
 [v0.2...v0.3]: https://github.com/rendercv/rendercv/compare/v0.2...v0.3
 [v0.1...v0.2]: https://github.com/rendercv/rendercv/compare/v0.1...v0.2
+[1.18]: https://github.com/rendercv/rendercv/releases/tag/v1.18
 [1.17]: https://github.com/rendercv/rendercv/releases/tag/v1.17
 [1.16]: https://github.com/rendercv/rendercv/releases/tag/v1.16
 [1.15]: https://github.com/rendercv/rendercv/releases/tag/v1.15
