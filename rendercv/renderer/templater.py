@@ -217,7 +217,8 @@ class TypstFile(TemplatedFile):
                 templates_with_substitutions = {
                     template_name: (
                         input_template_to_typst(
-                            templates[template_name], placeholders  # type: ignore
+                            templates[template_name],
+                            placeholders,  # type: ignore
                         )
                         if templates.get(template_name)
                         else None

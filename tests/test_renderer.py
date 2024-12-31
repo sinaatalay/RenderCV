@@ -448,9 +448,7 @@ def test_if_create_a_latex_file_can_create_a_new_directory(
 ):
     new_directory = tmp_path / "new_directory"
 
-    latex_file_path = renderer.create_a_typst_file(
-        rendercv_data_model, new_directory
-    )
+    latex_file_path = renderer.create_a_typst_file(rendercv_data_model, new_directory)
 
     assert latex_file_path.exists()
 
