@@ -254,6 +254,7 @@ class TypstFile(TemplatedFile):
                         "publication_entry",
                         "first_column_template_without_url",
                     ),
+                    ("entry_types", "publication_entry", "second_column_template"),
                 ],
                 "NormalEntry": [
                     ("entry_types", "normal_entry", "first_column_template"),
@@ -276,7 +277,7 @@ class TypstFile(TemplatedFile):
             for i, entry in enumerate(section.entries):
                 # Prepare placeholders:
                 placeholders = {}
-                placeholder_values = [
+                placeholder_keys = [
                     "DEGREE",
                     "INSTITUTION",
                     "AREA",
@@ -295,10 +296,23 @@ class TypstFile(TemplatedFile):
                     "NAME",
                 ]
 
-                for placeholder_value in placeholder_values:
-                    placeholders[placeholder_value] = super().template(
-                        "components", placeholder_value.lower(), "typ", entry
+                for placeholder_key in placeholder_keys:
+                    placeholder_value = super().template(
+                        "components", placeholder_key.lower(), "typ", entry
                     )
+                    placeholders[placeholder_key] = (
+                        placeholder_value if placeholder_value != "None" else None
+                    )
+
+                if section.entry_type == "PublicationEntry":
+                    a = (
+                        input_template_to_typst(
+                            templates["second_column_template"], placeholders
+                        )
+                        if templates.get("second_column_template")
+                        else None
+                    )
+                    b = 5
 
                 entries.append(
                     self.template(
@@ -316,9 +330,10 @@ class TypstFile(TemplatedFile):
                         ),
                         first_column_template_without_url=(
                             input_template_to_typst(
-                                templates["first_column_without_url"], placeholders
+                                templates["first_column_template_without_url"],
+                                placeholders,
                             )
-                            if templates.get("first_column_without_url")
+                            if templates.get("first_column_template_without_url")
                             else None
                         ),
                         first_column_template_without_journal=(
@@ -374,15 +389,13 @@ class TypstFile(TemplatedFile):
         Returns:
             The templated file.
         """
-        result = super().template(
+        return super().template(
             self.design.theme,
             template_name,
             "typ",
             entry,
             **kwargs,
         )
-
-        return revert_nested_latex_style_commands(result)
 
     def get_full_code(self) -> str:
         """Get the $\\LaTeX$ code of the file.
@@ -497,16 +510,39 @@ def input_template_to_typst(
     Returns:
         Typst string.
     """
-    return (
-        replace_placeholders_with_actual_values(
-            markdown_to_typst(input_template), placeholders
-        )
-        .replace("\n***None***", "")
-        .replace("\n**None**", "")
-        .replace("\n*None*", "")
-        .replace("\nNone", "")
-        .replace("None", "")
-    ).replace("\n", "\n\n")
+    output = replace_placeholders_with_actual_values(
+        markdown_to_typst(input_template), placeholders
+    )
+
+    # Check if there are any letters in the input template. If not, return an empty
+    if not re.search(r"[a-zA-Z]", input_template):
+        return ""
+
+    # Finsh italic and bold links and fix them:
+    # For example:
+    # Convert `#[_#link("https://google.com")[italic link]]`` to
+    # `#link("https://google.com")[_italic link_]`
+    output = re.sub(
+        r"#\[_#link\(\"(.*?)\"\)\[(.*?)\]_\]",
+        r'#link("\1")[_\2_]',
+        output,
+    )
+    output = re.sub(
+        r"#\[\*#link\(\"(.*?)\"\)\[(.*?)\]\*\]",
+        r'#link("\1")[*\2*]',
+        output,
+    )
+    output = re.sub(
+        r"#\[\*_#link\(\"(.*?)\"\)\[(.*?)\]_\*\]",
+        r'#link("\1")[*_\2_*]',
+        output,
+    )
+
+    # Replace all multiple \n with a single \n:
+    output = re.sub(r"\n+", r"\n", output)
+
+    # Make all \n s, \n\n:
+    return "\n\n".join(output.split("\n"))
 
 
 def revert_nested_latex_style_commands(latex_string: str) -> str:
@@ -908,7 +944,11 @@ def replace_placeholders_with_actual_values(
         The string with actual values.
     """
     for placeholder, value in placeholders.items():
-        text = text.replace(placeholder, str(value))
+        if value:
+            text = text.replace(placeholder, str(value))
+        else:
+            # Replace the placeholder and the characters around it with an empty string:
+            text = re.sub(rf"[^\s]*{placeholder}[^\s]*", "", text)
 
     return text
 
