@@ -188,11 +188,11 @@ class Text(RenderCVBaseModelWithoutExtraKeys):
         description='The font size of the CV. The default value is "10pt".',
     )
     leading: TypstDimension = pydantic.Field(
-        default="0.8em",
+        default="0.6em",
         title="Leading",
         description=(
             "The vertical space between adjacent lines of text. The default value is"
-            ' "0.8em".'
+            ' "0.6em".'
         ),
     )
     alignment: Literal["left", "justified", "justified-with-no-hyphenation"] = (
@@ -240,20 +240,20 @@ class Header(RenderCVBaseModelWithoutExtraKeys):
         ),
     )
     vertical_space_between_name_and_connections: TypstDimension = pydantic.Field(
-        default="0.55cm",
+        default="0.7cm",
         title="Vertical Margin Between the Name and Connections",
         description=(
             "The vertical margin between the name of the person and the connections."
-            ' The default value is "0.55cm".'
+            ' The default value is "0.7cm".'
         ),
     )
     vertical_space_between_connections_and_first_section: TypstDimension = (
         pydantic.Field(
-            default="0.55cm",
+            default="0.7cm",
             title="Vertical Margin Between Connections and First Section",
             description=(
                 "The vertical margin between the connections and the first section"
-                ' title. The default value is "0.55cm".'
+                ' title. The default value is "0.7cm".'
             ),
         )
     )
@@ -333,68 +333,35 @@ class SectionTitles(RenderCVBaseModelWithoutExtraKeys):
     )
 
 
-class Highlights(RenderCVBaseModelWithoutExtraKeys):
-    bullet: Literal["•", "●", "◦", "-", "◆", "★", "■", "—"] = pydantic.Field(
-        default="•",
-        title="Bullet",
-        description='The bullet used for the highlights. The default value is "•".',
-    )
-    top_margin: TypstDimension = pydantic.Field(
-        default="0.1cm",
-        title="Top Margin",
-        description='The top margin of the highlights. The default value is "0.1cm".',
-    )
-    left_margin: TypstDimension = pydantic.Field(
-        default="0.4cm",
-        title="Left Margin",
-        description='The left margin of the highlights. The default value is "0.4cm".',
-    )
-    vertical_space_between_highlights: TypstDimension = pydantic.Field(
-        default="0.4cm",
-        title="Vertical Space Between Highlights",
-        description=(
-            'The vertical space between the highlights. The default value is "0.4cm".'
-        ),
-    )
-    horizontal_space_between_bullet_and_highlight: TypstDimension = pydantic.Field(
-        default="0.5em",
-        title="Horizontal Space Between Bullet and Highlight",
-        description=(
-            "The horizontal space between the bullet and the highlight. The default"
-            ' value is "0.5em".'
-        ),
-    )
-
-
 class Entries(RenderCVBaseModelWithoutExtraKeys):
     date_and_location_width: TypstDimension = pydantic.Field(
-        default="4.5cm",
+        default="4.15cm",
         title="Width of Date and Location",
         description=(
             "The width of the date and location in the entries. The default value is"
-            ' "4.5cm".'
+            ' "4.15cm".'
         ),
     )
     left_and_right_margin: TypstDimension = pydantic.Field(
-        default="0.5cm",
+        default="0.2cm",
         title="Left and Right Margin",
         description=(
-            "The left and right margin of the entries. The default value is 0.5cm."
+            "The left and right margin of the entries. The default value is 0.2cm."
         ),
     )
     horizontal_space_between_columns: TypstDimension = pydantic.Field(
-        default="0cm",
+        default="0.1cm",
         title="Horizontal Space Between Columns",
         description=(
             "The horizontal space between the columns in the entries. The default value"
-            ' is "0cm".'
+            ' is "0.1cm".'
         ),
     )
     vertical_space_between_entries: TypstDimension = pydantic.Field(
-        default="0.2cm",
+        default="1.2em",
         title="Vertical Space Between Entries",
         description=(
-            'The vertical space between the entries. The default value is "0.2cm".'
+            'The vertical space between the entries. The default value is "1.2em".'
         ),
     )
     allow_page_break_in_entries: bool = pydantic.Field(
@@ -403,6 +370,39 @@ class Entries(RenderCVBaseModelWithoutExtraKeys):
         description=(
             'If this option is set to "true", then a page break will be allowed in the'
             ' entries. The default value is "true".'
+        ),
+    )
+
+
+class Highlights(RenderCVBaseModelWithoutExtraKeys):
+    bullet: Literal["•", "●", "◦", "-", "◆", "★", "■", "—"] = pydantic.Field(
+        default="•",
+        title="Bullet",
+        description='The bullet used for the highlights. The default value is "•".',
+    )
+    top_margin: TypstDimension = pydantic.Field(
+        default="0.25cm",
+        title="Top Margin",
+        description='The top margin of the highlights. The default value is "0.25cm".',
+    )
+    left_margin: TypstDimension = pydantic.Field(
+        default="0.4cm",
+        title="Left Margin",
+        description='The left margin of the highlights. The default value is "0.4cm".',
+    )
+    vertical_space_between_highlights: TypstDimension = pydantic.Field(
+        default="0.25cm",
+        title="Vertical Space Between Highlights",
+        description=(
+            'The vertical space between the highlights. The default value is "0.25cm".'
+        ),
+    )
+    horizontal_space_between_bullet_and_highlight: TypstDimension = pydantic.Field(
+        default="0.5em",
+        title="Horizontal Space Between Bullet and Highlight",
+        description=(
+            "The horizontal space between the bullet and the highlight. The default"
+            ' value is "0.5em".'
         ),
     )
 
@@ -417,17 +417,17 @@ class EntryBase(RenderCVBaseModelWithoutExtraKeys):
 
 class PublicationEntry(EntryBase):
     first_column_template: str = pydantic.Field(
-        default="*TITLE*\n*AUTHORS*\n*URL* (JOURNAL)",
+        default="**TITLE**\nAUTHORS\nURL (JOURNAL)",
         title="First Column",
         description="The content of the first column.",
     )
     first_column_template_without_journal: str = pydantic.Field(
-        default="*TITLE*\n*AUTHORS*\n*URL*",
+        default="**TITLE**\nAUTHORS\nURL",
         title="First Column Without Journal",
         description="The content of the first column without the journal.",
     )
     first_column_template_without_url: str = pydantic.Field(
-        default="*TITLE*\n*AUTHORS*\nJOURNAL",
+        default="**TITLE**\nAUTHORS\nJOURNAL",
         title="First Column Without URL",
         description="The content of the first column without the URL.",
     )
@@ -435,7 +435,7 @@ class PublicationEntry(EntryBase):
 
 class EducationEntryBase(RenderCVBaseModelWithoutExtraKeys):
     first_column_template: str = pydantic.Field(
-        default="*INSTITUTION*, AREA\nSUMMARY\nHIGHLIGHTS",
+        default="**INSTITUTION**, AREA\nSUMMARY\nHIGHLIGHTS",
         title="First Column",
         description="The content of the first column.",
     )
@@ -545,15 +545,15 @@ class ThemeOptions(RenderCVBaseModelWithoutExtraKeys):
         title="Section Titles",
         description="Options related to the section titles.",
     )
-    highlights: Highlights = pydantic.Field(
-        default=Highlights(),
-        title="Highlights",
-        description="Options related to the highlights.",
-    )
     entries: Entries = pydantic.Field(
         default=Entries(),
         title="Entries",
         description="Options related to the entries.",
+    )
+    highlights: Highlights = pydantic.Field(
+        default=Highlights(),
+        title="Highlights",
+        description="Options related to the highlights.",
     )
     entry_types: EntryTypes = pydantic.Field(
         default=EntryTypes(),

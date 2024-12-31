@@ -219,6 +219,71 @@ class TypstFile(TemplatedFile):
         Returns:
             The preamble, header, and sections of the $\\LaTeX$ file.
         """
+        # This dictionary contains the locations of templates in the design options
+        # for each entry type:
+        entry_specific_templates = {
+            "EducationEntry": [
+                ("entry_types", "education_entry", "first_column_template"),
+                ("entry_types", "education_entry", "second_column_template"),
+                ("entry_types", "education_entry", "degree_column_template"),
+            ],
+            "ExperienceEntry": [
+                ("entry_types", "experience_entry", "first_column_template"),
+                ("entry_types", "experience_entry", "second_column_template"),
+            ],
+            "OneLineEntry": [("entry_types", "one_line_entry", "template")],
+            "PublicationEntry": [
+                ("entry_types", "publication_entry", "first_column_template"),
+                (
+                    "entry_types",
+                    "publication_entry",
+                    "first_column_template_without_journal",
+                ),
+                (
+                    "entry_types",
+                    "publication_entry",
+                    "first_column_template_without_url",
+                ),
+                ("entry_types", "publication_entry", "second_column_template"),
+            ],
+            "NormalEntry": [
+                ("entry_types", "normal_entry", "first_column_template"),
+                ("entry_types", "normal_entry", "second_column_template"),
+            ],
+            "TextEntry": [],
+            "BulletEntry": [],
+        }
+
+        # All the template field names:
+        all_template_names = [
+            "first_column_template",
+            "first_column_template_without_url",
+            "first_column_template_without_journal",
+            "second_column_template",
+            "template",
+            "degree_column_template",
+        ]
+
+        # All the placeholders used in the templates:
+        placeholder_keys = [
+            "DEGREE",
+            "INSTITUTION",
+            "AREA",
+            "SUMMARY",
+            "HIGHLIGHTS",
+            "POSITION",
+            "COMPANY",
+            "DATE",
+            "LOCATION",
+            "TITLE",
+            "AUTHORS",
+            "JOURNAL",
+            "URL",
+            "LABEL",
+            "DETAILS",
+            "NAME",
+        ]
+
         # Template the preamble, header, and sections:
         preamble = self.template("Preamble")
         header = self.template("Header")
@@ -229,40 +294,6 @@ class TypstFile(TemplatedFile):
                 section_title=escape_typst_characters(section.title),
                 entry_type=section.entry_type,
             )
-            # This dictionary contains the locations of templates in the data model
-            # for each entry type:
-            entry_specific_templates = {
-                "EducationEntry": [
-                    ("entry_types", "education_entry", "first_column_template"),
-                    ("entry_types", "education_entry", "second_column_template"),
-                    ("entry_types", "education_entry", "degree_column_template"),
-                ],
-                "ExperienceEntry": [
-                    ("entry_types", "experience_entry", "first_column_template"),
-                    ("entry_types", "experience_entry", "second_column_template"),
-                ],
-                "OneLineEntry": [("entry_types", "one_line_entry", "template")],
-                "PublicationEntry": [
-                    ("entry_types", "publication_entry", "first_column_template"),
-                    (
-                        "entry_types",
-                        "publication_entry",
-                        "first_column_template_without_journal",
-                    ),
-                    (
-                        "entry_types",
-                        "publication_entry",
-                        "first_column_template_without_url",
-                    ),
-                    ("entry_types", "publication_entry", "second_column_template"),
-                ],
-                "NormalEntry": [
-                    ("entry_types", "normal_entry", "first_column_template"),
-                    ("entry_types", "normal_entry", "second_column_template"),
-                ],
-                "TextEntry": [],
-                "BulletEntry": [],
-            }
 
             templates = {
                 location[-1]: getattr(
@@ -277,25 +308,6 @@ class TypstFile(TemplatedFile):
             for i, entry in enumerate(section.entries):
                 # Prepare placeholders:
                 placeholders = {}
-                placeholder_keys = [
-                    "DEGREE",
-                    "INSTITUTION",
-                    "AREA",
-                    "SUMMARY",
-                    "HIGHLIGHTS",
-                    "POSITION",
-                    "COMPANY",
-                    "DATE",
-                    "LOCATION",
-                    "TITLE",
-                    "AUTHORS",
-                    "JOURNAL",
-                    "URL",
-                    "LABEL",
-                    "DETAILS",
-                    "NAME",
-                ]
-
                 for placeholder_key in placeholder_keys:
                     placeholder_value = super().template(
                         "components", placeholder_key.lower(), "typ", entry
@@ -304,15 +316,17 @@ class TypstFile(TemplatedFile):
                         placeholder_value if placeholder_value != "None" else None
                     )
 
-                if section.entry_type == "PublicationEntry":
-                    a = (
+                # Substitute the placeholders in the templates:
+                templates_with_substitutions = {
+                    template_name: (
                         input_template_to_typst(
-                            templates["second_column_template"], placeholders
+                            templates[template_name], placeholders  # type: ignore
                         )
-                        if templates.get("second_column_template")
+                        if templates.get(template_name)
                         else None
                     )
-                    b = 5
+                    for template_name in all_template_names
+                }
 
                 entries.append(
                     self.template(
@@ -321,48 +335,7 @@ class TypstFile(TemplatedFile):
                         section_title=section.title,
                         entry_type=section.entry_type,
                         is_first_entry=i == 0,
-                        first_column_template=(
-                            input_template_to_typst(
-                                templates["first_column_template"], placeholders
-                            )
-                            if templates.get("first_column_template")
-                            else None
-                        ),
-                        first_column_template_without_url=(
-                            input_template_to_typst(
-                                templates["first_column_template_without_url"],
-                                placeholders,
-                            )
-                            if templates.get("first_column_template_without_url")
-                            else None
-                        ),
-                        first_column_template_without_journal=(
-                            input_template_to_typst(
-                                templates["first_column_template_without_journal"],
-                                placeholders,
-                            )
-                            if templates.get("first_column_template_without_journal")
-                            else None
-                        ),
-                        second_column_template=(
-                            input_template_to_typst(
-                                templates["second_column_template"], placeholders
-                            )
-                            if templates.get("second_column_template")
-                            else None
-                        ),
-                        template=(
-                            input_template_to_typst(templates["template"], placeholders)
-                            if templates.get("template")
-                            else None
-                        ),
-                        degree_column_template=(
-                            input_template_to_typst(
-                                templates["degree_column_template"], placeholders
-                            )
-                            if templates.get("degree_column_template")
-                            else None
-                        ),
+                        **templates_with_substitutions,  # all the templates
                     )
                 )
             section_ending = self.template(
@@ -539,10 +512,10 @@ def input_template_to_typst(
     )
 
     # Replace all multiple \n with a single \n:
-    output = re.sub(r"\n+", r"\n", output)
+    output = re.sub(r"\n+", r"\n\n", output)
 
     # Make all \n s, \n\n:
-    return "\n\n".join(output.split("\n"))
+    return output
 
 
 def revert_nested_latex_style_commands(latex_string: str) -> str:
@@ -675,6 +648,8 @@ def escape_typst_characters(string: str) -> str:
     escape_dictionary = {
         "[": "\\[",
         "]": "\\]",
+        "(": "\\(",
+        ")": "\\)",
         "\\": "\\\\",
         '"': '\\"',
         "#": "\\#",

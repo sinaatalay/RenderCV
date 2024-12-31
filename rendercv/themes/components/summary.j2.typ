@@ -1,9 +1,10 @@
 ((* if entry.summary *))
 #block(
-  [<<entry.summary>>],
-  inset: (
-    left: design-highlights-left-margin,
-  ),
+  [
+    #v(design-highlights-top-margin)
+
+    <<entry.summary>>
+  ],
   width: 100%,
 )
 ((* endif *))
