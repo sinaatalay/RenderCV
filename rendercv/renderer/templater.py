@@ -34,7 +34,7 @@ class TemplatedFile:
     ):
         self.cv = data_model.cv
         self.design = data_model.design
-        self.locale_catalog = data_model.locale_catalog
+        self.locale = data_model.locale
         self.environment = environment
 
     def template(
@@ -76,7 +76,7 @@ class TemplatedFile:
         return template.render(
             cv=self.cv,
             design=self.design,
-            locale_catalog=self.locale_catalog,
+            locale=self.locale,
             entry=entry,
             today=data.format_date(Date.today()),
             **kwargs,

@@ -46,12 +46,12 @@ def cli_command_render(
             help='The "design" field\'s YAML input file.',
         ),
     ] = None,
-    locale_catalog: Annotated[
+    locale: Annotated[
         Optional[str],
         typer.Option(
             "--locale-catalog",
             "-lc",
-            help='The "locale_catalog" field\'s YAML input file.',
+            help='The "locale" field\'s YAML input file.',
         ),
     ] = None,
     rendercv_settings: Annotated[

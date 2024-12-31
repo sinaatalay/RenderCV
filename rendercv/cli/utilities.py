@@ -545,7 +545,7 @@ def read_and_construct_the_input(
     """
     input_file_as_a_dict = data.read_a_yaml_file(input_file_path)
 
-    # Read individual `design`, `locale_catalog`, etc. files if they are provided in the
+    # Read individual `design`, `locale`, etc. files if they are provided in the
     # input file:
     for field in data.rendercv_data_model_fields:
         if field in cli_render_arguments and cli_render_arguments[field] is not None:

@@ -144,12 +144,12 @@ This page lists the available commands and options of the RenderCV CLI.
     rendercv render "Full_Name_CV.yaml" --design "design.yaml"
     ```
 
-- `#!bash --locale-catalog locale_catalog.yaml`
+- `#!bash --locale-catalog locale.yaml`
    
-    Uses the given locale catalog file for the `locale_catalog` field of the input YAML file.
+    Uses the given locale catalog file for the `locale` field of the input YAML file.
 
     ```bash
-    rendercv render "Full_Name_CV.yaml" --locale-catalog "locale_catalog.yaml"
+    rendercv render "Full_Name_CV.yaml" --locale-catalog "locale.yaml"
     ```
 
 - `#!bash --rendercv-settings rendercv_settings.yaml`

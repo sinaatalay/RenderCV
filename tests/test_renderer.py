@@ -816,7 +816,7 @@ def test_render_pdf_invalid_typst_file(tmp_path):
     data.available_themes,
 )
 @time_machine.travel("2024-01-01")
-def test_locale_catalog(
+def test_locale(
     theme_name,
     tmp_path,
 ):
@@ -839,7 +839,7 @@ def test_locale_catalog(
     # " MONTH_IN_TWO_DIGITS: Month as a number in two digits\n- YEAR: Year as a"
     # " number\n- YEAR_IN_TWO_DIGITS: Year as a number in two digits\nThe"
     # ' default value is "MONTH_ABBREVIATION YEAR".'
-    locale_catalog = data.LocaleCatalog(
+    locale = data.Locale(
         abbreviations_for_months=[
             "Abbreviation of Jan",
             "Feb",
@@ -879,7 +879,7 @@ def test_locale_catalog(
     data_model = data.RenderCVDataModel(
         cv=cv,
         design={"theme": theme_name},
-        locale_catalog=locale_catalog,
+        locale=locale,
     )
 
     latex_file = renderer.create_a_latex_file(data_model, tmp_path)

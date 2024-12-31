@@ -1,6 +1,6 @@
 """
-The `rendercv.models.locale_catalog` module contains the data model of the
-`locale_catalog` field of the input file.
+The `rendercv.models.locale` module contains the data model of the
+`locale` field of the input file.
 """
 
 from typing import Annotated, Literal, Optional
@@ -12,9 +12,9 @@ import pydantic_extra_types.language_code
 from .base import RenderCVBaseModelWithoutExtraKeys
 
 
-class LocaleCatalog(RenderCVBaseModelWithoutExtraKeys):
+class Locale(RenderCVBaseModelWithoutExtraKeys):
     """This class is the data model of the locale catalog. The values of each field
-    updates the `locale_catalog` dictionary.
+    updates the `locale` dictionary.
     """
 
     language: pydantic_extra_types.language_code.LanguageAlpha2 = pydantic.Field(
@@ -43,7 +43,7 @@ class LocaleCatalog(RenderCVBaseModelWithoutExtraKeys):
             "The template of the page numbering. The following placeholders can be"
             " used:\n- NAME: The name of the person\n- PAGE_NUMBER: The current page"
             " number\n- TOTAL_PAGES: The total number of pages\n- TODAY: Today's date"
-            ' with `locale_catalog.date_template`\nThe default value is "NAME -'
+            ' with `locale.date_template`\nThe default value is "NAME -'
             ' Page PAGE_NUMBER of TOTAL_PAGES".'
         ),
     )
@@ -52,7 +52,7 @@ class LocaleCatalog(RenderCVBaseModelWithoutExtraKeys):
         title="Last Updated Date Template",
         description=(
             "The template of the last updated date. The following placeholders can be"
-            " used:\n- TODAY: Today's date with `locale_catalog.date_template`\nThe"
+            " used:\n- TODAY: Today's date with `locale.date_template`\nThe"
             ' default value is "Last updated in TODAY".'
         ),
     )
@@ -157,18 +157,18 @@ class LocaleCatalog(RenderCVBaseModelWithoutExtraKeys):
         "date_template",
     )
     @classmethod
-    def update_locale_catalog(cls, value: str, info: pydantic.ValidationInfo) -> str:
-        """Update the `locale_catalog` dictionary."""
+    def update_locale(cls, value: str, info: pydantic.ValidationInfo) -> str:
+        """Update the `locale` dictionary."""
         if value:
-            LOCALE_CATALOG[info.field_name] = value  # type: ignore
+            locale[info.field_name] = value  # type: ignore
 
         return value
 
 
-# The dictionary below will be overwritten by LocaleCatalog class, which will contain
+# The dictionary below will be overwritten by Locale class, which will contain
 # month names, month abbreviations, and other locale-specific strings.
-LOCALE_CATALOG: dict[str, str | list[str]] = {}
+locale: dict[str, str | list[str]] = {}
 
 # Initialize even if the RenderCVDataModel is not called (to make `format_date` function
 # work on its own):
-LocaleCatalog()
+Locale()

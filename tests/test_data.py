@@ -15,7 +15,7 @@ from rendercv.data.models import (
     computers,
     curriculum_vitae,
     entry_types,
-    locale_catalog,
+    locale,
 )
 
 
@@ -701,9 +701,9 @@ def test_custom_theme_with_broken_init_file(tmp_path, testdata_directory_path):
         )
 
 
-def test_locale_catalog():
+def test_locale():
     data_model = data.create_a_sample_data_model("John Doe")
-    data_model.locale_catalog = data.LocaleCatalog(
+    data_model.locale = data.Locale(
         month="a",
         months="b",
         year="c",
@@ -741,26 +741,26 @@ def test_locale_catalog():
         phone_number_format="international",
     )
 
-    locale_catalog_as_dict = data_model.locale_catalog.model_dump()
-    del locale_catalog_as_dict["page_numbering_template"]
-    del locale_catalog_as_dict["last_updated_date_template"]
-    del locale_catalog_as_dict["language"]
+    locale_as_dict = data_model.locale.model_dump()
+    del locale_as_dict["page_numbering_template"]
+    del locale_as_dict["last_updated_date_template"]
+    del locale_as_dict["language"]
 
-    assert locale_catalog_as_dict == locale_catalog.LOCALE_CATALOG
+    assert locale_as_dict == locale.locale
 
 
 def test_if_local_catalog_resets():
     data_model = data.create_a_sample_data_model("John Doe")
 
-    data_model.locale_catalog = data.LocaleCatalog(
+    data_model.locale = data.Locale(
         month="a",
     )
 
-    assert locale_catalog.LOCALE_CATALOG["month"] == "a"
+    assert locale.locale["month"] == "a"
 
     data_model = data.create_a_sample_data_model("John Doe")
 
-    assert locale_catalog.LOCALE_CATALOG["month"] == "month"
+    assert locale.locale["month"] == "month"
 
 
 def test_curriculum_vitae():

@@ -970,22 +970,22 @@ def test_empty_input_file_with_render_command(tmp_path, input_file_path):
 
 
 @pytest.mark.parametrize(
-    ("design", "locale_catalog", "rendercv_settings"),
+    ("design", "locale", "rendercv_settings"),
     # All possible combinations of the three:
     [(x, y, z) for x in [True, False] for y in [True, False] for z in [True, False]],
 )
 def test_read_and_construct_the_input(
     input_file_path,
     design_file_path,
-    locale_catalog_file_path,
+    locale_file_path,
     rendercv_settings_file_path,
     design,
-    locale_catalog,
+    locale,
     rendercv_settings,
 ):
     cli_render_arguments = {
         "design": str(design_file_path) if design else None,
-        "locale_catalog": str(locale_catalog_file_path) if locale_catalog else None,
+        "locale": str(locale_file_path) if locale else None,
         "rendercv_settings": (
             str(rendercv_settings_file_path) if rendercv_settings else None
         ),

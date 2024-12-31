@@ -55,11 +55,11 @@ class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
         ),
     )
 
-    locale_catalog: Optional[str] = pydantic.Field(
+    locale: Optional[str] = pydantic.Field(
         default=None,
-        title="`locale_catalog` Field's YAML File",
+        title="`locale` Field's YAML File",
         description=(
-            "The file path to the yaml file containing the `locale_catalog` field"
+            "The file path to the yaml file containing the `locale` field"
             " separately."
         ),
     )
@@ -166,7 +166,7 @@ class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
 
     @pydantic.field_validator(
         "design",
-        "locale_catalog",
+        "locale",
         "rendercv_settings",
         "pdf_path",
         "typst_path",

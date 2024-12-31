@@ -38,7 +38,7 @@ flowchart TD
         - [`entry_types.py`](data/models/entry_types.md) module contains the data models of the available entry types in RenderCV.
         - [`curriculum_vitae.py`](data/models/curriculum_vitae.md) module contains the data model of the `cv` field of the input file.
         - [`design.py`](data/models/design.md) module contains the data model of the `design` field of the input file.
-        - [`locale_catalog.py`](data/models/locale_catalog.md) module contains the data model of the `locale_catalog` field of the input file.
+        - [`locale.py`](data/models/locale.md) module contains the data model of the `locale` field of the input file.
         - [`rendercv_data_model.py`](data/models/rendercv_data_model.md) module contains the `RenderCVDataModel` data model, which is the main data model that defines the whole input file structure.
     - [`generator.py`](data/generator.md) module contains the functions for generating the JSON Schema of the input data format and a sample YAML input file.
     - [`reader.py`](data/reader.md) module contains the functions that are used to read the input files. 
