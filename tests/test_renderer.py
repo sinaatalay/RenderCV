@@ -19,9 +19,7 @@ folder_name_dictionary = {
 
 
 def test_typst_file_class(tmp_path, rendercv_data_model, jinja2_environment):
-    rendercv_data_model.design = data.models.design.ClassicThemeOptions(
-        theme="classic"
-    )
+    rendercv_data_model.design = data.models.design.ClassicThemeOptions(theme="classic")
     typst_file = templater.TypstFile(rendercv_data_model, jinja2_environment)
     typst_file.get_full_code()
     typst_file.create_file(tmp_path / "test.typ")
