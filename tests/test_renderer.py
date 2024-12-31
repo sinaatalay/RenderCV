@@ -18,13 +18,13 @@ folder_name_dictionary = {
 }
 
 
-def test_latex_file_class(tmp_path, rendercv_data_model, jinja2_environment):
-    rendercv_data_model.design = data.models.design.Classic_latexThemeOptions(
-        theme="classic_latex"
+def test_typst_file_class(tmp_path, rendercv_data_model, jinja2_environment):
+    rendercv_data_model.design = data.models.design.ClassicThemeOptions(
+        theme="classic"
     )
-    latex_file = templater.LaTeXFile(rendercv_data_model, jinja2_environment)
-    latex_file.get_full_code()
-    latex_file.create_file(tmp_path / "test.typ")
+    typst_file = templater.TypstFile(rendercv_data_model, jinja2_environment)
+    typst_file.get_full_code()
+    typst_file.create_file(tmp_path / "test.typ")
 
 
 def test_typst_file_class(tmp_path, rendercv_data_model, jinja2_environment):
@@ -68,14 +68,14 @@ def test_typst_file_class(tmp_path, rendercv_data_model, jinja2_environment):
         ),
     ],
 )
-def test_latex_file_revert_nested_latex_style_commands_method(string, expected_string):
+def test_typst_file_revert_nested_typst_style_commands_method(string, expected_string):
     assert templater.revert_nested_typst_style_commands(string) == expected_string
 
 
 @pytest.mark.xfail(
     strict=True,
     reason=(
-        "The current implementation of revert_nested_latex_style_commands method does"
+        "The current implementation of revert_nested_typst_style_commands method does"
         " not handle the challenging cases in the test cases below."
     ),
 )
@@ -98,16 +98,16 @@ def test_latex_file_revert_nested_latex_style_commands_method(string, expected_s
         ),
     ],
 )
-def test_latex_file_revert_nested_latex_style_commands_method_challenging_ones(
+def test_typst_file_revert_nested_typst_style_commands_method_challenging_ones(
     string, expected_string
 ):
     assert templater.revert_nested_typst_style_commands(string) == expected_string
 
 
 def test_markdown_file_class(tmp_path, rendercv_data_model, jinja2_environment):
-    latex_file = templater.MarkdownFile(rendercv_data_model, jinja2_environment)
-    latex_file.get_full_code()
-    latex_file.create_file(tmp_path / "test.typ")
+    typst_file = templater.MarkdownFile(rendercv_data_model, jinja2_environment)
+    typst_file.get_full_code()
+    typst_file.create_file(tmp_path / "test.typ")
 
 
 @pytest.mark.parametrize(
@@ -143,12 +143,12 @@ def test_markdown_file_class(tmp_path, rendercv_data_model, jinja2_environment):
         ),
     ],
 )
-def test_escape_latex_characters(string, expected_string):
-    assert templater.escape_latex_characters(string) == expected_string
+def test_escape_typst_characters(string, expected_string):
+    assert templater.escape_typst_characters(string) == expected_string
 
 
 @pytest.mark.parametrize(
-    ("markdown_string", "expected_latex_string"),
+    ("markdown_string", "expected_typst_string"),
     [
         ("My Text", "My Text"),
         ("**My** Text", "\\textbf{My} Text"),
@@ -169,12 +169,12 @@ def test_escape_latex_characters(string, expected_string):
         ),
     ],
 )
-def test_markdown_to_latex(markdown_string, expected_latex_string):
-    assert templater.markdown_to_latex(markdown_string) == expected_latex_string
+def test_markdown_to_typst(markdown_string, expected_typst_string):
+    assert templater.markdown_to_typst(markdown_string) == expected_typst_string
 
 
 @pytest.mark.parametrize(
-    ("markdown_string", "expected_latex_string"),
+    ("markdown_string", "expected_typst_string"),
     [
         ("My Text", "My Text"),
         ("**My** Text", "#[*My*] Text"),
@@ -192,13 +192,13 @@ def test_markdown_to_latex(markdown_string, expected_latex_string):
         ),
     ],
 )
-def test_markdown_to_typst(markdown_string, expected_latex_string):
-    assert templater.markdown_to_typst(markdown_string) == expected_latex_string
+def test_markdown_to_typst(markdown_string, expected_typst_string):
+    assert templater.markdown_to_typst(markdown_string) == expected_typst_string
 
 
-def test_transform_markdown_sections_to_latex_sections(rendercv_data_model):
+def test_transform_markdown_sections_to_typst_sections(rendercv_data_model):
     new_data_model = copy.deepcopy(rendercv_data_model)
-    new_sections_input = templater.transform_markdown_sections_to_latex_sections(
+    new_sections_input = templater.transform_markdown_sections_to_typst_sections(
         new_data_model.cv.sections_input
     )
     new_data_model.cv.sections_input = new_sections_input
@@ -414,7 +414,7 @@ def test_setup_jinja2_environment():
     ],
 )
 @time_machine.travel("2024-01-01")
-def test_create_a_latex_file(
+def test_create_a_typst_file(
     run_a_function_and_check_if_output_is_the_same_as_reference,
     request: pytest.FixtureRequest,
     theme_name,
@@ -429,28 +429,28 @@ def test_create_a_latex_file(
     reference_file_name = (
         f"{theme_name}_{folder_name_dictionary[curriculum_vitae_data_model]}.typ"
     )
-    if theme_name in data.available_latex_themes:
+    if theme_name in data.available_typst_themes:
         output_file_name = output_file_name.replace(".typ", ".typ")
         reference_file_name = reference_file_name.replace(".typ", ".typ")
 
-    def create_a_latex_file(output_directory_path, _):
+    def create_a_typst_file(output_directory_path, _):
         renderer.create_a_typst_file(data_model, output_directory_path)
 
     assert run_a_function_and_check_if_output_is_the_same_as_reference(
-        create_a_latex_file,
+        create_a_typst_file,
         reference_file_name,
         output_file_name,
     )
 
 
-def test_if_create_a_latex_file_can_create_a_new_directory(
+def test_if_create_a_typst_file_can_create_a_new_directory(
     tmp_path, rendercv_data_model
 ):
     new_directory = tmp_path / "new_directory"
 
-    latex_file_path = renderer.create_a_typst_file(rendercv_data_model, new_directory)
+    typst_file_path = renderer.create_a_typst_file(rendercv_data_model, new_directory)
 
-    assert latex_file_path.exists()
+    assert typst_file_path.exists()
 
 
 @pytest.mark.parametrize(
@@ -497,11 +497,11 @@ def test_if_create_a_markdown_file_can_create_a_new_directory(
 ):
     new_directory = tmp_path / "new_directory"
 
-    latex_file_path = renderer.create_a_markdown_file(
+    typst_file_path = renderer.create_a_markdown_file(
         rendercv_data_model, new_directory
     )
 
-    assert latex_file_path.exists()
+    assert typst_file_path.exists()
 
 
 @pytest.mark.parametrize(
@@ -605,7 +605,7 @@ def test_copy_theme_files_to_output_directory_nonexistent_theme():
     ],
 )
 @time_machine.travel("2024-01-01")
-def test_create_a_latex_file_and_copy_theme_files(
+def test_create_a_typst_file_and_copy_theme_files(
     run_a_function_and_check_if_output_is_the_same_as_reference,
     request: pytest.FixtureRequest,
     theme_name,
@@ -620,13 +620,13 @@ def test_create_a_latex_file_and_copy_theme_files(
         design={"theme": theme_name},
     )
 
-    def create_a_latex_file_and_copy_theme_files(output_directory_path, _):
+    def create_a_typst_file_and_copy_theme_files(output_directory_path, _):
         renderer.create_a_typst_file_and_copy_theme_files(
             data_model, output_directory_path
         )
 
     assert run_a_function_and_check_if_output_is_the_same_as_reference(
-        create_a_latex_file_and_copy_theme_files,
+        create_a_typst_file_and_copy_theme_files,
         reference_directory_name,
     )
 
@@ -643,7 +643,7 @@ def test_create_a_latex_file_and_copy_theme_files(
     ],
 )
 @time_machine.travel("2024-01-01")
-def test_render_a_pdf_from_latex(
+def test_render_a_pdf_from_typst(
     request: pytest.FixtureRequest,
     run_a_function_and_check_if_output_is_the_same_as_reference,
     theme_name,
@@ -660,20 +660,18 @@ def test_render_a_pdf_from_latex(
 
     file_name = f"{name}_CV.typ"
 
-    if theme_name in data.available_latex_themes:
+    if theme_name in data.available_themes:
         file_name = file_name.replace(".typ", ".typ")
 
     def generate_pdf_file(output_directory_path, reference_file_or_directory_path):
-        latex_sources_path = (
+        typst_sources_path = (
             reference_file_or_directory_path.parent.parent
-            / "test_create_a_latex_file_and_copy_theme_files"
+            / "test_create_a_typst_file_and_copy_theme_files"
             / reference_name
         )
 
-        # copy the latex sources to the output path
-        shutil.copytree(latex_sources_path, output_directory_path, dirs_exist_ok=True)
+        shutil.copytree(typst_sources_path, output_directory_path, dirs_exist_ok=True)
 
-        # convert the latex code to a pdf
         renderer.render_a_pdf_from_typst(output_directory_path / file_name)
 
     assert run_a_function_and_check_if_output_is_the_same_as_reference(
@@ -683,7 +681,7 @@ def test_render_a_pdf_from_latex(
     )
 
 
-def test_render_pdf_from_latex_nonexistent_latex_file():
+def test_render_pdf_from_typst_nonexistent_typst_file():
     file_path = pathlib.Path("file_doesnt_exist.typ")
     with pytest.raises(FileNotFoundError):
         renderer.render_a_pdf_from_typst(file_path)
@@ -747,15 +745,15 @@ def test_render_html_from_markdown_nonexistent_markdown_file():
 def test_render_pngs_from_pdf_single_page(
     run_a_function_and_check_if_output_is_the_same_as_reference,
 ):
-    output_file_name = "classic_latex_empty_1.png"
-    reference_file_name = "classic_latex_empty.png"
+    output_file_name = "classic_empty_1.png"
+    reference_file_name = "classic_empty.png"
 
     def generate_pngs(output_directory_path, reference_file_or_directory_path):
-        pdf_file_name = "classic_latex_empty.pdf"
+        pdf_file_name = "classic_empty.pdf"
 
         pdf_path = (
             reference_file_or_directory_path.parent.parent
-            / "test_render_a_pdf_from_latex"
+            / "test_render_a_pdf_from_typst"
             / pdf_file_name
         )
 
@@ -778,11 +776,11 @@ def test_render_pngs_from_pdf(
     reference_directory_name = "pngs"
 
     def generate_pngs(output_directory_path, reference_file_or_directory_path):
-        pdf_file_name = "classic_latex_filled.pdf"
+        pdf_file_name = "classic_filled.pdf"
 
         pdf_path = (
             reference_file_or_directory_path.parent.parent
-            / "test_render_a_pdf_from_latex"
+            / "test_render_a_pdf_from_typst"
             / pdf_file_name
         )
 
@@ -807,12 +805,12 @@ def test_render_pngs_from_pdf_nonexistent_pdf_file():
         renderer.render_pngs_from_pdf(file_path)
 
 
-def test_render_pdf_invalid_latex_file(tmp_path):
-    latex_file_path = tmp_path / "invalid_latex_file.typ"
-    latex_file_path.write_text("Invalid LaTeX code")
+def test_render_pdf_invalid_typst_file(tmp_path):
+    typst_file_path = tmp_path / "invalid_typst_file.typ"
+    typst_file_path.write_text("Invalid Typst code")
 
     with pytest.raises(RuntimeError):
-        renderer.render_a_pdf_from_latex_or_typst(latex_file_path)
+        renderer.render_a_pdf_from_typst(typst_file_path)
 
 
 @pytest.mark.parametrize(

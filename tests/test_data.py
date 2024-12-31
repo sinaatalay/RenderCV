@@ -76,7 +76,7 @@ def test_read_input_file_directly_with_contents():
             "name": "John Doe",
         },
         "design": {
-            "theme": "classic_latex",
+            "theme": "classic",
         },
     }
 

@@ -270,14 +270,14 @@ def test_render_command_with_relative_input_file_path(tmp_path, input_file_path)
 
     output_folder_path = tmp_path / "rendercv_output"
     pdf_file_path = output_folder_path / "John_Doe_CV.pdf"
-    latex_file_path = output_folder_path / "John_Doe_CV.typ"
+    typst_file_path = output_folder_path / "John_Doe_CV.typ"
     markdown_file_path = output_folder_path / "John_Doe_CV.md"
     html_file_path = output_folder_path / "John_Doe_CV.html"
     png_file_path = output_folder_path / "John_Doe_CV_1.png"
 
     assert output_folder_path.exists()
     assert pdf_file_path.exists()
-    assert latex_file_path.exists()
+    assert typst_file_path.exists()
     assert markdown_file_path.exists()
     assert html_file_path.exists()
     assert png_file_path.exists()
@@ -305,7 +305,7 @@ def test_render_command_with_different_output_path(input_file_path, tmp_path):
     ("option", "file_name"),
     [
         ("--pdf-path", "test.pdf"),
-        ("--latex-path", "test.typ"),
+        ("--typst-path", "test.typ"),
         ("--markdown-path", "test.md"),
         ("--html-path", "test.html"),
         ("--png-path", "test.png"),
@@ -374,17 +374,6 @@ def test_render_command_with_dont_generate_files(
     assert not file_path.exists()
 
 
-def test_render_command_with_local_latex_command(tmp_path, input_file_path):
-    run_render_command(
-        input_file_path,
-        tmp_path,
-        [
-            "--use-local-latex-command",
-            "pdflatex",
-        ],
-    )
-
-
 @pytest.mark.parametrize(
     "invalid_arguments",
     [
@@ -420,7 +409,7 @@ def test_render_command_with_invalid_arguments(
         ("--cv.location", "Test City"),
         ("--cv.sections.test_section.0", "Testing overriding TextEntry."),
         ("--cv.sections.nonexistent", '["this is a textentry for test"]'),
-        ("--design.theme", "sb2nov_latex"),
+        ("--design.theme", "sb2nov_typst"),
         ("--cv.sections", '{"test_title": ["testentry"]}'),
     ],
 )
@@ -458,12 +447,12 @@ def test_new_command(tmp_path):
     result = runner.invoke(cli.app, ["new", "Jahn Doe"])
 
     markdown_source_files_path = tmp_path / "markdown"
-    theme_source_files_path = tmp_path / "classic_latex"
+    theme_source_files_path = tmp_path / "classic_typst"
     input_file_path = tmp_path / "Jahn_Doe_CV.yaml"
 
     assert "Jahn_Doe_CV.yaml" in result.stdout
     assert "markdown" in result.stdout
-    assert "classic_latex" in result.stdout
+    assert "classic_typst" in result.stdout
 
     assert markdown_source_files_path.exists()
     assert theme_source_files_path.exists()
@@ -482,7 +471,7 @@ def test_new_command_with_invalid_theme(tmp_path):
 @pytest.mark.parametrize(
     ("option", "folder_name"),
     [
-        ("--dont-create-theme-source-files", "classic_latex"),
+        ("--dont-create-theme-source-files", "classic_typst"),
         ("--dont-create-markdown-source-files", "markdown"),
     ],
 )
@@ -525,7 +514,7 @@ def test_new_command_with_only_input_file(tmp_path):
     [
         "Jahn_Doe_CV.yaml",
         "markdown",
-        "classic_latex",
+        "classic_typst",
     ],
 )
 def test_new_command_with_existing_files(tmp_path, file_or_folder_name):
@@ -569,14 +558,14 @@ def test_custom_theme_names(tmp_path, input_file_path, custom_theme_name):
 
     output_folder_path = tmp_path / "rendercv_output"
     pdf_file_path = output_folder_path / "John_Doe_CV.pdf"
-    latex_file_path = output_folder_path / "John_Doe_CV.typ"
+    typst_file_path = output_folder_path / "John_Doe_CV.typ"
     markdown_file_path = output_folder_path / "John_Doe_CV.md"
     html_file_path = output_folder_path / "John_Doe_CV.html"
     png_file_path = output_folder_path / "John_Doe_CV_1.png"
 
     assert output_folder_path.exists()
     assert pdf_file_path.exists()
-    assert latex_file_path.exists()
+    assert typst_file_path.exists()
     assert markdown_file_path.exists()
     assert html_file_path.exists()
     assert png_file_path.exists()
@@ -607,14 +596,14 @@ def test_create_theme_command(tmp_path, input_file_path, based_on):
 
     output_folder_path = tmp_path / "rendercv_output"
     pdf_file_path = output_folder_path / "John_Doe_CV.pdf"
-    latex_file_path = output_folder_path / "John_Doe_CV.typ"
+    typst_file_path = output_folder_path / "John_Doe_CV.typ"
     markdown_file_path = output_folder_path / "John_Doe_CV.md"
     html_file_path = output_folder_path / "John_Doe_CV.html"
     png_file_path = output_folder_path / "John_Doe_CV_1.png"
 
     assert output_folder_path.exists()
     assert pdf_file_path.exists()
-    assert latex_file_path.exists()
+    assert typst_file_path.exists()
     assert markdown_file_path.exists()
     assert html_file_path.exists()
     assert png_file_path.exists()
@@ -644,14 +633,14 @@ def test_custom_theme_in_a_different_path(tmp_path, input_file_path):
 
     output_folder_path = tmp_path / "rendercv_output"
     pdf_file_path = output_folder_path / "John_Doe_CV.pdf"
-    latex_file_path = output_folder_path / "John_Doe_CV.typ"
+    typst_file_path = output_folder_path / "John_Doe_CV.typ"
     markdown_file_path = output_folder_path / "John_Doe_CV.md"
     html_file_path = output_folder_path / "John_Doe_CV.html"
     png_file_path = output_folder_path / "John_Doe_CV_1.png"
 
     assert output_folder_path.exists()
     assert pdf_file_path.exists()
-    assert latex_file_path.exists()
+    assert typst_file_path.exists()
     assert markdown_file_path.exists()
     assert html_file_path.exists()
     assert png_file_path.exists()
@@ -816,7 +805,7 @@ def test_render_command_with_input_file_settings(tmp_path, input_file_path):
     input_dictionary["rendercv_settings"] = {
         "render_command": {
             "pdf_path": "test.pdf",
-            "latex_path": "test.typ",
+            "typst_path": "test.typ",
             "markdown_path": "test.md",
             "html_path": "test.html",
             "png_path": "test.png",
@@ -883,7 +872,7 @@ def test_render_command_with_input_file_settings_2(tmp_path, input_file_path):
     ("option", "new_value"),
     [
         ("pdf-path", "override.pdf"),
-        ("latex-path", "override.typ"),
+        ("typst-path", "override.typ"),
         ("markdown-path", "override.md"),
         ("html-path", "override.html"),
         ("png-path", "override.png"),
@@ -902,7 +891,7 @@ def test_render_command_overriding_input_file_settings(
     input_dictionary["rendercv_settings"] = {
         "render_command": {
             "pdf_path": "test.pdf",
-            "latex_path": "test.typ",
+            "typst_path": "test.typ",
             "markdown_path": "test.md",
             "html_path": "test.html",
             "png_path": "test.png",
@@ -1051,7 +1040,7 @@ def test_bold_keywords(input_file_path, tmp_path):
         input_file_path,
         tmp_path,
     )
-    latex_file_path = tmp_path / "rendercv_output" / "None_CV.typ"
-    latex_content = latex_file_path.read_text()
+    typst_file_path = tmp_path / "rendercv_output" / "None_CV.typ"
+    typst_content = typst_file_path.read_text()
 
-    assert "\\textbf{test}" in latex_content
+    assert "\\textbf{test}" in typst_content
