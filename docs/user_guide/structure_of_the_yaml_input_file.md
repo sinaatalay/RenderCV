@@ -253,7 +253,7 @@ highlights:
 
 By default, the `an_arbitrary_key` key will not affect the output as the built-in templates do not use it. However, you can use the `an_arbitrary_key` key in your custom templates. Further information on overriding the built-in templates with custom ones can be found [here](index.md#overriding-built-in-themes).
 
-Also, you can use arbitrary keys in the `cv` field. You can use them anywhere in the templates, but generally, they are used in the header of the CV (`Header.j2.tex`).
+Also, you can use arbitrary keys in the `cv` field. You can use them anywhere in the templates, but generally, they are used in the header of the CV (`Header.j2.typ`).
 
 ```yaml hl_lines="3"
 cv:

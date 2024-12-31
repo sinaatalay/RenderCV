@@ -223,9 +223,9 @@ def test_copy_templates(tmp_path, folder_name):
     assert copied_path is not None
     assert copied_path.exists()
 
-    # make sure only j2.tex or j2.md files are copied:
+    # make sure only j2.typ or j2.md files are copied:
     for file in copied_path.iterdir():
-        assert file.suffix in [".tex", ".md"]
+        assert file.suffix in [".typ", ".md"]
 
 
 def test_copy_templates_with_new_folder_name(tmp_path):
@@ -270,7 +270,7 @@ def test_render_command_with_relative_input_file_path(tmp_path, input_file_path)
 
     output_folder_path = tmp_path / "rendercv_output"
     pdf_file_path = output_folder_path / "John_Doe_CV.pdf"
-    latex_file_path = output_folder_path / "John_Doe_CV.tex"
+    latex_file_path = output_folder_path / "John_Doe_CV.typ"
     markdown_file_path = output_folder_path / "John_Doe_CV.md"
     html_file_path = output_folder_path / "John_Doe_CV.html"
     png_file_path = output_folder_path / "John_Doe_CV_1.png"
@@ -305,7 +305,7 @@ def test_render_command_with_different_output_path(input_file_path, tmp_path):
     ("option", "file_name"),
     [
         ("--pdf-path", "test.pdf"),
-        ("--latex-path", "test.tex"),
+        ("--latex-path", "test.typ"),
         ("--markdown-path", "test.md"),
         ("--html-path", "test.html"),
         ("--png-path", "test.png"),
@@ -569,7 +569,7 @@ def test_custom_theme_names(tmp_path, input_file_path, custom_theme_name):
 
     output_folder_path = tmp_path / "rendercv_output"
     pdf_file_path = output_folder_path / "John_Doe_CV.pdf"
-    latex_file_path = output_folder_path / "John_Doe_CV.tex"
+    latex_file_path = output_folder_path / "John_Doe_CV.typ"
     markdown_file_path = output_folder_path / "John_Doe_CV.md"
     html_file_path = output_folder_path / "John_Doe_CV.html"
     png_file_path = output_folder_path / "John_Doe_CV_1.png"
@@ -607,7 +607,7 @@ def test_create_theme_command(tmp_path, input_file_path, based_on):
 
     output_folder_path = tmp_path / "rendercv_output"
     pdf_file_path = output_folder_path / "John_Doe_CV.pdf"
-    latex_file_path = output_folder_path / "John_Doe_CV.tex"
+    latex_file_path = output_folder_path / "John_Doe_CV.typ"
     markdown_file_path = output_folder_path / "John_Doe_CV.md"
     html_file_path = output_folder_path / "John_Doe_CV.html"
     png_file_path = output_folder_path / "John_Doe_CV_1.png"
@@ -644,7 +644,7 @@ def test_custom_theme_in_a_different_path(tmp_path, input_file_path):
 
     output_folder_path = tmp_path / "rendercv_output"
     pdf_file_path = output_folder_path / "John_Doe_CV.pdf"
-    latex_file_path = output_folder_path / "John_Doe_CV.tex"
+    latex_file_path = output_folder_path / "John_Doe_CV.typ"
     markdown_file_path = output_folder_path / "John_Doe_CV.md"
     html_file_path = output_folder_path / "John_Doe_CV.html"
     png_file_path = output_folder_path / "John_Doe_CV_1.png"
@@ -816,7 +816,7 @@ def test_render_command_with_input_file_settings(tmp_path, input_file_path):
     input_dictionary["rendercv_settings"] = {
         "render_command": {
             "pdf_path": "test.pdf",
-            "latex_path": "test.tex",
+            "latex_path": "test.typ",
             "markdown_path": "test.md",
             "html_path": "test.html",
             "png_path": "test.png",
@@ -837,7 +837,7 @@ def test_render_command_with_input_file_settings(tmp_path, input_file_path):
     )
 
     assert (tmp_path / "test.pdf").exists()
-    assert (tmp_path / "test.tex").exists()
+    assert (tmp_path / "test.typ").exists()
     assert (tmp_path / "test.md").exists()
     assert (tmp_path / "test.html").exists()
     assert (tmp_path / "test.png").exists()
@@ -883,7 +883,7 @@ def test_render_command_with_input_file_settings_2(tmp_path, input_file_path):
     ("option", "new_value"),
     [
         ("pdf-path", "override.pdf"),
-        ("latex-path", "override.tex"),
+        ("latex-path", "override.typ"),
         ("markdown-path", "override.md"),
         ("html-path", "override.html"),
         ("png-path", "override.png"),
@@ -902,7 +902,7 @@ def test_render_command_overriding_input_file_settings(
     input_dictionary["rendercv_settings"] = {
         "render_command": {
             "pdf_path": "test.pdf",
-            "latex_path": "test.tex",
+            "latex_path": "test.typ",
             "markdown_path": "test.md",
             "html_path": "test.html",
             "png_path": "test.png",
@@ -1051,7 +1051,7 @@ def test_bold_keywords(input_file_path, tmp_path):
         input_file_path,
         tmp_path,
     )
-    latex_file_path = tmp_path / "rendercv_output" / "None_CV.tex"
+    latex_file_path = tmp_path / "rendercv_output" / "None_CV.typ"
     latex_content = latex_file_path.read_text()
 
     assert "\\textbf{test}" in latex_content

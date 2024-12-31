@@ -47,7 +47,7 @@ rendercv render "Your_Name_CV.yaml"
 This command will generate a directory called `rendercv_output`, which contains the following files:
 
 -   The CV in PDF format, `Your_Name_CV.pdf`.
--   Typst source code of the PDF file, `Your_Name_CV.tex`.
+-   Typst source code of the PDF file, `Your_Name_CV.typ`.
 -   Images of each page of the PDF file in PNG format, `Your_Name_CV_1.png`, `Your_Name_CV_page_2.png`, etc.
 -   The CV in Markdown format, `Your_Name_CV.md`.
 -   The CV in HTML format, `Your_Name_CV.html`. You can open this file in a web browser and copy-paste the content to Grammarly for proofreading.
@@ -63,11 +63,11 @@ For example, `ExperienceEntry` of the `classic` theme can be modified as shown b
 
 ``` { .sh .no-copy }
 ├── classic
-│   └── ExperienceEntry.j2.tex # (1)!
+│   └── ExperienceEntry.j2.typ # (1)!
 └── Your_Full_Name_CV.yaml
 ```
 
-1.  This file will override the built-in `ExperienceEntry.j2.tex` template of the `classic` theme.
+1.  This file will override the built-in `ExperienceEntry.j2.typ` template of the `classic` theme.
 
 
 ## Creating custom themes with the `create-theme` command
@@ -83,16 +83,16 @@ This command will create a directory called `mycustomtheme`, which contains the 
 ``` { .sh .no-copy }
 ├── mycustomtheme
 │   ├── __init__.py
-│   ├── Preamble.j2.tex
-│   ├── Header.j2.tex
-│   ├── EducationEntry.j2.tex
-│   ├── ExperienceEntry.j2.tex
-│   ├── NormalEntry.j2.tex
-│   ├── OneLineEntry.j2.tex
-│   ├── PublicationEntry.j2.tex
-│   ├── TextEntry.j2.tex
-│   ├── SectionBeginning.j2.tex
-│   └── SectionEnding.j2.tex
+│   ├── Preamble.j2.typ
+│   ├── Header.j2.typ
+│   ├── EducationEntry.j2.typ
+│   ├── ExperienceEntry.j2.typ
+│   ├── NormalEntry.j2.typ
+│   ├── OneLineEntry.j2.typ
+│   ├── PublicationEntry.j2.typ
+│   ├── TextEntry.j2.typ
+│   ├── SectionBeginning.j2.typ
+│   └── SectionEnding.j2.typ
 └── Your_Full_Name_CV.yaml
 ```
 
@@ -121,7 +121,7 @@ The best way to understand how they work is to look at the templates of the buil
 - [templates of the `engineeringresumes` theme](../reference/themes/engineeringresumes.md#jinja-templates)
 - [templates of the `sb2nov` theme](../reference/themes/sb2nov.md#jinja-templates)
 
-For example, the content of `ExperienceEntry.j2.tex` for the `classic` theme is shown below:
+For example, the content of `ExperienceEntry.j2.typ` for the `classic` theme is shown below:
 
 ```typst
 \cventry{
@@ -163,7 +163,7 @@ class YourcustomthemeThemeOptions(pydantic.BaseModel):
     option4: bool
 ```
 
-RenderCV will then parse your custom design options from the YAML input. You can use these variables inside your `*.j2.tex` files as shown below:
+RenderCV will then parse your custom design options from the YAML input. You can use these variables inside your `*.j2.typ` files as shown below:
 
 ```typst
 <<design.option1>>

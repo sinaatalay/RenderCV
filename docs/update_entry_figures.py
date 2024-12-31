@@ -78,7 +78,7 @@ def define_env(env):
     theme_templates = {}
     for theme in data.available_themes:
         theme_templates[theme] = {}
-        for theme_file in themes_path.glob(f"{theme}/*.tex"):
+        for theme_file in themes_path.glob(f"{theme}/*.typ"):
             theme_templates[theme][theme_file.stem] = theme_file.read_text()
 
         # Update ordering of theme templates
@@ -99,7 +99,7 @@ def define_env(env):
 
         if theme != "markdown":
             theme_templates[theme] = {
-                f"{key}.tex": value for key, value in theme_templates[theme].items()
+                f"{key}.typ": value for key, value in theme_templates[theme].items()
             }
         else:
             theme_templates[theme] = {

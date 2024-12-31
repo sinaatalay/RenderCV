@@ -168,12 +168,12 @@ cython_debug/
 # Personal CVs
 *_CV.yaml
 *_cv.py
-*_CV.tex
+*_CV.typ
 rendercv_output/
 
 # Include reference files
 !/tests/testdata/**/*.pdf
-!/tests/testdata/**/*.tex
+!/tests/testdata/**/*.typ
 !/tests/testdata/**/*.md
 !/tests/testdata/**/*.html
 !/tests/testdata/**/*.yaml

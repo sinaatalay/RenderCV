@@ -24,7 +24,7 @@ def test_latex_file_class(tmp_path, rendercv_data_model, jinja2_environment):
     )
     latex_file = templater.LaTeXFile(rendercv_data_model, jinja2_environment)
     latex_file.get_full_code()
-    latex_file.create_file(tmp_path / "test.tex")
+    latex_file.create_file(tmp_path / "test.typ")
 
 
 def test_typst_file_class(tmp_path, rendercv_data_model, jinja2_environment):
@@ -107,7 +107,7 @@ def test_latex_file_revert_nested_latex_style_commands_method_challenging_ones(
 def test_markdown_file_class(tmp_path, rendercv_data_model, jinja2_environment):
     latex_file = templater.MarkdownFile(rendercv_data_model, jinja2_environment)
     latex_file.get_full_code()
-    latex_file.create_file(tmp_path / "test.tex")
+    latex_file.create_file(tmp_path / "test.typ")
 
 
 @pytest.mark.parametrize(
@@ -430,8 +430,8 @@ def test_create_a_latex_file(
         f"{theme_name}_{folder_name_dictionary[curriculum_vitae_data_model]}.typ"
     )
     if theme_name in data.available_latex_themes:
-        output_file_name = output_file_name.replace(".typ", ".tex")
-        reference_file_name = reference_file_name.replace(".typ", ".tex")
+        output_file_name = output_file_name.replace(".typ", ".typ")
+        reference_file_name = reference_file_name.replace(".typ", ".typ")
 
     def create_a_latex_file(output_directory_path, _):
         renderer.create_a_typst_file(data_model, output_directory_path)
@@ -540,12 +540,12 @@ def test_copy_theme_files_to_output_directory_custom_theme(
 
         # create a txt file called test.txt in the custom theme directory:
         for entry_type_name in data.available_entry_type_names:
-            pathlib.Path(dummytheme_path / f"{entry_type_name}.j2.tex").touch()
+            pathlib.Path(dummytheme_path / f"{entry_type_name}.j2.typ").touch()
 
-        pathlib.Path(dummytheme_path / "Header.j2.tex").touch()
-        pathlib.Path(dummytheme_path / "Preamble.j2.tex").touch()
-        pathlib.Path(dummytheme_path / "SectionBeginning.j2.tex").touch()
-        pathlib.Path(dummytheme_path / "SectionEnding.j2.tex").touch()
+        pathlib.Path(dummytheme_path / "Header.j2.typ").touch()
+        pathlib.Path(dummytheme_path / "Preamble.j2.typ").touch()
+        pathlib.Path(dummytheme_path / "SectionBeginning.j2.typ").touch()
+        pathlib.Path(dummytheme_path / "SectionEnding.j2.typ").touch()
         pathlib.Path(dummytheme_path / "theme_auxiliary_file.cls").touch()
         pathlib.Path(dummytheme_path / "theme_auxiliary_dir").mkdir(exist_ok=True)
         pathlib.Path(
@@ -661,7 +661,7 @@ def test_render_a_pdf_from_latex(
     file_name = f"{name}_CV.typ"
 
     if theme_name in data.available_latex_themes:
-        file_name = file_name.replace(".typ", ".tex")
+        file_name = file_name.replace(".typ", ".typ")
 
     def generate_pdf_file(output_directory_path, reference_file_or_directory_path):
         latex_sources_path = (
@@ -684,7 +684,7 @@ def test_render_a_pdf_from_latex(
 
 
 def test_render_pdf_from_latex_nonexistent_latex_file():
-    file_path = pathlib.Path("file_doesnt_exist.tex")
+    file_path = pathlib.Path("file_doesnt_exist.typ")
     with pytest.raises(FileNotFoundError):
         renderer.render_a_pdf_from_typst(file_path)
 
@@ -808,7 +808,7 @@ def test_render_pngs_from_pdf_nonexistent_pdf_file():
 
 
 def test_render_pdf_invalid_latex_file(tmp_path):
-    latex_file_path = tmp_path / "invalid_latex_file.tex"
+    latex_file_path = tmp_path / "invalid_latex_file.typ"
     latex_file_path.write_text("Invalid LaTeX code")
 
     with pytest.raises(RuntimeError):

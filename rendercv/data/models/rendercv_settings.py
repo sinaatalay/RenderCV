@@ -3,6 +3,7 @@ The `rendercv.models.rendercv_settings` module contains the data model of the
 `rendercv_settings` field of the input file.
 """
 
+import datetime
 import pathlib
 from typing import Optional
 
@@ -189,6 +190,15 @@ class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
 class RenderCVSettings(RenderCVBaseModelWithoutExtraKeys):
     """This class is the data model of the RenderCV settings."""
 
+    date: datetime.date = pydantic.Field(
+        default=datetime.date.today(),
+        title="Date",
+        description=(
+            "The date that will be used everywhere (e.g., in the output file names,"
+            " last updated date, computation of time spans for the events that are"
+            " currently happening, etc.). The default value is the current date."
+        ),
+    )
     render_command: Optional[RenderCommandSettings] = pydantic.Field(
         default=None,
         title="Render Command Settings",
@@ -206,3 +216,15 @@ class RenderCVSettings(RenderCVBaseModelWithoutExtraKeys):
             " empty list."
         ),
     )
+
+    @pydantic.field_validator("date")
+    @classmethod
+    def mock_today(cls, value: datetime.date) -> datetime.date:
+        """Mocks the current date for testing."""
+
+        def mock_today():
+            return value
+
+        datetime.date.today = mock_today
+
+        return value
