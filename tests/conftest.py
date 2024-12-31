@@ -511,7 +511,7 @@ def design_file_path(tmp_path, testdata_directory_path) -> pathlib.Path:
     """Return the path to the input file."""
     design_settings_file_path = testdata_directory_path / "John_Doe_CV_design.yaml"
     if update_testdata:
-        design_settings_file_path.write_text("design:\n  theme: classic_latex\n")
+        design_settings_file_path.write_text("design:\n  theme: classic\n")
 
     shutil.copyfile(design_settings_file_path, tmp_path / "John_Doe_CV_design.yaml")
     return tmp_path / "John_Doe_CV_design.yaml"

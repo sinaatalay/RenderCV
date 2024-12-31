@@ -161,14 +161,10 @@ def generate_entry_figures():
                 )
 
                 # Render
-                latex_file_path = (
-                    renderer.create_a_latex_or_typst_file_and_copy_theme_files(
-                        data_model, temporary_directory_path
-                    )
+                typst_file_path = renderer.create_a_typst_file_and_copy_theme_files(
+                    data_model, temporary_directory_path
                 )
-                pdf_file_path = renderer.render_a_pdf_from_latex_or_typst(
-                    latex_file_path
-                )
+                pdf_file_path = renderer.render_a_pdf_from_typst(typst_file_path)
 
                 # Prepare output directory and file path
                 output_directory = image_assets_directory / theme

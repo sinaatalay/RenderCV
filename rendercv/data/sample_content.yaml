@@ -55,11 +55,14 @@ sections:
         - Designed an inventory management web application for a warehouse
   projects:
     - name: "[Example Project](https://example.com)"
+      start_date: 2024-05
+      end_date: present
       summary: "A web application for writing essays"
       highlights:
         - "Launched an [iOS app](https://example.com) in 09/2024 that currently has 10k+ monthly active users"
         - "The app is made open-source (3,000+ stars [on GitHub](https://github.com))"
     - name: "[Teaching on Udemy](https://example.com)"
+      date: Fall 2023
       highlights:
         - 'Instructed the "Statics" course on Udemy (60,000+ students, 200,000+ hours watched)'
   skills:

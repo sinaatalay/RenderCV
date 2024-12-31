@@ -4,8 +4,6 @@ This page provides everything you need to know about the usage of RenderCV.
 
 ## Installation
 
-> RenderCV doesn't require a $\LaTeX$ installation; it comes with it!
-
 1. Install [Python](https://www.python.org/downloads/) (3.10 or newer).
 
 2. Run the command below to install RenderCV.
@@ -29,7 +27,7 @@ This command will create the following files:
 
 -   A directory called `classic`.
 
-    This directory contains the $\LaTeX$ templates of RenderCV's default built-in theme, `classic`. You can update its contents to tweak the appearance of the output PDF file.
+    This directory contains the Typst templates of RenderCV's default built-in theme, `classic`. You can update its contents to tweak the appearance of the output PDF file.
 
 -   A directory called `markdown`.
 
@@ -49,11 +47,10 @@ rendercv render "Your_Name_CV.yaml"
 This command will generate a directory called `rendercv_output`, which contains the following files:
 
 -   The CV in PDF format, `Your_Name_CV.pdf`.
--   $\LaTeX$ source code of the PDF file, `Your_Name_CV.tex`.
+-   Typst source code of the PDF file, `Your_Name_CV.tex`.
 -   Images of each page of the PDF file in PNG format, `Your_Name_CV_1.png`, `Your_Name_CV_page_2.png`, etc.
 -   The CV in Markdown format, `Your_Name_CV.md`.
 -   The CV in HTML format, `Your_Name_CV.html`. You can open this file in a web browser and copy-paste the content to Grammarly for proofreading.
--   Some log and auxiliary files related to the $\LaTeX$ compilation process.
 
 !!! info
     Refer to the [here](cli.md#rendercv-render-command) for the complete list of CLI options available for the `render` command.
@@ -75,7 +72,7 @@ For example, `ExperienceEntry` of the `classic` theme can be modified as shown b
 
 ## Creating custom themes with the `create-theme` command
 
-RenderCV is a general $\LaTeX$ CV framework. It allows you to use any $\LaTeX$ code to generate your CVs. To begin developing a custom theme, run the command below.
+RenderCV is a general Typst-based CV framework. It allows you to use any Typst code to generate your CVs. To begin developing a custom theme, run the command below.
 
 ```bash
 rendercv create-theme "mycustomtheme"
@@ -116,18 +113,17 @@ Then, run the `render` command to render your CV with `mycustomtheme`.
 !!! note
     Since JSON Schema will not recognize the name of the custom theme, it may show a warning in your IDE. This warning can be ignored.
 
-Each of these `*.j2.tex` files is $\LaTeX$ code with some Python in it. These files allow RenderCV to create your CV out of the YAML input.
+Each of these `*.j2.typ` files is Typst code with some Python in it. These files allow RenderCV to create your CV out of the YAML input.
 
 The best way to understand how they work is to look at the templates of the built-in themes:
 
-- [templates of the `classic` theme](../reference/themes/classic_latex.md#jinja-templates)
-- [templates of the `engineeringresumes` theme](../reference/themes/engineeringresumes_latex.md#jinja-templates)
-- [templates of the `sb2nov` theme](../reference/themes/sb2nov_latex.md#jinja-templates)
-- [templates of the `moderncv` theme](../reference/themes/moderncv_latex.md#jinja-templates)
+- [templates of the `classic` theme](../reference/themes/classic.md#jinja-templates)
+- [templates of the `engineeringresumes` theme](../reference/themes/engineeringresumes.md#jinja-templates)
+- [templates of the `sb2nov` theme](../reference/themes/sb2nov.md#jinja-templates)
 
-For example, the content of `ExperienceEntry.j2.tex` for the `moderncv` theme is shown below:
+For example, the content of `ExperienceEntry.j2.tex` for the `classic` theme is shown below:
 
-```latex
+```typst
 \cventry{
     ((* if design.show_only_years *))
     <<entry.date_string_only_years>>
@@ -146,9 +142,9 @@ For example, the content of `ExperienceEntry.j2.tex` for the `moderncv` theme is
 ((* endfor *))
 ```
 
-The values between `<<` and `>>` are the names of Python variables, allowing you to write a $\\LaTeX$ CV without writing any content. They will be replaced with the values found in the YAML input. The values between `((*` and `*))` are Python blocks, allowing you to use loops and conditional statements.
+The values between `<<` and `>>` are the names of Python variables, allowing you to write a Typst CV without writing any content. They will be replaced with the values found in the YAML input. The values between `((*` and `*))` are Python blocks, allowing you to use loops and conditional statements.
 
-The process of generating $\\LaTeX$ files like this is called "templating," and it is achieved with a Python package called [Jinja](https://jinja.palletsprojects.com/en/3.1.x/).
+The process of generating Typst files like this is called "templating," and it is achieved with a Python package called [Jinja](https://jinja.palletsprojects.com/en/3.1.x/).
 
 The `__init__.py` file found in the theme directory defines the design options of the custom theme. You can define your custom design options in this file.
 
@@ -169,7 +165,7 @@ class YourcustomthemeThemeOptions(pydantic.BaseModel):
 
 RenderCV will then parse your custom design options from the YAML input. You can use these variables inside your `*.j2.tex` files as shown below:
 
-```latex
+```typst
 <<design.option1>>
 <<design.option2>>
 ((* if design.option4 *))

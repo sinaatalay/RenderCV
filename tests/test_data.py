@@ -875,14 +875,14 @@ def test_render_command_settings_placeholders(path_name, expected_value):
 
     render_command_settings = data.RenderCommandSettings(
         pdf_path=path_name,
-        latex_path=path_name,
+        typst_path=path_name,
         html_path=path_name,
         markdown_path=path_name,
         output_folder_name=path_name,
     )
 
     assert render_command_settings.pdf_path.name == expected_value  # type: ignore
-    assert render_command_settings.latex_path.name == expected_value  # type: ignore
+    assert render_command_settings.typst_path.name == expected_value  # type: ignore
     assert render_command_settings.html_path.name == expected_value  # type: ignore
     assert render_command_settings.markdown_path.name == expected_value  # type: ignore
     assert render_command_settings.output_folder_name == expected_value

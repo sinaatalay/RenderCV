@@ -360,8 +360,8 @@ def run_rendercv_with_printer(
 
     # Compute the number of steps
     # 1. Validate the input file.
-    # 2. Create the LaTeX file.
-    # 3. Render PDF from LaTeX.
+    # 2. Create the Typst file.
+    # 3. Render PDF from Typst.
     # 4. Render PNGs from PDF.
     # 5. Create the Markdown file.
     # 6. Render HTML from Markdown.
@@ -409,26 +409,25 @@ def run_rendercv_with_printer(
 
         progress.finish_the_current_step()
 
-        progress.start_a_step("Generating the LaTeX file")
+        progress.start_a_step("Generating the Typst file")
 
-        latex_file_path_in_output_folder = (
-            renderer.create_a_latex_or_typst_file_and_copy_theme_files(
+        typst_file_path_in_output_folder = (
+            renderer.create_a_typst_file_and_copy_theme_files(
                 data_model, output_directory
             )
         )
-        if render_command_settings.latex_path:
+        if render_command_settings.typst_path:
             copy_files(
-                latex_file_path_in_output_folder,
-                render_command_settings.latex_path,
+                typst_file_path_in_output_folder,
+                render_command_settings.typst_path,
             )
 
         progress.finish_the_current_step()
 
-        progress.start_a_step("Rendering the LaTeX file to a PDF")
+        progress.start_a_step("Rendering the Typst file to a PDF")
 
-        pdf_file_path_in_output_folder = renderer.render_a_pdf_from_latex_or_typst(
-            latex_file_path_in_output_folder,
-            render_command_settings.use_local_latex_command,
+        pdf_file_path_in_output_folder = renderer.render_a_pdf_from_typst(
+            typst_file_path_in_output_folder,
         )
         if render_command_settings.pdf_path:
             copy_files(
@@ -442,7 +441,7 @@ def run_rendercv_with_printer(
             progress.start_a_step("Rendering PNG files from the PDF")
 
             png_file_paths_in_output_folder = renderer.render_pngs_from_typst(
-                latex_file_path_in_output_folder
+                typst_file_path_in_output_folder
             )
             if render_command_settings.png_path:
                 copy_files(

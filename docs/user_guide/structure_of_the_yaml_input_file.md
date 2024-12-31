@@ -372,7 +372,7 @@ rendercv_settings:
   render_command:
     output_folder_name: rendercv_output
     pdf_path: NAME_IN_SNAKE_CASE_CV.pdf # (1)!
-    latex_path: NAME_IN_LOWER_SNAKE_CASE_cv.tex
+    typst_path: NAME_IN_LOWER_SNAKE_CASE_cv.typ
     html_path: NAME_IN_KEBAB_CASE_CV.html
     markdown_path: NAME.md
     dont_generate_html: false 

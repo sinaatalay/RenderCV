@@ -30,10 +30,8 @@ from .curriculum_vitae import (
     available_social_networks,
 )
 from .design import (
-    available_latex_themes,
     available_theme_options,
     available_themes,
-    available_typst_themes,
 )
 from .entry_types import (
     BulletEntry,
@@ -67,11 +65,9 @@ __all__ = [
     "SocialNetwork",
     "available_entry_models",
     "available_entry_type_names",
-    "available_latex_themes",
     "available_social_networks",
     "available_theme_options",
     "available_themes",
-    "available_typst_themes",
     "format_date",
     "rendercv_data_model_fields",
 ]

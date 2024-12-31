@@ -69,7 +69,7 @@ def test_typst_file_class(tmp_path, rendercv_data_model, jinja2_environment):
     ],
 )
 def test_latex_file_revert_nested_latex_style_commands_method(string, expected_string):
-    assert templater.revert_nested_latex_style_commands(string) == expected_string
+    assert templater.revert_nested_typst_style_commands(string) == expected_string
 
 
 @pytest.mark.xfail(
@@ -101,7 +101,7 @@ def test_latex_file_revert_nested_latex_style_commands_method(string, expected_s
 def test_latex_file_revert_nested_latex_style_commands_method_challenging_ones(
     string, expected_string
 ):
-    assert templater.revert_nested_latex_style_commands(string) == expected_string
+    assert templater.revert_nested_typst_style_commands(string) == expected_string
 
 
 def test_markdown_file_class(tmp_path, rendercv_data_model, jinja2_environment):
@@ -434,7 +434,7 @@ def test_create_a_latex_file(
         reference_file_name = reference_file_name.replace(".typ", ".tex")
 
     def create_a_latex_file(output_directory_path, _):
-        renderer.create_a_latex_or_typst_file(data_model, output_directory_path)
+        renderer.create_a_typst_file(data_model, output_directory_path)
 
     assert run_a_function_and_check_if_output_is_the_same_as_reference(
         create_a_latex_file,
@@ -448,7 +448,7 @@ def test_if_create_a_latex_file_can_create_a_new_directory(
 ):
     new_directory = tmp_path / "new_directory"
 
-    latex_file_path = renderer.create_a_latex_or_typst_file(
+    latex_file_path = renderer.create_a_typst_file(
         rendercv_data_model, new_directory
     )
 
@@ -623,7 +623,7 @@ def test_create_a_latex_file_and_copy_theme_files(
     )
 
     def create_a_latex_file_and_copy_theme_files(output_directory_path, _):
-        renderer.create_a_latex_or_typst_file_and_copy_theme_files(
+        renderer.create_a_typst_file_and_copy_theme_files(
             data_model, output_directory_path
         )
 
@@ -676,7 +676,7 @@ def test_render_a_pdf_from_latex(
         shutil.copytree(latex_sources_path, output_directory_path, dirs_exist_ok=True)
 
         # convert the latex code to a pdf
-        renderer.render_a_pdf_from_latex_or_typst(output_directory_path / file_name)
+        renderer.render_a_pdf_from_typst(output_directory_path / file_name)
 
     assert run_a_function_and_check_if_output_is_the_same_as_reference(
         function=generate_pdf_file,
@@ -688,7 +688,7 @@ def test_render_a_pdf_from_latex(
 def test_render_pdf_from_latex_nonexistent_latex_file():
     file_path = pathlib.Path("file_doesnt_exist.tex")
     with pytest.raises(FileNotFoundError):
-        renderer.render_a_pdf_from_latex_or_typst(file_path)
+        renderer.render_a_pdf_from_typst(file_path)
 
 
 @pytest.mark.parametrize(

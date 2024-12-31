@@ -465,7 +465,6 @@ class CurriculumVitae(RenderCVBaseModelWithExtraKeys):
             connections.append(
                 {
                     "typst_icon": "location-dot",
-                    "latex_icon": "\\faMapMarker*",
                     "url": None,
                     "clean_url": None,
                     "placeholder": self.location,
@@ -476,7 +475,6 @@ class CurriculumVitae(RenderCVBaseModelWithExtraKeys):
             connections.append(
                 {
                     "typst_icon": "envelope",
-                    "latex_icon": "\\faEnvelope[regular]",
                     "url": f"mailto:{self.email}",
                     "clean_url": self.email,
                     "placeholder": self.email,
@@ -488,7 +486,6 @@ class CurriculumVitae(RenderCVBaseModelWithExtraKeys):
             connections.append(
                 {
                     "typst_icon": "phone",
-                    "latex_icon": "\\faPhone*",
                     "url": self.phone,
                     "clean_url": phone_placeholder,
                     "placeholder": phone_placeholder,
@@ -500,7 +497,6 @@ class CurriculumVitae(RenderCVBaseModelWithExtraKeys):
             connections.append(
                 {
                     "typst_icon": "link",
-                    "latex_icon": "\\faLink",
                     "url": str(self.website),
                     "clean_url": website_placeholder,
                     "placeholder": website_placeholder,
@@ -521,24 +517,10 @@ class CurriculumVitae(RenderCVBaseModelWithExtraKeys):
                 "Google Scholar": "graduation-cap",
                 "Telegram": "telegram",
             }
-            latex_icon_dictionary = {
-                "LinkedIn": "\\faLinkedinIn",
-                "GitHub": "\\faGithub",
-                "GitLab": "\\faGitlab",
-                "Instagram": "\\faInstagram",
-                "Mastodon": "\\faMastodon",
-                "ORCID": "\\faOrcid",
-                "StackOverflow": "\\faStackOverflow",
-                "ResearchGate": "\\faResearchgate",
-                "YouTube": "\\faYoutube",
-                "Google Scholar": "\\faGraduationCap",
-                "Telegram": "\\faTelegram",
-            }
             for social_network in self.social_networks:
                 clean_url = computers.make_a_url_clean(social_network.url)
                 connection = {
                     "typst_icon": typst_icon_dictionary[social_network.network],
-                    "latex_icon": latex_icon_dictionary[social_network.network],
                     "url": social_network.url,
                     "clean_url": clean_url,
                     "placeholder": social_network.username,

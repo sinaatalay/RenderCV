@@ -73,30 +73,21 @@ class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
         ),
     )
 
-    use_local_latex_command: Optional[str] = pydantic.Field(
-        default=None,
-        title="Local LaTeX Command",
-        description=(
-            "The command to compile the LaTeX file to a PDF file. The default value is"
-            ' "pdflatex".'
-        ),
-    )
-
     pdf_path: Optional[pathlib.Path] = pydantic.Field(
         default=None,
         title="PDF Path",
         description=(
-            "The path of the PDF file. If it is not provided, the PDF file will not be"
-            f" generated. {file_path_placeholder_description}"
+            "The path to copy the PDF file to. If it is not provided, the PDF file will"
+            f" not be copied. {file_path_placeholder_description}"
         ),
     )
 
-    latex_path: Optional[pathlib.Path] = pydantic.Field(
+    typst_path: Optional[pathlib.Path] = pydantic.Field(
         default=None,
-        title="LaTeX Path",
+        title="Typst Path",
         description=(
-            "The path of the LaTeX file. If it is not provided, the LaTeX file will not"
-            f" be generated. {file_path_placeholder_description}"
+            "The path to copy the Typst file to. If it is not provided, the Typst file"
+            f" will not be copied. {file_path_placeholder_description}"
         ),
     )
 
@@ -104,8 +95,8 @@ class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
         default=None,
         title="HTML Path",
         description=(
-            "The path of the HTML file. If it is not provided, the HTML file will not"
-            f" be generated. {file_path_placeholder_description}"
+            "The path to copy the HTML file to. If it is not provided, the HTML file"
+            f" will not be copied. {file_path_placeholder_description}"
         ),
     )
 
@@ -113,8 +104,8 @@ class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
         default=None,
         title="PNG Path",
         description=(
-            "The path of the PNG file. If it is not provided, the PNG file will not be"
-            f" generated. {file_path_placeholder_description}"
+            "The path to copy the PNG file to. If it is not provided, the PNG file will"
+            f" not be copied. {file_path_placeholder_description}"
         ),
     )
 
@@ -122,8 +113,8 @@ class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
         default=None,
         title="Markdown Path",
         description=(
-            "The path of the Markdown file. If it is not provided, the Markdown file"
-            f" will not be generated. {file_path_placeholder_description}"
+            "The path to copy the Markdown file to. If it is not provided, the Markdown"
+            f" file will not be copied. {file_path_placeholder_description}"
         ),
     )
 
@@ -177,7 +168,7 @@ class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
         "locale_catalog",
         "rendercv_settings",
         "pdf_path",
-        "latex_path",
+        "typst_path",
         "html_path",
         "png_path",
         "markdown_path",

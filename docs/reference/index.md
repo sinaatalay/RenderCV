@@ -22,7 +22,7 @@ flowchart TD
     AA --> E
     subgraph rendercv.renderer
     E[Markdown File] --markdown package--> K[HTML FIle]
-    D[LaTeX File] --TinyTeX--> L[PDF File]
+    D[Typst File] --typst package--> L[PDF File]
     L --PyMuPDF package--> Z[PNG Files]
     end
 ```
@@ -43,12 +43,12 @@ flowchart TD
     - [`generator.py`](data/generator.md) module contains the functions for generating the JSON Schema of the input data format and a sample YAML input file.
     - [`reader.py`](data/reader.md) module contains the functions that are used to read the input files. 
 - [`renderer`](renderer/index.md) package contains the necessary classes and functions for generating the output files from the `RenderCVDataModel` object.
-    - [`renderer.py`](renderer/renderer.md) module contains the necessary functions for rendering $\\LaTeX$, PDF, Markdown, HTML, and PNG files from the data model.
-    - [`templater.py`](renderer/templater.md) module contains the necessary classes and functions for templating the $\\LaTeX$ and Markdown files from the data model.
+    - [`renderer.py`](renderer/renderer.md) module contains the necessary functions for rendering Typst, PDF, Markdown, HTML, and PNG files from the data model.
+    - [`templater.py`](renderer/templater.md) module contains the necessary classes and functions for templating the Typst and Markdown files from the data model.
 - [`themes`](themes/index.md) package contains the built-in themes of RenderCV.
-    - [`common_options_latex_themes.py`](themes/common_options_latex_themes.md) module contains some standard data models for $\LaTeX$ themes' design options
+    - [`options.py`](themes/options.md) module contains the standard data models for built-in Typst themes' design options
     - [`common_options_typst_themes.py`](themes/common_options_typst_themes.md) module contains some standard data models for Typst themes' design options.
-    - [`classic_latex`](themes/classic_latex.md) package contains the `classic_latex` theme templates and data models for its design options.
-    - [`engineeringresumes_latex`](themes/engineeringresumes_latex.md) package contains the `engineeringresumes_latex` theme templates and data models for its design options.
-    - [`sb2nov_latex`](themes/sb2nov_latex.md) package contains the `sb2nov_latex` theme templates and data models for its design options.
-    - [`moderncv_latex`](themes/moderncv_latex.md) package contains the `moderncv_latex` theme templates and data models for its design options.
+    - [`classic`](themes/classic.md) package contains the `classic` theme templates and data models for its design options.
+    - [`engineeringresumes`](themes/engineeringresumes.md) package contains the `engineeringresumes` theme templates and data models for its design options.
+    - [`sb2nov`](themes/sb2nov.md) package contains the `sb2nov` theme templates and data models for its design options.
+    - [`moderncv`](themes/moderncv.md) package contains the `moderncv` theme templates and data models for its design options.

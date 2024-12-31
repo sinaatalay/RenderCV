@@ -162,15 +162,6 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# LaTeX intermediate files
-*.aux
-*.log
-*.fdb_latexmk
-*.fls
-*.out
-*.synctex.gz
-*.pdf
-
 # VSCode
 .vscode/
 
