@@ -36,7 +36,7 @@ class RenderCVDataModel(RenderCVBaseModelWithoutExtraKeys):
         ),
     )
     locale_catalog: LocaleCatalog = pydantic.Field(
-        default=LocaleCatalog(),
+        default=None,  # type: ignore
         title="Locale Catalog",
         description=(
             "The locale catalog of the CV to allow the support of multiple languages."
@@ -65,12 +65,15 @@ class RenderCVDataModel(RenderCVBaseModelWithoutExtraKeys):
 
         return model
 
-    @pydantic.field_validator("locale_catalog")
+    @pydantic.field_validator("locale_catalog", mode="before")
     @classmethod
-    def update_locale_catalog(cls, _) -> LocaleCatalog:
+    def update_locale_catalog(cls, value) -> LocaleCatalog:
         """Update the output folder name in the RenderCV settings."""
         # Somehow, we need this for `test_if_local_catalog_resets` to pass.
-        return LocaleCatalog()
+        if value is None:
+            return LocaleCatalog()
+
+        return value
 
 
 rendercv_data_model_fields = tuple(RenderCVDataModel.model_fields.keys())
