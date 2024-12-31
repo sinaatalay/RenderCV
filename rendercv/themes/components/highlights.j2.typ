@@ -5,5 +5,7 @@
 #highlights(
   ((* endif *))
   [<<item>>],
-((* endfor *))
+  ((* if loop.last *))
 )
+((* endif *))
+((* endfor *))

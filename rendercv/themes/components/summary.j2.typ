@@ -4,5 +4,6 @@
   inset: (
     left: design-highlights-left-margin,
   ),
+  width: 100%,
 )
 ((* endif *))

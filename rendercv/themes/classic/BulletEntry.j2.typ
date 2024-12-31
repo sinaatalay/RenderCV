@@ -5,4 +5,5 @@
     left: design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
+  width: 100%,
 )

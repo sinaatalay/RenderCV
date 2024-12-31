@@ -95,8 +95,8 @@
   justify = false
   hyphenate = false
 } else if design-text-alignment == "justified-with-no-hyphenation" {
-  justify = false
-  hyphenate = true
+  justify = true
+  hyphenate = false
 }
 #set text(
   font: design-text-font-family,
@@ -130,7 +130,7 @@
   body-indent: design-highlights-horizontal-space-between-bullet-and-highlights,
 )
 
-// Main headi#ng settings:
+// Main heading settings:
 #let header-font-weight
 #if design-header-name-bold {
   header-font-weight = 700
@@ -170,6 +170,7 @@
   #v(design-section-titles-vertical-space-above, weak: true)
   #block(
     breakable: false,
+    width: 100%,
     [
       #box([
         #if true [
@@ -191,7 +192,6 @@
   #v(design-section-titles-vertical-space-below - 0.5em)
 ]
 
-// Links:
 // Links:
 #let original-link = link
 #let link(url, body) = {
@@ -275,6 +275,7 @@
       right: design-entries-left-and-right-margin,
     ),
     breakable: true,
+    width: 100%,
   )
 ]
 
@@ -296,5 +297,6 @@
       right: design-entries-left-and-right-margin,
     ),
     breakable: true,
+    width: 100%,
   )
 ]
