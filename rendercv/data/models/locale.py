@@ -32,7 +32,7 @@ class Locale(RenderCVBaseModelWithoutExtraKeys):
             description=(
                 "If 'national', phone numbers are formatted without the country code."
                 " If 'international', phone numbers are formatted with the country"
-                " code. The default value is \"national\""
+                ' code. The default value is "national"'
             ),
         )
     )

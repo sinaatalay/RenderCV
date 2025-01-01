@@ -520,14 +520,10 @@ def design_file_path(tmp_path, testdata_directory_path) -> pathlib.Path:
 @pytest.fixture
 def locale_file_path(tmp_path, testdata_directory_path) -> pathlib.Path:
     """Return the path to the input file."""
-    locale_file_path = (
-        testdata_directory_path / "John_Doe_CV_locale.yaml"
-    )
+    locale_file_path = testdata_directory_path / "John_Doe_CV_locale.yaml"
     if update_testdata:
         locale_file_path.write_text("locale:\n  years: yil\n")
-    shutil.copyfile(
-        locale_file_path, tmp_path / "John_Doe_CV_locale.yaml"
-    )
+    shutil.copyfile(locale_file_path, tmp_path / "John_Doe_CV_locale.yaml")
     return tmp_path / "John_Doe_CV_locale.yaml"
 
 
