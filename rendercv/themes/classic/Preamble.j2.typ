@@ -262,12 +262,13 @@
   left-content: "",
   middle-content: "",
   right-content: "",
+  alignments: (left, left, right),
 ) = [
   #block(
     grid(
       columns: (left-column-width, 1fr, right-column-width),
       column-gutter: design-entries-horizontal-space-between-columns,
-      align: (left, left, right),
+      align: alignments,
       left-content, middle-content, ([#set par(spacing: design-text-leading); #right-content]),
     ),
     inset: (
@@ -284,12 +285,13 @@
   right-column-width: design-entries-date-and-location-width,
   left-content: "",
   right-content: "",
+  alignments: (left, right),
 ) = [
   #block(
     grid(
       columns: (left-column-width, right-column-width),
       column-gutter: design-entries-horizontal-space-between-columns,
-      align: (left, right),
+      align: alignments,
       left-content, ([#set par(spacing: design-text-leading); #right-content]),
     ),
     inset: (

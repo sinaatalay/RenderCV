@@ -481,6 +481,14 @@ class EducationEntryBase(RenderCVBaseModelWithoutExtraKeys):
             ' available placeholders are DEGREE. The default value is "**DEGREE**".'
         ),
     )
+    degree_column_width: TypstDimension = pydantic.Field(
+        default="1cm",
+        title="Width of the Degree Column",
+        description=(
+            "The width of the degree column if the `degree_column_template` is given."
+            ' The default value is "1cm".'
+        ),
+    )
 
 
 class EducationEntry(EducationEntryBase, EntryBaseWithDate):

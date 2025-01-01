@@ -1,17 +1,15 @@
 #block(
-  ((* if entry.date_string or entry.location *))
+  ((* if "\n\n" in second_column_template *))
   two-col-entry(
     left-content: ((* endif *))[
-        <<first_column_template>>
-    ]
-  ((* if entry.date_string or entry.location *))
-    ,
+      <<first_column_template>>
+    ]((* if "\n\n" in second_column_template *)),
     right-content: [
       <<second_column_template>>
     ],
   )
   ((* endif *)),
-  ((* if not (entry.date_string or entry.location) *))
+  ((* if "\n\n" not in second_column_template *))
   inset: (
     left: design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,

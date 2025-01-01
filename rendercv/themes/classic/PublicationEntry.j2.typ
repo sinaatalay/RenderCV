@@ -1,5 +1,5 @@
 #block(
-  ((* if entry.date_string *))
+  ((* if "\n\n" in second_column_template *))
   two-col-entry(
     left-content: ((* endif *))[
         #set par(spacing: design-highlights-vertical-space-between-highlights)
@@ -10,13 +10,13 @@
         ((*- else -*))
         <<first_column_template>>
         ((*- endif -*))
-    ]((* if entry.date_string *)),
+    ]((* if "\n\n" in second_column_template *)),
     right-content: [
       <<second_column_template>>
     ],
   )
   ((* endif *)),
-  ((* if not entry.date_string *))
+  ((* if "\n\n" not in second_column_template *))
   inset: (
     left: design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,

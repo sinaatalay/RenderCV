@@ -212,7 +212,6 @@ class TypstFile(TemplatedFile):
                         "typ",
                         entry,
                         section_title=section.title,
-                        design=self.design,
                     )
                     placeholders[placeholder_key] = (
                         placeholder_value if placeholder_value != "None" else None
@@ -417,7 +416,9 @@ def input_template_to_typst(
     )
 
     # Replace all multiple \n with a double \n:
-    return re.sub(r"\n+", r"\n\n", output)
+    output = re.sub(r"\n+", r"\n\n", output)
+
+    return output.strip()
 
 
 def revert_nested_typst_style_commands(typst_string: str) -> str:
