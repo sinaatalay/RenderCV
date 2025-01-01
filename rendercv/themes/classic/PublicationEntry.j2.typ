@@ -3,12 +3,13 @@
   two-col-entry(
     left-content: ((* endif *))[
         #set par(spacing: design-highlights-vertical-space-between-highlights)
+        <<first_column_first_row_template>>
         ((* if not (entry.doi or entry.url)*))
-        <<first_column_template_without_url>>
+        <<second_column_template_without_url>>
         ((*- elif not entry.journal -*))
-        <<first_column_template_without_journal>>
+        <<second_column_template_without_journal>>
         ((*- else -*))
-        <<first_column_template>>
+        <<first_column_template_second_row_template>>
         ((*- endif -*))
     ]((* if "\n\n" in second_column_template *)),
     right-content: [

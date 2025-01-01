@@ -419,12 +419,29 @@ class Highlights(RenderCVBaseModelWithoutExtraKeys):
 
 
 class EntryBaseWithDate(RenderCVBaseModelWithoutExtraKeys):
+    first_column_second_row_template: str = pydantic.Field(
+        default="\nSUMMARY\nHIGHLIGHTS",
+        title="First Column, Second Row",
+        description=(
+            "The content of the second row of the first column. The available"
+            " placeholders are SUMMARY and HIGHLIGHTS. The default value is"
+            ' "\nSUMMARY\nHIGHLIGHTS".'
+        ),
+    )
     second_column_template: str = pydantic.Field(
         default="LOCATION\nDATE",
         title="Second Column",
         description=(
             "The content of the second column. The available placeholders are"
             ' LOCATION and DATE. The default value is "LOCATION\nDATE".'
+        ),
+    )
+    short_second_row: bool = pydantic.Field(
+        default=False,
+        title="Short Second Row",
+        description=(
+            "If this option is enabled, second row will be shortened to leave the"
+            " bottom of the date empty."
         ),
     )
 
@@ -435,26 +452,35 @@ publication_entry_placeholders = (
 
 
 class PublicationEntry(EntryBaseWithDate):
-    first_column_template: str = pydantic.Field(
-        default="**TITLE**\nAUTHORS\nURL (JOURNAL)",
+    first_column_first_row_template: str = pydantic.Field(
+        default="**TITLE**",
         title="First Column",
         description=(
             f"The content of the first column. {publication_entry_placeholders}. The"
-            ' default value is "**TITLE**\nAUTHORS\nURL (JOURNAL)".'
+            ' default value is "**TITLE**".'
         ),
     )
-    first_column_template_without_journal: str = pydantic.Field(
-        default="**TITLE**\nAUTHORS\nURL",
-        title="First Column Without Journal",
+    first_column_second_row_template: str = pydantic.Field(
+        default="AUTHORS\nURL (JOURNAL)",
+        title="First Column, Second Row",
+        description=(
+            "The content of the second row of the first column."
+            f" {publication_entry_placeholders}. The default value is"
+            ' "AUTHORS\nURL (JOURNAL)".'
+        ),
+    )
+    first_column_second_row_template_without_journal: str = pydantic.Field(
+        default="AUTHORS\nURL",
+        title="First Column, Second Row Without Journal",
         description=(
             "The content of the first column in case the `journal` is not given."
             f" {publication_entry_placeholders}. The default value is"
-            ' "**TITLE**\nAUTHORS\nURL".'
+            ' "AUTHORS\nURL".'
         ),
     )
-    first_column_template_without_url: str = pydantic.Field(
-        default="**TITLE**\nAUTHORS\nJOURNAL",
-        title="First Column Without URL",
+    first_column_second_row_template_without_url: str = pydantic.Field(
+        default="AUTHORS\nJOURNAL",
+        title="First Column, Second Row Without URL",
         description=(
             "The content of the first column in case the `url` or `doi` is not given."
             f" {publication_entry_placeholders}. The default value is"
@@ -464,13 +490,12 @@ class PublicationEntry(EntryBaseWithDate):
 
 
 class EducationEntryBase(RenderCVBaseModelWithoutExtraKeys):
-    first_column_template: str = pydantic.Field(
-        default="**INSTITUTION**, AREA\nSUMMARY\nHIGHLIGHTS",
-        title="First Column",
+    first_column_first_row_template: str = pydantic.Field(
+        default="**INSTITUTION**, AREA",
+        title="First Column, First Row",
         description=(
             "The content of the first column. The available placeholders are"
-            " INSTITUTION, AREA, SUMMARY, and HIGHLIGHTS. The default value is"
-            '"**INSTITUTION**, AREA\nSUMMARY\nHIGHLIGHTS".'
+            ' INSTITUTION and AREA. The default value is "**INSTITUTION**, AREA".'
         ),
     )
     degree_column_template: Optional[str] = pydantic.Field(
@@ -496,13 +521,12 @@ class EducationEntry(EducationEntryBase, EntryBaseWithDate):
 
 
 class NormalEntryBase(RenderCVBaseModelWithoutExtraKeys):
-    first_column_template: str = pydantic.Field(
-        default="**NAME**\nSUMMARY\nHIGHLIGHTS",
-        title="First Column",
+    first_column_first_row_template: str = pydantic.Field(
+        default="**NAME**",
+        title="First Column, First Row",
         description=(
             "The content of the first column. The available placeholders are NAME,"
-            " SUMMARY, and HIGHLIGHTS. The default value is"
-            ' "**NAME**\nSUMMARY\nHIGHLIGHTS".'
+            ' SUMMARY, and HIGHLIGHTS. The default value is "**NAME**".'
         ),
     )
 
@@ -512,13 +536,12 @@ class NormalEntry(NormalEntryBase, EntryBaseWithDate):
 
 
 class ExperienceEntryBase(RenderCVBaseModelWithoutExtraKeys):
-    first_column_template: str = pydantic.Field(
-        default="**COMPANY**, POSITION\nSUMMARY\nHIGHLIGHTS",
-        title="First Column",
+    first_column_first_row_template: str = pydantic.Field(
+        default="**COMPANY**, POSITION",
+        title="First Column, First Row",
         description=(
             "The content of the first column. The available placeholders are"
-            " COMPANY, POSITION, SUMMARY, and HIGHLIGHTS. The default value is"
-            '"**COMPANY**, POSITION\nSUMMARY\nHIGHLIGHTS".'
+            ' COMPANY and POSITION. The default value is"**COMPANY**, POSITION".'
         ),
     )
 

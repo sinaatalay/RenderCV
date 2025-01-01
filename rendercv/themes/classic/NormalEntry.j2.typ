@@ -2,7 +2,7 @@
   ((* if "\n\n" in second_column_template *))
   two-col-entry(
     left-content: ((* endif *))[
-      <<first_column_template>>
+      <<first_column_first_row_template>>
     ]((* if "\n\n" in second_column_template *)),
     right-content: [
       <<second_column_template>>

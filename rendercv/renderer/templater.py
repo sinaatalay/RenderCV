@@ -8,8 +8,7 @@ import copy
 import pathlib
 import re
 from collections.abc import Callable
-from datetime import date as Date
-from typing import Any, Literal, Optional
+from typing import Optional
 
 import jinja2
 
@@ -116,46 +115,12 @@ class TypstFile(TemplatedFile):
         Returns:
             The preamble, header, and sections of the Typst file.
         """
-        # This dictionary contains the locations of templates in the design options
-        # for each entry type:
-        entry_specific_templates = {
-            "EducationEntry": [
-                ("entry_types", "education_entry", "first_column_template"),
-                ("entry_types", "education_entry", "second_column_template"),
-                ("entry_types", "education_entry", "degree_column_template"),
-            ],
-            "ExperienceEntry": [
-                ("entry_types", "experience_entry", "first_column_template"),
-                ("entry_types", "experience_entry", "second_column_template"),
-            ],
-            "OneLineEntry": [("entry_types", "one_line_entry", "template")],
-            "PublicationEntry": [
-                ("entry_types", "publication_entry", "first_column_template"),
-                (
-                    "entry_types",
-                    "publication_entry",
-                    "first_column_template_without_journal",
-                ),
-                (
-                    "entry_types",
-                    "publication_entry",
-                    "first_column_template_without_url",
-                ),
-                ("entry_types", "publication_entry", "second_column_template"),
-            ],
-            "NormalEntry": [
-                ("entry_types", "normal_entry", "first_column_template"),
-                ("entry_types", "normal_entry", "second_column_template"),
-            ],
-            "TextEntry": [],
-            "BulletEntry": [],
-        }
-
         # All the template field names:
         all_template_names = [
-            "first_column_template",
-            "first_column_template_without_url",
-            "first_column_template_without_journal",
+            "first_column_first_row_template",
+            "first_column_second_row_template",
+            "first_column_second_row_template_without_url",
+            "first_column_second_row_template_without_journal",
             "second_column_template",
             "template",
             "degree_column_template",
@@ -181,6 +146,11 @@ class TypstFile(TemplatedFile):
             "NAME",
         ]
 
+        pattern = re.compile(r"(?<!^)(?=[A-Z])")
+
+        def camel_to_snake(name: str) -> str:
+            return pattern.sub("_", name).lower()
+
         # Template the preamble, header, and sections:
         preamble = self.template("Preamble")
         header = self.template("Header")
@@ -193,12 +163,16 @@ class TypstFile(TemplatedFile):
             )
 
             templates = {
-                location[-1]: getattr(
-                    getattr(getattr(self.design, location[0], None), location[1], None),
-                    location[2],
+                template_name: getattr(
+                    getattr(
+                        getattr(self.design, "entry_types", None),
+                        camel_to_snake(section.entry_type),
+                        None,
+                    ),
+                    template_name,
                     None,
                 )
-                for location in entry_specific_templates[section.entry_type]
+                for template_name in all_template_names
             }
 
             entries: list[str] = []
