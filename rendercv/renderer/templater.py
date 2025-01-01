@@ -119,8 +119,8 @@ class TypstFile(TemplatedFile):
         all_template_names = [
             "first_column_first_row_template",
             "first_column_second_row_template",
-            "first_column_second_row_template_without_url",
-            "first_column_second_row_template_without_journal",
+            "first_column_second_row_without_url_template",
+            "first_column_second_row_without_journal_template",
             "second_column_template",
             "template",
             "degree_column_template",

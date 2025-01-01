@@ -375,6 +375,14 @@ class Entries(RenderCVBaseModelWithoutExtraKeys):
             ' entries. The default value is "true".'
         ),
     )
+    short_second_row: bool = pydantic.Field(
+        default=False,
+        title="Short Second Row",
+        description=(
+            "If this option is enabled, second row will be shortened to leave the"
+            " bottom of the date empty."
+        ),
+    )
     show_time_spans_in: list[str] = pydantic.Field(
         default=[],
         title="Show Time Spans in",
@@ -436,14 +444,6 @@ class EntryBaseWithDate(RenderCVBaseModelWithoutExtraKeys):
             ' LOCATION and DATE. The default value is "LOCATION\nDATE".'
         ),
     )
-    short_second_row: bool = pydantic.Field(
-        default=False,
-        title="Short Second Row",
-        description=(
-            "If this option is enabled, second row will be shortened to leave the"
-            " bottom of the date empty."
-        ),
-    )
 
 
 publication_entry_placeholders = (
@@ -469,7 +469,7 @@ class PublicationEntry(EntryBaseWithDate):
             ' "AUTHORS\nURL (JOURNAL)".'
         ),
     )
-    first_column_second_row_template_without_journal: str = pydantic.Field(
+    first_column_second_row_without_journal_template: str = pydantic.Field(
         default="AUTHORS\nURL",
         title="First Column, Second Row Without Journal",
         description=(
@@ -478,7 +478,7 @@ class PublicationEntry(EntryBaseWithDate):
             ' "AUTHORS\nURL".'
         ),
     )
-    first_column_second_row_template_without_url: str = pydantic.Field(
+    first_column_second_row_without_url_template: str = pydantic.Field(
         default="AUTHORS\nJOURNAL",
         title="First Column, Second Row Without URL",
         description=(
