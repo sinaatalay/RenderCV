@@ -22,7 +22,7 @@
         <<first_column_second_row_template>>
       ],
       inset: (
-        left: <<design.entry_types.education_entry.degree_column_width>>,
+        left: <<design.entry_types.education_entry.degree_column_width>> + <<design.entries.horizontal_space_between_columns>>,
       ),
     )
     ((* endif *))
@@ -66,7 +66,7 @@
         <<first_column_second_row_template>>
       ],
       inset: (
-        left: <<design.entry_types.education_entry.degree_column_width>>,
+        left: <<design.entry_types.education_entry.degree_column_width>> + <<design.entries.horizontal_space_between_columns>>,
       ),
     )
     ((* endif *))
