@@ -270,7 +270,7 @@ class Header(RenderCVBaseModelWithoutExtraKeys):
         title="Separator Between Connections",
         description=(
             "The separator between the connections in the header. The default value is"
-            " empty string."
+            " an empty string."
         ),
     )
     use_icons_for_connections: bool = pydantic.Field(
@@ -278,7 +278,8 @@ class Header(RenderCVBaseModelWithoutExtraKeys):
         title="Use Icons for Connections",
         description=(
             "If this option is set to true, then icons will be used for the connections"
-            ' in the header. The default value is "true".'
+            " (phone number, email, social networks, etc.) in the header. The default"
+            ' value is "true".'
         ),
     )
     alignment: Literal["left", "center", "right"] = pydantic.Field(
@@ -307,7 +308,9 @@ class SectionTitles(RenderCVBaseModelWithoutExtraKeys):
     line_type: Literal["partial", "full", "none"] = pydantic.Field(
         default="partial",
         title="Line Type",
-        description='The line type of the section titles. The default value is "full".',
+        description=(
+            'The line type of the section titles. The default value is "partial".'
+        ),
     )
     line_thickness: TypstDimension = pydantic.Field(
         default="0.5pt",
@@ -346,7 +349,7 @@ class Entries(RenderCVBaseModelWithoutExtraKeys):
         default="0.2cm",
         title="Left and Right Margin",
         description=(
-            "The left and right margin of the entries. The default value is 0.2cm."
+            'The left and right margin of the entries. The default value is "0.2cm".'
         ),
     )
     horizontal_space_between_columns: TypstDimension = pydantic.Field(
@@ -370,6 +373,14 @@ class Entries(RenderCVBaseModelWithoutExtraKeys):
         description=(
             'If this option is set to "true", then a page break will be allowed in the'
             ' entries. The default value is "true".'
+        ),
+    )
+    show_time_spans_in: list[str] = pydantic.Field(
+        default=[],
+        title="Show Time Spans in",
+        description=(
+            "The list of section titles where the time spans will be shown in the"
+            " entries. The default value is an empty list."
         ),
     )
 
@@ -407,29 +418,48 @@ class Highlights(RenderCVBaseModelWithoutExtraKeys):
     )
 
 
-class EntryBase(RenderCVBaseModelWithoutExtraKeys):
+class EntryBaseWithDate(RenderCVBaseModelWithoutExtraKeys):
     second_column_template: str = pydantic.Field(
         default="LOCATION\nDATE",
         title="Second Column",
-        description="The content of the second column.",
+        description=(
+            "The content of the second column. The available placeholders are"
+            ' LOCATION and DATE. The default value is "LOCATION\nDATE".'
+        ),
     )
 
 
-class PublicationEntry(EntryBase):
+publication_entry_placeholders = (
+    "The available placeholders are TITLE, AUTHORS, URL, and JOURNAL"
+)
+
+
+class PublicationEntry(EntryBaseWithDate):
     first_column_template: str = pydantic.Field(
         default="**TITLE**\nAUTHORS\nURL (JOURNAL)",
         title="First Column",
-        description="The content of the first column.",
+        description=(
+            f"The content of the first column. {publication_entry_placeholders}. The"
+            ' default value is "**TITLE**\nAUTHORS\nURL (JOURNAL)".'
+        ),
     )
     first_column_template_without_journal: str = pydantic.Field(
         default="**TITLE**\nAUTHORS\nURL",
         title="First Column Without Journal",
-        description="The content of the first column without the journal.",
+        description=(
+            "The content of the first column in case the `journal` is not given."
+            f" {publication_entry_placeholders}. The default value is"
+            ' "**TITLE**\nAUTHORS\nURL".'
+        ),
     )
     first_column_template_without_url: str = pydantic.Field(
         default="**TITLE**\nAUTHORS\nJOURNAL",
         title="First Column Without URL",
-        description="The content of the first column without the URL.",
+        description=(
+            "The content of the first column in case the `url` or `doi` is not given."
+            f" {publication_entry_placeholders}. The default value is"
+            ' "**TITLE**\nAUTHORS\nJOURNAL".'
+        ),
     )
 
 
@@ -437,19 +467,23 @@ class EducationEntryBase(RenderCVBaseModelWithoutExtraKeys):
     first_column_template: str = pydantic.Field(
         default="**INSTITUTION**, AREA\nSUMMARY\nHIGHLIGHTS",
         title="First Column",
-        description="The content of the first column.",
+        description=(
+            "The content of the first column. The available placeholders are"
+            " INSTITUTION, AREA, SUMMARY, and HIGHLIGHTS. The default value is"
+            '"**INSTITUTION**, AREA\nSUMMARY\nHIGHLIGHTS".'
+        ),
     )
     degree_column_template: Optional[str] = pydantic.Field(
         default="**DEGREE**",
         title="Template of the Degree Column",
         description=(
             "If given, a degree column will be added to the education entry. The"
-            ' default value is "**DEGREE**".'
+            ' available placeholders are DEGREE. The default value is "**DEGREE**".'
         ),
     )
 
 
-class EducationEntry(EducationEntryBase, EntryBase):
+class EducationEntry(EducationEntryBase, EntryBaseWithDate):
     pass
 
 
@@ -457,11 +491,15 @@ class NormalEntryBase(RenderCVBaseModelWithoutExtraKeys):
     first_column_template: str = pydantic.Field(
         default="**NAME**\nSUMMARY\nHIGHLIGHTS",
         title="First Column",
-        description="The content of the first column.",
+        description=(
+            "The content of the first column. The available placeholders are NAME,"
+            " SUMMARY, and HIGHLIGHTS. The default value is"
+            ' "**NAME**\nSUMMARY\nHIGHLIGHTS".'
+        ),
     )
 
 
-class NormalEntry(NormalEntryBase, EntryBase):
+class NormalEntry(NormalEntryBase, EntryBaseWithDate):
     pass
 
 
@@ -469,11 +507,15 @@ class ExperienceEntryBase(RenderCVBaseModelWithoutExtraKeys):
     first_column_template: str = pydantic.Field(
         default="**COMPANY**, POSITION\nSUMMARY\nHIGHLIGHTS",
         title="First Column",
-        description="The content of the first column.",
+        description=(
+            "The content of the first column. The available placeholders are"
+            " COMPANY, POSITION, SUMMARY, and HIGHLIGHTS. The default value is"
+            '"**COMPANY**, POSITION\nSUMMARY\nHIGHLIGHTS".'
+        ),
     )
 
 
-class ExperienceEntry(ExperienceEntryBase, EntryBase):
+class ExperienceEntry(ExperienceEntryBase, EntryBaseWithDate):
     pass
 
 
@@ -481,7 +523,10 @@ class OneLineEntry(RenderCVBaseModelWithoutExtraKeys):
     template: str = pydantic.Field(
         default="**LABEL:** DETAILS",
         title="Template",
-        description="The template of the one-line entry.",
+        description=(
+            "The template of the one-line entry. The available placeholders are"
+            " LABEL and DETAILS. The default value is \"'**LABEL:** DETAILS'\""
+        ),
     )
 
 
