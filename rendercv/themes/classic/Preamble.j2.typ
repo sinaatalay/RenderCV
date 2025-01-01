@@ -271,10 +271,6 @@
       align: alignments,
       left-content, middle-content, ([#set par(spacing: design-text-leading); #right-content]),
     ),
-    inset: (
-      left: design-entries-left-and-right-margin,
-      right: design-entries-left-and-right-margin,
-    ),
     breakable: true,
     width: 100%,
   )
@@ -293,10 +289,6 @@
       column-gutter: design-entries-horizontal-space-between-columns,
       align: alignments,
       left-content, ([#set par(spacing: design-text-leading); #right-content]),
-    ),
-    inset: (
-      left: design-entries-left-and-right-margin,
-      right: design-entries-left-and-right-margin,
     ),
     breakable: true,
     width: 100%,
