@@ -17,7 +17,6 @@ from .renderer import (
     create_a_typst_file_and_copy_theme_files,
     render_a_pdf_from_typst,
     render_an_html_from_markdown,
-    render_pngs_from_pdf,
     render_pngs_from_typst,
 )
 
@@ -27,6 +26,5 @@ __all__ = [
     "create_a_typst_file_and_copy_theme_files",
     "render_a_pdf_from_typst",
     "render_an_html_from_markdown",
-    "render_pngs_from_pdf",
     "render_pngs_from_typst",
 ]

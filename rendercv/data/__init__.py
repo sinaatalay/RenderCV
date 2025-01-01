@@ -38,6 +38,7 @@ from .models import (
     available_theme_options,
     available_themes,
     format_date,
+    get_date_input,
     rendercv_data_model_fields,
 )
 from .reader import (
@@ -56,6 +57,7 @@ __all__ = [
     "NormalEntry",
     "OneLineEntry",
     "PublicationEntry",
+    "get_date_input",
     "RenderCVDataModel",
     "RenderCVSettings",
     "RenderCommandSettings",

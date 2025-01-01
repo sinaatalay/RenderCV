@@ -34,6 +34,8 @@ file_path_placeholder_description_without_default = (
     file_path_placeholder_description.replace("\nThe default value is null.", "")
 )
 
+DATE_INPUT = datetime.date.today()
+
 
 class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
     """This class is the data model of the `render` command's settings."""
@@ -59,8 +61,7 @@ class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
         default=None,
         title="`locale` Field's YAML File",
         description=(
-            "The file path to the yaml file containing the `locale` field"
-            " separately."
+            "The file path to the yaml file containing the `locale` field separately."
         ),
     )
 
@@ -133,7 +134,7 @@ class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
         title="Don't Generate Markdown",
         description=(
             "A boolean value to determine whether the Markdown file will be generated."
-            " The default value is False."
+            ' The default value is "false".'
         ),
     )
 
@@ -151,7 +152,7 @@ class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
         title="Re-run RenderCV When the Input File is Updated",
         description=(
             "A boolean value to determine whether to re-run RenderCV when the input"
-            "file is updated. The default value is False."
+            'file is updated. The default value is "false".'
         ),
     )
 
@@ -222,9 +223,8 @@ class RenderCVSettings(RenderCVBaseModelWithoutExtraKeys):
     def mock_today(cls, value: datetime.date) -> datetime.date:
         """Mocks the current date for testing."""
 
-        def mock_today():
-            return value
+        global DATE_INPUT  # NOQA: PLW0603
 
-        datetime.date.today = mock_today
+        DATE_INPUT = value
 
         return value

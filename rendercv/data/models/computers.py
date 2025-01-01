@@ -42,6 +42,17 @@ def format_phone_number(phone_number: str) -> str:
     )
 
 
+def get_date_input() -> Date:
+    """Return the date input.
+
+    Returns:
+        The date input.
+    """
+    from .rendercv_settings import DATE_INPUT
+
+    return DATE_INPUT
+
+
 def format_date(date: Date, date_template: Optional[str] = None) -> str:
     """Formats a `Date` object to a string in the following format: "Jan 2021". The
     month names are taken from the `locale` dictionary from the
@@ -94,8 +105,8 @@ def replace_placeholders(value: str) -> str:
     full_month_names = locale["full_names_of_months"]
     short_month_names = locale["abbreviations_for_months"]
 
-    month = Date.today().month
-    year = str(Date.today().year)
+    month = get_date_input().month
+    year = str(get_date_input().year)
 
     placeholders = {
         "NAME_IN_SNAKE_CASE": name.replace(" ", "_"),
@@ -351,7 +362,7 @@ def get_date_object(date: str | int) -> Date:
         # Then it is in YYYY format
         date_object = Date.fromisoformat(f"{date}-01-01")
     elif date == "present":
-        date_object = Date.today()
+        date_object = get_date_input()
     else:
         message = (
             "This is not a valid date! Please use either YYYY-MM-DD, YYYY-MM, or"

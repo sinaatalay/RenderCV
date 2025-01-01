@@ -78,7 +78,7 @@ class TemplatedFile:
             design=self.design,
             locale=self.locale,
             entry=entry,
-            today=data.format_date(Date.today()),
+            today=data.format_date(data.get_date_input()),
             **kwargs,
         )
 
@@ -207,7 +207,12 @@ class TypstFile(TemplatedFile):
                 placeholders = {}
                 for placeholder_key in placeholder_keys:
                     placeholder_value = super().template(
-                        "components", placeholder_key.lower(), "typ", entry
+                        "components",
+                        placeholder_key.lower(),
+                        "typ",
+                        entry,
+                        section_title=section.title,
+                        design=self.design,
                     )
                     placeholders[placeholder_key] = (
                         placeholder_value if placeholder_value != "None" else None

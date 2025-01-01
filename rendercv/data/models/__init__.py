@@ -22,7 +22,7 @@ modules, each containing a different group of data models.
     main data model that defines the whole input file structure.
 """
 
-from .computers import format_date
+from .computers import format_date, get_date_input
 from .curriculum_vitae import (
     CurriculumVitae,
     SectionContents,
@@ -62,6 +62,7 @@ __all__ = [
     "RenderCVSettings",
     "RenderCommandSettings",
     "SectionContents",
+    "get_date_input",
     "SocialNetwork",
     "available_entry_models",
     "available_entry_type_names",
