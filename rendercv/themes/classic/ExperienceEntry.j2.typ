@@ -3,7 +3,6 @@
     ((* if second_column_template *))
     #two-col-entry(
       left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
         <<first_column_first_row_template>>
         ((* if design.entries.short_second_row or "\n\n" in second_column_template *))
 
