@@ -522,6 +522,9 @@ def escape_typst_characters(string: str) -> str:
         "#": "\\#",
         "$": "\\$",
         "@": "\\@",
+        "%": "\\%",
+        "~": "\\~",
+        "_": "\\_",
     }
 
     return escape_characters(string, escape_dictionary)
@@ -677,8 +680,9 @@ def replace_placeholders_with_actual_values(
         if value:
             text = text.replace(placeholder, str(value))
         else:
-            # Replace the placeholder and the characters around it with an empty string:
-            text = re.sub(rf"[^\s]*{placeholder}[^\s]*", "", text)
+            # Replace the placeholder and the new line after it (if there is any) with
+            # an empty string:
+            text = re.sub(rf"{placeholder}\n?", "", text)
 
     return text
 

@@ -34,12 +34,12 @@ from rendercv.data.models import (
         ("2022-20-20", None, ValueError),
     ],
 )
-@time_machine.travel("2024-01-01")
 def test_get_date_object(date, expected_date_object, expected_error):
     if expected_error:
         with pytest.raises(expected_error):
             computers.get_date_object(date)
     else:
+        data.RenderCVSettings(date="2024-01-01")
         assert computers.get_date_object(date) == expected_date_object
 
 
@@ -307,7 +307,6 @@ def test_if_the_schema_is_the_latest(root_directory_path):
         ("2002", "2020", "2024", "2024", "2024", ""),
     ],
 )
-@time_machine.travel("2024-01-01")
 def test_dates(
     start_date,
     end_date,
@@ -316,6 +315,7 @@ def test_dates(
     expected_date_string_only_years,
     expected_time_span,
 ):
+    data.RenderCVSettings(date="2024-01-01")
     entry_base = entry_types.EntryBase(
         start_date=start_date, end_date=end_date, date=date
     )
