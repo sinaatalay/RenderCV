@@ -23,6 +23,21 @@ TypstDimension = Annotated[
     ),
 ]
 
+FontFamily = Literal[
+    "Libertinus Serif",
+    "New Computer Modern",
+    "DejaVu Sans Mono",
+    "Source Sans 3",
+    "Roboto",
+    "Open Sans",
+    "Ubuntu",
+    "Noto Sans",
+    "Mukta",
+    "Charter",
+]
+
+BulletPoint = Literal["•", "◦", "-", "◆", "★", "■", "—", "○"]
+
 
 class Page(RenderCVBaseModelWithoutExtraKeys):
     size: Literal[
@@ -140,17 +155,7 @@ class Colors(RenderCVBaseModelWithoutExtraKeys):
 
 
 class Text(RenderCVBaseModelWithoutExtraKeys):
-    font_family: Literal[
-        "Libertinus Serif",
-        "New Computer Modern",
-        "DejaVu Sans Mono",
-        "Source Sans 3",
-        "Roboto",
-        "Open Sans",
-        "Ubuntu",
-        "Noto Sans",
-        "Mukta",
-    ] = pydantic.Field(
+    font_family: FontFamily = pydantic.Field(
         default="Source Sans 3",
         title="Font Family",
         description="The font family of the CV.",
@@ -339,7 +344,7 @@ class Entries(RenderCVBaseModelWithoutExtraKeys):
 
 
 class Highlights(RenderCVBaseModelWithoutExtraKeys):
-    bullet: Literal["•", "●", "◦", "-", "◆", "★", "■", "—", "○"] = pydantic.Field(
+    bullet: BulletPoint = pydantic.Field(
         default="•",
         title="Bullet",
         description="The bullet used for the highlights.",
@@ -438,7 +443,7 @@ class EducationEntryBase(RenderCVBaseModelWithoutExtraKeys):
         title="First Column, First Row",
         description=(
             "The content of the first column. The available placeholders are"
-            " INSTITUTION, AREA, and DEGREE."
+            "  INSTITUTION, AREA, DEGREE, and LOCATION."
         ),
     )
     degree_column_template: Optional[str] = pydantic.Field(
