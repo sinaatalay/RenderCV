@@ -343,11 +343,9 @@ def test_render_command_with_custom_png_path_multiple_pages(tmp_path):
         ],
     )
 
-    png_page1_file_path = tmp_path / "test_1.png"
-    png_page2_file_path = tmp_path / "test_2.png"
+    png_page_file_path = tmp_path / "test.png"
 
-    assert png_page1_file_path.exists()
-    assert png_page2_file_path.exists()
+    assert png_page_file_path.exists()
 
 
 @pytest.mark.parametrize(
@@ -409,7 +407,7 @@ def test_render_command_with_invalid_arguments(
         ("--cv.location", "Test City"),
         ("--cv.sections.test_section.0", "Testing overriding TextEntry."),
         ("--cv.sections.nonexistent", '["this is a textentry for test"]'),
-        ("--design.theme", "sb2nov_typst"),
+        ("--design.theme", "classic"),
         ("--cv.sections", '{"test_title": ["testentry"]}'),
     ],
 )
@@ -447,12 +445,12 @@ def test_new_command(tmp_path):
     result = runner.invoke(cli.app, ["new", "Jahn Doe"])
 
     markdown_source_files_path = tmp_path / "markdown"
-    theme_source_files_path = tmp_path / "classic_typst"
+    theme_source_files_path = tmp_path / "classic"
     input_file_path = tmp_path / "Jahn_Doe_CV.yaml"
 
     assert "Jahn_Doe_CV.yaml" in result.stdout
     assert "markdown" in result.stdout
-    assert "classic_typst" in result.stdout
+    assert "classic" in result.stdout
 
     assert markdown_source_files_path.exists()
     assert theme_source_files_path.exists()
@@ -471,7 +469,7 @@ def test_new_command_with_invalid_theme(tmp_path):
 @pytest.mark.parametrize(
     ("option", "folder_name"),
     [
-        ("--dont-create-theme-source-files", "classic_typst"),
+        ("--dont-create-theme-source-files", "classic"),
         ("--dont-create-markdown-source-files", "markdown"),
     ],
 )
@@ -514,7 +512,7 @@ def test_new_command_with_only_input_file(tmp_path):
     [
         "Jahn_Doe_CV.yaml",
         "markdown",
-        "classic_typst",
+        "classic",
     ],
 )
 def test_new_command_with_existing_files(tmp_path, file_or_folder_name):
@@ -728,7 +726,7 @@ def test_warn_if_new_version_is_available(monkeypatch):
         ("cv.sections.education.0.degree", "PhD"),
         ("cv.sections.education.0.highlights.0", "Did this."),
         ("cv.sections.this_is_a_new_section", '["This is a text entry."]'),
-        ("design.page_size", "a4paper"),
+        ("design.page.size", "a4"),
         ("cv.sections", '{"test_title": ["test_entry"]}'),
     ],
 )
@@ -1043,4 +1041,4 @@ def test_bold_keywords(input_file_path, tmp_path):
     typst_file_path = tmp_path / "rendercv_output" / "None_CV.typ"
     typst_content = typst_file_path.read_text()
 
-    assert "\\textbf{test}" in typst_content
+    assert "*test*" in typst_content
