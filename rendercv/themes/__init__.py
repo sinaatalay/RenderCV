@@ -4,7 +4,9 @@ models for the themes.
 """
 
 from .classic import ClassicThemeOptions
+from .sb2nov import Sb2novThemeOptions
 
 __all__ = [
     "ClassicThemeOptions",
+    "Sb2novThemeOptions",
 ]

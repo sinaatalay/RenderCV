@@ -699,3 +699,30 @@ def test_locale(
     assert "Abbreviation of Jan" in latex_file_contents
     assert "this is present" in latex_file_contents
     assert "this is to" in latex_file_contents
+
+
+@pytest.mark.parametrize(
+    "theme_name",
+    data.available_themes,
+)
+def test_are_all_the_theme_files_the_same(theme_name):
+    source_of_truth_theme = "classic"
+
+    # find the directiory of rendercv.themes.classic:
+    source_of_truth_theme_folder = (
+        pathlib.Path(__file__).parent.parent
+        / "rendercv"
+        / "themes"
+        / source_of_truth_theme
+    )
+    source_of_truth_file_contents = [
+        file.read_text() for file in source_of_truth_theme_folder.rglob("*.j2.typ")
+    ]
+
+    # find the directiory of rendercv.themes.{theme_name}:
+    theme_folder = (
+        pathlib.Path(__file__).parent.parent / "rendercv" / "themes" / theme_name
+    )
+    theme_file_contents = [file.read_text() for file in theme_folder.rglob("*.j2.typ")]
+
+    assert source_of_truth_file_contents == theme_file_contents
