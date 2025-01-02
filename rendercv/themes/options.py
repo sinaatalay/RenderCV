@@ -516,7 +516,7 @@ class EducationEntryBase(RenderCVBaseModelWithoutExtraKeys):
     )
 
 
-class EducationEntry(EducationEntryBase, EntryBaseWithDate):
+class EducationEntry(EntryBaseWithDate, EducationEntryBase):
     pass
 
 
@@ -531,7 +531,7 @@ class NormalEntryBase(RenderCVBaseModelWithoutExtraKeys):
     )
 
 
-class NormalEntry(NormalEntryBase, EntryBaseWithDate):
+class NormalEntry(EntryBaseWithDate, NormalEntryBase):
     pass
 
 
@@ -546,7 +546,7 @@ class ExperienceEntryBase(RenderCVBaseModelWithoutExtraKeys):
     )
 
 
-class ExperienceEntry(ExperienceEntryBase, EntryBaseWithDate):
+class ExperienceEntry(EntryBaseWithDate, ExperienceEntryBase):
     pass
 
 
