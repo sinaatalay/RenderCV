@@ -144,7 +144,6 @@
     size: design-header-name-font-size,
     fill: design-colors-name,
   )
-  #set par(spacing: 0pt)
   #it.body
   // Vertical space after the name
   #v(design-header-vertical-space-between-name-and-connections)
@@ -196,7 +195,7 @@
 #let original-link = link
 #let link(url, body) = {
   body = [#if design-links-underline [#underline(body)] else [#body]]
-  body = [#if design-links-use-external-link-icon [#body #box(
+  body = [#if design-links-use-external-link-icon [#body#h(design-text-font-size/4)#box(
         fa-icon("external-link", size: 0.7em),
         baseline: -10%,
       )] else [#body]]
@@ -269,7 +268,9 @@
       columns: (left-column-width, 1fr, right-column-width),
       column-gutter: design-entries-horizontal-space-between-columns,
       align: alignments,
-      left-content, middle-content, ([#set par(spacing: design-text-leading); #right-content]),
+      ([#set par(spacing: design-text-leading); #left-content]),
+      ([#set par(spacing: design-text-leading); #middle-content]),
+      ([#set par(spacing: design-text-leading); #right-content]),
     ),
     breakable: true,
     width: 100%,
@@ -288,7 +289,8 @@
       columns: (left-column-width, right-column-width),
       column-gutter: design-entries-horizontal-space-between-columns,
       align: alignments,
-      left-content, ([#set par(spacing: design-text-leading); #right-content]),
+      ([#set par(spacing: design-text-leading); #left-content]),
+      ([#set par(spacing: design-text-leading); #right-content]),
     ),
     breakable: true,
     width: 100%,

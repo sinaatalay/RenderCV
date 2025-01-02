@@ -7,7 +7,8 @@
       left-content: [<<degree_column_template>>],
       middle-content: [
         <<first_column_first_row_template>>
-        ((* if design.entries.short_second_row or "\n\n" in second_column_template *))
+        ((* if design.entries.short_second_row or second_column_template.count("\n\n") > first_column_first_row_template.count("\n\n") *))
+        #v(-design-text-leading)
 
         <<first_column_second_row_template>>
         ((* endif *))
@@ -16,7 +17,7 @@
         <<second_column_template>>
       ],
     )
-    ((* if not (design.entries.short_second_row or "\n\n" in second_column_template) and first_column_second_row_template *))
+    ((* if not (design.entries.short_second_row or second_column_template.count("\n\n") > first_column_first_row_template.count("\n\n")) and first_column_second_row_template *))
     #block(
       [
         <<first_column_second_row_template>>
@@ -31,7 +32,8 @@
     #two-col-entry(
       left-content: [
         <<first_column_first_row_template>>
-        ((* if design.entries.short_second_row or "\n\n" in second_column_template *))
+        ((* if design.entries.short_second_row or second_column_template.count("\n\n") > first_column_first_row_template.count("\n\n") *))
+        #v(-design-text-leading)
 
         <<first_column_second_row_template>>
         ((* endif *))
@@ -40,7 +42,7 @@
         <<second_column_template>>
       ],
     )
-    ((* if not (design.entries.short_second_row or "\n\n" in second_column_template) *))
+    ((* if not (design.entries.short_second_row or second_column_template.count("\n\n") > first_column_first_row_template.count("\n\n")) *))
     <<first_column_second_row_template>>
     ((* endif *))
     ((* elif not second_column_template and design.entry_types.education_entry.degree_column_template *))
@@ -54,13 +56,14 @@
       ],
       right-content: [
         <<first_column_first_row_template>>
-        ((* if design.entries.short_second_row or "\n\n" in second_column_template *))
+        ((* if design.entries.short_second_row or second_column_template.count("\n\n") > first_column_first_row_template.count("\n\n") *))
+        #v(-design-text-leading)
 
         <<first_column_second_row_template>>
         ((* endif *))
       ],
     )
-    ((* if not (design.entries.short_second_row or "\n\n" in second_column_template) and first_column_second_row_template *))
+    ((* if not (design.entries.short_second_row or second_column_template.count("\n\n") > first_column_first_row_template.count("\n\n")) and first_column_second_row_template *))
     #block(
       [
         <<first_column_second_row_template>>

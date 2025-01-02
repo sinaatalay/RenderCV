@@ -7,7 +7,7 @@
         #set par(spacing: design-highlights-vertical-space-between-highlights)
         <<first_column_first_row_template>>
 
-      ((* if design.entries.short_second_row or "\n\n" in second_column_template *))
+      ((* if design.entries.short_second_row or second_column_template.count("\n\n") > first_column_first_row_template.count("\n\n") *))
         ((* if not (entry.doi or entry.url)*))
       <<first_column_second_row_without_url_template>>
         ((*- elif not entry.journal -*))
@@ -21,7 +21,7 @@
         <<second_column_template>>
       ],
     )
-    ((* if not (design.entries.short_second_row or "\n\n" in second_column_template) *))
+    ((* if not (design.entries.short_second_row or second_column_template.count("\n\n") > first_column_first_row_template.count("\n\n")) *))
         ((* if not (entry.doi or entry.url)*))
       <<first_column_second_row_without_url_template>>
         ((*- elif not entry.journal -*))

@@ -365,11 +365,15 @@ def input_template_to_typst(
         markdown_to_typst(input_template), placeholders
     )
 
+    # If there are blank italics and bolds, remove them:
+    output = output.replace("#[__]", "")
+    output = output.replace("#[**]", "")
+
     # Check if there are any letters in the input template. If not, return an empty
     if not re.search(r"[a-zA-Z]", input_template):
         return ""
 
-    # Finsh italic and bold links and fix them:
+    # Find italic and bold links and fix them:
     # For example:
     # Convert `#[_#link("https://google.com")[italic link]]`` to
     # `#link("https://google.com")[_italic link_]`

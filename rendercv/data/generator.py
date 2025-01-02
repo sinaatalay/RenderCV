@@ -135,9 +135,6 @@ def generate_json_schema() -> dict:
             # Loop through $defs and remove docstring descriptions and fix optional
             # fields
             for _, value in json_schema["$defs"].items():
-                # Don't allow additional properties
-                value["additionalProperties"] = False
-
                 # If a type is optional, then Pydantic sets the type to a list of two
                 # types, one of which is null. The null type can be removed since we
                 # already have the required field. Moreover, we would like to warn
@@ -154,20 +151,25 @@ def generate_json_schema() -> dict:
                         field["oneOf"] = field["anyOf"]
                         del field["anyOf"]
 
-            # Currently, YAML extension in VS Code doesn't work properly with the
-            # `ListOfEntries` objects. For the best user experience, we will update
-            # the JSON Schema. If YAML extension in VS Code starts to work properly,
-            # then we should remove the following code for the correct JSON Schema.
-            ListOfEntriesForJsonSchema = list[models.Entry]
-            list_of_entries_json_schema = pydantic.TypeAdapter(
-                ListOfEntriesForJsonSchema
-            ).json_schema()
-            del list_of_entries_json_schema["$defs"]
+            # # Currently, YAML extension in VS Code doesn't work properly with the
+            # # `ListOfEntries` objects. For the best user experience, we will update
+            # # the JSON Schema. If YAML extension in VS Code starts to work properly,
+            # # then we should remove the following code for the correct JSON Schema.
+            # ListOfEntriesForJsonSchema = list[models.Entry]
+            # list_of_entries_json_schema = pydantic.TypeAdapter(
+            #     ListOfEntriesForJsonSchema
+            # ).json_schema()
+            # del list_of_entries_json_schema["$defs"]
 
-            # Update the JSON Schema:
-            json_schema["$defs"]["CurriculumVitae"]["properties"]["sections"]["oneOf"][
-                0
-            ]["additionalProperties"] = list_of_entries_json_schema
+            # json_schema["$defs"]["CurriculumVitae"]["properties"]["sections"]["oneOf"][
+            #     0
+            # ]["additionalProperties"] = list_of_entries_json_schema
+
+            # # Loop through json_schema["$defs"] and update keys:
+            # # Make all ANYTHING__KEY to KEY
+            # for key in list(json_schema["$defs"]):
+            #     new_key = key.split("__")[-1]
+            #     json_schema["$defs"][new_key] = json_schema["$defs"][key]
 
             return json_schema
 

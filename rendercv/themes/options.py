@@ -394,7 +394,7 @@ class Entries(RenderCVBaseModelWithoutExtraKeys):
 
 
 class Highlights(RenderCVBaseModelWithoutExtraKeys):
-    bullet: Literal["•", "●", "◦", "-", "◆", "★", "■", "—"] = pydantic.Field(
+    bullet: Literal["•", "●", "◦", "-", "◆", "★", "■", "—", "○"] = pydantic.Field(
         default="•",
         title="Bullet",
         description='The bullet used for the highlights. The default value is "•".',

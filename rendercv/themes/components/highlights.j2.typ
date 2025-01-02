@@ -1,11 +1,11 @@
 ((* for item in entry.highlights *))
   ((* if loop.first *))
-#v(design-highlights-top-margin)
+  #v(design-highlights-top-margin)
 
-#highlights(
+  #highlights(
   ((* endif *))
-  [<<item>>],
+    [<<item>>],
   ((* if loop.last *))
-)
-((* endif *))
+  )
+  ((* endif *))
 ((* endfor *))
