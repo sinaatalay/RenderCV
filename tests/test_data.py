@@ -7,7 +7,6 @@ from datetime import date as Date
 import pydantic
 import pytest
 import ruamel.yaml
-import time_machine
 
 from rendercv import data
 from rendercv.data import generator
@@ -26,7 +25,7 @@ from rendercv.data.models import (
         ("2020-01", Date(2020, 1, 1), None),
         ("2020", Date(2020, 1, 1), None),
         (2020, Date(2020, 1, 1), None),
-        ("present", Date(2024, 1, 1), None),
+        ("present", Date.today(), None),
         ("invalid", None, ValueError),
         ("20222", None, ValueError),
         ("202222-20200", None, ValueError),
@@ -39,7 +38,6 @@ def test_get_date_object(date, expected_date_object, expected_error):
         with pytest.raises(expected_error):
             computers.get_date_object(date)
     else:
-        data.RenderCVSettings(date="2024-01-01")
         assert computers.get_date_object(date) == expected_date_object
 
 
@@ -869,8 +867,9 @@ def test_make_a_url_clean(url, expected_clean_url):
         ("YEAR_IN_TWO_DIGITS", "24"),
     ],
 )
-@time_machine.travel("2024-01-01")
 def test_render_command_settings_placeholders(path_name, expected_value):
+    data.RenderCVSettings(date="2024-01-01")
+
     data.CurriculumVitae(name="John Doe")
 
     render_command_settings = data.RenderCommandSettings(

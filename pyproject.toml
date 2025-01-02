@@ -119,15 +119,14 @@ rendercv = 'rendercv.cli:app'
 installer = "uv"
 python = "3.13"
 dependencies = [
-    "ruff",                 # to lint and format the code
-    "black",                # to format the code
-    "ipython",              # for ipython shell
-    "pyright",              # to check the types
-    "pre-commit",           # to run the checks before committing
-    "pytest==8.3.2",        # to run the tests
-    "coverage==7.6.1",      # to generate coverage reports
-    "time-machine==2.15.0", # to select an arbitrary date and time for testing
-    "pypdf==4.3.1",         # to read PDF files
+    "ruff",             # to lint and format the code
+    "black",            # to format the code
+    "ipython",          # for ipython shell
+    "pyright",          # to check the types
+    "pre-commit",       # to run the checks before committing
+    "pytest==8.3.4",    # to run the tests
+    "coverage==7.6.10", # to generate coverage reports
+    "pypdf==5.1.0",     # to read PDF files
 ]
 [tool.hatch.envs.default.scripts]
 # Hatch allows us to define scripts that can be run in the activated virtual environment

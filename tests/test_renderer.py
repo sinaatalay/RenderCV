@@ -1,12 +1,10 @@
 import copy
-import math
 import os
 import pathlib
 import shutil
 
 import jinja2
 import pytest
-import time_machine
 
 from rendercv import data, renderer
 from rendercv.renderer import renderer as renderer_module
@@ -259,7 +257,6 @@ def test_setup_jinja2_environment():
         "rendercv_filled_curriculum_vitae_data_model",
     ],
 )
-@time_machine.travel("2024-01-01")
 def test_create_a_typst_file(
     run_a_function_and_check_if_output_is_the_same_as_reference,
     request: pytest.FixtureRequest,
@@ -310,13 +307,13 @@ def test_if_create_a_typst_file_can_create_a_new_directory(
         "rendercv_filled_curriculum_vitae_data_model",
     ],
 )
-@time_machine.travel("2024-01-01")
 def test_create_a_markdown_file(
     run_a_function_and_check_if_output_is_the_same_as_reference,
     request: pytest.FixtureRequest,
     theme_name,
     curriculum_vitae_data_model,
 ):
+    data.RenderCVSettings(date="2024-01-01")
     cv_data_model = request.getfixturevalue(curriculum_vitae_data_model)
     data_model = data.RenderCVDataModel(
         cv=cv_data_model,
@@ -450,13 +447,13 @@ def test_copy_theme_files_to_output_directory_nonexistent_theme():
         "rendercv_filled_curriculum_vitae_data_model",
     ],
 )
-@time_machine.travel("2024-01-01")
 def test_create_a_typst_file_and_copy_theme_files(
     run_a_function_and_check_if_output_is_the_same_as_reference,
     request: pytest.FixtureRequest,
     theme_name,
     curriculum_vitae_data_model,
 ):
+    data.RenderCVSettings(date="2024-01-01")
     reference_directory_name = (
         f"{theme_name}_{folder_name_dictionary[curriculum_vitae_data_model]}"
     )
@@ -488,13 +485,13 @@ def test_create_a_typst_file_and_copy_theme_files(
         "rendercv_filled_curriculum_vitae_data_model",
     ],
 )
-@time_machine.travel("2024-01-01")
 def test_render_a_pdf_from_typst(
     request: pytest.FixtureRequest,
     run_a_function_and_check_if_output_is_the_same_as_reference,
     theme_name,
     curriculum_vitae_data_model,
 ):
+    data.RenderCVSettings(date="2024-01-01")
     name = request.getfixturevalue(curriculum_vitae_data_model).name
     name = str(name).replace(" ", "_")
 
@@ -544,12 +541,12 @@ def test_render_pdf_from_typst_nonexistent_typst_file():
         "rendercv_filled_curriculum_vitae_data_model",
     ],
 )
-@time_machine.travel("2024-01-01")
 def test_render_an_html_from_markdown(
     run_a_function_and_check_if_output_is_the_same_as_reference,
     theme_name,
     curriculum_vitae_data_model,
 ):
+    data.RenderCVSettings(date="2024-01-01")
     reference_name = (
         f"{theme_name}_{folder_name_dictionary[curriculum_vitae_data_model]}"
     )
@@ -627,11 +624,11 @@ def test_render_pdf_invalid_typst_file(tmp_path):
     "theme_name",
     data.available_themes,
 )
-@time_machine.travel("2024-01-01")
 def test_locale(
     theme_name,
     tmp_path,
 ):
+    data.RenderCVSettings(date="2024-01-01")
     cv = data.CurriculumVitae(
         name="Test",
         sections={
