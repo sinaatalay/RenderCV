@@ -87,16 +87,14 @@ page_show_page_numbering_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=True,
     title="Show Page Numbering",
     description=(
-        "If this option is set to true, then the page numbering will be shown"
-        " in the footer."
+        'If this option is "true", the page numbering will be shown in the footer.'
     ),
 )
 page_show_last_updated_date_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=True,
     title="Show Last Updated Date",
     description=(
-        "If this option is set to true, then the last updated date will be"
-        " shown in the top right corner of the CV."
+        'If this option is "true", the last updated date will be shown in the footer.'
     ),
 )
 
@@ -122,7 +120,7 @@ color_common_examples = ["Black", "7fffd4", "rgb(0,79,144)", "hsl(270, 60%, 70%)
 colors_text_field_info = pydantic.Field(
     default="rgb(0,0,0)",
     title="Color of Text",
-    description="The color of the text in the CV." + color_common_description,
+    description="The color of the text." + color_common_description,
     examples=color_common_examples,
 )
 colors_name_field_info = pydantic.Field(
@@ -176,12 +174,12 @@ class Colors(RenderCVBaseModelWithoutExtraKeys):
 text_font_family_field_info = pydantic.Field(
     default="Source Sans 3",
     title="Font Family",
-    description="The font family of the CV.",
+    description="The font family.",
 )
 text_font_size_field_info = pydantic.Field(
     default="10pt",
     title="Font Size",
-    description="The font size of the CV.",
+    description="The font size of the text.",
 )
 text_leading_field_info = pydantic.Field(
     default="0.6em",
@@ -205,17 +203,14 @@ class Text(RenderCVBaseModelWithoutExtraKeys):
 links_underline_field_info = pydantic.Field(
     default=False,
     title="Underline Links",
-    description=(
-        "If this option is set to true, then the links will be underlined. The"
-        ' default value is "false".'
-    ),
+    description='If this option is "true", links will be underlined.',
 )
 links_use_external_link_icon_field_info = pydantic.Field(
     default=True,
     title="Use External Link Icon",
     description=(
-        "If this option is set to true, then the external link icon will be shown"
-        " next to the links."
+        'If this option is "true", an external link icon will be shown next to the'
+        " links."
     ),
 )
 
@@ -233,9 +228,7 @@ header_name_field_info = pydantic.Field(
 header_name_bold_field_info = pydantic.Field(
     default=True,
     title="Bold Name",
-    description=(
-        "If this option is set to true, then the name in the header will be bold."
-    ),
+    description='If this option is "true", the name in the header will be bold.',
 )
 header_vertical_space_name_connections_field_info = pydantic.Field(
     default="0.7cm",
@@ -254,10 +247,7 @@ header_vertical_space_connections_first_section_field_info = pydantic.Field(
 header_horizontal_space_connections_field_info = pydantic.Field(
     default="0.5cm",
     title="Space Between Connections",
-    description=(
-        "The space between the connections (like phone, email, and website). The"
-        ' default value is "0.5cm".'
-    ),
+    description="The space between the connections (like phone, email, and website).",
 )
 header_separator_between_connections_field_info = pydantic.Field(
     default="",
@@ -268,9 +258,8 @@ header_use_icons_for_connections_field_info = pydantic.Field(
     default=True,
     title="Use Icons for Connections",
     description=(
-        "If this option is set to true, then icons will be used for the connections"
-        " (phone number, email, social networks, etc.) in the header. The default"
-        ' value is "true".'
+        'If this option is "true", icons will be used for the connections'
+        " (phone number, email, social networks, etc.) in the header."
     ),
 )
 header_alignment_field_info = pydantic.Field(
@@ -305,7 +294,7 @@ section_titles_font_size_field_info = pydantic.Field(
 section_titles_bold_field_info = pydantic.Field(
     default=True,
     title="Bold Section Titles",
-    description="If this option is set to true, then the section titles will be bold.",
+    description='If this option is "true", the section titles will be bold.',
 )
 section_titles_line_type_field_info = pydantic.Field(
     default="partial",
@@ -355,10 +344,7 @@ entries_left_and_right_margin_field_info = pydantic.Field(
 entries_horizontal_space_between_columns_field_info = pydantic.Field(
     default="0.1cm",
     title="Horizontal Space Between Columns",
-    description=(
-        "The horizontal space between the columns in the entries. The default value"
-        ' is "0.1cm".'
-    ),
+    description="The horizontal space between the columns in the entries.",
 )
 entries_vertical_space_between_entries_field_info = pydantic.Field(
     default="1.2em",
@@ -369,15 +355,14 @@ entries_allow_page_break_in_entries_field_info = pydantic.Field(
     default=True,
     title="Allow Page Break in Entries",
     description=(
-        'If this option is set to "true", then a page break will be allowed in the'
-        " entries."
+        'If this option is "true", a page break will be allowed in the entries.'
     ),
 )
 entries_short_second_row_field_info = pydantic.Field(
     default=False,
     title="Short Second Row",
     description=(
-        "If this option is enabled, second row will be shortened to leave the bottom"
+        'If this option is "true", second row will be shortened to leave the bottom'
         " of the date empty."
     ),
 )
@@ -407,7 +392,7 @@ class Entries(RenderCVBaseModelWithoutExtraKeys):
 highlights_bullet_field_info = pydantic.Field(
     default="•",
     title="Bullet",
-    description="The bullet used for the highlights.",
+    description="The bullet used for the highlights and bullet entries.",
 )
 highlights_top_margin_field_info = pydantic.Field(
     default="0.25cm",
@@ -427,10 +412,7 @@ highlights_vertical_space_between_highlights_field_info = pydantic.Field(
 highlights_horizontal_space_between_bullet_and_highlight_field_info = pydantic.Field(
     default="0.5em",
     title="Horizontal Space Between Bullet and Highlight",
-    description=(
-        "The horizontal space between the bullet and the highlight. The default"
-        ' value is "0.5em".'
-    ),
+    description="The horizontal space between the bullet and the highlight.",
 )
 
 
@@ -449,7 +431,10 @@ class Highlights(RenderCVBaseModelWithoutExtraKeys):
 entry_base_with_date_first_column_second_row_template_field_info = pydantic.Field(
     default="SUMMARY\nHIGHLIGHTS",
     title="First Column, Second Row",
-    description="The content of the second row of the first column.",
+    description=(
+        "The content of the second row of the first column. The available"
+        " placeholders are SUMMARY and HIGHLIGHTS."
+    ),
 )
 entry_base_with_date_second_column_template_field_info = pydantic.Field(
     default="LOCATION\nDATE",
@@ -472,27 +457,33 @@ publication_entry_first_column_first_row_template_field_info = pydantic.Field(
     default="**TITLE**",
     title="First Column",
     description=(
-        "The content of the first column. The available placeholders are TITLE."
+        "The content of the first column. The available placeholders are TITLE,"
+        " JOURNAL, and URL."
     ),
 )
 publication_entry_first_column_second_row_template_field_info = pydantic.Field(
     default="AUTHORS\nURL (JOURNAL)",
     title="First Column, Second Row",
-    description="The content of the second row of the first column.",
+    description=(
+        "The content of the second row of the first column. The available placeholders"
+        " are AUTHORS, URL, and JOURNAL."
+    ),
 )
-publication_entry_first_column_second_row_without_journal_template_field_info = (
-    pydantic.Field(
-        default="AUTHORS\nURL",
-        title="First Column, Second Row Without Journal",
-        description="The content of the first column in case the journal is not given.",
-    )
+publication_entry_first_column_second_row_without_journal_template_field_info = pydantic.Field(
+    default="AUTHORS\nURL",
+    title="First Column, Second Row Without Journal",
+    description=(
+        "The content of the first column in case the journal is not given. The"
+        " available placeholders are AUTHORS and URL."
+    ),
 )
-publication_entry_first_column_second_row_without_url_template_field_info = (
-    pydantic.Field(
-        default="AUTHORS\nJOURNAL",
-        title="First Column, Second Row Without URL",
-        description="The content of the first column in case the URL is not given.",
-    )
+publication_entry_first_column_second_row_without_url_template_field_info = pydantic.Field(
+    default="AUTHORS\nJOURNAL",
+    title="First Column, Second Row Without URL",
+    description=(
+        "The content of the first column in case the URL is not given. The"
+        " available placeholders are AUTHORS and JOURNAL."
+    ),
 )
 
 
@@ -535,7 +526,7 @@ education_entry_degree_column_width_field_info = pydantic.Field(
     default="1cm",
     title="Width of the Degree Column",
     description=(
-        "The width of the degree column if the `degree_column_template` is given."
+        'The width of the degree column if the "degree_column_template" is given.'
     ),
 )
 
@@ -557,10 +548,7 @@ class EducationEntry(EntryBaseWithDate, EducationEntryBase):
 normal_entry_first_column_first_row_template_field_info = pydantic.Field(
     default="**NAME**",
     title="First Column, First Row",
-    description=(
-        "The content of the first column. The available placeholders are NAME, SUMMARY,"
-        " and HIGHLIGHTS."
-    ),
+    description="The content of the first column. The available placeholders are NAME.",
 )
 
 
@@ -578,8 +566,8 @@ experience_entry_first_column_first_row_template_field_info = pydantic.Field(
     default="**COMPANY**, POSITION",
     title="First Column, First Row",
     description=(
-        "The content of the first column. The available placeholders are COMPANY"
-        " and POSITION."
+        "The content of the first column. The available placeholders are COMPANY,"
+        " POSITION, and LOCATION."
     ),
 )
 
