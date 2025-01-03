@@ -13,7 +13,8 @@ import pydantic
 
 from ...themes import (
     ClassicThemeOptions,
-    Sb2novThemeOptions
+    EngineeringresumesThemeOptions,
+    Sb2novThemeOptions,
 )
 from . import entry_types
 from .base import RenderCVBaseModelWithoutExtraKeys
@@ -197,6 +198,7 @@ RenderCVDesign = Annotated[
 available_theme_options = {
     "classic": ClassicThemeOptions,
     "sb2nov": Sb2novThemeOptions,
+    "engineeringresumes": EngineeringresumesThemeOptions,
 }
 
 available_themes = list(available_theme_options.keys())
