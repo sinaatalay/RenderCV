@@ -14,10 +14,10 @@ import urllib.request
 from collections.abc import Callable
 from typing import Any, Optional
 
+import pydantic
 import typer
 import watchdog.events
 import watchdog.observers
-import pydantic
 
 from .. import data, renderer
 from . import printer

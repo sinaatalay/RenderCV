@@ -62,7 +62,6 @@ __all__ = [
     "RenderCVSettings",
     "RenderCommandSettings",
     "SectionContents",
-    "get_date_input",
     "SocialNetwork",
     "available_entry_models",
     "available_entry_type_names",
@@ -70,5 +69,6 @@ __all__ = [
     "available_theme_options",
     "available_themes",
     "format_date",
+    "get_date_input",
     "rendercv_data_model_fields",
 ]
