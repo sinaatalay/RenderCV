@@ -224,6 +224,10 @@ def parse_validation_errors(
         "Input should be a valid list": (
             "This field should contain a list of items but it doesn't!"
         ),
+        "value is not a valid color: string not recognised as a valid color": (
+            "This is not a valid color! Here are some examples of valid colors:"
+            ' "red", "#ff0000", "rgb(255, 0, 0)", "hsl(0, 100%, 50%)"'
+        ),
     }
 
     unwanted_texts = ["value is not a valid email address: ", "Value error, "]
