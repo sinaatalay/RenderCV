@@ -24,6 +24,7 @@
 #let design-text-leading = 0.6em
 #let design-text-font-family = "Source Sans 3"
 #let design-text-alignment = "justified"
+#let design-header-photo-width = 3.5cm
 #let design-header-use-icons-for-connections = true
 #let design-header-name-font-size = 30pt
 #let design-header-name-bold = true
@@ -33,6 +34,7 @@
 #let design-header-horizontal-space-between-connections = 0.5cm
 #let design-header-separator-between-connections = ""
 #let design-header-alignment = center
+#let design-highlights-summary-left-margin = 0cm
 #let design-highlights-bullet = "•"
 #let design-highlights-top-margin = 0.25cm
 #let design-highlights-left-margin = 0.4cm
@@ -135,7 +137,6 @@
     size: design-header-name-font-size,
     fill: design-colors-name,
   )
-  #set par(spacing: 0pt)
   #it.body
   // Vertical space after the name
   #v(design-header-vertical-space-between-name-and-connections)
@@ -172,7 +173,8 @@
         #if design-section-titles-line-type == "partial" [
           #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
         ] else if design-section-titles-line-type == "full" [
-          #v(-design-text-leading * 0.6)
+
+          #v(design-text-font-size * 0.4)
           #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
         ]
       ])
@@ -187,7 +189,7 @@
 #let original-link = link
 #let link(url, body) = {
   body = [#if design-links-underline [#underline(body)] else [#body]]
-  body = [#if design-links-use-external-link-icon [#body #box(
+  body = [#if design-links-use-external-link-icon [#body#h(design-text-font-size/4)#box(
         fa-icon("external-link", size: 0.7em),
         baseline: -10%,
       )] else [#body]]
@@ -260,7 +262,9 @@
       columns: (left-column-width, 1fr, right-column-width),
       column-gutter: design-entries-horizontal-space-between-columns,
       align: alignments,
-      left-content, middle-content, ([#set par(spacing: design-text-leading); #right-content]),
+      ([#set par(spacing: design-text-leading); #left-content]),
+      ([#set par(spacing: design-text-leading); #middle-content]),
+      ([#set par(spacing: design-text-leading); #right-content]),
     ),
     breakable: true,
     width: 100%,
@@ -273,13 +277,15 @@
   left-content: "",
   right-content: "",
   alignments: (left, right),
+  column-gutter: design-entries-horizontal-space-between-columns,
 ) = [
   #block(
     grid(
       columns: (left-column-width, right-column-width),
-      column-gutter: design-entries-horizontal-space-between-columns,
+      column-gutter: column-gutter,
       align: alignments,
-      left-content, ([#set par(spacing: design-text-leading); #right-content]),
+      ([#set par(spacing: design-text-leading); #left-content]),
+      ([#set par(spacing: design-text-leading); #right-content]),
     ),
     breakable: true,
     width: 100%,
@@ -292,6 +298,8 @@
 #let connections-list = (
 )
 #connections(connections-list)
+
+
 
 == Test
 
