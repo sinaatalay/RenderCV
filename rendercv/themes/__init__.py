@@ -4,9 +4,9 @@ models for the themes.
 """
 
 from .classic import ClassicThemeOptions
+from .engineeringclassic import EngineeringclassicThemeOptions
 from .engineeringresumes import EngineeringresumesThemeOptions
 from .sb2nov import Sb2novThemeOptions
-from .engineeringclassic import EngineeringclassicThemeOptions
 
 __all__ = [
     "ClassicThemeOptions",

@@ -66,10 +66,31 @@ def copy_theme_files_to_output_directory(
                 )
 
 
+def create_typst_contente(
+    rendercv_data_model: data.RenderCVDataModel,
+) -> str:
+    """Create a Typst file with the given data model and return it as a string.
+
+    Args:
+        rendercv_data_model: The data model.
+
+    Returns:
+        The path to the generated Typst file.
+    """
+    jinja2_environment = templater.setup_jinja2_environment()
+
+    file_object = templater.TypstFile(
+        rendercv_data_model,
+        jinja2_environment,
+    )
+
+    return file_object.get_full_code()
+
+
 def create_a_typst_file(
     rendercv_data_model: data.RenderCVDataModel,
-    output_directory: Optional[pathlib.Path],
-) -> pathlib.Path | str:
+    output_directory: pathlib.Path,
+) -> pathlib.Path:
     """Create a Typst file (depending on the theme) with the given data model and write
     it to the output directory.
 
@@ -81,24 +102,18 @@ def create_a_typst_file(
     Returns:
         The path to the generated Typst file.
     """
-    jinja2_environment = templater.setup_jinja2_environment()
 
-    file_object = templater.TypstFile(
-        rendercv_data_model,
-        jinja2_environment,
-    )
+    typst_contents = create_typst_contente(rendercv_data_model)
+
+    # Create output directory if it doesn't exist:
+    if not output_directory.is_dir():
+        output_directory.mkdir(parents=True)
+
     file_name = f"{str(rendercv_data_model.cv.name).replace(' ', '_')}_CV.typ"
+    file_path = output_directory / file_name
+    file_path.write_text(typst_contents, encoding="utf-8")
 
-    if output_directory:
-        # Create output directory if it doesn't exist:
-        if not output_directory.is_dir():
-            output_directory.mkdir(parents=True)
-        file_path = output_directory / file_name
-        file_object.create_file(file_path)
-
-        return file_path
-
-    return file_object.get_full_code()
+    return file_path
 
 
 def create_a_markdown_file(

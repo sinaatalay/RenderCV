@@ -13,9 +13,9 @@ import pydantic
 
 from ...themes import (
     ClassicThemeOptions,
+    EngineeringclassicThemeOptions,
     EngineeringresumesThemeOptions,
     Sb2novThemeOptions,
-    EngineeringclassicThemeOptions,
 )
 from . import entry_types
 from .base import RenderCVBaseModelWithoutExtraKeys

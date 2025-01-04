@@ -1,9 +1,6 @@
-from typing import Literal, Optional
-
-import pydantic_extra_types.color as pydantic_color
+from typing import Literal
 
 import rendercv.themes.options as o
-
 
 o.page_show_page_numbering_field_info.default = False
 

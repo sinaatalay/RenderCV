@@ -4,7 +4,6 @@ import pydantic_extra_types.color as pydantic_color
 
 import rendercv.themes.options as o
 
-
 o.page_show_page_numbering_field_info.default = False
 
 
