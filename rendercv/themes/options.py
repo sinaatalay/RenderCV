@@ -469,7 +469,7 @@ entry_base_with_date_first_column_second_row_template_field_info: (
     title="First Column, Second Row",
     description=(
         "The content of the second row of the first column. The available placeholders"
-        " are all the keys used in the entries."
+        " are all the keys used in the entries (in uppercase)."
     ),
 )
 entry_base_with_date_second_column_template_field_info: pydantic.fields.FieldInfo = (
@@ -478,7 +478,7 @@ entry_base_with_date_second_column_template_field_info: pydantic.fields.FieldInf
         title="Second Column",
         description=(
             "The content of the second column. The available placeholders are all the"
-            " keys used in the entries."
+            " keys used in the entries (in uppercase)."
         ),
     )
 )
@@ -498,7 +498,7 @@ publication_entry_first_column_first_row_template_field_info: (
     title="First Column",
     description=(
         "The content of the first column. The available placeholders are all the keys"
-        " used in the entries."
+        " used in the entries (in uppercase)."
     ),
 )
 publication_entry_first_column_second_row_template_field_info: (
@@ -508,7 +508,7 @@ publication_entry_first_column_second_row_template_field_info: (
     title="First Column, Second Row",
     description=(
         "The content of the second row of the first column. The available placeholders"
-        " are all the keys used in the entries."
+        " are all the keys used in the entries (in uppercase)."
     ),
 )
 publication_entry_first_column_second_row_without_journal_template_field_info: (
@@ -518,7 +518,7 @@ publication_entry_first_column_second_row_without_journal_template_field_info: (
     title="First Column, Second Row Without Journal",
     description=(
         "The content of the first column in case the journal is not given. The"
-        " available placeholders are all the keys used in the entries."
+        " available placeholders are all the keys used in the entries (in uppercase)."
     ),
 )
 publication_entry_first_column_second_row_without_url_template_field_info: (
@@ -528,7 +528,7 @@ publication_entry_first_column_second_row_without_url_template_field_info: (
     title="First Column, Second Row Without URL",
     description=(
         "The content of the first column in case the `doi` or `url is not given. The"
-        " available placeholders are all the keys used in the entries."
+        " available placeholders are all the keys used in the entries (in uppercase)."
     ),
 )
 
@@ -559,7 +559,7 @@ education_entry_first_column_first_row_template_field_info: (
     title="First Column, First Row",
     description=(
         "The content of the first column. The available placeholders are all the keys"
-        " used in the entries."
+        " used in the entries (in uppercase)."
     ),
 )
 education_entry_degree_column_template_field_info: pydantic.fields.FieldInfo = (
@@ -569,7 +569,7 @@ education_entry_degree_column_template_field_info: pydantic.fields.FieldInfo = (
         description=(
             'If given, a degree column will be added to the education entry. If "null",'
             " no degree column will be shown. The available placeholders are all the"
-            " keys used in the entries."
+            " keys used in the entries (in uppercase)."
         ),
     )
 )
@@ -604,7 +604,7 @@ normal_entry_first_column_first_row_template_field_info: pydantic.fields.FieldIn
         title="First Column, First Row",
         description=(
             "The content of the first column. The available placeholders are all the"
-            " keys used in the entries."
+            " keys used in the entries (in uppercase)."
         ),
     )
 )
@@ -627,7 +627,7 @@ experience_entry_first_column_first_row_template_field_info: (
     title="First Column, First Row",
     description=(
         "The content of the first column. The available placeholders are all the keys"
-        " used in the entries."
+        " used in the entries (in uppercase)."
     ),
 )
 
@@ -647,7 +647,7 @@ one_line_entry_template_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     title="Template",
     description=(
         "The template of the one-line entry. The available placeholders are all the"
-        " keys used in the entries."
+        " keys used in the entries (in uppercase)."
     ),
 )
 
