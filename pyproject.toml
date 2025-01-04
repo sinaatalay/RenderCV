@@ -159,6 +159,7 @@ dependencies = [
     "pdfCropMargins==2.1.3",       # to generate entry figures for the documentation
     "pillow==10.4.0",              # lock the dependency of pdfCropMargins
     "mkdocs-macros-plugin==1.0.5", # to be able to have dynamic content in the documentation
+    "PyMuPDF==1.24.14",            # to convert PDF files to images    
 ]
 [tool.hatch.envs.docs.scripts]
 # Build the documentation with `mkdocs`:
@@ -232,6 +233,7 @@ enable-unstable-feature = [
 [tool.pyright]
 reportIncompatibleVariableOverride = false # disable this error type
 reportIncompatibleMethodOverride = false   # disable this error type
+exclude = ["rendercv/themes/*"]
 
 [tool.coverage.run]
 source = ['rendercv']             # The source to measure during execution
