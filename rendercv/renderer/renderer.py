@@ -5,6 +5,7 @@ Typst, PDF, Markdown, HTML, and PNG files from the `RenderCVDataModel` object.
 
 import importlib.resources
 import pathlib
+import tempfile
 import re
 import shutil
 from typing import Optional
@@ -66,7 +67,7 @@ def copy_theme_files_to_output_directory(
                 )
 
 
-def create_typst_contente(
+def create_typst_contents(
     rendercv_data_model: data.RenderCVDataModel,
 ) -> str:
     """Create a Typst file with the given data model and return it as a string.
@@ -103,7 +104,7 @@ def create_a_typst_file(
         The path to the generated Typst file.
     """
 
-    typst_contents = create_typst_contente(rendercv_data_model)
+    typst_contents = create_typst_contents(rendercv_data_model)
 
     # Create output directory if it doesn't exist:
     if not output_directory.is_dir():
@@ -198,8 +199,13 @@ def render_typst(typst_file_contents: str) -> bytes:
     Returns:
         The rendered bytes.
     """
-    typst_compiler = setup_typst_compiler(typst_file_contents)
-    return typst_compiler.compile(format="pdf")
+    # create a temporary folder:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_dir_path = pathlib.Path(temp_dir)
+        typst_file_path = temp_dir_path / "temp.typ"
+        typst_file_path.write_text(typst_file_contents, encoding="utf-8")
+
+        return typst.compile(typst_file_path, format="pdf")
 
 
 def render_a_pdf_from_typst(file_path: pathlib.Path) -> pathlib.Path:

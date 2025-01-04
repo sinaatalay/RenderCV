@@ -313,7 +313,7 @@ def test_dates(
     expected_date_string_only_years,
     expected_time_span,
 ):
-    data.RenderCVSettings(date="2024-01-01")
+    data.RenderCVSettings(date="2024-01-01") # type: ignore
     entry_base = entry_types.EntryBase(
         start_date=start_date, end_date=end_date, date=date
     )
@@ -868,7 +868,7 @@ def test_make_a_url_clean(url, expected_clean_url):
     ],
 )
 def test_render_command_settings_placeholders(path_name, expected_value):
-    data.RenderCVSettings(date="2024-01-01")
+    data.RenderCVSettings(date="2024-01-01") # type: ignore
 
     data.CurriculumVitae(name="John Doe")
 

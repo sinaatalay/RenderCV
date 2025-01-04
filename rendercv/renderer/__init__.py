@@ -13,6 +13,7 @@ into an HTML file with
 
 from .renderer import (
     create_a_markdown_file,
+    create_typst_contents,
     create_a_typst_file,
     create_a_typst_file_and_copy_theme_files,
     render_a_pdf_from_typst,
@@ -23,6 +24,7 @@ from .renderer import (
 
 __all__ = [
     "create_a_markdown_file",
+    "create_typst_contents",
     "create_a_typst_file",
     "create_a_typst_file_and_copy_theme_files",
     "render_a_pdf_from_typst",

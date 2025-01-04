@@ -662,7 +662,7 @@ def run_rendercv_just_for_pdf_in_bytes(
         cv_field_as_dictionary["sections"] = new_sections_field
         data_model.cv = data.models.CurriculumVitae(**cv_field_as_dictionary)
 
-    typst_file_contents = renderer.create_a_typst_file_and_copy_theme_files(data_model)
+    typst_file_contents = renderer.create_typst_contents(data_model)
 
     return renderer.render_typst(typst_file_contents)
 

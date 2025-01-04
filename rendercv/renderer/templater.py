@@ -11,6 +11,7 @@ from collections.abc import Callable
 from typing import Optional
 
 import jinja2
+import pydantic
 
 from .. import data
 
@@ -127,10 +128,10 @@ class TypstFile(TemplatedFile):
         ]
 
         # All the placeholders used in the templates:
-        sections = self.cv.sections_input
+        sections_input: dict[str, list[pydantic.BaseModel]] = self.cv.sections_input  # type: ignore
         # Loop through the sections and entries to find all the field names:
-        placeholder_keys: list[str] = set()
-        for section in sections.values():
+        placeholder_keys: set[str] = set()
+        for section in sections_input.values():
             for entry in section:
                 if isinstance(entry, str):
                     break
@@ -350,7 +351,7 @@ class MarkdownFile(TemplatedFile):
 
 
 def input_template_to_typst(
-    input_template: str, placeholders: dict[str, Optional[str]]
+    input_template: Optional[str], placeholders: dict[str, Optional[str]]
 ) -> str:
     """Convert an input template to Typst.
 
@@ -361,6 +362,9 @@ def input_template_to_typst(
     Returns:
         Typst string.
     """
+    if input_template is None:
+        return ""
+
     output = replace_placeholders_with_actual_values(
         markdown_to_typst(input_template), placeholders
     )

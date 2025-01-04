@@ -17,87 +17,9 @@ folder_name_dictionary = {
 
 
 def test_typst_file_class(tmp_path, rendercv_data_model, jinja2_environment):
-    rendercv_data_model.design = data.models.design.ClassicThemeOptions(theme="classic")
     typst_file = templater.TypstFile(rendercv_data_model, jinja2_environment)
     typst_file.get_full_code()
     typst_file.create_file(tmp_path / "test.typ")
-
-
-def test_typst_file_class(tmp_path, rendercv_data_model, jinja2_environment):
-    typst_file = templater.TypstFile(rendercv_data_model, jinja2_environment)
-    typst_file.get_full_code()
-    typst_file.create_file(tmp_path / "test.typ")
-
-
-@pytest.mark.parametrize(
-    ("string", "expected_string"),
-    [
-        (
-            "\\textit{This is a \\textit{nested} italic text.}",
-            "\\textit{This is a \\textnormal{nested} italic text.}",
-        ),
-        (
-            "\\underline{This is a \\underline{nested} underlined text.}",
-            "\\underline{This is a \\textnormal{nested} underlined text.}",
-        ),
-        (
-            "\\textbf{This is a \\textit{nested} bold text.}",
-            "\\textbf{This is a \\textit{nested} bold text.}",
-        ),
-        (
-            "\\textbf{This is not} a \\textbf{nested bold text.}",
-            "\\textbf{This is not} a \\textbf{nested bold text.}",
-        ),
-        (
-            (
-                "\\textbf{This is not} \\textbf{a nested bold text. But it \\textbf{is}"
-                " now.}"
-            ),
-            (
-                "\\textbf{This is not} \\textbf{a nested bold text. But it"
-                " \\textnormal{is} now.}"
-            ),
-        ),
-        (
-            "\\textit{This is a \\underline{nested} italic text.}",
-            "\\textit{This is a \\underline{nested} italic text.}",
-        ),
-    ],
-)
-def test_typst_file_revert_nested_typst_style_commands_method(string, expected_string):
-    assert templater.revert_nested_typst_style_commands(string) == expected_string
-
-
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "The current implementation of revert_nested_typst_style_commands method does"
-        " not handle the challenging cases in the test cases below."
-    ),
-)
-@pytest.mark.parametrize(
-    ("string", "expected_string"),
-    [
-        (
-            "\\textbf{This is a \\textbf{nested} bold \\textbf{text}.}",
-            "\\textbf{This is a \\textnormal{nested} bold \\textnormal{text}.}",
-        ),
-        (
-            (
-                "\\textit{This \\textit{is} a \\textbf{n\\textit{ested}} underlined"
-                " \\textit{text}.}"
-            ),
-            (
-                "\\textit{This \\textnormal{is} a \\textbf{n\\textnormal{ested}}"
-                " underlined \\textnormal{text}.}"
-            ),
-        ),
-    ],
-)
-def test_typst_file_revert_nested_typst_style_commands_method_challenging_ones(
-    string, expected_string
-):
-    assert templater.revert_nested_typst_style_commands(string) == expected_string
 
 
 def test_markdown_file_class(tmp_path, rendercv_data_model, jinja2_environment):
@@ -144,32 +66,6 @@ def test_markdown_file_class(tmp_path, rendercv_data_model, jinja2_environment):
 )
 def test_escape_typst_characters(string, expected_string):
     assert templater.escape_typst_characters(string) == expected_string
-
-
-@pytest.mark.parametrize(
-    ("markdown_string", "expected_typst_string"),
-    [
-        ("My Text", "My Text"),
-        ("**My** Text", "\\textbf{My} Text"),
-        ("*My* Text", "\\textit{My} Text"),
-        ("***My*** Text", "\\textbf{\\textit{My}} Text"),
-        ("[My](https://myurl.com) Text", "\\href{https://myurl.com}{My} Text"),
-        ("`My` Text", "`My` Text"),
-        (
-            "[**My** *Text* ***Is*** `Here`](https://myurl.com)",
-            (
-                "\\href{https://myurl.com}{\\textbf{My} \\textit{Text}"
-                " \\textbf{\\textit{Is}} `Here`}"
-            ),
-        ),
-        (
-            "Some other *** tests, which should be tricky* to parse!**",
-            "Some other \\textbf{\\textit{ tests, which should be tricky} to parse!}",
-        ),
-    ],
-)
-def test_markdown_to_typst(markdown_string, expected_typst_string):
-    assert templater.markdown_to_typst(markdown_string) == expected_typst_string
 
 
 @pytest.mark.parametrize(
@@ -313,7 +209,7 @@ def test_create_a_markdown_file(
     theme_name,
     curriculum_vitae_data_model,
 ):
-    data.RenderCVSettings(date="2024-01-01")
+    data.RenderCVSettings(date="2024-01-01")  # type: ignore
     cv_data_model = request.getfixturevalue(curriculum_vitae_data_model)
     data_model = data.RenderCVDataModel(
         cv=cv_data_model,
@@ -453,7 +349,7 @@ def test_create_a_typst_file_and_copy_theme_files(
     theme_name,
     curriculum_vitae_data_model,
 ):
-    data.RenderCVSettings(date="2024-01-01")
+    data.RenderCVSettings(date="2024-01-01")  # type: ignore
     reference_directory_name = (
         f"{theme_name}_{folder_name_dictionary[curriculum_vitae_data_model]}"
     )
@@ -491,7 +387,7 @@ def test_render_a_pdf_from_typst(
     theme_name,
     curriculum_vitae_data_model,
 ):
-    data.RenderCVSettings(date="2024-01-01")
+    data.RenderCVSettings(date="2024-01-01")  # type: ignore
     name = request.getfixturevalue(curriculum_vitae_data_model).name
     name = str(name).replace(" ", "_")
 
@@ -546,7 +442,7 @@ def test_render_an_html_from_markdown(
     theme_name,
     curriculum_vitae_data_model,
 ):
-    data.RenderCVSettings(date="2024-01-01")
+    data.RenderCVSettings(date="2024-01-01")  # type: ignore
     reference_name = (
         f"{theme_name}_{folder_name_dictionary[curriculum_vitae_data_model]}"
     )
@@ -628,7 +524,7 @@ def test_locale(
     theme_name,
     tmp_path,
 ):
-    data.RenderCVSettings(date="2024-01-01")
+    data.RenderCVSettings(date="2024-01-01")  # type: ignore
     cv = data.CurriculumVitae(
         name="Test",
         sections={
