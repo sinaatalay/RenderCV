@@ -67,22 +67,20 @@ def copy_theme_files_to_output_directory(
 
 
 def create_a_typst_file(
-    rendercv_data_model: data.RenderCVDataModel, output_directory: pathlib.Path
-) -> pathlib.Path:
+    rendercv_data_model: data.RenderCVDataModel,
+    output_directory: Optional[pathlib.Path],
+) -> pathlib.Path | str:
     """Create a Typst file (depending on the theme) with the given data model and write
     it to the output directory.
 
     Args:
         rendercv_data_model: The data model.
-        output_directory: Path to the output directory.
+        output_directory: Path to the output directory. If not given, the Typst file
+            will be returned as a string.
 
     Returns:
         The path to the generated Typst file.
     """
-    # Create output directory if it doesn't exist:
-    if not output_directory.is_dir():
-        output_directory.mkdir(parents=True)
-
     jinja2_environment = templater.setup_jinja2_environment()
 
     file_object = templater.TypstFile(
@@ -91,10 +89,16 @@ def create_a_typst_file(
     )
     file_name = f"{str(rendercv_data_model.cv.name).replace(' ', '_')}_CV.typ"
 
-    file_path = output_directory / file_name
-    file_object.create_file(file_path)
+    if output_directory:
+        # Create output directory if it doesn't exist:
+        if not output_directory.is_dir():
+            output_directory.mkdir(parents=True)
+        file_path = output_directory / file_name
+        file_object.create_file(file_path)
 
-    return file_path
+        return file_path
+
+    return file_object.get_full_code()
 
 
 def create_a_markdown_file(
@@ -168,6 +172,19 @@ def setup_typst_compiler(file_path: pathlib.Path) -> typst.Compiler:
         typst_file_path = file_path
 
     return typst_compiler
+
+
+def render_typst(typst_file_contents: str) -> bytes:
+    """Render the given Typst file and return the rendered bytes.
+
+    Args:
+        typst_file_contents: The Typst file as a string.
+
+    Returns:
+        The rendered bytes.
+    """
+    typst_compiler = setup_typst_compiler(typst_file_contents)
+    return typst_compiler.compile(format="pdf")
 
 
 def render_a_pdf_from_typst(file_path: pathlib.Path) -> pathlib.Path:

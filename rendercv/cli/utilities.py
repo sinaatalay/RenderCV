@@ -629,6 +629,44 @@ def run_rendercv_with_printer(
                 progress.finish_the_current_step()
 
 
+def run_rendercv_just_for_pdf_in_bytes(
+    input_file_as_a_dict: dict,
+) -> bytes | list[dict]:
+    """
+    Validate the input file given as a dictionary, create the Typst file, and render the
+    Typst file to a PDF. Return the PDF as bytes. If there are validation errors, return
+    the errors as a list of dictionaries.
+
+    Args:
+        input_file_as_a_dict: The input file as a dictionary.
+
+    Returns:
+        The rendered PDF as bytes or the validation errors as a list of dictionaries.
+    """
+
+    try:
+        data_model = data.validate_input_dictionary_and_return_the_data_model(
+            input_file_as_a_dict,
+        )
+    except pydantic.ValidationError as e:
+        return parse_validation_errors(e)
+
+    # If the `bold_keywords` field is provided in the `rendercv_settings`, make the
+    # given keywords bold in the `cv.sections` field:
+    if data_model.rendercv_settings and data_model.rendercv_settings.bold_keywords:
+        cv_field_as_dictionary = data_model.cv.model_dump(by_alias=True)
+        new_sections_field = make_given_keywords_bold_in_a_dictionary(
+            cv_field_as_dictionary["sections"],
+            data_model.rendercv_settings.bold_keywords,
+        )
+        cv_field_as_dictionary["sections"] = new_sections_field
+        data_model.cv = data.models.CurriculumVitae(**cv_field_as_dictionary)
+
+    typst_file_contents = renderer.create_a_typst_file_and_copy_theme_files(data_model)
+
+    return renderer.render_typst(typst_file_contents)
+
+
 def run_a_function_if_a_file_changes(file_path: pathlib.Path, function: Callable):
     """Watch the file located at `file_path` and call the `function` when the file is
     modified. The function should not take any arguments.

@@ -18,6 +18,7 @@ from .renderer import (
     render_a_pdf_from_typst,
     render_an_html_from_markdown,
     render_pngs_from_typst,
+    render_typst,
 )
 
 __all__ = [
@@ -27,4 +28,5 @@ __all__ = [
     "render_a_pdf_from_typst",
     "render_an_html_from_markdown",
     "render_pngs_from_typst",
+    "render_typst",
 ]
