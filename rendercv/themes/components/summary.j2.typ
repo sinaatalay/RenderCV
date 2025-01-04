@@ -1,10 +1,13 @@
 ((* if entry.summary *))
-#block(
-  [
+#two-col-entry(
+  left-column-width: design-highlights-summary-left-margin,
+  right-column-width: 1fr,
+  left-content: [],
+  right-content: [
     #v(design-highlights-top-margin)
 
-    <<entry.summary>>
+    #align(left, [<<entry.summary>>])
   ],
-  width: 100%,
+  column-gutter: 0cm,
 )
 ((* endif *))

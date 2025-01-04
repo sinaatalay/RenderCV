@@ -43,6 +43,7 @@
 #let design-header-horizontal-space-between-connections = <<design.header.horizontal_space_between_connections>>
 #let design-header-separator-between-connections = "<<design.header.separator_between_connections>>"
 #let design-header-alignment = <<design.header.alignment>>
+#let design-highlights-summary-left-margin = <<design.highlights.summary_left_margin>>
 #let design-highlights-bullet = "<<design.highlights.bullet>>"
 #let design-highlights-top-margin = <<design.highlights.top_margin>>
 #let design-highlights-left-margin = <<design.highlights.left_margin>>

@@ -454,6 +454,11 @@ highlights_horizontal_space_between_bullet_and_highlight_field_info: (
     title="Horizontal Space Between Bullet and Highlight",
     description="The horizontal space between the bullet and the highlight.",
 )
+highlights_summary_left_margin_field_info: pydantic.fields.FieldInfo = pydantic.Field(
+    default="0cm",
+    title="Left Margin of the Summary",
+    description="The left margin of the summary.",
+)
 
 
 class Highlights(RenderCVBaseModelWithoutExtraKeys):
@@ -466,6 +471,7 @@ class Highlights(RenderCVBaseModelWithoutExtraKeys):
     horizontal_space_between_bullet_and_highlight: TypstDimension = (
         highlights_horizontal_space_between_bullet_and_highlight_field_info
     )
+    summary_left_margin: TypstDimension = highlights_summary_left_margin_field_info
 
 
 entry_base_with_date_first_column_second_row_template_field_info: (
@@ -510,7 +516,7 @@ publication_entry_first_column_first_row_template_field_info: (
 publication_entry_first_column_second_row_template_field_info: (
     pydantic.fields.FieldInfo
 ) = pydantic.Field(
-    default="AUTHORS\nDOIURL (JOURNAL)",
+    default="AUTHORS\nDOIURL (JOURNAL)\nSUMMARY",
     title="First Column, Second Row",
     description=(
         "The content of the second row of the first column. The available placeholders"
@@ -520,7 +526,7 @@ publication_entry_first_column_second_row_template_field_info: (
 publication_entry_first_column_second_row_without_journal_template_field_info: (
     pydantic.fields.FieldInfo
 ) = pydantic.Field(
-    default="AUTHORS\nDOIURL",
+    default="AUTHORS\nDOIURL\nSUMMARY",
     title="First Column, Second Row Without Journal",
     description=(
         "The content of the first column in case the journal is not given. The"
@@ -530,7 +536,7 @@ publication_entry_first_column_second_row_without_journal_template_field_info: (
 publication_entry_first_column_second_row_without_url_template_field_info: (
     pydantic.fields.FieldInfo
 ) = pydantic.Field(
-    default="AUTHORS\nJOURNAL",
+    default="AUTHORS\nJOURNAL\nSUMMARY",
     title="First Column, Second Row Without URL",
     description=(
         "The content of the first column in case the `doi` or `url is not given. The"
