@@ -238,6 +238,11 @@ header_name_bold_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     title="Bold Name",
     description='If this option is "true", the name in the header will be bold.',
 )
+header_photo_width_field_info: pydantic.fields.FieldInfo = pydantic.Field(
+    default="3.5cm",
+    title="Width of the Photo",
+    description="The width of the photo in the header.",
+)
 header_vertical_space_name_connections_field_info: pydantic.fields.FieldInfo = (
     pydantic.Field(
         default="0.7cm",
@@ -290,6 +295,7 @@ header_alignment_field_info: pydantic.fields.FieldInfo = pydantic.Field(
 class Header(RenderCVBaseModelWithoutExtraKeys):
     name_font_size: TypstDimension = header_name_font_size_field_info
     name_bold: bool = header_name_bold_field_info
+    photo_width: TypstDimension = header_photo_width_field_info
     vertical_space_between_name_and_connections: TypstDimension = (
         header_vertical_space_name_connections_field_info
     )

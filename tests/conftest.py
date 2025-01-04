@@ -24,7 +24,7 @@ from rendercv.renderer import templater
 # the output. Setting update_testdata to True will update the reference files with
 # the latest RenderCV. This should be done with caution, as it will overwrite the
 # reference files with the latest output.
-update_testdata = False
+update_testdata = True
 
 # copy sample entries from docs/update_rendercv_files.py:
 education_entry_dictionary = {
@@ -284,7 +284,7 @@ def rendercv_filled_curriculum_vitae_data_model(
     """Return a filled CurriculumVitae data model, where each section has all possible
     combinations of entry types.
     """
-    profile_picture_path = testdata_directory_path / "profile_picture.png"
+    profile_picture_path = testdata_directory_path / "profile_picture.jpg"
     if update_testdata:
         # Get an image from https://picsum.photos
         response = urllib.request.urlopen("https://picsum.photos/id/237/300/300")

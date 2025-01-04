@@ -33,6 +33,7 @@
 #let design-text-leading = <<design.text.leading>>
 #let design-text-font-family = "<<design.text.font_family>>"
 #let design-text-alignment = "<<design.text.alignment>>"
+#let design-header-photo-width = <<design.header.photo_width>>
 #let design-header-use-icons-for-connections = <<design.header.use_icons_for_connections|lower>>
 #let design-header-name-font-size = <<design.header.name_font_size>>
 #let design-header-name-bold = <<design.header.name_bold|lower>>
@@ -237,7 +238,7 @@
     let ending-index = starting-index + 1
     while (
       measure(connections-list.slice(starting-index, ending-index).join(separator)).width
-        < page.width - left-sum-right-margin
+        < page.width - left-sum-right-margin - design-header-photo-width * 1.1
     ) {
       ending-index = ending-index + 1
       if ending-index > connections-list.len() {
@@ -284,11 +285,12 @@
   left-content: "",
   right-content: "",
   alignments: (left, right),
+  column-gutter: design-entries-horizontal-space-between-columns,
 ) = [
   #block(
     grid(
       columns: (left-column-width, right-column-width),
-      column-gutter: design-entries-horizontal-space-between-columns,
+      column-gutter: column-gutter,
       align: alignments,
       ([#set par(spacing: design-text-leading); #left-content]),
       ([#set par(spacing: design-text-leading); #right-content]),
