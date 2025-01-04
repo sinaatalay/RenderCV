@@ -75,7 +75,7 @@ class SectionTitles(o.SectionTitles):
     font_size: o.TypstDimension = o.section_titles_font_size_field_info
 
 
-o.entries_vertical_space_between_entries_field_info.default = "0.25cm"
+o.entries_vertical_space_between_entries_field_info.default = "0.30cm"
 o.entries_left_and_right_margin_field_info.default = "0cm"
 
 

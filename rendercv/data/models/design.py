@@ -15,6 +15,7 @@ from ...themes import (
     ClassicThemeOptions,
     EngineeringresumesThemeOptions,
     Sb2novThemeOptions,
+    EngineeringclassicThemeOptions,
 )
 from . import entry_types
 from .base import RenderCVBaseModelWithoutExtraKeys
@@ -199,6 +200,7 @@ available_theme_options = {
     "classic": ClassicThemeOptions,
     "sb2nov": Sb2novThemeOptions,
     "engineeringresumes": EngineeringresumesThemeOptions,
+    "engineeringclassic": EngineeringclassicThemeOptions,
 }
 
 available_themes = list(available_theme_options.keys())
