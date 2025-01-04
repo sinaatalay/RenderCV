@@ -4,6 +4,7 @@ models for the Typst themes' design options. To avoid code duplication, the them
 are encouraged to inherit from these data models.
 """
 
+import re
 from typing import Annotated, Literal, Optional
 
 import pydantic
@@ -11,15 +12,22 @@ import pydantic_extra_types.color as pydantic_color
 
 from ..data.models.base import RenderCVBaseModelWithoutExtraKeys
 
+
 # Custom field types:
+def validate_typst_dimension(value: str) -> str:
+    if not re.fullmatch(r"\d+\.?\d*(cm|in|pt|mm|ex|em)", value):
+        message = (
+            "The value must be a number followed by a unit (cm, in, pt, mm, ex, em)."
+            " For example, 0.1cm."
+        )
+        raise ValueError(message)
+    return value
+
+
 TypstDimension = Annotated[
     str,
-    pydantic.Field(
-        pattern=r"\d+\.?\d*(cm|in|pt|mm|ex|em)",
-    ),
+    pydantic.AfterValidator(validate_typst_dimension),
 ]
-
-
 FontFamily = Literal[
     "Libertinus Serif",
     "New Computer Modern",
@@ -32,9 +40,7 @@ FontFamily = Literal[
     "Mukta",
     "Charter",
 ]
-
 BulletPoint = Literal["•", "◦", "-", "◆", "★", "■", "—", "○"]
-
 PageSize = Literal[
     "a0",
     "a1",
@@ -54,9 +60,9 @@ PageSize = Literal[
     "presentation-16-9",
     "presentation-4-3",
 ]
-
 HeaderAlignment = Literal["left", "center", "right"]
 TextAlignment = Literal["left", "justified", "justified-with-no-hyphenation"]
+SectionTitleLineType = Optional[Literal["partial", "full"]]
 
 page_size_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="us-letter",
@@ -117,19 +123,19 @@ color_common_description = (
 color_common_examples = ["Black", "7fffd4", "rgb(0,79,144)", "hsl(270, 60%, 70%)"]
 
 
-colors_text_field_info = pydantic.Field(
+colors_text_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="rgb(0,0,0)",
     title="Color of Text",
     description="The color of the text." + color_common_description,
     examples=color_common_examples,
 )
-colors_name_field_info = pydantic.Field(
+colors_name_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="rgb(0,79,144)",
     title="Color of Name",
     description=("The color of the name in the header." + color_common_description),
     examples=color_common_examples,
 )
-colors_connections_field_info = pydantic.Field(
+colors_connections_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="rgb(0,79,144)",
     title="Color of Connections",
     description=(
@@ -137,26 +143,28 @@ colors_connections_field_info = pydantic.Field(
     ),
     examples=color_common_examples,
 )
-colors_section_titles_field_info = pydantic.Field(
+colors_section_titles_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="rgb(0,79,144)",
     title="Color of Section Titles",
     description=("The color of the section titles." + color_common_description),
     examples=color_common_examples,
 )
-colors_links_field_info = pydantic.Field(
+colors_links_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="rgb(0,79,144)",
     title="Color of Links",
     description="The color of the links." + color_common_description,
     examples=color_common_examples,
 )
-colors_last_updated_date_and_page_numbering_field_info = pydantic.Field(
-    default="rgb(128,128,128)",
-    title="Color of Last Updated Date and Page Numbering",
-    description=(
-        "The color of the last updated date and page numbering."
-        + color_common_description
-    ),
-    examples=color_common_examples,
+colors_last_updated_date_and_page_numbering_field_info: pydantic.fields.FieldInfo = (
+    pydantic.Field(
+        default="rgb(128,128,128)",
+        title="Color of Last Updated Date and Page Numbering",
+        description=(
+            "The color of the last updated date and page numbering."
+            + color_common_description
+        ),
+        examples=color_common_examples,
+    )
 )
 
 
@@ -171,22 +179,22 @@ class Colors(RenderCVBaseModelWithoutExtraKeys):
     )
 
 
-text_font_family_field_info = pydantic.Field(
+text_font_family_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="Source Sans 3",
     title="Font Family",
     description="The font family.",
 )
-text_font_size_field_info = pydantic.Field(
+text_font_size_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="10pt",
     title="Font Size",
     description="The font size of the text.",
 )
-text_leading_field_info = pydantic.Field(
+text_leading_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="0.6em",
     title="Leading",
     description="The vertical space between adjacent lines of text.",
 )
-text_alignment_field_info = pydantic.Field(
+text_alignment_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="justified",
     title="Alignment of Text",
     description="The alignment of the text.",
@@ -200,12 +208,12 @@ class Text(RenderCVBaseModelWithoutExtraKeys):
     alignment: TextAlignment = text_alignment_field_info
 
 
-links_underline_field_info = pydantic.Field(
+links_underline_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=False,
     title="Underline Links",
     description='If this option is "true", links will be underlined.',
 )
-links_use_external_link_icon_field_info = pydantic.Field(
+links_use_external_link_icon_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=True,
     title="Use External Link Icon",
     description=(
@@ -220,41 +228,51 @@ class Links(RenderCVBaseModelWithoutExtraKeys):
     use_external_link_icon: bool = links_use_external_link_icon_field_info
 
 
-header_name_field_info = pydantic.Field(
+header_name_font_size_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="30pt",
     title="Name Font Size",
     description="The font size of the name in the header.",
 )
-header_name_bold_field_info = pydantic.Field(
+header_name_bold_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=True,
     title="Bold Name",
     description='If this option is "true", the name in the header will be bold.',
 )
-header_vertical_space_name_connections_field_info = pydantic.Field(
-    default="0.7cm",
-    title="Vertical Margin Between the Name and Connections",
-    description=(
-        "The vertical margin between the name of the person and the connections."
-    ),
+header_vertical_space_name_connections_field_info: pydantic.fields.FieldInfo = (
+    pydantic.Field(
+        default="0.7cm",
+        title="Vertical Margin Between the Name and Connections",
+        description=(
+            "The vertical margin between the name of the person and the connections."
+        ),
+    )
 )
-header_vertical_space_connections_first_section_field_info = pydantic.Field(
+header_vertical_space_connections_first_section_field_info: (
+    pydantic.fields.FieldInfo
+) = pydantic.Field(
     default="0.7cm",
     title="Vertical Margin Between Connections and First Section",
     description=(
         "The vertical margin between the connections and the first section title."
     ),
 )
-header_horizontal_space_connections_field_info = pydantic.Field(
-    default="0.5cm",
-    title="Space Between Connections",
-    description="The space between the connections (like phone, email, and website).",
+header_horizontal_space_connections_field_info: pydantic.fields.FieldInfo = (
+    pydantic.Field(
+        default="0.5cm",
+        title="Space Between Connections",
+        description=(
+            "The space between the connections (like phone, email, and website)."
+        ),
+    )
 )
-header_separator_between_connections_field_info = pydantic.Field(
-    default="",
-    title="Separator Between Connections",
-    description="The separator between the connections in the header.",
+header_separator_between_connections_field_info: pydantic.fields.FieldInfo = (
+    pydantic.Field(
+        default="",
+        title="Separator Between Connections",
+        description="The separator between the connections in the header.",
+    )
 )
-header_use_icons_for_connections_field_info = pydantic.Field(
+header_use_icons_for_connections_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=True,
     title="Use Icons for Connections",
     description=(
@@ -262,7 +280,7 @@ header_use_icons_for_connections_field_info = pydantic.Field(
         " (phone number, email, social networks, etc.) in the header."
     ),
 )
-header_alignment_field_info = pydantic.Field(
+header_alignment_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="center",
     title="Alignment of the Header",
     description="The alignment of the header.",
@@ -270,7 +288,7 @@ header_alignment_field_info = pydantic.Field(
 
 
 class Header(RenderCVBaseModelWithoutExtraKeys):
-    name_font_size: TypstDimension = header_name_field_info
+    name_font_size: TypstDimension = header_name_font_size_field_info
     name_bold: bool = header_name_bold_field_info
     vertical_space_between_name_and_connections: TypstDimension = (
         header_vertical_space_name_connections_field_info
@@ -286,42 +304,48 @@ class Header(RenderCVBaseModelWithoutExtraKeys):
     alignment: HeaderAlignment = header_alignment_field_info
 
 
-section_titles_font_size_field_info = pydantic.Field(
+section_titles_font_size_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="1.4em",
     title="Font Size",
     description="The font size of the section titles.",
 )
-section_titles_bold_field_info = pydantic.Field(
+section_titles_bold_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=True,
     title="Bold Section Titles",
     description='If this option is "true", the section titles will be bold.',
 )
-section_titles_line_type_field_info = pydantic.Field(
+section_titles_line_type_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="partial",
     title="Line Type",
-    description="The line type of the section titles.",
+    description=(
+        'The line type of the section titles. If "null", no line will be shown.'
+    ),
 )
-section_titles_line_thickness_field_info = pydantic.Field(
+section_titles_line_thickness_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="0.5pt",
     title="Line Thickness",
     description="The thickness of the line under the section titles.",
 )
-section_titles_vertical_space_above_field_info = pydantic.Field(
-    default="0.5cm",
-    title="Vertical Space Above Section Titles",
-    description="The vertical space above the section titles.",
+section_titles_vertical_space_above_field_info: pydantic.fields.FieldInfo = (
+    pydantic.Field(
+        default="0.5cm",
+        title="Vertical Space Above Section Titles",
+        description="The vertical space above the section titles.",
+    )
 )
-section_titles_vertical_space_below_field_info = pydantic.Field(
-    default="0.3cm",
-    title="Vertical Space Below Section Titles",
-    description="The vertical space below the section titles.",
+section_titles_vertical_space_below_field_info: pydantic.fields.FieldInfo = (
+    pydantic.Field(
+        default="0.3cm",
+        title="Vertical Space Below Section Titles",
+        description="The vertical space below the section titles.",
+    )
 )
 
 
 class SectionTitles(RenderCVBaseModelWithoutExtraKeys):
     font_size: TypstDimension = section_titles_font_size_field_info
     bold: bool = section_titles_bold_field_info
-    line_type: Literal["partial", "full", "none"] = section_titles_line_type_field_info
+    line_type: SectionTitleLineType = section_titles_line_type_field_info
     line_thickness: TypstDimension = section_titles_line_thickness_field_info
     vertical_space_above: TypstDimension = (
         section_titles_vertical_space_above_field_info
@@ -331,34 +355,40 @@ class SectionTitles(RenderCVBaseModelWithoutExtraKeys):
     )
 
 
-entries_date_and_location_width_field_info = pydantic.Field(
+entries_date_and_location_width_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="4.15cm",
     title="Width of Date and Location",
     description="The width of the date and location in the entries.",
 )
-entries_left_and_right_margin_field_info = pydantic.Field(
+entries_left_and_right_margin_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="0.2cm",
     title="Left and Right Margin",
     description="The left and right margin of the entries.",
 )
-entries_horizontal_space_between_columns_field_info = pydantic.Field(
-    default="0.1cm",
-    title="Horizontal Space Between Columns",
-    description="The horizontal space between the columns in the entries.",
+entries_horizontal_space_between_columns_field_info: pydantic.fields.FieldInfo = (
+    pydantic.Field(
+        default="0.1cm",
+        title="Horizontal Space Between Columns",
+        description="The horizontal space between the columns in the entries.",
+    )
 )
-entries_vertical_space_between_entries_field_info = pydantic.Field(
-    default="1.2em",
-    title="Vertical Space Between Entries",
-    description="The vertical space between the entries.",
+entries_vertical_space_between_entries_field_info: pydantic.fields.FieldInfo = (
+    pydantic.Field(
+        default="1.2em",
+        title="Vertical Space Between Entries",
+        description="The vertical space between the entries.",
+    )
 )
-entries_allow_page_break_in_entries_field_info = pydantic.Field(
-    default=True,
-    title="Allow Page Break in Entries",
-    description=(
-        'If this option is "true", a page break will be allowed in the entries.'
-    ),
+entries_allow_page_break_in_entries_field_info: pydantic.fields.FieldInfo = (
+    pydantic.Field(
+        default=True,
+        title="Allow Page Break in Entries",
+        description=(
+            'If this option is "true", a page break will be allowed in the entries.'
+        ),
+    )
 )
-entries_short_second_row_field_info = pydantic.Field(
+entries_short_second_row_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=False,
     title="Short Second Row",
     description=(
@@ -366,7 +396,7 @@ entries_short_second_row_field_info = pydantic.Field(
         " of the date empty."
     ),
 )
-entries_show_time_spans_in_field_info = pydantic.Field(
+entries_show_time_spans_in_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=[],
     title="Show Time Spans in",
     description=(
@@ -389,27 +419,31 @@ class Entries(RenderCVBaseModelWithoutExtraKeys):
     show_time_spans_in: list[str] = entries_show_time_spans_in_field_info
 
 
-highlights_bullet_field_info = pydantic.Field(
+highlights_bullet_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="•",
     title="Bullet",
     description="The bullet used for the highlights and bullet entries.",
 )
-highlights_top_margin_field_info = pydantic.Field(
+highlights_top_margin_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="0.25cm",
     title="Top Margin",
     description="The top margin of the highlights.",
 )
-highlights_left_margin_field_info = pydantic.Field(
+highlights_left_margin_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="0.4cm",
     title="Left Margin",
     description="The left margin of the highlights.",
 )
-highlights_vertical_space_between_highlights_field_info = pydantic.Field(
-    default="0.25cm",
-    title="Vertical Space Between Highlights",
-    description="The vertical space between the highlights.",
+highlights_vertical_space_between_highlights_field_info: pydantic.fields.FieldInfo = (
+    pydantic.Field(
+        default="0.25cm",
+        title="Vertical Space Between Highlights",
+        description="The vertical space between the highlights.",
+    )
 )
-highlights_horizontal_space_between_bullet_and_highlight_field_info = pydantic.Field(
+highlights_horizontal_space_between_bullet_and_highlight_field_info: (
+    pydantic.fields.FieldInfo
+) = pydantic.Field(
     default="0.5em",
     title="Horizontal Space Between Bullet and Highlight",
     description="The horizontal space between the bullet and the highlight.",
@@ -428,7 +462,9 @@ class Highlights(RenderCVBaseModelWithoutExtraKeys):
     )
 
 
-entry_base_with_date_first_column_second_row_template_field_info = pydantic.Field(
+entry_base_with_date_first_column_second_row_template_field_info: (
+    pydantic.fields.FieldInfo
+) = pydantic.Field(
     default="SUMMARY\nHIGHLIGHTS",
     title="First Column, Second Row",
     description=(
@@ -436,13 +472,15 @@ entry_base_with_date_first_column_second_row_template_field_info = pydantic.Fiel
         " placeholders are SUMMARY and HIGHLIGHTS."
     ),
 )
-entry_base_with_date_second_column_template_field_info = pydantic.Field(
-    default="LOCATION\nDATE",
-    title="Second Column",
-    description=(
-        "The content of the second column. The available placeholders are LOCATION"
-        " and DATE."
-    ),
+entry_base_with_date_second_column_template_field_info: pydantic.fields.FieldInfo = (
+    pydantic.Field(
+        default="LOCATION\nDATE",
+        title="Second Column",
+        description=(
+            "The content of the second column. The available placeholders are LOCATION"
+            " and DATE."
+        ),
+    )
 )
 
 
@@ -453,7 +491,9 @@ class EntryBaseWithDate(RenderCVBaseModelWithoutExtraKeys):
     second_column_template: str = entry_base_with_date_second_column_template_field_info
 
 
-publication_entry_first_column_first_row_template_field_info = pydantic.Field(
+publication_entry_first_column_first_row_template_field_info: (
+    pydantic.fields.FieldInfo
+) = pydantic.Field(
     default="**TITLE**",
     title="First Column",
     description=(
@@ -461,28 +501,34 @@ publication_entry_first_column_first_row_template_field_info = pydantic.Field(
         " JOURNAL, and URL."
     ),
 )
-publication_entry_first_column_second_row_template_field_info = pydantic.Field(
+publication_entry_first_column_second_row_template_field_info: (
+    pydantic.fields.FieldInfo
+) = pydantic.Field(
     default="AUTHORS\nURL (JOURNAL)",
     title="First Column, Second Row",
     description=(
         "The content of the second row of the first column. The available placeholders"
-        " are AUTHORS, URL, and JOURNAL."
+        " are AUTHORS, URL, SUMMARY, and JOURNAL."
     ),
 )
-publication_entry_first_column_second_row_without_journal_template_field_info = pydantic.Field(
+publication_entry_first_column_second_row_without_journal_template_field_info: (
+    pydantic.fields.FieldInfo
+) = pydantic.Field(
     default="AUTHORS\nURL",
     title="First Column, Second Row Without Journal",
     description=(
         "The content of the first column in case the journal is not given. The"
-        " available placeholders are AUTHORS and URL."
+        " available placeholders are AUTHORS, SUMMARY, and URL."
     ),
 )
-publication_entry_first_column_second_row_without_url_template_field_info = pydantic.Field(
+publication_entry_first_column_second_row_without_url_template_field_info: (
+    pydantic.fields.FieldInfo
+) = pydantic.Field(
     default="AUTHORS\nJOURNAL",
     title="First Column, Second Row Without URL",
     description=(
         "The content of the first column in case the URL is not given. The"
-        " available placeholders are AUTHORS and JOURNAL."
+        " available placeholders are AUTHORS, SUMMARY, and JOURNAL."
     ),
 )
 
@@ -506,7 +552,9 @@ class PublicationEntry(EntryBaseWithDate, PublicationEntryBase):
     pass
 
 
-education_entry_first_column_first_row_template_field_info = pydantic.Field(
+education_entry_first_column_first_row_template_field_info: (
+    pydantic.fields.FieldInfo
+) = pydantic.Field(
     default="**INSTITUTION**, AREA",
     title="First Column, First Row",
     description=(
@@ -514,20 +562,24 @@ education_entry_first_column_first_row_template_field_info = pydantic.Field(
         " AREA, DEGREE, and LOCATION."
     ),
 )
-education_entry_degree_column_template_field_info = pydantic.Field(
-    default="**DEGREE**",
-    title="Template of the Degree Column",
-    description=(
-        "If given, a degree column will be added to the education entry. The"
-        " available placeholders are DEGREE."
-    ),
+education_entry_degree_column_template_field_info: pydantic.fields.FieldInfo = (
+    pydantic.Field(
+        default="**DEGREE**",
+        title="Template of the Degree Column",
+        description=(
+            'If given, a degree column will be added to the education entry. If "null",'
+            " no degree column will be shown. The available placeholders are DEGREE."
+        ),
+    )
 )
-education_entry_degree_column_width_field_info = pydantic.Field(
-    default="1cm",
-    title="Width of the Degree Column",
-    description=(
-        'The width of the degree column if the "degree_column_template" is given.'
-    ),
+education_entry_degree_column_width_field_info: pydantic.fields.FieldInfo = (
+    pydantic.Field(
+        default="1cm",
+        title="Width of the Degree Column",
+        description=(
+            'The width of the degree column if the "degree_column_template" is given.'
+        ),
+    )
 )
 
 
@@ -545,10 +597,14 @@ class EducationEntry(EntryBaseWithDate, EducationEntryBase):
     pass
 
 
-normal_entry_first_column_first_row_template_field_info = pydantic.Field(
-    default="**NAME**",
-    title="First Column, First Row",
-    description="The content of the first column. The available placeholders are NAME.",
+normal_entry_first_column_first_row_template_field_info: pydantic.fields.FieldInfo = (
+    pydantic.Field(
+        default="**NAME**",
+        title="First Column, First Row",
+        description=(
+            "The content of the first column. The available placeholders are NAME."
+        ),
+    )
 )
 
 
@@ -562,7 +618,9 @@ class NormalEntry(EntryBaseWithDate, NormalEntryBase):
     pass
 
 
-experience_entry_first_column_first_row_template_field_info = pydantic.Field(
+experience_entry_first_column_first_row_template_field_info: (
+    pydantic.fields.FieldInfo
+) = pydantic.Field(
     default="**COMPANY**, POSITION",
     title="First Column, First Row",
     description=(
@@ -582,7 +640,7 @@ class ExperienceEntry(EntryBaseWithDate, ExperienceEntryBase):
     pass
 
 
-one_line_entry_template_field_info = pydantic.Field(
+one_line_entry_template_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="**LABEL:** DETAILS",
     title="Template",
     description=(
@@ -596,27 +654,27 @@ class OneLineEntry(RenderCVBaseModelWithoutExtraKeys):
     template: str = one_line_entry_template_field_info
 
 
-entry_types_one_line_entry_field_info = pydantic.Field(
+entry_types_one_line_entry_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=OneLineEntry(),
     title="One-Line Entry",
     description="Options related to one-line entries.",
 )
-entry_types_education_entry_field_info = pydantic.Field(
+entry_types_education_entry_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=EducationEntry(),
     title="Education Entry",
     description="Options related to education entries.",
 )
-entry_types_normal_entry_field_info = pydantic.Field(
+entry_types_normal_entry_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=NormalEntry(),
     title="Normal Entry",
     description="Options related to normal entries.",
 )
-entry_types_experience_entry_field_info = pydantic.Field(
+entry_types_experience_entry_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=ExperienceEntry(),
     title="Experience Entry",
     description="Options related to experience entries.",
 )
-entry_types_publication_entry_field_info = pydantic.Field(
+entry_types_publication_entry_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=PublicationEntry(),
     title="Publication Entry",
     description="Options related to publication entries.",
@@ -631,52 +689,52 @@ class EntryTypes(RenderCVBaseModelWithoutExtraKeys):
     publication_entry: PublicationEntry = entry_types_publication_entry_field_info
 
 
-theme_options_theme_field_info = pydantic.Field(
+theme_options_theme_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="tobeoverwritten",
     title="Theme",
     description="The theme of the CV. It just changes the default values.",
 )
-theme_options_page_field_info = pydantic.Field(
+theme_options_page_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=Page(),
     title="Page",
     description="Options related to the page.",
 )
-theme_options_colors_field_info = pydantic.Field(
+theme_options_colors_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=Colors(),
     title="Colors",
     description="Color used throughout the CV.",
 )
-theme_options_text_field_info = pydantic.Field(
+theme_options_text_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=Text(),
     title="Text",
     description="Options related to text.",
 )
-theme_options_links_field_info = pydantic.Field(
+theme_options_links_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=Links(),
     title="Links",
     description="Options related to links.",
 )
-theme_options_header_field_info = pydantic.Field(
+theme_options_header_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=Header(),
     title="Headers",
     description="Options related to headers.",
 )
-theme_options_section_titles_field_info = pydantic.Field(
+theme_options_section_titles_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=SectionTitles(),
     title="Section Titles",
     description="Options related to section titles.",
 )
-theme_options_entries_field_info = pydantic.Field(
+theme_options_entries_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=Entries(),
     title="Entries",
     description="Options related to entries.",
 )
-theme_options_highlights_field_info = pydantic.Field(
+theme_options_highlights_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=Highlights(),
     title="Highlights",
     description="Options related to highlights.",
 )
-theme_options_entry_types_field_info = pydantic.Field(
+theme_options_entry_types_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default=EntryTypes(),
     title="Templates",
     description="Options related to the templates.",

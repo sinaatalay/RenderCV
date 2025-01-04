@@ -180,7 +180,8 @@
         #if design-section-titles-line-type == "partial" [
           #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
         ] else if design-section-titles-line-type == "full" [
-          #v(-design-text-leading * 0.6)
+
+          #v(design-text-font-size * 0.4)
           #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
         ]
       ])

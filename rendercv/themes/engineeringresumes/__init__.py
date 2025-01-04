@@ -1,164 +1,178 @@
 from typing import Literal, Optional
 
-import pydantic
 import pydantic_extra_types.color as pydantic_color
 
-from rendercv.themes.options import (
-    BulletPoint,
-    Colors,
-    EducationEntry,
-    EntryTypes,
-    ExperienceEntry,
-    FontFamily,
-    Highlights,
-    Links,
-    NormalEntry,
-    Text,
-    ThemeOptions,
-    color_common_description,
-    color_common_examples,
+import rendercv.themes.options as o
+
+
+o.page_show_page_numbering_field_info.default = False
+
+
+class Page(o.Page):
+    show_page_numbering: bool = o.page_show_page_numbering_field_info
+
+
+o.header_separator_between_connections_field_info.default = "|"
+o.header_use_icons_for_connections_field_info.default = False
+o.header_name_bold_field_info.default = False
+o.header_name_font_size_field_info = "25pt"
+
+
+class Header(o.Header):
+    name_font_size: o.TypstDimension = o.header_name_font_size_field_info
+    name_bold: bool = o.header_name_bold_field_info
+    separator_between_connections: str = (
+        o.header_separator_between_connections_field_info
+    )
+    use_icons_for_connections: bool = o.header_use_icons_for_connections_field_info
+
+
+o.colors_name_field_info.default = "rgb(0,0,0)"
+o.colors_connections_field_info.default = "rgb(0,0,0)"
+o.colors_section_titles_field_info.default = "rgb(0,0,0)"
+o.colors_links_field_info.default = "rgb(0,0,0)"
+
+
+class Colors(o.Colors):
+    name: pydantic_color.Color = o.colors_name_field_info
+    connections: pydantic_color.Color = o.colors_connections_field_info
+    section_titles: pydantic_color.Color = o.colors_section_titles_field_info
+    links: pydantic_color.Color = o.colors_links_field_info
+
+
+o.links_underline_field_info.default = True
+o.links_use_external_link_icon_field_info.default = False
+
+
+class Links(o.Links):
+    underline: bool = o.links_underline_field_info
+    use_external_link_icon: bool = o.links_use_external_link_icon_field_info
+
+
+o.text_font_family_field_info.default = "Charter"
+o.text_leading_field_info.default = "0.2em"
+
+
+class Text(o.Text):
+    font_family: o.FontFamily = o.text_font_family_field_info
+    leading: o.TypstDimension = o.text_leading_field_info
+
+
+o.section_titles_line_type_field_info.default = "full"
+o.section_titles_vertical_space_above_field_info.default = "0.3cm"
+o.section_titles_vertical_space_below_field_info.default = "0.1cm"
+o.section_titles_font_size_field_info.default = "1.2em"
+
+
+class SectionTitles(o.SectionTitles):
+    line_type: o.SectionTitleLineType = o.section_titles_line_type_field_info
+    vertical_space_above: o.TypstDimension = (
+        o.section_titles_vertical_space_above_field_info
+    )
+    vertical_space_below: o.TypstDimension = (
+        o.section_titles_vertical_space_below_field_info
+    )
+    font_size: o.TypstDimension = o.section_titles_font_size_field_info
+
+
+o.entries_vertical_space_between_entries_field_info.default = "0.25cm"
+o.entries_left_and_right_margin_field_info.default = "0cm"
+
+
+class Entries(o.Entries):
+    vertical_space_between_entries: o.TypstDimension = (
+        o.entries_vertical_space_between_entries_field_info
+    )
+    left_and_right_margin: o.TypstDimension = o.entries_left_and_right_margin_field_info
+
+
+o.highlights_left_margin_field_info.default = "0cm"
+o.highlights_top_margin_field_info.default = "0.1cm"
+o.highlights_vertical_space_between_highlights_field_info.default = "0.13cm"
+o.highlights_horizontal_space_between_bullet_and_highlight_field_info.default = "0.3em"
+
+
+class Highlights(o.Highlights):
+    left_margin: o.TypstDimension = o.highlights_left_margin_field_info
+    top_margin: o.TypstDimension = o.highlights_top_margin_field_info
+    horizontal_space_between_bullet_and_highlight: o.TypstDimension = (
+        o.highlights_horizontal_space_between_bullet_and_highlight_field_info
+    )
+    vertical_space_between_highlights: o.TypstDimension = (
+        o.highlights_vertical_space_between_highlights_field_info
+    )
+
+
+o.education_entry_first_column_first_row_template_field_info.default = (
+    "**INSTITUTION**, DEGREE in AREA -- LOCATION"
+)
+o.education_entry_degree_column_template_field_info.default = None
+o.entry_base_with_date_second_column_template_field_info.default = "DATE"
+
+
+class EducationEntry(o.EducationEntry):
+    first_column_first_row_template: str = (
+        o.education_entry_first_column_first_row_template_field_info
+    )
+    degree_column_template: Optional[str] = (
+        o.education_entry_degree_column_template_field_info
+    )
+    second_column_template: str = (
+        o.entry_base_with_date_second_column_template_field_info
+    )
+
+
+class NormalEntry(o.NormalEntry):
+    second_column_template: str = (
+        o.entry_base_with_date_second_column_template_field_info
+    )
+
+
+o.experience_entry_first_column_first_row_template_field_info.default = (
+    "**POSITION**, COMPANY -- LOCATION"
 )
 
-engineeringresumes_second_column_template_field = pydantic.Field(
-    default="DATE",
-    title="Second Column",
-    description=(
-        "The content of the second column. The available placeholders are"
-        " LOCATION and DATE."
-    ),
-)
 
-
-class Colors(Colors):
-    name: pydantic_color.Color = pydantic.Field(
-        default="rgb(0,0,0)",  # type: ignore
-        title="Color of Name",
-        description=("The color of the name in the header." + color_common_description),
-        examples=color_common_examples,
+class ExperienceEntry(o.ExperienceEntry):
+    first_column_first_row_template: str = (
+        o.experience_entry_first_column_first_row_template_field_info
     )
-    connections: pydantic_color.Color = pydantic.Field(
-        default="rgb(0,0,0)",  # type: ignore
-        title="Color of Connections",
-        description=(
-            "The color of the connections in the header." + color_common_description
-        ),
-        examples=color_common_examples,
-    )
-    section_titles: pydantic_color.Color = pydantic.Field(
-        default="rgb(0,0,0)",  # type: ignore
-        title="Color of Section Titles",
-        description=("The color of the section titles." + color_common_description),
-        examples=color_common_examples,
-    )
-    links: pydantic_color.Color = pydantic.Field(
-        default="rgb(0,0,0)",  # type: ignore
-        title="Color of Links",
-        description="The color of the links. " + color_common_description,
-        examples=color_common_examples,
+    second_column_template: str = (
+        o.entry_base_with_date_second_column_template_field_info
     )
 
 
-class Links(Links):
-    underline: bool = pydantic.Field(
-        default=True,
-        title="Underline Links",
-        description=(
-            "If this option is set to true, then the links will be underlined. The"
-            ' default value is "false".'
-        ),
-    )
+o.entry_types_education_entry_field_info.default = EducationEntry()
+o.entry_types_normal_entry_field_info.default = NormalEntry()
+o.entry_types_experience_entry_field_info.default = ExperienceEntry()
 
 
-class Text(Text):
-    font_family: FontFamily = pydantic.Field(
-        default="Charter",
-        title="Font Family",
-        description="The font family of the CV.",
-    )
+class EntryTypes(o.EntryTypes):
+    education_entry: EducationEntry = o.entry_types_education_entry_field_info
+    normal_entry: NormalEntry = o.entry_types_normal_entry_field_info
+    experience_entry: ExperienceEntry = o.entry_types_experience_entry_field_info
 
 
-class Highlights(Highlights):
-    bullet: BulletPoint = pydantic.Field(
-        default="•",
-        title="Bullet",
-        description="The bullet used for the highlights.",
-    )
+o.theme_options_theme_field_info.default = "engineeringresumes"
+o.theme_options_page_field_info.default = Page()
+o.theme_options_header_field_info.default = Header()
+o.theme_options_text_field_info.default = Text()
+o.theme_options_colors_field_info.default = Colors()
+o.theme_options_entry_types_field_info.default = EntryTypes()
+o.theme_options_section_titles_field_info.default = SectionTitles()
+o.theme_options_highlights_field_info.default = Highlights()
+o.theme_options_links_field_info.default = Links()
+o.theme_options_entries_field_info.default = Entries()
 
 
-class EducationEntry(EducationEntry):
-    first_column_first_row_template: str = pydantic.Field(
-        default="**INSTITUTION**, DEGREE in AREA -- LOCATION",
-        title="First Column, First Row",
-        description=(
-            "The content of the first column. The available placeholders are"
-            " INSTITUTION, AREA, DEGREE, and LOCATION."
-        ),
-    )
-    degree_column_template: Optional[str] = pydantic.Field(
-        default=None,
-        title="Template of the Degree Column",
-        description=(
-            "If given, a degree column will be added to the education entry. The"
-            " available placeholders are DEGREE."
-        ),
-    )
-    second_column_template: str = engineeringresumes_second_column_template_field
-
-
-class NormalEntry(NormalEntry):
-    second_column_template: str = engineeringresumes_second_column_template_field
-
-
-class ExperienceEntry(ExperienceEntry):
-    first_column_first_row_template: str = pydantic.Field(
-        default="**POSITION**, COMPANY -- LOCATION",
-        title="First Column, First Row",
-        description=(
-            "The content of the first column. The available placeholders are"
-            " COMPANY and POSITION."
-        ),
-    )
-
-    second_column_template: str = engineeringresumes_second_column_template_field
-
-
-class EntryTypes(EntryTypes):
-    education_entry: EducationEntry = pydantic.Field(
-        default=EducationEntry(),
-        title="Education Entry",
-        description="Options related to education entries.",
-    )
-    normal_entry: NormalEntry = pydantic.Field(
-        default=NormalEntry(),
-        title="Normal Entry",
-        description="Options related to normal entries.",
-    )
-    experience_entry: ExperienceEntry = pydantic.Field(
-        default=ExperienceEntry(),
-        title="Experience Entry",
-        description="Options related to experience entries.",
-    )
-
-
-class EngineeringresumesThemeOptions(ThemeOptions):
-    theme: Literal["engineeringresumes"]
-    text: Text = pydantic.Field(
-        default=Text(),
-        title="Text",
-        description="Options related to text.",
-    )
-    colors: Colors = pydantic.Field(
-        default=Colors(),
-        title="Colors",
-        description="Color used throughout the CV.",
-    )
-    highlights: Highlights = pydantic.Field(
-        default=Highlights(),
-        title="Highlights",
-        description="Options related to highlights.",
-    )
-    entry_types: EntryTypes = pydantic.Field(
-        default=EntryTypes(),
-        title="Entry Types",
-        description="Options related to entry types.",
-    )
+class EngineeringresumesThemeOptions(o.ThemeOptions):
+    theme: Literal["engineeringresumes"] = o.theme_options_theme_field_info
+    page: Page = o.theme_options_page_field_info
+    header: Header = o.theme_options_header_field_info
+    highlights: Highlights = o.theme_options_highlights_field_info
+    text: Text = o.theme_options_text_field_info
+    colors: Colors = o.theme_options_colors_field_info
+    links: Links = o.theme_options_links_field_info
+    entries: Entries = o.theme_options_entries_field_info
+    entry_types: EntryTypes = o.theme_options_entry_types_field_info
+    section_titles: SectionTitles = o.theme_options_section_titles_field_info

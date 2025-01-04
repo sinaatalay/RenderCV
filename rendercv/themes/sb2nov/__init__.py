@@ -1,147 +1,103 @@
 from typing import Literal, Optional
 
-import pydantic
 import pydantic_extra_types.color as pydantic_color
 
-from rendercv.themes.options import (
-    BulletPoint,
-    Colors,
-    EducationEntry,
-    EntryTypes,
-    ExperienceEntry,
-    FontFamily,
-    Highlights,
-    NormalEntry,
-    Text,
-    ThemeOptions,
-    color_common_description,
-    color_common_examples,
-    connections_color_description,
-    name_color_description,
-    section_titles_color_description,
+import rendercv.themes.options as o
+
+o.colors_name_field_info.default = "rgb(0,0,0)"
+o.colors_connections_field_info.default = "rgb(0,0,0)"
+o.colors_section_titles_field_info.default = "rgb(0,0,0)"
+
+
+class Colors(o.Colors):
+    name: pydantic_color.Color = o.colors_name_field_info
+    connections: pydantic_color.Color = o.colors_connections_field_info
+    section_titles: pydantic_color.Color = o.colors_section_titles_field_info
+
+
+o.text_font_family_field_info.default = "New Computer Modern"
+
+
+class Text(o.Text):
+    font_family: o.FontFamily = o.text_font_family_field_info
+
+
+o.section_titles_line_type_field_info.default = "full"
+
+
+class SectionTitles(o.SectionTitles):
+    line_type: o.SectionTitleLineType = o.section_titles_line_type_field_info
+
+
+o.highlights_bullet_field_info.default = "◦"
+
+
+class Highlights(o.Highlights):
+    bullet: o.BulletPoint = o.highlights_bullet_field_info
+
+
+o.education_entry_first_column_first_row_template_field_info.default = (
+    "**INSTITUTION**\n*DEGREE in AREA*"
+)
+o.education_entry_degree_column_template_field_info.default = None
+o.entry_base_with_date_second_column_template_field_info.default = "*LOCATION*\n*DATE*"
+
+
+class EducationEntry(o.EducationEntry):
+    first_column_first_row_template: str = (
+        o.education_entry_first_column_first_row_template_field_info
+    )
+    degree_column_template: Optional[str] = (
+        o.education_entry_degree_column_template_field_info
+    )
+    second_column_template: str = (
+        o.entry_base_with_date_second_column_template_field_info
+    )
+
+
+class NormalEntry(o.NormalEntry):
+    second_column_template: str = (
+        o.entry_base_with_date_second_column_template_field_info
+    )
+
+
+o.experience_entry_first_column_first_row_template_field_info.default = (
+    "**POSITION**\n*COMPANY*"
 )
 
-sb2nov_second_column_template_field = pydantic.Field(
-    default="*LOCATION*\n*DATE*",
-    title="Second Column",
-    description=(
-        "The content of the second column. The available placeholders are"
-        " LOCATION and DATE."
-    ),
-)
 
-
-class Colors(Colors):
-    name: pydantic_color.Color = pydantic.Field(
-        default="rgb(0,0,0)",  # type: ignore
-        title="Color of Name",
-        description=name_color_description,
-        examples=color_common_examples,
+class ExperienceEntry(o.ExperienceEntry):
+    first_column_first_row_template: str = (
+        o.experience_entry_first_column_first_row_template_field_info
     )
-    connections: pydantic_color.Color = pydantic.Field(
-        default="rgb(0,0,0)",  # type: ignore
-        title="Color of Connections",
-        description=connections_color_description,
-        examples=color_common_examples,
-    )
-    section_titles: pydantic_color.Color = pydantic.Field(
-        default="rgb(0,0,0)",  # type: ignore
-        title="Color of Section Titles",
-        description=section_titles_color_description,
-        examples=color_common_examples,
+    second_column_template: str = (
+        o.entry_base_with_date_second_column_template_field_info
     )
 
 
-class Text(Text):
-    font_family: FontFamily = pydantic.Field(
-        default="New Computer Modern",
-        title="Font Family",
-        description="The font family of the CV.",
-    )
+o.entry_types_education_entry_field_info.default = EducationEntry()
+o.entry_types_normal_entry_field_info.default = NormalEntry()
+o.entry_types_experience_entry_field_info.default = ExperienceEntry()
 
 
-class Highlights(Highlights):
-    bullet: BulletPoint = pydantic.Field(
-        default="◦",
-        title="Bullet",
-        description="The bullet used for the highlights.",
-    )
+class EntryTypes(o.EntryTypes):
+    education_entry: EducationEntry = o.entry_types_education_entry_field_info
+    normal_entry: NormalEntry = o.entry_types_normal_entry_field_info
+    experience_entry: ExperienceEntry = o.entry_types_experience_entry_field_info
 
 
-class EducationEntry(EducationEntry):
-    first_column_first_row_template: str = pydantic.Field(
-        default="**INSTITUTION**\n*DEGREE in AREA*",
-        title="First Column, First Row",
-        description=(
-            "The content of the first column. The available placeholders are"
-            " INSTITUTION, AREA, DEGREE, and LOCATION."
-        ),
-    )
-    degree_column_template: Optional[str] = pydantic.Field(
-        default=None,
-        title="Template of the Degree Column",
-        description=(
-            "If given, a degree column will be added to the education entry. The"
-            " available placeholders are DEGREE."
-        ),
-    )
-    second_column_template: str = sb2nov_second_column_template_field
+o.theme_options_text_field_info.default = Text()
+o.theme_options_colors_field_info.default = Colors()
+o.theme_options_highlights_field_info.default = Highlights()
+o.theme_options_entry_types_field_info.default = EntryTypes()
+o.theme_options_section_titles_field_info.default = SectionTitles()
+o.theme_options_theme_field_info.default = "sb2nov"
 
 
-class NormalEntry(NormalEntry):
-    second_column_template: str = sb2nov_second_column_template_field
-
-
-class ExperienceEntry(ExperienceEntry):
-    first_column_first_row_template: str = pydantic.Field(
-        default="**POSITION**\n*COMPANY*",
-        title="First Column, First Row",
-        description=(
-            "The content of the first column. The available placeholders are"
-            " COMPANY and POSITION."
-        ),
-    )
-
-    second_column_template: str = sb2nov_second_column_template_field
-
-
-class EntryTypes(EntryTypes):
-    education_entry: EducationEntry = pydantic.Field(
-        default=EducationEntry(),
-        title="Education Entry",
-        description="Options related to education entries.",
-    )
-    normal_entry: NormalEntry = pydantic.Field(
-        default=NormalEntry(),
-        title="Normal Entry",
-        description="Options related to normal entries.",
-    )
-    experience_entry: ExperienceEntry = pydantic.Field(
-        default=ExperienceEntry(),
-        title="Experience Entry",
-        description="Options related to experience entries.",
-    )
-
-
-class Sb2novThemeOptions(ThemeOptions):
-    theme: Literal["sb2nov"]
-    text: Text = pydantic.Field(
-        default=Text(),
-        title="Text",
-        description="Options related to text.",
-    )
-    colors: Colors = pydantic.Field(
-        default=Colors(),
-        title="Colors",
-        description="Color used throughout the CV.",
-    )
-    highlights: Highlights = pydantic.Field(
-        default=Highlights(),
-        title="Highlights",
-        description="Options related to highlights.",
-    )
-    entry_types: EntryTypes = pydantic.Field(
-        default=EntryTypes(),
-        title="Entry Types",
-        description="Options related to entry types.",
-    )
+class Sb2novThemeOptions(o.ThemeOptions):
+    theme: Literal["sb2nov"] = o.theme_options_theme_field_info
+    text: Text = o.theme_options_text_field_info
+    colors: Colors = o.theme_options_colors_field_info
+    highlights: Highlights = o.theme_options_highlights_field_info
+    entry_types: EntryTypes = o.theme_options_entry_types_field_info
+    section_titles: SectionTitles = o.theme_options_section_titles_field_info
