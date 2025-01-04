@@ -1,3 +1,16 @@
+((* if cv.photo *))
+#two-col-entry(
+  left-column-width: design-header-photo-width * 1.1,
+  right-column-width: 1fr,
+  left-content: [
+    #align(
+      left + horizon,
+      image("profile_picture.jpg", width: design-header-photo-width),
+    )
+  ],
+  column-gutter: 0cm,
+  right-content: [
+((* endif *))
 = <<cv.name>>
 
 // Print connections:
@@ -20,3 +33,8 @@
 ((* endfor *))
 )
 #connections(connections-list)
+
+((* if cv.photo *))
+  ],
+)
+((* endif *))

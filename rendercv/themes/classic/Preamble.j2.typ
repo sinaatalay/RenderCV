@@ -238,7 +238,11 @@
     let ending-index = starting-index + 1
     while (
       measure(connections-list.slice(starting-index, ending-index).join(separator)).width
+      ((* if cv.photo *))
         < page.width - left-sum-right-margin - design-header-photo-width * 1.1
+      ((* else *))
+        < page.width - left-sum-right-margin
+      ((* endif *))
     ) {
       ending-index = ending-index + 1
       if ending-index > connections-list.len() {
