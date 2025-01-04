@@ -1,6 +1,6 @@
-site_name: RenderCV Engine
-site_description: A CLI tool to version-control CVs and resumes as code
-site_author: Sina Atalay
+site_name: RenderCV Engine - CLI tool to write a CV or resume as code
+site_description: A Python package with CLI tool to write and version-control CVs and resumes as source code
+site_author: RenderCV Team
 copyright: Copyright &copy; 2023 - 2024 RenderCV
 site_url: https://docs.rendercv.com
 repo_url: https://github.com/rendercv/rendercv
