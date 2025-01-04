@@ -127,24 +127,16 @@ class TypstFile(TemplatedFile):
         ]
 
         # All the placeholders used in the templates:
-        placeholder_keys = [
-            "DEGREE",
-            "INSTITUTION",
-            "AREA",
-            "SUMMARY",
-            "HIGHLIGHTS",
-            "POSITION",
-            "COMPANY",
-            "DATE",
-            "LOCATION",
-            "TITLE",
-            "AUTHORS",
-            "JOURNAL",
-            "URL",
-            "LABEL",
-            "DETAILS",
-            "NAME",
-        ]
+        sections = self.cv.sections_input
+        # Loop through the sections and entries to find all the field names:
+        placeholder_keys: list[str] = set()
+        for section in sections.values():
+            for entry in section:
+                if isinstance(entry, str):
+                    break
+                entry_dictionary = entry.model_dump()
+                for key in entry_dictionary:
+                    placeholder_keys.add(key.upper())
 
         pattern = re.compile(r"(?<!^)(?=[A-Z])")
 
@@ -180,13 +172,23 @@ class TypstFile(TemplatedFile):
                 # Prepare placeholders:
                 placeholders = {}
                 for placeholder_key in placeholder_keys:
-                    placeholder_value = super().template(
-                        "components",
-                        placeholder_key.lower(),
-                        "typ",
-                        entry,
-                        section_title=section.title,
+                    components_path = (
+                        pathlib.Path(__file__).parent.parent / "themes" / "components"
                     )
+                    lowercase_placeholder_key = placeholder_key.lower()
+                    if (
+                        components_path / f"{lowercase_placeholder_key}.j2.typ"
+                    ).exists():
+                        placeholder_value = super().template(
+                            "components",
+                            lowercase_placeholder_key,
+                            "typ",
+                            entry,
+                            section_title=section.title,
+                        )
+                    else:
+                        placeholder_value = getattr(entry, placeholder_key, None)
+
                     placeholders[placeholder_key] = (
                         placeholder_value if placeholder_value != "None" else None
                     )
@@ -238,14 +240,12 @@ class TypstFile(TemplatedFile):
         Returns:
             The templated file.
         """
-        return revert_nested_typst_style_commands(
-            super().template(
-                self.design.theme,
-                template_name,
-                "typ",
-                entry,
-                **kwargs,
-            )
+        return super().template(
+            self.design.theme,
+            template_name,
+            "typ",
+            entry,
+            **kwargs,
         )
 
     def get_full_code(self) -> str:
@@ -397,43 +397,6 @@ def input_template_to_typst(
     output = re.sub(r"\n+", r"\n\n", output)
 
     return output.strip()
-
-
-def revert_nested_typst_style_commands(typst_string: str) -> str:
-    """Revert the nested Typst style commands to allow users to unbold or
-    unitalicize a bold or italicized text.
-
-    Args:
-        typst_string: The string to revert the nested Typst style commands.
-
-    Returns:
-        The string with the reverted nested Typst style commands.
-    """
-    # If there is nested \textbf, \textit, or \underline commands, replace the inner
-    # ones with \textnormal:
-    nested_commands_to_look_for = [
-        "textbf",
-        "textit",
-        "underline",
-    ]
-
-    for command in nested_commands_to_look_for:
-        nested_commands = True
-        while nested_commands:
-            # replace all the inner commands with \textnormal until there are no
-            # nested commands left:
-
-            # find the first nested command:
-            nested_commands = re.findall(
-                rf"\\{command}{{[^}}]*?(\\{command}{{.*?}})", typst_string
-            )
-
-            # replace the nested command with \textnormal:
-            for nested_command in nested_commands:
-                new_command = nested_command.replace(command, "textnormal")
-                typst_string = typst_string.replace(nested_command, new_command)
-
-    return typst_string
 
 
 def escape_characters(string: str, escape_dictionary: dict[str, str]) -> str:

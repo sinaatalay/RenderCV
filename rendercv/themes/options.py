@@ -468,8 +468,8 @@ entry_base_with_date_first_column_second_row_template_field_info: (
     default="SUMMARY\nHIGHLIGHTS",
     title="First Column, Second Row",
     description=(
-        "The content of the second row of the first column. The available"
-        " placeholders are SUMMARY and HIGHLIGHTS."
+        "The content of the second row of the first column. The available placeholders"
+        " are all the keys used in the entries."
     ),
 )
 entry_base_with_date_second_column_template_field_info: pydantic.fields.FieldInfo = (
@@ -477,8 +477,8 @@ entry_base_with_date_second_column_template_field_info: pydantic.fields.FieldInf
         default="LOCATION\nDATE",
         title="Second Column",
         description=(
-            "The content of the second column. The available placeholders are LOCATION"
-            " and DATE."
+            "The content of the second column. The available placeholders are all the"
+            " keys used in the entries."
         ),
     )
 )
@@ -497,28 +497,28 @@ publication_entry_first_column_first_row_template_field_info: (
     default="**TITLE**",
     title="First Column",
     description=(
-        "The content of the first column. The available placeholders are TITLE,"
-        " JOURNAL, and URL."
+        "The content of the first column. The available placeholders are all the keys"
+        " used in the entries."
     ),
 )
 publication_entry_first_column_second_row_template_field_info: (
     pydantic.fields.FieldInfo
 ) = pydantic.Field(
-    default="AUTHORS\nURL (JOURNAL)",
+    default="AUTHORS\nDOIURL (JOURNAL)",
     title="First Column, Second Row",
     description=(
         "The content of the second row of the first column. The available placeholders"
-        " are AUTHORS, URL, SUMMARY, and JOURNAL."
+        " are all the keys used in the entries."
     ),
 )
 publication_entry_first_column_second_row_without_journal_template_field_info: (
     pydantic.fields.FieldInfo
 ) = pydantic.Field(
-    default="AUTHORS\nURL",
+    default="AUTHORS\nDOIURL",
     title="First Column, Second Row Without Journal",
     description=(
         "The content of the first column in case the journal is not given. The"
-        " available placeholders are AUTHORS, SUMMARY, and URL."
+        " available placeholders are all the keys used in the entries."
     ),
 )
 publication_entry_first_column_second_row_without_url_template_field_info: (
@@ -527,8 +527,8 @@ publication_entry_first_column_second_row_without_url_template_field_info: (
     default="AUTHORS\nJOURNAL",
     title="First Column, Second Row Without URL",
     description=(
-        "The content of the first column in case the URL is not given. The"
-        " available placeholders are AUTHORS, SUMMARY, and JOURNAL."
+        "The content of the first column in case the `doi` or `url is not given. The"
+        " available placeholders are all the keys used in the entries."
     ),
 )
 
@@ -558,8 +558,8 @@ education_entry_first_column_first_row_template_field_info: (
     default="**INSTITUTION**, AREA",
     title="First Column, First Row",
     description=(
-        "The content of the first column. The available placeholders are INSTITUTION,"
-        " AREA, DEGREE, and LOCATION."
+        "The content of the first column. The available placeholders are all the keys"
+        " used in the entries."
     ),
 )
 education_entry_degree_column_template_field_info: pydantic.fields.FieldInfo = (
@@ -568,7 +568,8 @@ education_entry_degree_column_template_field_info: pydantic.fields.FieldInfo = (
         title="Template of the Degree Column",
         description=(
             'If given, a degree column will be added to the education entry. If "null",'
-            " no degree column will be shown. The available placeholders are DEGREE."
+            " no degree column will be shown. The available placeholders are all the"
+            " keys used in the entries."
         ),
     )
 )
@@ -602,7 +603,8 @@ normal_entry_first_column_first_row_template_field_info: pydantic.fields.FieldIn
         default="**NAME**",
         title="First Column, First Row",
         description=(
-            "The content of the first column. The available placeholders are NAME."
+            "The content of the first column. The available placeholders are all the"
+            " keys used in the entries."
         ),
     )
 )
@@ -624,8 +626,8 @@ experience_entry_first_column_first_row_template_field_info: (
     default="**COMPANY**, POSITION",
     title="First Column, First Row",
     description=(
-        "The content of the first column. The available placeholders are COMPANY,"
-        " POSITION, and LOCATION."
+        "The content of the first column. The available placeholders are all the keys"
+        " used in the entries."
     ),
 )
 
@@ -644,8 +646,8 @@ one_line_entry_template_field_info: pydantic.fields.FieldInfo = pydantic.Field(
     default="**LABEL:** DETAILS",
     title="Template",
     description=(
-        "The template of the one-line entry. The available placeholders are"
-        " LABEL and DETAILS."
+        "The template of the one-line entry. The available placeholders are all the"
+        " keys used in the entries."
     ),
 )
 
