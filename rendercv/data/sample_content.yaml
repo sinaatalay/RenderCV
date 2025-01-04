@@ -10,8 +10,8 @@ social_networks:
     username: john.doe
 sections:
   welcome_to_RenderCV!:
-    - "[RenderCV](https://rendercv.com) is a Typst-based CV framework, designed for academics and engineers, with Markdown syntax support."
-    - "Each section title is arbitrary. Each section contains a list of entries and there are 7 different entry types to choose from."
+    - "[RenderCV](https://rendercv.com) is a Typst-based CV framework designed for academics and engineers, with Markdown syntax support."
+    - "Each section title is arbitrary. Each section contains a list of entries, and there are 7 different entry types to choose from."
   education:
     - institution: Stanford University
       location: Stanford, CA, USA
@@ -20,7 +20,7 @@ sections:
       start_date: 2023-09
       end_date: present
       highlights:
-        - Working on the optimization of autonomous vehichles in urban environemnts
+        - Working on the optimization of autonomous vehicles in urban environments
     - institution: Boğaziçi University
       location: Istanbul, Türkiye
       area: Computer Engineering
