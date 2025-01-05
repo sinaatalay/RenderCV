@@ -3,7 +3,7 @@
 
 #let name = "None"
 #let locale-catalog-page-numbering-style = context { " - Page " + str(here().page()) + " of " + str(counter(page).final().first()) + "" }
-#let locale-catalog-last-updated-date-style = "Last updated in Jan 2024"
+#let locale-catalog-last-updated-date-style = "Last updated in Jan 2025"
 #let locale-catalog-language = "en"
 #let design-page-size = "us-letter"
 #let design-section-titles-font-size = 1.2em
@@ -16,7 +16,7 @@
 #let design-section-titles-bold = true
 #let design-section-titles-line-thickness = 0.5pt
 #let design-section-titles-font-size = 1.2em
-#let design-section-titles-line-type = "full"
+#let design-section-titles-type = "With Parial Line"
 #let design-section-titles-vertical-space-above = 0.3cm
 #let design-section-titles-vertical-space-below = 0.1cm
 #let design-links-use-external-link-icon = false
@@ -170,9 +170,9 @@
         ] else [
           #smallcaps(it.body)
         ]
-        #if design-section-titles-line-type == "partial" [
+        #if design-section-titles-type == "With Parial Line" [
           #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
-        ] else if design-section-titles-line-type == "full" [
+        ] else if design-section-titles-type == "With Full Line" [
 
           #v(design-text-font-size * 0.4)
           #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
