@@ -13,7 +13,6 @@ import pytest
 import ruamel.yaml
 import typer.testing
 
-import rendercv.api.interface as interface
 import rendercv.api.utilities as api_utilities
 import rendercv.cli as cli
 import rendercv.cli.printer as printer

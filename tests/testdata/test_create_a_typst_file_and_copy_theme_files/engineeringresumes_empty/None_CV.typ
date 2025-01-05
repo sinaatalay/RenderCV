@@ -16,7 +16,7 @@
 #let design-section-titles-bold = true
 #let design-section-titles-line-thickness = 0.5pt
 #let design-section-titles-font-size = 1.2em
-#let design-section-titles-type = "With Parial Line"
+#let design-section-titles-type = "with-parial-line"
 #let design-section-titles-vertical-space-above = 0.3cm
 #let design-section-titles-vertical-space-below = 0.1cm
 #let design-links-use-external-link-icon = false
@@ -170,9 +170,9 @@
         ] else [
           #smallcaps(it.body)
         ]
-        #if design-section-titles-type == "With Parial Line" [
+        #if design-section-titles-type == "with-parial-line" [
           #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
-        ] else if design-section-titles-type == "With Full Line" [
+        ] else if design-section-titles-type == "with-full-line" [
 
           #v(design-text-font-size * 0.4)
           #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)

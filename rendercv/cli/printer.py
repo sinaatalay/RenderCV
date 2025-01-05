@@ -21,8 +21,8 @@ import typer
 from rich import print
 
 from .. import __version__
-from . import utilities
 from ..api import utilities as api_utilities
+from . import utilities
 
 
 class LiveProgressReporter(rich.live.Live):

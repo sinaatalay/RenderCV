@@ -11,10 +11,10 @@ cv:
   sections:
     welcome_to_RenderCV!:
       - '[RenderCV](https://rendercv.com) is a Typst-based CV
-        framework, designed for academics and engineers, with
-        Markdown syntax support.'
+        framework designed for academics and engineers, with Markdown
+        syntax support.'
       - Each section title is arbitrary. Each section contains
-        a list of entries and there are 7 different entry types
+        a list of entries, and there are 7 different entry types
         to choose from.
     education:
       - institution: Stanford University
@@ -24,8 +24,8 @@ cv:
         start_date: 2023-09
         end_date: present
         highlights:
-          - Working on the optimization of autonomous vehichles
-            in urban environemnts
+          - Working on the optimization of autonomous vehicles
+            in urban environments
       - institution: Boğaziçi University
         area: Computer Engineering
         degree: BS
@@ -121,12 +121,14 @@ design:
     font_size: 10pt
     leading: 0.6em
     alignment: justified
+    date_and_location_column_alignment: right
   links:
     underline: false
     use_external_link_icon: true
   header:
     name_font_size: 30pt
     name_bold: true
+    photo_width: 3.5cm
     vertical_space_between_name_and_connections: 0.7cm
     vertical_space_between_connections_and_first_section: 0.7cm
     horizontal_space_between_connections: 0.5cm
@@ -134,9 +136,10 @@ design:
     use_icons_for_connections: true
     alignment: center
   section_titles:
+    type: with-parial-line
     font_size: 1.4em
     bold: true
-    line_type: partial
+    small_caps: false
     line_thickness: 0.5pt
     vertical_space_above: 0.5cm
     vertical_space_below: 0.3cm
@@ -154,34 +157,32 @@ design:
     left_margin: 0.4cm
     vertical_space_between_highlights: 0.25cm
     horizontal_space_between_bullet_and_highlight: 0.5em
+    summary_left_margin: 0cm
   entry_types:
     one_line_entry:
       template: '**LABEL:** DETAILS'
     education_entry:
-      first_column_first_row_template: '**INSTITUTION**, AREA'
+      main_column_first_row_template: '**INSTITUTION**, AREA'
       degree_column_template: '**DEGREE**'
       degree_column_width: 1cm
-      first_column_second_row_template: "\nSUMMARY\nHIGHLIGHTS"
-      second_column_template: "LOCATION\nDATE"
+      main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
+      date_and_location_column_template: "LOCATION\nDATE"
     normal_entry:
-      first_column_first_row_template: '**NAME**'
-      first_column_second_row_template: "\nSUMMARY\nHIGHLIGHTS"
-      second_column_template: "LOCATION\nDATE"
+      main_column_first_row_template: '**NAME**'
+      main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
+      date_and_location_column_template: "LOCATION\nDATE"
     experience_entry:
-      first_column_first_row_template: '**COMPANY**, POSITION'
-      first_column_second_row_template: "\nSUMMARY\nHIGHLIGHTS"
-      second_column_template: "LOCATION\nDATE"
+      main_column_first_row_template: '**COMPANY**, POSITION'
+      main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
+      date_and_location_column_template: "LOCATION\nDATE"
     publication_entry:
-      first_column_second_row_template: "AUTHORS\nURL (JOURNAL)"
-      second_column_template: "LOCATION\nDATE"
-      first_column_first_row_template: '**TITLE**'
-      first_column_second_row_without_journal_template: "AUTHORS\n\
-        URL"
-      first_column_second_row_without_url_template: "AUTHORS\n\
-        JOURNAL"
-  theme_specific:
-    show_timespan_in: []
-    education_degree_width: 1cm
+      main_column_first_row_template: '**TITLE**'
+      main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
+      main_column_second_row_without_journal_template: "AUTHORS\n\
+        DOIURL\nSUMMARY"
+      main_column_second_row_without_url_template: "AUTHORS\n\
+        JOURNAL\nSUMMARY"
+      date_and_location_column_template: "LOCATION\nDATE"
 locale:
   language: en
   phone_number_format: national
@@ -221,5 +222,5 @@ locale:
     - November
     - December
 rendercv_settings:
-  date: '2025-01-02'
+  date: '2025-01-05'
   bold_keywords: []
