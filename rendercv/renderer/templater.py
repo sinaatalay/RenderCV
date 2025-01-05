@@ -658,51 +658,43 @@ def replace_placeholders_with_actual_values(
     return text
 
 
-# Only one Jinja2 environment is needed for all the templates:
-jinja2_environment: Optional[jinja2.Environment] = None
+class Jinja2Environment:
+    instance: "Jinja2Environment"
+    environment: jinja2.Environment
+    current_working_directory: Optional[pathlib.Path] = None
 
+    def __new__(cls):
+        if (
+            not hasattr(cls, "instance")
+            or cls.current_working_directory != pathlib.Path.cwd()
+        ):
+            cls.instance = super().__new__(cls)
 
-def setup_jinja2_environment() -> jinja2.Environment:
-    """Setup and return the Jinja2 environment for templating.
+            themes_directory = pathlib.Path(__file__).parent.parent / "themes"
 
-    Returns:
-        The theme environment.
-    """
-    global jinja2_environment  # noqa: PLW0603
-    themes_directory = pathlib.Path(__file__).parent.parent / "themes"
+            # create a Jinja2 environment:
+            # we need to add the current working directory because custom themes might be used.
+            environment = jinja2.Environment(
+                loader=jinja2.FileSystemLoader([pathlib.Path.cwd(), themes_directory]),
+                trim_blocks=True,
+                lstrip_blocks=True,
+            )
 
-    if jinja2_environment is None:
-        # create a Jinja2 environment:
-        # we need to add the current working directory because custom themes might be used.
-        environment = jinja2.Environment(
-            loader=jinja2.FileSystemLoader([pathlib.Path.cwd(), themes_directory]),
-            trim_blocks=True,
-            lstrip_blocks=True,
-        )
+            # set custom delimiters:
+            environment.block_start_string = "((*"
+            environment.block_end_string = "*))"
+            environment.variable_start_string = "<<"
+            environment.variable_end_string = ">>"
+            environment.comment_start_string = "((#"
+            environment.comment_end_string = "#))"
 
-        # set custom delimiters:
-        environment.block_start_string = "((*"
-        environment.block_end_string = "*))"
-        environment.variable_start_string = "<<"
-        environment.variable_end_string = ">>"
-        environment.comment_start_string = "((#"
-        environment.comment_end_string = "#))"
+            # add custom Jinja2 filters:
+            environment.filters["replace_placeholders_with_actual_values"] = (
+                replace_placeholders_with_actual_values
+            )
+            environment.filters["escape_typst_characters"] = escape_typst_characters
+            environment.filters["markdown_to_typst"] = markdown_to_typst
 
-        # add custom Jinja2 filters:
-        environment.filters["replace_placeholders_with_actual_values"] = (
-            replace_placeholders_with_actual_values
-        )
-        environment.filters["escape_typst_characters"] = escape_typst_characters
-        environment.filters["markdown_to_typst"] = markdown_to_typst
+            cls.environment = environment
 
-        jinja2_environment = environment
-    else:
-        # update the loader in case the current working directory has changed:
-        jinja2_environment.loader = jinja2.FileSystemLoader(
-            [
-                pathlib.Path.cwd(),
-                themes_directory,
-            ]
-        )
-
-    return jinja2_environment
+        return cls.instance

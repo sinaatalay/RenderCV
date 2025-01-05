@@ -128,7 +128,7 @@ def test_replace_placeholders_with_actual_values(string, placeholders, expected_
 
 
 def test_setup_jinja2_environment():
-    env = templater.setup_jinja2_environment()
+    env = templater.Jinja2Environment().environment
 
     # Check if the returned object is a jinja2.Environment instance
     assert isinstance(env, jinja2.Environment)

@@ -7,12 +7,7 @@ import importlib.resources
 import pathlib
 import re
 import shutil
-import tempfile
-from typing import Optional
-
-import markdown
-import rendercv_fonts
-import typst
+from typing import Any, Literal, Optional
 
 from .. import data
 from . import templater
@@ -78,7 +73,7 @@ def create_typst_contents(
     Returns:
         The path to the generated Typst file.
     """
-    jinja2_environment = templater.setup_jinja2_environment()
+    jinja2_environment = templater.Jinja2Environment().environment
 
     file_object = templater.TypstFile(
         rendercv_data_model,
@@ -134,7 +129,7 @@ def create_a_markdown_file(
     if not output_directory.is_dir():
         output_directory.mkdir(parents=True)
 
-    jinja2_environment = templater.setup_jinja2_environment()
+    jinja2_environment = templater.Jinja2Environment().environment
     markdown_file_object = templater.MarkdownFile(
         rendercv_data_model,
         jinja2_environment,
@@ -175,37 +170,38 @@ def create_a_typst_file_and_copy_theme_files(
     return file_path
 
 
-typst_compiler: Optional[typst.Compiler] = None
-typst_file_path: pathlib.Path
+class TypstCompiler:
+    """A singleton class for the Typst compiler."""
 
+    instance: "TypstCompiler"
+    compiler: Any
+    file_path: pathlib.Path
 
-def setup_typst_compiler(file_path: pathlib.Path) -> typst.Compiler:
-    global typst_compiler, typst_file_path  # NOQA: PLW0603
-    if typst_compiler is None or typst_file_path != file_path:
-        typst_compiler = typst.Compiler(
-            file_path, font_paths=rendercv_fonts.paths_to_font_folders
-        )
-        typst_file_path = file_path
+    def __new__(cls, file_path: pathlib.Path):
+        if not hasattr(cls, "instance") or cls.instance.file_path != file_path:
+            try:
+                import rendercv_fonts
+                import typst
+            except Exception as e:
+                from .. import _parial_install_error_message
 
-    return typst_compiler
+                raise ImportError(_parial_install_error_message) from e
 
+            cls.instance = super().__new__(cls)
+            cls.instance.file_path = file_path
+            cls.instance.compiler = typst.Compiler(
+                file_path, font_paths=rendercv_fonts.paths_to_font_folders
+            )
 
-def render_typst(typst_file_contents: str) -> bytes:
-    """Render the given Typst file and return the rendered bytes.
+        return cls.instance
 
-    Args:
-        typst_file_contents: The Typst file as a string.
-
-    Returns:
-        The rendered bytes.
-    """
-    # create a temporary folder:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        temp_dir_path = pathlib.Path(temp_dir)
-        typst_file_path = temp_dir_path / "temp.typ"
-        typst_file_path.write_text(typst_file_contents, encoding="utf-8")
-
-        return typst.compile(typst_file_path, format="pdf")
+    def run(
+        self,
+        output: pathlib.Path,
+        format: Literal["png", "pdf"],
+        ppi: Optional[float] = None,
+    ) -> pathlib.Path | list[pathlib.Path]:
+        return self.instance.compiler.compile(format=format, output=output, ppi=ppi)
 
 
 def render_a_pdf_from_typst(file_path: pathlib.Path) -> pathlib.Path:
@@ -217,10 +213,10 @@ def render_a_pdf_from_typst(file_path: pathlib.Path) -> pathlib.Path:
     Returns:
         The path to the rendered PDF file.
     """
-    typst_compiler = setup_typst_compiler(file_path)
+    typst_compiler = TypstCompiler(file_path)
 
     pdf_output_path = file_path.with_suffix(".pdf")
-    typst_compiler.compile(output=pdf_output_path, format="pdf")
+    typst_compiler.run(output=pdf_output_path, format="pdf")
 
     return pdf_output_path
 
@@ -238,9 +234,9 @@ def render_pngs_from_typst(
     Returns:
         Paths to the rendered PNG files.
     """
-    typst_compiler = setup_typst_compiler(file_path)
+    typst_compiler = TypstCompiler(file_path)
     output_path = file_path.parent / (file_path.stem + "_{p}.png")
-    output = typst_compiler.compile(format="png", ppi=ppi, output=output_path)
+    output = typst_compiler.run(format="png", ppi=ppi, output=output_path)
 
     if isinstance(output, list):
         return [
@@ -261,6 +257,13 @@ def render_an_html_from_markdown(markdown_file_path: pathlib.Path) -> pathlib.Pa
     Returns:
         The path to the rendered HTML file.
     """
+    try:
+        import markdown
+    except Exception as e:
+        from .. import _parial_install_error_message
+
+        raise ImportError(_parial_install_error_message) from e
+
     # check if the file exists:
     if not markdown_file_path.is_file():
         message = f"The file {markdown_file_path} doesn't exist!"
@@ -274,7 +277,7 @@ def render_an_html_from_markdown(markdown_file_path: pathlib.Path) -> pathlib.Pa
     title = re.search(r"# (.*)\n", markdown_text)
     title = title.group(1) if title else None
 
-    jinja2_environment = templater.setup_jinja2_environment()
+    jinja2_environment = templater.Jinja2Environment().environment
     html_template = jinja2_environment.get_template("main.j2.html")
     html = html_template.render(html_body=html_body, title=title)
 
