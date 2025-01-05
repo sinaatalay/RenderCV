@@ -13,6 +13,8 @@ import pytest
 import ruamel.yaml
 import typer.testing
 
+import rendercv.api.interface as interface
+import rendercv.api.utilities as api_utilities
 import rendercv.cli as cli
 import rendercv.cli.printer as printer
 import rendercv.cli.utilities as utilities
@@ -62,19 +64,19 @@ def test_information():
 
 def test_get_error_message_and_location_and_value_from_a_custom_error():
     error_string = "('error message', 'location', 'value')"
-    result = utilities.get_error_message_and_location_and_value_from_a_custom_error(
+    result = api_utilities.get_error_message_and_location_and_value_from_a_custom_error(
         error_string
     )
     assert result == ("error message", "location", "value")
 
     error_string = """("er'ror message", 'location', 'value')"""
-    result = utilities.get_error_message_and_location_and_value_from_a_custom_error(
+    result = api_utilities.get_error_message_and_location_and_value_from_a_custom_error(
         error_string
     )
     assert result == ("er'ror message", "location", "value")
 
     error_string = "error message"
-    result = utilities.get_error_message_and_location_and_value_from_a_custom_error(
+    result = api_utilities.get_error_message_and_location_and_value_from_a_custom_error(
         error_string
     )
     assert result == (None, None, None)
@@ -1021,7 +1023,7 @@ def test_make_given_keywords_bold_in_a_dictionary():
         },
     }
     keywords = ["John"]
-    bolded_dictionary = utilities.make_given_keywords_bold_in_a_dictionary(
+    bolded_dictionary = api_utilities.make_given_keywords_bold_in_a_dictionary(
         dictionary, keywords
     )
     assert bolded_dictionary["name"] == "**John** Doe"

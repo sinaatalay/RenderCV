@@ -22,6 +22,7 @@ from rich import print
 
 from .. import __version__
 from . import utilities
+from ..api import utilities as api_utilities
 
 
 class LiveProgressReporter(rich.live.Live):
@@ -210,7 +211,7 @@ def print_validation_errors(exception: pydantic.ValidationError):
     Args:
         exception: The Pydantic validation error object.
     """
-    errors = utilities.parse_validation_errors(exception)
+    errors = api_utilities.parse_validation_errors(exception)
 
     # Print the errors in a nice table:
     table = rich.table.Table(
