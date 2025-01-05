@@ -1,9 +1,3 @@
-#block(
-  [- <<entry.bullet>>],
-  breakable: design-entries-allow-page-break-in-entries,
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  width: 100%,
+#one-col-entry(
+  content: [- <<entry.bullet>>],
 )
