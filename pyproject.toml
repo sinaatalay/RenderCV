@@ -62,12 +62,6 @@ dependencies = [
     'pydantic==2.10.4',             # to validate and parse the input file
     'pycountry==24.6.1',            # for ISO 639-3 validation
     'pydantic-extra-types==2.10.1', # to validate some extra types
-    'ruamel.yaml==0.18.6',          # to parse YAML files
-    'typer==0.15.1',                # to create the command-line interface
-    "markdown==3.7",                # to convert Markdown to HTML
-    "watchdog==6.0.0",              # to poll files for updates
-    "typst==0.12.2",                # to render PDF from Typst source files
-    "rendercv-fonts==0.1.0",        # some font files for RenderCV
 ]
 classifiers = [
     "Intended Audience :: Science/Research",
@@ -82,6 +76,16 @@ classifiers = [
     "Operating System :: OS Independent",
 ] # go to https://pypi.org/classifiers/ to see all classifiers
 dynamic = ["version"] # We will use hatchling to generate the version number
+
+[project.optional-dependencies]
+all = [
+    'ruamel.yaml==0.18.6',   # to parse YAML files
+    'typer==0.15.1',         # to create the command-line interface
+    "markdown==3.7",         # to convert Markdown to HTML
+    "watchdog==6.0.0",       # to poll files for updates
+    "typst==0.12.2",         # to render PDF from Typst source files
+    "rendercv-fonts==0.1.0", # some font files for RenderCV
+]
 
 [project.urls]
 # Here, we can specify the URLs related to RenderCV. They will be listed under the
@@ -128,6 +132,7 @@ dependencies = [
     "coverage==7.6.10", # to generate coverage reports
     "pypdf==5.1.0",     # to read PDF files
 ]
+features = ["all"] # to install all optional dependencies
 [tool.hatch.envs.default.scripts]
 # Hatch allows us to define scripts that can be run in the activated virtual environment
 # with `hatch run ENV_NAME:SCRIPT_NAME`.
@@ -161,6 +166,7 @@ dependencies = [
     "mkdocs-macros-plugin==1.0.5", # to be able to have dynamic content in the documentation
     "PyMuPDF==1.24.14",            # to convert PDF files to images    
 ]
+features = ["all"] # to install all optional dependencies
 [tool.hatch.envs.docs.scripts]
 # Build the documentation with `mkdocs`:
 build = "mkdocs build --clean --strict" # hatch run docs:build
