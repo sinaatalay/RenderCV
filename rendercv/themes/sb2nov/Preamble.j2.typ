@@ -179,9 +179,9 @@
         ] else [
           #smallcaps(it.body)
         ]
-        #if design-section-titles-type == "With Parial Line" [
+        #if design-section-titles-type == "with-parial-line" [
           #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
-        ] else if design-section-titles-type == "With Full Line" [
+        ] else if design-section-titles-type == "with-full-line" [
 
           #v(design-text-font-size * 0.4)
           #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)

@@ -7,7 +7,7 @@
         #set par(spacing: design-highlights-vertical-space-between-highlights)
         <<main_column_first_row_template>>
 
-      ((* if design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") *))
+      ((* if design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") or design.section_titles.type=="moderncv" *))
         ((* if not (entry.doi or entry.url)*))
       <<main_column_second_row_without_url_template>>
         ((*- elif not entry.journal -*))
@@ -21,7 +21,7 @@
         <<date_and_location_column_template>>
       ],
     )
-    ((* if not (design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n")) *))
+      ((* if not (design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") or design.section_titles.type=="moderncv") *))
         ((* if not (entry.doi or entry.url)*))
       <<main_column_second_row_without_url_template>>
         ((*- elif not entry.journal -*))

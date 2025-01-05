@@ -7,7 +7,7 @@
       left-content: [<<degree_column_template>>],
       middle-content: [
         <<main_column_first_row_template>>
-        ((* if design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") *))
+        ((* if design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") or design.section_titles.type=="moderncv" *))
         #v(-design-text-leading)
 
         <<main_column_second_row_template>>
@@ -32,7 +32,7 @@
     #two-col-entry(
       left-content: [
         <<main_column_first_row_template>>
-        ((* if design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") *))
+        ((* if design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") or design.section_titles.type=="moderncv" *))
         #v(-design-text-leading)
 
         <<main_column_second_row_template>>
@@ -42,7 +42,7 @@
         <<date_and_location_column_template>>
       ],
     )
-    ((* if not (design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n")) *))
+      ((* if not (design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") or design.section_titles.type=="moderncv") *))
     <<main_column_second_row_template>>
     ((* endif *))
     ((* elif not date_and_location_column_template and design.entry_types.education_entry.degree_column_template *))
@@ -56,7 +56,7 @@
       ],
       right-content: [
         <<main_column_first_row_template>>
-        ((* if design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") *))
+        ((* if design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") or design.section_titles.type=="moderncv" *))
         #v(-design-text-leading)
 
         <<main_column_second_row_template>>

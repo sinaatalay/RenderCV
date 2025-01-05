@@ -28,11 +28,13 @@
 #let design-section-titles-type = "<<design.section_titles.type>>"
 #let design-section-titles-vertical-space-above = <<design.section_titles.vertical_space_above>>
 #let design-section-titles-vertical-space-below = <<design.section_titles.vertical_space_below>>
+#let design-section-titles-small-caps = <<design.section_titles.small_caps|lower>>
 #let design-links-use-external-link-icon = <<design.links.use_external_link_icon|lower>>
 #let design-text-font-size = <<design.text.font_size>>
 #let design-text-leading = <<design.text.leading>>
 #let design-text-font-family = "<<design.text.font_family>>"
 #let design-text-alignment = "<<design.text.alignment>>"
+#let design-text-date-and-location-column-alignment = <<design.text.date_and_location_column_alignment>>
 #let design-header-photo-width = <<design.header.photo_width>>
 #let design-header-use-icons-for-connections = <<design.header.use_icons_for_connections|lower>>
 #let design-header-name-font-size = <<design.header.name_font_size>>
@@ -132,6 +134,51 @@
   body-indent: design-highlights-horizontal-space-between-bullet-and-highlights,
 )
 
+// Entry utilities:
+#let three-col(
+  left-column-width: 1fr,
+  middle-column-width: 1fr,
+  right-column-width: design-entries-date-and-location-width,
+  left-content: "",
+  middle-content: "",
+  right-content: "",
+  alignments: (auto, auto, auto),
+) = [
+  #block(
+    grid(
+      columns: (left-column-width, middle-column-width, right-column-width),
+      column-gutter: design-entries-horizontal-space-between-columns,
+      align: alignments,
+      ([#set par(spacing: design-text-leading); #left-content]),
+      ([#set par(spacing: design-text-leading); #middle-content]),
+      ([#set par(spacing: design-text-leading); #right-content]),
+    ),
+    breakable: true,
+    width: 100%,
+  )
+]
+
+#let two-col(
+  left-column-width: 1fr,
+  right-column-width: design-entries-date-and-location-width,
+  left-content: "",
+  right-content: "",
+  alignments: (auto, auto),
+  column-gutter: design-entries-horizontal-space-between-columns,
+) = [
+  #block(
+    grid(
+      columns: (left-column-width, right-column-width),
+      column-gutter: column-gutter,
+      align: alignments,
+      ([#set par(spacing: design-text-leading); #left-content]),
+      ([#set par(spacing: design-text-leading); #right-content]),
+    ),
+    breakable: true,
+    width: 100%,
+  )
+]
+
 // Main heading settings:
 #let header-font-weight
 #if design-header-name-bold {
@@ -166,28 +213,47 @@
     weight: section-title-font-weight,
     fill: design-colors-section-titles,
   )
-
+  #let section-title = (
+    if design-section-titles-small-caps [
+      #smallcaps(it.body)
+    ] else [
+      #it.body
+    ]
+  )
   // Vertical space above the section title
   #v(design-section-titles-vertical-space-above, weak: true)
   #block(
     breakable: false,
     width: 100%,
     [
-      #box([
-        #if true [
-          #it.body
-        ] else [
-          #smallcaps(it.body)
-        ]
-        #if design-section-titles-type == "With Parial Line" [
-          #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
-        ] else if design-section-titles-type == "With Full Line" [
+      #if design-section-titles-type == "moderncv" [
+        #two-col(
+          alignments: (right, left),
+          left-column-width: design-entries-date-and-location-width,
+          right-column-width: 1fr,
+          left-content: [
+            #align(horizon, box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles))
+          ],
+          right-content: [
+            #section-title
+          ]
+        )
 
-          #v(design-text-font-size * 0.4)
-          #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
-        ]
-      ])
-    ] + v(1em),
+      ] else [
+        #box(
+          [
+            #section-title
+            #if design-section-titles-type == "with-parial-line" [
+              #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
+            ] else if design-section-titles-type == "with-full-line" [
+
+              #v(design-text-font-size * 0.4)
+              #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
+            ]
+          ]
+        )
+      ]
+     ] + v(1em),
   )
   #v(-1em)
   // Vertical space after the section title
@@ -268,39 +334,114 @@
   left-content: "",
   middle-content: "",
   right-content: "",
-  alignments: (left, left, right),
-) = [
-  #block(
-    grid(
-      columns: (left-column-width, 1fr, right-column-width),
-      column-gutter: design-entries-horizontal-space-between-columns,
-      align: alignments,
-      ([#set par(spacing: design-text-leading); #left-content]),
-      ([#set par(spacing: design-text-leading); #middle-content]),
-      ([#set par(spacing: design-text-leading); #right-content]),
-    ),
-    breakable: true,
-    width: 100%,
-  )
-]
+  alignments: (left, auto, right),
+) = (
+  if design-section-titles-type == "moderncv" [
+    #three-col(
+      left-column-width: right-column-width,
+      middle-column-width: left-column-width,
+      right-column-width: 1fr,
+      left-content: right-content,
+      middle-content: [
+        #block(
+          [
+            #left-content
+          ],
+          inset: (
+            left: design-entries-left-and-right-margin,
+            right: design-entries-left-and-right-margin,
+          ),
+          breakable: design-entries-allow-page-break-in-entries,
+          width: 100%,
+        )
+      ],
+      right-content: middle-content,
+      alignments: (design-text-date-and-location-column-alignment, left, auto),
+    )
+  ] else [
+    #block(
+      [
+        #three-col(
+          left-column-width: left-column-width,
+          right-column-width: right-column-width,
+          left-content: left-content,
+          middle-content: middle-content,
+          right-content: right-content,
+          alignments: alignments,
+        )
+      ],
+      inset: (
+        left: design-entries-left-and-right-margin,
+        right: design-entries-left-and-right-margin,
+      ),
+      breakable: design-entries-allow-page-break-in-entries,
+      width: 100%,
+    )
+  ]
+)
 
 #let two-col-entry(
   left-column-width: 1fr,
   right-column-width: design-entries-date-and-location-width,
   left-content: "",
   right-content: "",
-  alignments: (left, right),
+  alignments: (auto, design-text-date-and-location-column-alignment),
   column-gutter: design-entries-horizontal-space-between-columns,
-) = [
+) = (
+  if design-section-titles-type == "moderncv" [
+    #two-col(
+      left-column-width: right-column-width,
+      right-column-width: left-column-width,
+      left-content: right-content,
+      right-content: [
+        #block(
+          [
+            #left-content
+          ],
+          inset: (
+            left: design-entries-left-and-right-margin,
+            right: design-entries-left-and-right-margin,
+          ),
+          breakable: design-entries-allow-page-break-in-entries,
+          width: 100%,
+        )
+      ],
+      alignments: (design-text-date-and-location-column-alignment, auto),
+    )
+  ] else [
+    #block(
+      [
+        #two-col(
+          left-column-width: left-column-width,
+          right-column-width: right-column-width,
+          left-content: left-content,
+          middle-content: middle-content,
+          right-content: right-content,
+          alignments: alignments,
+        )
+      ],
+      inset: (
+        left: design-entries-left-and-right-margin,
+        right: design-entries-left-and-right-margin,
+      ),
+      breakable: design-entries-allow-page-break-in-entries,
+      width: 100%,
+    )
+  ]
+)
+
+#let one-col-entry(content: "") = [
+  #let left-space = design-entries-left-and-right-margin
+  #if design-section-titles-type == "moderncv" [
+    #(left-space = left-space + design-entries-date-and-location-width)
+  ]
   #block(
-    grid(
-      columns: (left-column-width, right-column-width),
-      column-gutter: column-gutter,
-      align: alignments,
-      ([#set par(spacing: design-text-leading); #left-content]),
-      ([#set par(spacing: design-text-leading); #right-content]),
+    content,
+    breakable: design-entries-allow-page-break-in-entries,
+    inset: (
+      left: left-space,
+      right: design-entries-left-and-right-margin,
     ),
-    breakable: true,
     width: 100%,
   )
 ]

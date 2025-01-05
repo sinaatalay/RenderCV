@@ -60,10 +60,10 @@ PageSize = Literal[
     "presentation-16-9",
     "presentation-4-3",
 ]
-HeaderAlignment = Literal["left", "center", "right"]
+Alignment = Literal["left", "center", "right"]
 TextAlignment = Literal["left", "justified", "justified-with-no-hyphenation"]
 SectionTitleType = Optional[
-    Literal["With Parial Line", "With Full Line", "Without Line", "moderncv"]
+    Literal["with-parial-line", "with-full-line", "without-line", "moderncv"]
 ]
 
 page_size_field_info = pydantic.Field(
@@ -199,6 +199,11 @@ text_alignment_field_info = pydantic.Field(
     title="Alignment of Text",
     description="The alignment of the text.",
 )
+text_date_and_location_column_alignment_field_info = pydantic.Field(
+    default="right",
+    title="Alignment of Date and Location Column",
+    description="The alignment of the date column in the entries.",
+)
 
 
 class Text(RenderCVBaseModelWithoutExtraKeys):
@@ -206,6 +211,9 @@ class Text(RenderCVBaseModelWithoutExtraKeys):
     font_size: TypstDimension = text_font_size_field_info
     leading: TypstDimension = text_leading_field_info
     alignment: TextAlignment = text_alignment_field_info
+    date_and_location_column_alignment: Alignment = (
+        text_date_and_location_column_alignment_field_info
+    )
 
 
 links_underline_field_info = pydantic.Field(
@@ -297,7 +305,7 @@ class Header(RenderCVBaseModelWithoutExtraKeys):
     )
     separator_between_connections: str = header_separator_between_connections_field_info
     use_icons_for_connections: bool = header_use_icons_for_connections_field_info
-    alignment: HeaderAlignment = header_alignment_field_info
+    alignment: Alignment = header_alignment_field_info
 
 
 section_titles_font_size_field_info = pydantic.Field(
@@ -311,7 +319,7 @@ section_titles_bold_field_info = pydantic.Field(
     description='If this option is "true", the section titles will be bold.',
 )
 section_titles_type_field_info = pydantic.Field(
-    default="With Parial Line",
+    default="with-parial-line",
     title="Line Type",
     description="The type of the section titles.",
 )
@@ -330,12 +338,18 @@ section_titles_vertical_space_below_field_info = pydantic.Field(
     title="Vertical Space Below Section Titles",
     description="The vertical space below the section titles.",
 )
+section_titles_small_caps_field_info = pydantic.Field(
+    default=False,
+    title="Small Caps",
+    description='If this option is "true", the section titles will be in small caps.',
+)
 
 
 class SectionTitles(RenderCVBaseModelWithoutExtraKeys):
     type: SectionTitleType = section_titles_type_field_info
     font_size: TypstDimension = section_titles_font_size_field_info
     bold: bool = section_titles_bold_field_info
+    small_caps: bool = section_titles_small_caps_field_info
     line_thickness: TypstDimension = section_titles_line_thickness_field_info
     vertical_space_above: TypstDimension = (
         section_titles_vertical_space_above_field_info

@@ -15,7 +15,7 @@ o.header_alignment_field_info.default = "left"
 
 class Header(o.Header):
     name_bold: bool = o.header_name_bold_field_info
-    alignment: o.HeaderAlignment = o.header_alignment_field_info
+    alignment: o.Alignment = o.header_alignment_field_info
 
 
 o.links_use_external_link_icon_field_info.default = False

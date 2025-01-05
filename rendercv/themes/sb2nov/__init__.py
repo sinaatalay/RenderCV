@@ -22,7 +22,7 @@ class Text(o.Text):
     font_family: o.FontFamily = o.text_font_family_field_info
 
 
-o.section_titles_type_field_info.default = "With Full Line"
+o.section_titles_type_field_info.default = "with-full-line"
 
 
 class SectionTitles(o.SectionTitles):
