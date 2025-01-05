@@ -57,14 +57,14 @@ class Text(o.Text):
     leading: o.TypstDimension = o.text_leading_field_info
 
 
-o.section_titles_line_type_field_info.default = "full"
+o.section_titles_type_field_info.default = "With Full Line"
 o.section_titles_vertical_space_above_field_info.default = "0.3cm"
 o.section_titles_vertical_space_below_field_info.default = "0.1cm"
 o.section_titles_font_size_field_info.default = "1.2em"
 
 
 class SectionTitles(o.SectionTitles):
-    line_type: o.SectionTitleLineType = o.section_titles_line_type_field_info
+    line_type: o.SectionTitleType = o.section_titles_type_field_info
     vertical_space_above: o.TypstDimension = (
         o.section_titles_vertical_space_above_field_info
     )

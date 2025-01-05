@@ -25,7 +25,7 @@
 #let design-section-titles-bold = <<design.section_titles.bold|lower>>
 #let design-section-titles-line-thickness = <<design.section_titles.line_thickness>>
 #let design-section-titles-font-size = <<design.section_titles.font_size>>
-#let design-section-titles-line-type = "<<design.section_titles.line_type>>"
+#let design-section-titles-type = "<<design.section_titles.type>>"
 #let design-section-titles-vertical-space-above = <<design.section_titles.vertical_space_above>>
 #let design-section-titles-vertical-space-below = <<design.section_titles.vertical_space_below>>
 #let design-links-use-external-link-icon = <<design.links.use_external_link_icon|lower>>
@@ -179,9 +179,9 @@
         ] else [
           #smallcaps(it.body)
         ]
-        #if design-section-titles-line-type == "partial" [
+        #if design-section-titles-type == "With Parial Line" [
           #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
-        ] else if design-section-titles-line-type == "full" [
+        ] else if design-section-titles-type == "With Full Line" [
 
           #v(design-text-font-size * 0.4)
           #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)

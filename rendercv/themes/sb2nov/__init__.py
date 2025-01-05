@@ -22,11 +22,11 @@ class Text(o.Text):
     font_family: o.FontFamily = o.text_font_family_field_info
 
 
-o.section_titles_line_type_field_info.default = "full"
+o.section_titles_type_field_info.default = "With Full Line"
 
 
 class SectionTitles(o.SectionTitles):
-    line_type: o.SectionTitleLineType = o.section_titles_line_type_field_info
+    line_type: o.SectionTitleType = o.section_titles_type_field_info
 
 
 o.highlights_bullet_field_info.default = "◦"
@@ -40,7 +40,9 @@ o.education_entry_main_column_first_row_template_field_info.default = (
     "**INSTITUTION**\n*DEGREE in AREA*"
 )
 o.education_entry_degree_column_template_field_info.default = None
-o.entry_base_with_date_date_and_location_column_template_field_info.default = "*LOCATION*\n*DATE*"
+o.entry_base_with_date_date_and_location_column_template_field_info.default = (
+    "*LOCATION*\n*DATE*"
+)
 
 
 class EducationEntry(o.EducationEntry):

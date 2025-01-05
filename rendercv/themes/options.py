@@ -62,7 +62,9 @@ PageSize = Literal[
 ]
 HeaderAlignment = Literal["left", "center", "right"]
 TextAlignment = Literal["left", "justified", "justified-with-no-hyphenation"]
-SectionTitleLineType = Optional[Literal["partial", "full"]]
+SectionTitleType = Optional[
+    Literal["With Parial Line", "With Full Line", "Without Line", "moderncv"]
+]
 
 page_size_field_info = pydantic.Field(
     default="us-letter",
@@ -308,12 +310,10 @@ section_titles_bold_field_info = pydantic.Field(
     title="Bold Section Titles",
     description='If this option is "true", the section titles will be bold.',
 )
-section_titles_line_type_field_info = pydantic.Field(
-    default="partial",
+section_titles_type_field_info = pydantic.Field(
+    default="With Parial Line",
     title="Line Type",
-    description=(
-        'The line type of the section titles. If "null", no line will be shown.'
-    ),
+    description="The type of the section titles.",
 )
 section_titles_line_thickness_field_info = pydantic.Field(
     default="0.5pt",
@@ -333,9 +333,9 @@ section_titles_vertical_space_below_field_info = pydantic.Field(
 
 
 class SectionTitles(RenderCVBaseModelWithoutExtraKeys):
+    type: SectionTitleType = section_titles_type_field_info
     font_size: TypstDimension = section_titles_font_size_field_info
     bold: bool = section_titles_bold_field_info
-    line_type: SectionTitleLineType = section_titles_line_type_field_info
     line_thickness: TypstDimension = section_titles_line_thickness_field_info
     vertical_space_above: TypstDimension = (
         section_titles_vertical_space_above_field_info
@@ -470,7 +470,9 @@ class EntryBaseWithDate(RenderCVBaseModelWithoutExtraKeys):
     main_column_second_row_template: str = (
         entry_base_with_date_main_column_second_row_template_field_info
     )
-    date_and_location_column_template: str = entry_base_with_date_date_and_location_column_template_field_info
+    date_and_location_column_template: str = (
+        entry_base_with_date_date_and_location_column_template_field_info
+    )
 
 
 publication_entry_main_column_first_row_template_field_info = pydantic.Field(
