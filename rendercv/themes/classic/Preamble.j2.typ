@@ -129,7 +129,7 @@
 }
 #show list: set list(
   marker: design-highlights-bullet,
-  spacing: design-entries-vertical-space-between-entries,
+  spacing: 0pt,
   indent: 0pt,
   body-indent: design-highlights-horizontal-space-between-bullet-and-highlights,
 )
@@ -415,7 +415,6 @@
           left-column-width: left-column-width,
           right-column-width: right-column-width,
           left-content: left-content,
-          middle-content: middle-content,
           right-content: right-content,
           alignments: alignments,
         )
@@ -431,9 +430,10 @@
 )
 
 #let one-col-entry(content: "") = [
+  #set par(spacing: 0pt)
   #let left-space = design-entries-left-and-right-margin
   #if design-section-titles-type == "moderncv" [
-    #(left-space = left-space + design-entries-date-and-location-width)
+    #(left-space = left-space + design-entries-date-and-location-width + design-entries-horizontal-space-between-columns)
   ]
   #block(
     content,
