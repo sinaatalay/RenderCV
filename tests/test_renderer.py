@@ -487,21 +487,22 @@ def test_render_pngs_from_typst(
     reference_directory_name = "pngs"
 
     def generate_pngs(output_directory_path, reference_file_or_directory_path):
-        typst_file_name = "classic_filled.typ"
-
-        typst_path = (
+        typst_folder_path = (
             reference_file_or_directory_path.parent.parent
-            / "test_create_a_typst_file"
-            / typst_file_name
+            / "test_create_a_typst_file_and_copy_theme_files"
+            / "classic_filled"
         )
 
-        shutil.copy(typst_path, output_directory_path)
+        # copy typst folder to the output path
+        shutil.copytree(typst_folder_path, output_directory_path, dirs_exist_ok=True)
 
         # convert pdf to pngs
-        renderer.render_pngs_from_typst(output_directory_path / typst_file_name)
+        renderer.render_pngs_from_typst(output_directory_path / "John_Doe_CV.typ")
 
-        # remove the typst file
-        (output_directory_path / typst_file_name).unlink()
+        # remove everything except the pngs
+        for file in output_directory_path.glob("*"):
+            if file.suffix == ".jpg" or file.suffix == ".typ":
+                file.unlink()
 
     assert run_a_function_and_check_if_output_is_the_same_as_reference(
         generate_pngs, reference_directory_name
