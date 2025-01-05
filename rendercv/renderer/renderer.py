@@ -5,9 +5,9 @@ Typst, PDF, Markdown, HTML, and PNG files from the `RenderCVDataModel` object.
 
 import importlib.resources
 import pathlib
-import tempfile
 import re
 import shutil
+import tempfile
 from typing import Optional
 
 import markdown

@@ -6,11 +6,13 @@ models for the themes.
 from .classic import ClassicThemeOptions
 from .engineeringclassic import EngineeringclassicThemeOptions
 from .engineeringresumes import EngineeringresumesThemeOptions
+from .moderncv import ModerncvThemeOptions
 from .sb2nov import Sb2novThemeOptions
 
 __all__ = [
     "ClassicThemeOptions",
     "EngineeringclassicThemeOptions",
     "EngineeringresumesThemeOptions",
+    "ModerncvThemeOptions",
     "Sb2novThemeOptions",
 ]

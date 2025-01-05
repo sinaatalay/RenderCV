@@ -15,6 +15,7 @@ from ...themes import (
     ClassicThemeOptions,
     EngineeringclassicThemeOptions,
     EngineeringresumesThemeOptions,
+    ModerncvThemeOptions,
     Sb2novThemeOptions,
 )
 from . import entry_types
@@ -201,6 +202,7 @@ available_theme_options = {
     "sb2nov": Sb2novThemeOptions,
     "engineeringresumes": EngineeringresumesThemeOptions,
     "engineeringclassic": EngineeringclassicThemeOptions,
+    "moderncv": ModerncvThemeOptions,
 }
 
 available_themes = list(available_theme_options.keys())
