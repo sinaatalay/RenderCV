@@ -118,11 +118,11 @@ class TypstFile(TemplatedFile):
         """
         # All the template field names:
         all_template_names = [
-            "first_column_first_row_template",
-            "first_column_second_row_template",
-            "first_column_second_row_without_url_template",
-            "first_column_second_row_without_journal_template",
-            "second_column_template",
+            "main_column_first_row_template",
+            "main_column_second_row_template",
+            "main_column_second_row_without_url_template",
+            "main_column_second_row_without_journal_template",
+            "date_and_location_column_template",
             "template",
             "degree_column_template",
         ]

@@ -46,38 +46,38 @@ class Highlights(o.Highlights):
     left_margin: o.TypstDimension = o.highlights_left_margin_field_info
 
 
-o.education_entry_first_column_first_row_template_field_info.default = (
+o.education_entry_main_column_first_row_template_field_info.default = (
     "**INSTITUTION**, AREA -- LOCATION"
 )
-o.entry_base_with_date_second_column_template_field_info.default = "DATE"
+o.entry_base_with_date_date_and_location_column_template_field_info.default = "DATE"
 
 
 class EducationEntry(o.EducationEntry):
-    first_column_first_row_template: str = (
-        o.education_entry_first_column_first_row_template_field_info
+    main_column_first_row_template: str = (
+        o.education_entry_main_column_first_row_template_field_info
     )
-    second_column_template: str = (
-        o.entry_base_with_date_second_column_template_field_info
+    date_and_location_column_template: str = (
+        o.entry_base_with_date_date_and_location_column_template_field_info
     )
 
 
 class NormalEntry(o.NormalEntry):
-    second_column_template: str = (
-        o.entry_base_with_date_second_column_template_field_info
+    date_and_location_column_template: str = (
+        o.entry_base_with_date_date_and_location_column_template_field_info
     )
 
 
-o.experience_entry_first_column_first_row_template_field_info.default = (
+o.experience_entry_main_column_first_row_template_field_info.default = (
     "**POSITION**, COMPANY -- LOCATION"
 )
 
 
 class ExperienceEntry(o.ExperienceEntry):
-    first_column_first_row_template: str = (
-        o.experience_entry_first_column_first_row_template_field_info
+    main_column_first_row_template: str = (
+        o.experience_entry_main_column_first_row_template_field_info
     )
-    second_column_template: str = (
-        o.entry_base_with_date_second_column_template_field_info
+    date_and_location_column_template: str = (
+        o.entry_base_with_date_date_and_location_column_template_field_info
     )
 
 

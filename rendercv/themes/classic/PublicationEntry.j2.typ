@@ -1,45 +1,45 @@
 #block(
   [
     #set par(spacing: design-highlights-vertical-space-between-highlights)
-  ((* if second_column_template *))
+  ((* if date_and_location_column_template *))
     #two-col-entry(
       left-content: [
         #set par(spacing: design-highlights-vertical-space-between-highlights)
-        <<first_column_first_row_template>>
+        <<main_column_first_row_template>>
 
-      ((* if design.entries.short_second_row or second_column_template.count("\n\n") > first_column_first_row_template.count("\n\n") *))
+      ((* if design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") *))
         ((* if not (entry.doi or entry.url)*))
-      <<first_column_second_row_without_url_template>>
+      <<main_column_second_row_without_url_template>>
         ((*- elif not entry.journal -*))
-      <<first_column_second_row_without_journal_template>>
+      <<main_column_second_row_without_journal_template>>
         ((*- else -*))
-      <<first_column_second_row_template>>
+      <<main_column_second_row_template>>
         ((*- endif -*))
       ((* endif *))
       ],
       right-content: [
-        <<second_column_template>>
+        <<date_and_location_column_template>>
       ],
     )
-    ((* if not (design.entries.short_second_row or second_column_template.count("\n\n") > first_column_first_row_template.count("\n\n")) *))
+    ((* if not (design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n")) *))
         ((* if not (entry.doi or entry.url)*))
-      <<first_column_second_row_without_url_template>>
+      <<main_column_second_row_without_url_template>>
         ((*- elif not entry.journal -*))
-      <<first_column_second_row_without_journal_template>>
+      <<main_column_second_row_without_journal_template>>
         ((*- else -*))
-      <<first_column_second_row_template>>
+      <<main_column_second_row_template>>
         ((*- endif -*))
     ((* endif *))
   ((* else *))
 
-    <<first_column_first_row_template>>
+    <<main_column_first_row_template>>
 
     ((* if not (entry.doi or entry.url)*))
-    <<first_column_second_row_without_url_template>>
+    <<main_column_second_row_without_url_template>>
     ((*- elif not entry.journal -*))
-    <<first_column_second_row_without_journal_template>>
+    <<main_column_second_row_without_journal_template>>
     ((*- else -*))
-    <<first_column_second_row_template>>
+    <<main_column_second_row_template>>
     ((*- endif -*))
   ((* endif *))
   ],

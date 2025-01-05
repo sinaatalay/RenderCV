@@ -448,7 +448,7 @@ class Highlights(RenderCVBaseModelWithoutExtraKeys):
     summary_left_margin: TypstDimension = highlights_summary_left_margin_field_info
 
 
-entry_base_with_date_first_column_second_row_template_field_info = pydantic.Field(
+entry_base_with_date_main_column_second_row_template_field_info = pydantic.Field(
     default="SUMMARY\nHIGHLIGHTS",
     title="First Column, Second Row",
     description=(
@@ -456,7 +456,7 @@ entry_base_with_date_first_column_second_row_template_field_info = pydantic.Fiel
         " are all the keys used in the entries (in uppercase)."
     ),
 )
-entry_base_with_date_second_column_template_field_info = pydantic.Field(
+entry_base_with_date_date_and_location_column_template_field_info = pydantic.Field(
     default="LOCATION\nDATE",
     title="Second Column",
     description=(
@@ -467,13 +467,13 @@ entry_base_with_date_second_column_template_field_info = pydantic.Field(
 
 
 class EntryBaseWithDate(RenderCVBaseModelWithoutExtraKeys):
-    first_column_second_row_template: str = (
-        entry_base_with_date_first_column_second_row_template_field_info
+    main_column_second_row_template: str = (
+        entry_base_with_date_main_column_second_row_template_field_info
     )
-    second_column_template: str = entry_base_with_date_second_column_template_field_info
+    date_and_location_column_template: str = entry_base_with_date_date_and_location_column_template_field_info
 
 
-publication_entry_first_column_first_row_template_field_info = pydantic.Field(
+publication_entry_main_column_first_row_template_field_info = pydantic.Field(
     default="**TITLE**",
     title="First Column",
     description=(
@@ -481,7 +481,7 @@ publication_entry_first_column_first_row_template_field_info = pydantic.Field(
         " used in the entries (in uppercase)."
     ),
 )
-publication_entry_first_column_second_row_template_field_info = pydantic.Field(
+publication_entry_main_column_second_row_template_field_info = pydantic.Field(
     default="AUTHORS\nDOIURL (JOURNAL)\nSUMMARY",
     title="First Column, Second Row",
     description=(
@@ -489,7 +489,7 @@ publication_entry_first_column_second_row_template_field_info = pydantic.Field(
         " are all the keys used in the entries (in uppercase)."
     ),
 )
-publication_entry_first_column_second_row_without_journal_template_field_info = pydantic.Field(
+publication_entry_main_column_second_row_without_journal_template_field_info = pydantic.Field(
     default="AUTHORS\nDOIURL\nSUMMARY",
     title="First Column, Second Row Without Journal",
     description=(
@@ -497,7 +497,7 @@ publication_entry_first_column_second_row_without_journal_template_field_info = 
         " available placeholders are all the keys used in the entries (in uppercase)."
     ),
 )
-publication_entry_first_column_second_row_without_url_template_field_info = pydantic.Field(
+publication_entry_main_column_second_row_without_url_template_field_info = pydantic.Field(
     default="AUTHORS\nJOURNAL\nSUMMARY",
     title="First Column, Second Row Without URL",
     description=(
@@ -508,17 +508,17 @@ publication_entry_first_column_second_row_without_url_template_field_info = pyda
 
 
 class PublicationEntryBase(RenderCVBaseModelWithoutExtraKeys):
-    first_column_first_row_template: str = (
-        publication_entry_first_column_first_row_template_field_info
+    main_column_first_row_template: str = (
+        publication_entry_main_column_first_row_template_field_info
     )
-    first_column_second_row_template: str = (
-        publication_entry_first_column_second_row_template_field_info
+    main_column_second_row_template: str = (
+        publication_entry_main_column_second_row_template_field_info
     )
-    first_column_second_row_without_journal_template: str = (
-        publication_entry_first_column_second_row_without_journal_template_field_info
+    main_column_second_row_without_journal_template: str = (
+        publication_entry_main_column_second_row_without_journal_template_field_info
     )
-    first_column_second_row_without_url_template: str = (
-        publication_entry_first_column_second_row_without_url_template_field_info
+    main_column_second_row_without_url_template: str = (
+        publication_entry_main_column_second_row_without_url_template_field_info
     )
 
 
@@ -526,7 +526,7 @@ class PublicationEntry(EntryBaseWithDate, PublicationEntryBase):
     pass
 
 
-education_entry_first_column_first_row_template_field_info = pydantic.Field(
+education_entry_main_column_first_row_template_field_info = pydantic.Field(
     default="**INSTITUTION**, AREA",
     title="First Column, First Row",
     description=(
@@ -553,8 +553,8 @@ education_entry_degree_column_width_field_info = pydantic.Field(
 
 
 class EducationEntryBase(RenderCVBaseModelWithoutExtraKeys):
-    first_column_first_row_template: str = (
-        education_entry_first_column_first_row_template_field_info
+    main_column_first_row_template: str = (
+        education_entry_main_column_first_row_template_field_info
     )
     degree_column_template: Optional[str] = (
         education_entry_degree_column_template_field_info
@@ -566,7 +566,7 @@ class EducationEntry(EntryBaseWithDate, EducationEntryBase):
     pass
 
 
-normal_entry_first_column_first_row_template_field_info = pydantic.Field(
+normal_entry_main_column_first_row_template_field_info = pydantic.Field(
     default="**NAME**",
     title="First Column, First Row",
     description=(
@@ -577,8 +577,8 @@ normal_entry_first_column_first_row_template_field_info = pydantic.Field(
 
 
 class NormalEntryBase(RenderCVBaseModelWithoutExtraKeys):
-    first_column_first_row_template: str = (
-        normal_entry_first_column_first_row_template_field_info
+    main_column_first_row_template: str = (
+        normal_entry_main_column_first_row_template_field_info
     )
 
 
@@ -586,7 +586,7 @@ class NormalEntry(EntryBaseWithDate, NormalEntryBase):
     pass
 
 
-experience_entry_first_column_first_row_template_field_info = pydantic.Field(
+experience_entry_main_column_first_row_template_field_info = pydantic.Field(
     default="**COMPANY**, POSITION",
     title="First Column, First Row",
     description=(
@@ -597,8 +597,8 @@ experience_entry_first_column_first_row_template_field_info = pydantic.Field(
 
 
 class ExperienceEntryBase(RenderCVBaseModelWithoutExtraKeys):
-    first_column_first_row_template: str = (
-        experience_entry_first_column_first_row_template_field_info
+    main_column_first_row_template: str = (
+        experience_entry_main_column_first_row_template_field_info
     )
 
 

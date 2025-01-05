@@ -1,27 +1,27 @@
 #block(
   [
-    ((* if second_column_template *))
+    ((* if date_and_location_column_template *))
     #two-col-entry(
       left-content: [
-        <<first_column_first_row_template>>
-        ((* if design.entries.short_second_row or second_column_template.count("\n\n") > first_column_first_row_template.count("\n\n") *))
+        <<main_column_first_row_template>>
+        ((* if design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") *))
         #v(-design-text-leading)
 
-        <<first_column_second_row_template>>
+        <<main_column_second_row_template>>
         ((* endif *))
       ],
       right-content: [
-        <<second_column_template>>
+        <<date_and_location_column_template>>
       ],
     )
-    ((* if not (design.entries.short_second_row or second_column_template.count("\n\n") > first_column_first_row_template.count("\n\n")) *))
-    <<first_column_second_row_template>>
+    ((* if not (design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n")) *))
+    <<main_column_second_row_template>>
     ((* endif *))
     ((* else *))
 
-    <<first_column_first_row_template>>
+    <<main_column_first_row_template>>
 
-    <<first_column_second_row_template>>
+    <<main_column_second_row_template>>
     ((* endif *))
   ],
   inset: (
