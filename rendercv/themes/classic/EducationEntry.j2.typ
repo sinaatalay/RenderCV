@@ -6,9 +6,11 @@
   middle-content: [
     <<main_column_first_row_template>>
     ((* if design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") or design.section_titles.type=="moderncv" *))
+    ((* if main_column_second_row_template *))
     #v(-design-text-leading)
+    ((* endif *))
 
-    <<main_column_second_row_template>>
+    <<main_column_second_row_template|replace("\n\n", "\n\n#v(-design-text-leading)")>>
     ((* endif *))
   ],
   right-content: [
@@ -18,10 +20,12 @@
 ((* if not (design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n")) and main_column_second_row_template *))
 #block(
   [
+    #set par(spacing: 0pt)
     <<main_column_second_row_template>>
   ],
   inset: (
-    left: <<design.entry_types.education_entry.degree_column_width>> + <<design.entries.horizontal_space_between_columns>>,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
+    right: design-entries-left-and-right-margin,
   ),
 )
 ((* endif *))
@@ -31,9 +35,11 @@
   left-content: [
     <<main_column_first_row_template>>
     ((* if design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") or design.section_titles.type=="moderncv" *))
+    ((* if main_column_second_row_template *))
     #v(-design-text-leading)
+    ((* endif *))
 
-    <<main_column_second_row_template>>
+    <<main_column_second_row_template|replace("\n\n", "\n\n#v(-design-text-leading)")>>
     ((* endif *))
   ],
   right-content: [
@@ -41,7 +47,16 @@
   ],
 )
   ((* if not (design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") or design.section_titles.type=="moderncv") *))
-<<main_column_second_row_template>>
+#block(
+  [
+    #set par(spacing: 0pt)
+    <<main_column_second_row_template>>
+  ],
+  inset: (
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
+    right: design-entries-left-and-right-margin,
+  ),
+)
 ((* endif *))
 ((* elif not date_and_location_column_template and design.entry_types.education_entry.degree_column_template *))
 // NO DATE, YES DEGREE
@@ -55,26 +70,37 @@
   right-content: [
     <<main_column_first_row_template>>
     ((* if design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") or design.section_titles.type=="moderncv" *))
+    ((* if main_column_second_row_template *))
     #v(-design-text-leading)
-
-    <<main_column_second_row_template>>
+    ((* endif *))
+  
+    <<main_column_second_row_template|replace("\n\n", "\n\n#v(-design-text-leading)")>>
     ((* endif *))
   ],
 )
 ((* if not (design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n")) and main_column_second_row_template *))
 #block(
   [
+    #set par(spacing: 0pt)
     <<main_column_second_row_template>>
   ],
   inset: (
-    left: <<design.entry_types.education_entry.degree_column_width>> + <<design.entries.horizontal_space_between_columns>>,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
+    right: design-entries-left-and-right-margin,
   ),
 )
 ((* endif *))
 ((* else *))
 // NO DATE, NO DEGREE
 
-<<main_column_first_row_template>>
+#one-col-entry(
+  content: [
+    <<main_column_first_row_template>>
 
-<<main_column_second_row_template>>
+    ((* if main_column_second_row_template *))
+    #v(-design-text-leading)
+    ((* endif *))
+    <<main_column_second_row_template|replace("\n\n", "\n\n#v(-design-text-leading)")>>
+  ],
+)
 ((* endif *))
