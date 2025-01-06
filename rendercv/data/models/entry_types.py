@@ -175,8 +175,11 @@ EndDate = Annotated[
 
 def make_keywords_bold_in_a_string(string: str, keywords: list[str]) -> str:
     """Make the given keywords bold in the given string."""
-    translator = str.maketrans({keyword: f"**{keyword}**" for keyword in keywords})
-    return string.translate(translator)
+    replacement_map = {keyword: f"**{keyword}**" for keyword in keywords}
+    for keyword, replacement in replacement_map.items():
+        string = string.replace(keyword, replacement)
+
+    return string
 
 
 class OneLineEntry(RenderCVBaseModelWithExtraKeys):
@@ -254,6 +257,20 @@ class EntryWithDate(RenderCVBaseModelWithExtraKeys):
         return computers.compute_date_string(
             start_date=None, end_date=None, date=self.date
         )
+
+    def make_keywords_bold(self, keywords: list[str]) -> "EntryWithDate":
+        """Make the given keywords bold in the `summary` field.
+
+        Args:
+            keywords: The keywords to make bold.
+
+        Returns:
+            An EntryWithDate with the keywords made bold in the `summary` field.
+        """
+        if self.summary:
+            self.summary = make_keywords_bold_in_a_string(self.summary, keywords)
+
+        return self
 
 
 class PublicationEntryBase(RenderCVBaseModelWithExtraKeys):

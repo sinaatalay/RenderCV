@@ -885,3 +885,94 @@ def test_render_command_settings_placeholders(path_name, expected_value):
     assert render_command_settings.html_path.name == expected_value  # type: ignore
     assert render_command_settings.markdown_path.name == expected_value  # type: ignore
     assert render_command_settings.output_folder_name == expected_value
+
+
+def test_make_keywords_bold_in_a_string():
+    assert (
+        data.make_keywords_bold_in_a_string(
+            "This is a test string with some keywords.",
+            ["test", "keywords"],
+        )
+        == "This is a **test** string with some **keywords**."
+    )
+
+
+def test_bold_keywords():
+    data_model = data.RenderCVDataModel(
+        cv=data.CurriculumVitae(
+            name="John Doe",
+            sections={
+                "test": [
+                    "test_keyword_1",
+                ],
+                "test2": [
+                    data.EducationEntry(
+                        institution="Test Institution",
+                        area="Test Area",
+                        highlights=["test_keyword_2"],
+                        summary="test_keyword_3 test_keyword_4",
+                    ),
+                ],
+                "test3": [
+                    data.ExperienceEntry(
+                        company="Test Company",
+                        position="Test Position",
+                        highlights=["test_keyword_5", "test_keyword_6"],
+                        summary="test_keyword_6 test_keyword_7",
+                    ),
+                ],
+                "test4": [
+                    data.NormalEntry(
+                        name="Test",
+                        highlights=["test_keyword_2"],
+                        summary="test_keyword_3 test_keyword_4",
+                    ),
+                ],
+                "test5": [
+                    data.PublicationEntry(
+                        title="Test Institution",
+                        authors=["Test Author"],
+                        summary="test_keyword_3 test_keyword_4",
+                    ),
+                ],
+                "test6": [
+                    data.BulletEntry(
+                        bullet="test_keyword_3 test_keyword_4",
+                    ),
+                ],
+                "test7": [
+                    data.OneLineEntry(
+                        label="Test Institution",
+                        details="test_keyword_3 test_keyword_4",
+                    ),
+                ],
+            },
+        )
+    )
+
+    for section in data_model.cv.sections:
+        for entry in section.entries:
+            if section.title == "test":
+                assert "**test_keyword_1**" in entry
+            elif section.title == "test2":
+                assert "**test_keyword_2**" in entry.highlights[0]
+                assert "**test_keyword_3**" in entry.summary
+                assert "**test_keyword_4**" in entry.summary
+            elif section.title == "test3":
+                assert "**test_keyword_5**" in entry.highlights[0]
+                assert "**test_keyword_6**" in entry.highlights[1]
+                assert "**test_keyword_6**" in entry.summary
+                assert "**test_keyword_7**" in entry.summary
+            elif section.title == "test4":
+                assert "**test_keyword_2**" in entry.highlights[0]
+                assert "**test_keyword_3**" in entry.summary
+                assert "**test_keyword_4**" in entry.summary
+            elif section.title == "test5":
+                assert "**test_keyword_3**" in entry.summary
+                assert "**test_keyword_4**" in entry.summary
+            elif section.title == "test6":
+                assert "**test_keyword_3**" in entry.bullet
+                assert "**test_keyword_4**" in entry.bullet
+            elif section.title == "test7":
+                assert "**test_keyword_3**" in entry.details
+                assert "**test_keyword_4**" in entry.details

@@ -1011,18 +1011,3 @@ def test_read_and_construct_the_input(
                 field
             ], f"{field} is in dict: {field in input_dict}, expected: {locals()[field]}"
 
-
-def test_bold_keywords(input_file_path, tmp_path):
-    input_file_path.write_text(
-        "cv:\n  sections:\n    education:\n      - test test2\nrendercv_settings:\n "
-        " bold_keywords:\n    - test\n    - test2"
-    )
-    run_render_command(
-        input_file_path,
-        tmp_path,
-    )
-    typst_file_path = tmp_path / "rendercv_output" / "None_CV.typ"
-    typst_content = typst_file_path.read_text()
-
-    assert "*test*" in typst_content
-    assert "*test2*" in typst_content

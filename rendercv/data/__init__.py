@@ -27,6 +27,7 @@ from .models import (
     NormalEntry,
     OneLineEntry,
     PublicationEntry,
+    make_keywords_bold_in_a_string,
     RenderCommandSettings,
     RenderCVDataModel,
     RenderCVSettings,
@@ -80,5 +81,6 @@ __all__ = [
     "read_input_file",
     "get_error_message_and_location_and_value_from_a_custom_error",
     "rendercv_data_model_fields",
+    "make_keywords_bold_in_a_string",
     "validate_input_dictionary_and_return_the_data_model",
 ]
