@@ -370,6 +370,9 @@ def input_template_to_typst(
         markdown_to_typst(input_template), placeholders
     )
 
+    # If \n is escaped, revert:
+    output = output.replace("\\n", "\n")
+
     # If there are blank italics and bolds, remove them:
     output = output.replace("#[__]", "")
     output = output.replace("#[**]", "")
