@@ -10,6 +10,6 @@ from .api import create_contents_of_a_typst_file
 __all__ = ["create_contents_of_a_typst_file"]
 
 _parial_install_error_message = (
-    "Please install RenderCV with `pip install rendercv[all]` to be able to use"
+    'Please install RenderCV with `pip install "rendercv[full]"` to be able to use'
     " all the features of RenderCV."
 )

@@ -24,10 +24,12 @@ flowchart TD
     subgraph rendercv.renderer
     E[Markdown File] --markdown package--> K[HTML FIle]
     D[Typst File] --typst package--> L[PDF File]
-    L --PyMuPDF package--> Z[PNG Files]
+    D --typst package-->  Z[PNG Files]
     end
 ```
 
+- [`api`](api/index.md) package contains the functions to create a clean and simple API for RenderCV.
+    - [`functions.py`](api/functions.md) module contains the basic functions that are used to interact with RenderCV.
 - [`cli`](cli/index.md) package contains the command-line interface (CLI) related code for RenderCV.
     - [`commands.py`](cli/commands.md) module contains the CLI commands.
     - [`printer.py`](cli/printer.md) module contains the functions and classes that are used to print nice-looking messages to the terminal.
@@ -48,8 +50,8 @@ flowchart TD
     - [`templater.py`](renderer/templater.md) module contains the necessary classes and functions for templating the Typst and Markdown files from the data model.
 - [`themes`](themes/index.md) package contains the built-in themes of RenderCV.
     - [`options.py`](themes/options.md) module contains the standard data models for built-in Typst themes' design options
-    - [`options.py`](themes/options.md) module contains the standard data models for Typst themes' design options.
     - [`classic`](themes/classic.md) package contains the `classic` theme templates and data models for its design options.
     - [`engineeringresumes`](themes/engineeringresumes.md) package contains the `engineeringresumes` theme templates and data models for its design options.
     - [`sb2nov`](themes/sb2nov.md) package contains the `sb2nov` theme templates and data models for its design options.
     - [`moderncv`](themes/moderncv.md) package contains the `moderncv` theme templates and data models for its design options.
+    - [`engineeringclassic`](themes/engineeringclassic.md) package contains the `engineeringclassic` theme templates and data models for its design options.

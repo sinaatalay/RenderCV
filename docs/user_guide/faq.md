@@ -64,8 +64,6 @@ Each of these `*.j2.typ` files is Typst code with some Python in it. These files
 The best way to understand how they work is to look at the templates of the built-in themes:
 
 - [templates of the `classic` theme](../reference/themes/classic.md#jinja-templates)
-- [templates of the `engineeringresumes` theme](../reference/themes/engineeringresumes.md#jinja-templates)
-- [templates of the `sb2nov` theme](../reference/themes/sb2nov.md#jinja-templates)
 
 For example, the content of `ExperienceEntry.j2.typ` for the `classic` theme is shown below:
 

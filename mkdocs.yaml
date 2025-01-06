@@ -64,6 +64,9 @@ nav:
       - FAQ: developer_guide/faq.md
   - API Reference:
       - Reference: reference/index.md
+      - api:
+          - api: reference/api/index.md
+          - functions.py: reference/api/functions.md
       - cli:
           - cli: reference/cli/index.md
           - commands.py: reference/cli/commands.md

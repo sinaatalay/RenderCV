@@ -9,7 +9,7 @@ This page provides everything you need to know about the usage of RenderCV.
 2. Run the command below to install RenderCV.
 
 ```bash
-pip install rendercv
+pip install "rendercv[full]"
 ```
 
 ## Getting started
@@ -31,7 +31,10 @@ This command will create the following files:
 
 -   A directory called `markdown`.
 
-    This directory contains the templates of RenderCV's default Markdown template. You can update its contents to tweak the Markdown and HTML output of the CV.
+    This directory contains the templates of RenderCV's default Markdown template. You can update its contents to tweak the Markdown and HTML output of the CV. 
+
+!!! note "A note about `classic` and `markdown` directories"
+    It's optional to have the `classic` and `markdown` directories. If you don't have them, RenderCV will use the built-in theme and Markdown templates.
 
 !!! info    
     Refer to the [here](cli.md#rendercv-new-command) for the complete list of CLI options available for the `new` command.

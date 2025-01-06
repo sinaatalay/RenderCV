@@ -78,7 +78,7 @@ classifiers = [
 dynamic = ["version"] # We will use hatchling to generate the version number
 
 [project.optional-dependencies]
-all = [
+full = [
     'ruamel.yaml==0.18.6',   # to parse YAML files
     'typer==0.15.1',         # to create the command-line interface
     "markdown==3.7",         # to convert Markdown to HTML
@@ -132,7 +132,7 @@ dependencies = [
     "coverage==7.6.10", # to generate coverage reports
     "pypdf==5.1.0",     # to read PDF files
 ]
-features = ["all"] # to install all optional dependencies
+features = ["full"] # to install full optional dependencies
 [tool.hatch.envs.default.scripts]
 # Hatch allows us to define scripts that can be run in the activated virtual environment
 # with `hatch run ENV_NAME:SCRIPT_NAME`.
@@ -166,7 +166,7 @@ dependencies = [
     "mkdocs-macros-plugin==1.0.5", # to be able to have dynamic content in the documentation
     "PyMuPDF==1.24.14",            # to convert PDF files to images    
 ]
-features = ["all"] # to install all optional dependencies
+features = ["full"] # to install full optional dependencies
 [tool.hatch.envs.docs.scripts]
 # Build the documentation with `mkdocs`:
 build = "mkdocs build --clean --strict" # hatch run docs:build

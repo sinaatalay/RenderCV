@@ -1,3 +1,8 @@
+"""
+The `rendercv.api.functions` package contains the basic functions that are used to
+interact with the RenderCV.
+"""
+
 import pydantic
 
 from .. import data, renderer
@@ -16,7 +21,7 @@ def create_contents_of_a_typst_file(
 
     Returns:
         The Typst file as a string or a list of dictionaries that contain the error
-        messages, locations, and the input values.
+            messages, locations, and the input values.
     """
 
     try:

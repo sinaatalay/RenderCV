@@ -23,10 +23,10 @@ rendercv_settings:
 
 - The `cv` field is mandatory. It contains the **content of the CV**.
 - The `design` field is optional. It contains the **design options of the CV**. If you don't provide a `design` field, RenderCV will use the default design options with the `classic` theme.
-- The `locale` field is optional. You can provide translations for some of the strings used in the CV, for example, month abbreviations. RenderCV will use the default English strings if you don't provide a `locale` field.
-- The `rendercv_settings` field is optional. It contains the **settings of RenderCV** (output paths, etc.). If you don't provide a `rendercv_settings` field, RenderCV will use the default settings.
+- The `locale` field is optional. It contains all the strings that define the CV's language (like month names, etc.). If you don't provide a `locale` field, the default English strings will be used.
+- The `rendercv_settings` field is optional. It contains the settings of RenderCV (output paths, keywords to make bold, etc.). If you don't provide a `rendercv_settings` field, the default settings will be used.
 
-!!! tip
+!!! tip "Tip: JSON Schema"
     To maximize your productivity while editing the input YAML file, set up RenderCV's JSON Schema in your IDE. It will validate your inputs on the fly and give auto-complete suggestions.
 
     === "Visual Studio Code"
@@ -37,13 +37,13 @@ rendercv_settings:
 
     === "Other"
 
-        1.  Ensure your editor of choice has support for JSON Schema.
-        2.  Add the following line at the top of `Your_Name_CV.yaml`:
+        4.  Ensure your editor of choice has support for JSON Schema.
+        5.  Add the following line at the top of `Your_Name_CV.yaml`:
 
             ``` yaml
             # yaml-language-server: $schema=https://github.com/rendercv/rendercv/blob/main/schema.json?raw=true
             ```
-        3. Press `Ctrl + Space` to see the auto-complete suggestions.
+        6. Press `Ctrl + Space` to see the auto-complete suggestions.
 
 ## "`cv`" field
 
@@ -143,74 +143,77 @@ Each entry type is a different object (a dictionary). Below, you can find all th
 
 **Optional Fields:**
 
-- `degree`: The type of degree.
-- `location`: The location.
-- `start_date`: The start date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format.
-- `end_date`: The end date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format or "present".
+- `degree`: The type of degree (e.g., BS, MS, PhD)
+- `location`: The location
+- `start_date`: The start date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format
+- `end_date`: The end date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format or "present"
 - `date`: The date as a custom string or in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format. This will override `start_date` and `end_date`.
-- `highlights`: A list of bullet points.
+- `highlights`: The list of bullet points
+- `summary`: The summary
 
 {% elif entry_name == "ExperienceEntry" %}
 
 **Mandatory Fields:**
 
-- `company`: The name of the company.
-- `position`: Your position.
+- `company`: The name of the company
+- `position`: The position
 
 **Optional Fields:**
 
-- `location`: The location.
-- `start_date`: The start date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format.
-- `end_date`: The end date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format or "present".
+- `location`: The location
+- `start_date`: The start date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format
+- `end_date`: The end date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format or "present"
 - `date`: The date as a custom string or in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format. This will override `start_date` and `end_date`.
-- `highlights`: A list of bullet points.
+- `highlights`: The list of bullet points
+- `summary`: The summary
 
 {% elif entry_name == "PublicationEntry" %}
 
 **Mandatory Fields:**
 
-- `title`: The title of the publication.
-- `authors`: The authors of the publication.
+- `title`: The title of the publication
+- `authors`: The authors of the publication
 
 **Optional Fields:**
 
-- `doi`: The DOI of the publication.
-- `journal`: The journal of the publication.
-- `date`: The date as a custom string or in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format.
+- `doi`: The DOI of the publication
+- `journal`: The journal of the publication
+- `date`: The date as a custom string or in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format
 
 {% elif entry_name == "NormalEntry" %}
 
 
 **Mandatory Fields:**
 
-- `name`: The name of the entry.
+- `name`: The name of the entry
 
 **Optional Fields:**
 
-- `location`: The location.
-- `start_date`: The start date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format.
-- `end_date`: The end date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format or "present".
+- `location`: The location
+- `start_date`: The start date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format
+- `end_date`: The end date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format or "present"
 - `date`: The date as a custom string or in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format. This will override `start_date` and `end_date`.
-- `highlights`: A list of bullet points.
+- `highlights`: The list of bullet points
+- `summary`: The summary
 
 {% elif entry_name == "OneLineEntry" %}
 
 **Mandatory Fields:**
 
-- `label`: The label of the entry.
-- `details`: The details of the entry.
+- `label`: The label of the entry
+- `details`: The details of the entry
 
 {% elif entry_name == "BulletEntry" %}
 
 **Mandatory Fields:**
 
-- `bullet`: The bullet point.
+- `bullet`: The bullet point
 
 {% elif entry_name == "TextEntry" %}
 
 **Mandatory Fields:**
 
-- The text itself.
+- The text itself
 
 {% endif %}
 
@@ -251,7 +254,7 @@ highlights:
   - Managed a team of **5** engineers.
 ```
 
-By default, the `an_arbitrary_key` key will not affect the output as the built-in design options do not use it. However, you can use the `an_arbitrary_key` key in your own design options (see `design.entry_types` field).
+By default, the `an_arbitrary_key` key will not affect the output as the default design options do not use it. However, you can use the `an_arbitrary_key` key in your own design options (see `design.entry_types` field).
 
 ## "`design`" field
 
@@ -425,6 +428,6 @@ rendercv_settings:
     dont_generate_png: false 
 ```
 
-1. It will be used for time span calculations and last updated date text.
-2. The words in the list will be bolded in the output.
+1. This field is used for time span calculations and last updated date text.
+2. The words in the list will be bolded in the output automatically.
 3. `NAME_IN_SNAKE_CASE` is a placeholder. The available placeholders are: `NAME_IN_SNAKE_CASE`, `NAME_IN_LOWER_SNAKE_CASE`, `NAME_IN_UPPER_SNAKE_CASE`, `NAME_IN_KEBAB_CASE`, `NAME_IN_LOWER_KEBAB_CASE`, `NAME_IN_UPPER_KEBAB_CASE`, `NAME`, `FULL_MONTH_NAME`, `MONTH_ABBREVIATION`, `MONTH`, `MONTH_IN_TWO_DIGITS`, `YEAR`, and `YEAR_IN_TWO_DIGITS`.
