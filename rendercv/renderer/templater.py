@@ -131,13 +131,14 @@ class TypstFile(TemplatedFile):
         sections_input: dict[str, list[pydantic.BaseModel]] = self.cv.sections_input  # type: ignore
         # Loop through the sections and entries to find all the field names:
         placeholder_keys: set[str] = set()
-        for section in sections_input.values():
-            for entry in section:
-                if isinstance(entry, str):
-                    break
-                entry_dictionary = entry.model_dump()
-                for key in entry_dictionary:
-                    placeholder_keys.add(key.upper())
+        if sections_input:
+            for section in sections_input.values():
+                for entry in section:
+                    if isinstance(entry, str):
+                        break
+                    entry_dictionary = entry.model_dump()
+                    for key in entry_dictionary:
+                        placeholder_keys.add(key.upper())
 
         pattern = re.compile(r"(?<!^)(?=[A-Z])")
 
