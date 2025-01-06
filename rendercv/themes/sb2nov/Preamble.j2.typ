@@ -187,6 +187,7 @@
   header-font-weight = 400
 }
 #show heading.where(level: 1): it => [
+  #set par(spacing: 0pt)
   #set align(design-header-alignment)
   #set text(
     weight: header-font-weight,
@@ -430,13 +431,12 @@
 )
 
 #let one-col-entry(content: "") = [
-  #set par(spacing: 0pt)
   #let left-space = design-entries-left-and-right-margin
   #if design-section-titles-type == "moderncv" [
     #(left-space = left-space + design-entries-date-and-location-width + design-entries-horizontal-space-between-columns)
   ]
   #block(
-    content,
+    [#set par(spacing: design-text-leading); #content],
     breakable: design-entries-allow-page-break-in-entries,
     inset: (
       left: left-space,
