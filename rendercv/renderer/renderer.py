@@ -222,13 +222,13 @@ def render_a_pdf_from_typst(file_path: pathlib.Path) -> pathlib.Path:
 
 
 def render_pngs_from_typst(
-    file_path: pathlib.Path, ppi: float = 600
+    file_path: pathlib.Path, ppi: float = 150
 ) -> list[pathlib.Path]:
     """Run Typst with the given Typst file to render the PNG files.
 
     Args:
         file_path: The path to the Typst file.
-        ppi: Pixels per inch for PNG output, defaults to 600.
+        ppi: Pixels per inch for PNG output, defaults to 150.
 
     Returns:
         Paths to the rendered PNG files.
