@@ -434,7 +434,6 @@
   )
 ]
 
-= None
 
 // Print connections:
 #let connections-list = (

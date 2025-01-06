@@ -14,6 +14,7 @@ import pydantic_extra_types.phone_numbers as pydantic_phone_numbers
 import pypdf
 import pytest
 import ruamel.yaml
+import urllib.request
 
 from rendercv import data
 from rendercv.renderer import templater
@@ -303,10 +304,10 @@ def rendercv_filled_curriculum_vitae_data_model(
     combinations of entry types.
     """
     profile_picture_path = testdata_directory_path / "profile_picture.jpg"
-    # if update_testdata:
-    #     # Get an image from https://picsum.photos
-    #     response = urllib.request.urlopen("https://picsum.photos/id/237/300/300")
-    #     profile_picture_path.write_bytes(response.read())
+    if update_testdata:
+        # Get an image from https://picsum.photos
+        response = urllib.request.urlopen("https://picsum.photos/id/237/300/300")
+        profile_picture_path.write_bytes(response.read())
 
     return data.CurriculumVitae(
         name="John Doe",

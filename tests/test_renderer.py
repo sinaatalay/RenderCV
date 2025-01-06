@@ -504,7 +504,9 @@ def test_render_pngs_from_typst(
         shutil.copytree(typst_folder_path, output_directory_path, dirs_exist_ok=True)
 
         # convert pdf to pngs
-        renderer.render_pngs_from_typst(output_directory_path / "John_Doe_CV.typ")
+        renderer.render_pngs_from_typst(
+            output_directory_path / "John_Doe_CV.typ", ppi=20
+        )
 
         # remove everything except the pngs
         for file in output_directory_path.glob("*"):
