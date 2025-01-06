@@ -474,8 +474,8 @@ entry_base_with_date_date_and_location_column_template_field_info = pydantic.Fie
     default="LOCATION\nDATE",
     title="Date and Location Column",
     description=(
-        "The content of the Date and Location Column. The available placeholders are all the"
-        " keys used in the entries (in uppercase)."
+        "The content of the Date and Location Column. The available placeholders are"
+        " all the keys used in the entries (in uppercase)."
     ),
 )
 
@@ -525,8 +525,8 @@ publication_entry_date_and_location_column_template_field_info = pydantic.Field(
     default="DATE",
     title="Date and Location Column",
     description=(
-        "The content of the Date and Location Column. The available placeholders are all the keys"
-        " used in the entries (in uppercase)."
+        "The content of the Date and Location Column. The available placeholders are"
+        " all the keys used in the entries (in uppercase)."
     ),
 )
 
