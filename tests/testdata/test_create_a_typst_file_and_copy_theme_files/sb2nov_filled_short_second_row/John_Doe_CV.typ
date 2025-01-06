@@ -224,6 +224,7 @@
           left-column-width: design-entries-date-and-location-width,
           right-column-width: 1fr,
           left-content: [
+            #v(design-text-leading)
             #align(horizon, box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles))
           ],
           right-content: [
@@ -433,7 +434,7 @@
   )
 ]
 
-#two-col-entry(
+#two-col(
   left-column-width: design-header-photo-width * 1.1,
   right-column-width: 1fr,
   left-content: [

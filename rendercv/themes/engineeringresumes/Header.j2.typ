@@ -1,5 +1,5 @@
 ((* if cv.photo *))
-#two-col-entry(
+#two-col(
   left-column-width: design-header-photo-width * 1.1,
   right-column-width: 1fr,
   left-content: [

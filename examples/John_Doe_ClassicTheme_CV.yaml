@@ -64,13 +64,13 @@ cv:
             a warehouse
     projects:
       - name: '[Example Project](https://example.com)'
-        summary: A web application for writing essays
         start_date: 2024-05
         end_date: present
         highlights:
           - Launched an [iOS app](https://example.com) in 09/2024
             that currently has 10k+ monthly active users
           - The app is made open-source (3,000+ stars [on GitHub](https://github.com))
+        summary: A web application for writing essays
       - name: '[Teaching on Udemy](https://example.com)'
         date: Fall 2023
         highlights:
@@ -176,13 +176,13 @@ design:
       main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
       date_and_location_column_template: "LOCATION\nDATE"
     publication_entry:
-      main_column_first_row_template: '**TITLE**'
-      main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
-      main_column_second_row_without_journal_template: "AUTHORS\n\
-        DOIURL\nSUMMARY"
-      main_column_second_row_without_url_template: "AUTHORS\n\
-        JOURNAL\nSUMMARY"
+      main_column_second_row_template: "AUTHORS\nURL (JOURNAL)"
       date_and_location_column_template: "LOCATION\nDATE"
+      main_column_first_row_template: '**TITLE**'
+      main_column_second_row_without_journal_template: "AUTHORS\n\
+        URL"
+      main_column_second_row_without_url_template: "AUTHORS\n\
+        JOURNAL"
 locale:
   language: en
   phone_number_format: national
@@ -222,5 +222,5 @@ locale:
     - November
     - December
 rendercv_settings:
-  date: '2025-01-05'
+  date: '2025-01-06'
   bold_keywords: []
