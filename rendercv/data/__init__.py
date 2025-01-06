@@ -40,6 +40,7 @@ from .models import (
     format_date,
     get_date_input,
     make_keywords_bold_in_a_string,
+    make_a_url_clean,
     rendercv_data_model_fields,
 )
 from .reader import (
@@ -69,6 +70,7 @@ __all__ = [
     "available_entry_type_names",
     "available_social_networks",
     "available_theme_options",
+    "make_a_url_clean",
     "available_themes",
     "create_a_sample_data_model",
     "create_a_sample_yaml_input_file",

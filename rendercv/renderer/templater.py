@@ -656,7 +656,7 @@ def replace_placeholders_with_actual_values(
             # whitespace) around it (if there are any), and the new line after it (if
             # there is any) with an empty string:
             text = re.sub(
-                rf"[^\w\]\[\(\)\s]*{placeholder}[^\w\]\[\(\)\s]*\n?",
+                rf"[^\w\]\(\)]*{placeholder}[^\w\[\(\)\s]*\n?",
                 "",
                 text,
             )
@@ -700,6 +700,7 @@ class Jinja2Environment:
             )
             environment.filters["escape_typst_characters"] = escape_typst_characters
             environment.filters["markdown_to_typst"] = markdown_to_typst
+            environment.filters["make_a_url_clean"] = data.make_a_url_clean
 
             cls.environment = environment
 

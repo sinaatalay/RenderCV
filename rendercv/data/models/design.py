@@ -172,12 +172,26 @@ def validate_design_options(
 # Create custom types: =================================================================
 # ======================================================================================
 
+available_theme_options = {
+    "classic": ClassicThemeOptions,
+    "sb2nov": Sb2novThemeOptions,
+    "engineeringresumes": EngineeringresumesThemeOptions,
+    "engineeringclassic": EngineeringclassicThemeOptions,
+    "moderncv": ModerncvThemeOptions,
+}
+
+available_themes = list(available_theme_options.keys())
+
 # Create a custom type named RenderCVBuiltinDesign:
 # It is a union of all the design options and the correct design option is determined by
 # the theme field, thanks to Pydantic's discriminator feature.
 # See https://docs.pydantic.dev/2.7/concepts/fields/#discriminator for more information
 RenderCVBuiltinDesign = Annotated[
-    ClassicThemeOptions,
+    ClassicThemeOptions
+    | Sb2novThemeOptions
+    | EngineeringresumesThemeOptions
+    | EngineeringclassicThemeOptions
+    | ModerncvThemeOptions,
     pydantic.Field(discriminator="theme"),
 ]
 
@@ -195,14 +209,3 @@ RenderCVDesign = Annotated[
         )
     ),
 ]
-
-
-available_theme_options = {
-    "classic": ClassicThemeOptions,
-    "sb2nov": Sb2novThemeOptions,
-    "engineeringresumes": EngineeringresumesThemeOptions,
-    "engineeringclassic": EngineeringclassicThemeOptions,
-    "moderncv": ModerncvThemeOptions,
-}
-
-available_themes = list(available_theme_options.keys())

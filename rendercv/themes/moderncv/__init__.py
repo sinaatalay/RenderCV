@@ -103,7 +103,15 @@ class EducationEntry(o.EducationEntry):
     )
 
 
+o.normal_entry_main_column_first_row_template_field_info.default = (
+    "**NAME** -- **LOCATION**"
+)
+
+
 class NormalEntry(o.NormalEntry):
+    main_column_first_row_template: str = (
+        o.normal_entry_main_column_first_row_template_field_info
+    )
     date_and_location_column_template: str = (
         o.entry_base_with_date_date_and_location_column_template_field_info
     )
