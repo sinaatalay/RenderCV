@@ -63,7 +63,7 @@
 #let design-page-show-last-updated-date = <<design.page.show_last_updated_date|lower>>
 #let design-page-show-page-numbering = <<design.page.show_page_numbering|lower>>
 #let design-links-underline = <<design.links.underline|lower>>
-#let design-theme-specific-education-degree-width = <<design.entry_types.education_entry.degree_column_width>>
+#let design-entry-types-education-entry-degree-column-width = <<design.entry_types.education_entry.degree_column_width>>
 #let date = datetime.today()
 
 // Metadata:
