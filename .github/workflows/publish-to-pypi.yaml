@@ -6,6 +6,9 @@ on:
     types:
       - published
 
+permissions:
+  contents: write
+
 jobs:
   call_tests_workflow:
     name: Test
@@ -40,6 +43,13 @@ jobs:
 
       - name: Upload package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Upload wheel and source distribution
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.whl
+            dist/*.tar.gz
 
   call_update_files_workflow:
     name: Update files

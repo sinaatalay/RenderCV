@@ -11,13 +11,13 @@ _The engine of the [RenderCV App](https://rendercv.com)_
 
 </div>
 
-RenderCV engine is a Python package with a command-line interface (CLI) that allows you to version-control your CV as source code.
+RenderCV engine is a Typst-based Python package with a command-line interface (CLI) that allows you to version-control your CV/resume as source code. It reads a CV written in a YAML file with Markdown syntax, converts it into a [Typst](https://typst.app) code, and generates a PDF.
 
 RenderCV engine's focus is to provide these three features:
 
-- **Content-first approach:** CV writers should be able to focus on the content instead of worrying about the formatting.
-- **A mechanism to version-control a CV's content and design separately:** The content and design are version-controlled as a source code completely separately.
-- **Robustness:** A robust system that always delivers a PDF if there aren't any errors. If there are errors, it provides clear explanations and solutions.
+- **Content-first approach:** Users should be able to focus on the content instead of worrying about the formatting.
+- **A mechanism to version-control a CV's content and design separately:** The content and design of a CV are separate issues and they should be treated separately.
+- **Robustness:** A PDF should be delivered if there aren't any errors. If errors exist, they should be clearly explained along with solutions.
 
 
 It takes a YAML file that looks like this:
@@ -49,23 +49,24 @@ cv:
     experience: ...
 ```
 
-Then, it produces one of these PDFs with its corresponding $\LaTeX$ code, Markdown file, HTML file, and images as PNGs. Click on the images below to preview PDF files.
+Then, it produces one of these PDFs with its corresponding Typst file, Markdown file, HTML file, and images as PNGs. Click on the images below to preview PDF files.
 
 | [![Classic Theme Example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/classic.png)](https://github.com/rendercv/rendercv/blob/main/examples/John_Doe_ClassicTheme_CV.pdf)    | [![Sb2nov Theme Example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/sb2nov.png)](https://github.com/rendercv/rendercv/blob/main/examples/John_Doe_Sb2novTheme_CV.pdf)                                     |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | [![Moderncv Theme Example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/moderncv.png)](https://github.com/rendercv/rendercv/blob/main/examples/John_Doe_ModerncvTheme_CV.pdf) | [![Engineeringresumes Theme Example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/engineeringresumes.png)](https://github.com/rendercv/rendercv/blob/main/examples/John_Doe_EngineeringresumesTheme_CV.pdf) |
+| [![Engineeringclassic Theme Example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/engineeringclassic.png)](https://github.com/rendercv/rendercv/blob/main/examples/John_Doe_EngineeringclassicTheme_CV.pdf) | |
 
 RenderCV comes with a JSON Schema so that the YAML input file can be filled out interactively.
 
 ![JSON Schema of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/schema.gif)
 
-## Quick Start Guide
+## Getting Started
 
-RenderCV engine is very easy to install (`pip install rendercv`) and easy to use (`rendercv new "John Doe"`). Follow the [user guide](https://docs.rendercv.com/user_guide) to get started.
+RenderCV engine is very easy to install (`pip install "rendercv[full]"`) and easy to use (`rendercv new "John Doe"`). Follow the [user guide](https://docs.rendercv.com/user_guide) to get started.
 
 ## Motivation
 
-We are developing a purpose-built app for writing CVs and resumes that will be available on mobile and web. This Python project is the foundation of that app. Check out [our blog post](https://rendercv.com/rendercv-latex-cv-framework/) to learn more about why one would use such an app.
+We are developing a [purpose-built app](https://rendercv.com) for writing CVs and resumes that will be available on mobile and web. This Python project is the foundation of that app. Check out [our blog post](https://rendercv.com/introducing-rendercv/) to learn more about why one would use such an app.
 
 ## Contributing
 

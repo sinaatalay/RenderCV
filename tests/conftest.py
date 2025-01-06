@@ -171,6 +171,16 @@ def return_a_value_for_a_field_type(
         "start_date": "2015-09",
         "end_date": "2020-06",
         "date": "2021-09",
+        "summary": (
+            "Did *this* and this is a **bold** [link](https://example.com). But I"
+            " must explain to you how all this mistaken idea of denouncing pleasure"
+            " and praising pain was born and I will give you a complete account of"
+            " the system, and expound the actual teachings of the great explorer of"
+            " the truth, the master-builder of human happiness. No one rejects,"
+            " dislikes, or avoids pleasure itself, because it is pleasure, but"
+            " because those who do not know how to pursue pleasure rationally"
+            " encounter consequences that are extremely painful."
+        ),
         "highlights": [
             (
                 "Did *this* and this is a **bold** [link](https://example.com). But I"
@@ -189,7 +199,7 @@ def return_a_value_for_a_field_type(
                 " pleasure."
             ),
         ],
-        "company": "Some **Company**",
+        "company": "Some Company",
         "position": "Software Engineer",
         "name": "My Project",
         "label": "Pro**gram**ming",
@@ -218,7 +228,16 @@ def return_a_value_for_a_field_type(
     field_type_dictionary = {
         pydantic.HttpUrl: "https://example.com",
         pydantic_phone_numbers.PhoneNumber: "+905419999999",
-        str: "A string",
+        str: (
+            "Did *this* and this is a **bold** [link](https://example.com). But I"
+            " must explain to you how all this mistaken idea of denouncing pleasure"
+            " and praising pain was born and I will give you a complete account of"
+            " the system, and expound the actual teachings of the great explorer of"
+            " the truth, the master-builder of human happiness. No one rejects,"
+            " dislikes, or avoids pleasure itself, because it is pleasure, but"
+            " because those who do not know how to pursue pleasure rationally"
+            " encounter consequences that are extremely painful."
+        ),
         list[str]: ["A string", "Another string"],
         int: 1,
         float: 1.0,
@@ -284,7 +303,7 @@ def rendercv_filled_curriculum_vitae_data_model(
     """Return a filled CurriculumVitae data model, where each section has all possible
     combinations of entry types.
     """
-    profile_picture_path = testdata_directory_path / "profile_picture.png"
+    profile_picture_path = testdata_directory_path / "profile_picture.jpg"
     if update_testdata:
         # Get an image from https://picsum.photos
         response = urllib.request.urlopen("https://picsum.photos/id/237/300/300")
@@ -330,7 +349,7 @@ def rendercv_filled_curriculum_vitae_data_model(
 @pytest.fixture
 def jinja2_environment() -> jinja2.Environment:
     """Return a Jinja2 environment."""
-    return templater.setup_jinja2_environment()
+    return templater.Jinja2Environment().environment
 
 
 @pytest.fixture
@@ -518,17 +537,13 @@ def design_file_path(tmp_path, testdata_directory_path) -> pathlib.Path:
 
 
 @pytest.fixture
-def locale_catalog_file_path(tmp_path, testdata_directory_path) -> pathlib.Path:
+def locale_file_path(tmp_path, testdata_directory_path) -> pathlib.Path:
     """Return the path to the input file."""
-    locale_catalog_file_path = (
-        testdata_directory_path / "John_Doe_CV_locale_catalog.yaml"
-    )
+    locale_file_path = testdata_directory_path / "John_Doe_CV_locale.yaml"
     if update_testdata:
-        locale_catalog_file_path.write_text("locale_catalog:\n  years: yil\n")
-    shutil.copyfile(
-        locale_catalog_file_path, tmp_path / "John_Doe_CV_locale_catalog.yaml"
-    )
-    return tmp_path / "John_Doe_CV_locale_catalog.yaml"
+        locale_file_path.write_text("locale:\n  years: yil\n")
+    shutil.copyfile(locale_file_path, tmp_path / "John_Doe_CV_locale.yaml")
+    return tmp_path / "John_Doe_CV_locale.yaml"
 
 
 @pytest.fixture
