@@ -25,8 +25,8 @@ RenderCV has transitioned from using $\LaTeX$ to Typst. RenderCV is now much fas
 
 ### Added
 
-- RenderCV now supports Chineese, Japanese, and Korean characters by default ([#61](https://github.com/rendercv/rendercv/issues/61)).
-- A new theme has been added: `engineeringclassics`.
+- RenderCV now supports Chinese, Japanese, and Korean characters by default ([#61](https://github.com/rendercv/rendercv/issues/61)).
+- A new theme has been added: `engineeringclassic`.
 - `summary` field has been added to `NormalEntry`, `ExperienceEntry`, and `EducationEntry` ([#210](https://github.com/rendercv/rendercv/issues/210)).
 - `rendercv_settings.date` field has been added for time span calculations and last updated date text.
 
@@ -34,7 +34,7 @@ RenderCV has transitioned from using $\LaTeX$ to Typst. RenderCV is now much fas
 
 - $\LaTeX$ has been replaced with Typst.
 - The `design` field has been changed completely. See the [documentation](https://docs.rendercv.com/user_guide/structure_of_the_yaml_input_file/#design-field) for details.
-- The `locale_catalog` field has been renamed to `locale` and some fields has been moved from `design` to `locale`. See the [documentation](https://docs.rendercv.com/user_guide/structure_of_the_yaml_input_file/#locale-field) for details.
+- The `locale_catalog` field has been renamed to `locale`, and some fields have been moved from `design` to `locale`. See the [documentation](https://docs.rendercv.com/user_guide/structure_of_the_yaml_input_file/#locale-field) for details.
 - The `moderncv` theme's header has been changed.
 
 
