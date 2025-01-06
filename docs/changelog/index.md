@@ -17,6 +17,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Removed
 -->
 
+## [2.0] - January 7, 2025
+
+> **Full Changelog**: [v1.18...v2.0]
+
+RenderCV has transitioned from using $\LaTeX$ to Typst. RenderCV is now much faster and more powerful.
+
+### Added
+
+- RenderCV now supports Chineese, Japanese, and Korean characters by default ([#61](https://github.com/rendercv/rendercv/issues/61)).
+- A new theme has been added: `engineeringclassics`.
+- `summary` field has been added to `NormalEntry`, `ExperienceEntry`, and `EducationEntry` ([#210](https://github.com/rendercv/rendercv/issues/210)).
+- `rendercv_settings.date` field has been added for time span calculations and last updated date text.
+
+### Changed
+
+- $\LaTeX$ has been replaced with Typst.
+- The `design` field has been changed completely. See the [documentation](https://docs.rendercv.com/user_guide/structure_of_the_yaml_input_file/#design-field) for details.
+- The `locale_catalog` field has been renamed to `locale` and some fields has been moved from `design` to `locale`. See the [documentation](https://docs.rendercv.com/user_guide/structure_of_the_yaml_input_file/#locale-field) for details.
+- The `moderncv` theme's header has been changed.
+
+
 ## [1.18] - January 1, 2025
 
 > **Full Changelog**: [v1.17...v1.18]
@@ -452,6 +473,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 The first release of RenderCV.
 
+[v1.18...v2.0]: https://github.com/rendercv/rendercv/compare/v1.18...v2.0
 [v1.17...v1.18]: https://github.com/rendercv/rendercv/compare/v1.17...v1.18
 [v1.16...v1.17]: https://github.com/rendercv/rendercv/compare/v1.16...v1.17
 [v1.15...v1.16]: https://github.com/rendercv/rendercv/compare/v1.15...v1.16
@@ -479,6 +501,7 @@ The first release of RenderCV.
 [v0.3...v0.4]: https://github.com/rendercv/rendercv/compare/v0.3...v0.4
 [v0.2...v0.3]: https://github.com/rendercv/rendercv/compare/v0.2...v0.3
 [v0.1...v0.2]: https://github.com/rendercv/rendercv/compare/v0.1...v0.2
+[2.0]: https://github.com/rendercv/rendercv/releases/tag/v2.0
 [1.18]: https://github.com/rendercv/rendercv/releases/tag/v1.18
 [1.17]: https://github.com/rendercv/rendercv/releases/tag/v1.17
 [1.16]: https://github.com/rendercv/rendercv/releases/tag/v1.16
