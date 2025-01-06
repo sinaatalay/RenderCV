@@ -1010,4 +1010,3 @@ def test_read_and_construct_the_input(
             assert (field in input_dict) == locals()[
                 field
             ], f"{field} is in dict: {field in input_dict}, expected: {locals()[field]}"
-
