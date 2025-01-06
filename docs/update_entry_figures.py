@@ -163,13 +163,11 @@ def generate_entry_figures():
         for theme in themes:
             design_dictionary = {
                 "theme": theme,
-                "disable_page_numbering": True,
-                "disable_last_updated_date": True,
+                "page": {
+                    "show_page_numbering": False,
+                    "show_last_updated_date": False,
+                },
             }
-            if theme == "moderncv":
-                # moderncv theme does not support these options
-                del design_dictionary["disable_page_numbering"]
-                del design_dictionary["disable_last_updated_date"]
 
             entry_types = [
                 "education_entry",

@@ -1,7 +1,7 @@
 """
-The `rendercv.themes.common_options_typst_themes` module contains the standard data
-models for the Typst themes' design options. To avoid code duplication, the themes
-are encouraged to inherit from these data models.
+The `rendercv.themes.options` module contains the standard data models for the Typst
+themes' design options. To avoid code duplication, the themes are encouraged to inherit
+from these data models.
 """
 
 import re

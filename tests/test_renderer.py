@@ -595,14 +595,14 @@ def test_locale(
         locale=locale,
     )
 
-    latex_file = renderer.create_a_typst_file(data_model, tmp_path)
+    file = renderer.create_a_typst_file(data_model, tmp_path)
 
-    latex_file_contents = latex_file.read_text()
+    contents = file.read_text()
 
-    assert "Full name of January" in latex_file_contents
-    assert "Abbreviation of Jan" in latex_file_contents
-    assert "this is present" in latex_file_contents
-    assert "this is to" in latex_file_contents
+    assert "Full name of January" in contents
+    assert "Abbreviation of Jan" in contents
+    assert "this is present" in contents
+    assert "this is to" in contents
 
 
 @pytest.mark.parametrize(

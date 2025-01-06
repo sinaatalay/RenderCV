@@ -5,7 +5,8 @@ hide:
 
 # API Reference
 
-::: rendercv
+RenderCV is a Typst-based Python package with a command-line interface (CLI) that allows
+you to version-control your CV/resume as source code.
 
 In this section, you can find how RenderCV's components are structured and how they interact with each other. The flowchart below illustrates the general operations of RenderCV.
 
@@ -47,7 +48,7 @@ flowchart TD
     - [`templater.py`](renderer/templater.md) module contains the necessary classes and functions for templating the Typst and Markdown files from the data model.
 - [`themes`](themes/index.md) package contains the built-in themes of RenderCV.
     - [`options.py`](themes/options.md) module contains the standard data models for built-in Typst themes' design options
-    - [`common_options_typst_themes.py`](themes/common_options_typst_themes.md) module contains some standard data models for Typst themes' design options.
+    - [`options.py`](themes/options.md) module contains the standard data models for Typst themes' design options.
     - [`classic`](themes/classic.md) package contains the `classic` theme templates and data models for its design options.
     - [`engineeringresumes`](themes/engineeringresumes.md) package contains the `engineeringresumes` theme templates and data models for its design options.
     - [`sb2nov`](themes/sb2nov.md) package contains the `sb2nov` theme templates and data models for its design options.

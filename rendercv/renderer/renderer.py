@@ -208,7 +208,7 @@ def render_a_pdf_from_typst(file_path: pathlib.Path) -> pathlib.Path:
     """Run TinyTeX with the given Typst file to render the PDF.
 
     Args:
-        typst_file_path: The path to the Typst file.
+        file_path: The path to the Typst file.
 
     Returns:
         The path to the rendered PDF file.
@@ -228,7 +228,6 @@ def render_pngs_from_typst(
 
     Args:
         file_path: The path to the Typst file.
-        output_directory: Path to the output directory.
         ppi: Pixels per inch for PNG output, defaults to 600.
 
     Returns:

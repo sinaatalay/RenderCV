@@ -11,7 +11,9 @@
   column-gutter: 0cm,
   right-content: [
 ((* endif *))
+((* if cv.name *))
 = <<cv.name>>
+((* endif *))
 
 // Print connections:
 #let connections-list = (

@@ -1,4 +1,4 @@
-site_name: RenderCV Engine - CLI tool to write a CV or resume as code
+site_name: RenderCV Engine
 site_description: A Python package with CLI tool to write and version-control CVs and resumes as source code
 site_author: RenderCV Team
 copyright: Copyright &copy; 2023 - 2024 RenderCV
@@ -93,6 +93,8 @@ nav:
           - classic: reference/themes/classic.md
           - engineeringresumes: reference/themes/engineeringresumes.md
           - sb2nov: reference/themes/sb2nov.md
+          - moderncv: reference/themes/moderncv.md
+          - engineeringclassic: reference/themes/engineeringclassic.md
   - Changelog:
       - Changelog: changelog/index.md
 
