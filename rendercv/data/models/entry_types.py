@@ -173,6 +173,12 @@ EndDate = Annotated[
 # ======================================================================================
 
 
+def make_keywords_bold_in_a_string(string: str, keywords: list[str]) -> str:
+    """Make the given keywords bold in the given string."""
+    translator = str.maketrans({keyword: f"**{keyword}**" for keyword in keywords})
+    return string.translate(translator)
+
+
 class OneLineEntry(RenderCVBaseModelWithExtraKeys):
     """This class is the data model of `OneLineEntry`."""
 
@@ -185,6 +191,18 @@ class OneLineEntry(RenderCVBaseModelWithExtraKeys):
         description="The details of the OneLineEntry.",
     )
 
+    def make_keywords_bold(self, keywords: list[str]) -> "OneLineEntry":
+        """Make the given keywords bold in the `details` field.
+
+        Args:
+            keywords: The keywords to make bold.
+
+        Returns:
+            A OneLineEntry with the keywords made bold in the `details` field.
+        """
+        self.details = make_keywords_bold_in_a_string(self.details, keywords)
+        return self
+
 
 class BulletEntry(RenderCVBaseModelWithExtraKeys):
     """This class is the data model of `BulletEntry`."""
@@ -193,6 +211,18 @@ class BulletEntry(RenderCVBaseModelWithExtraKeys):
         title="Bullet",
         description="The bullet of the BulletEntry.",
     )
+
+    def make_keywords_bold(self, keywords: list[str]) -> "BulletEntry":
+        """Make the given keywords bold in the `bullet` field.
+
+        Args:
+            keywords: The keywords to make bold.
+
+        Returns:
+            A BulletEntry with the keywords made bold in the `bullet` field.
+        """
+        self.bullet = make_keywords_bold_in_a_string(self.bullet, keywords)
+        return self
 
 
 class EntryWithDate(RenderCVBaseModelWithExtraKeys):
@@ -394,6 +424,27 @@ class EntryBase(EntryWithDate):
         return computers.compute_time_span_string(
             start_date=self.start_date, end_date=self.end_date, date=self.date
         )
+
+    def make_keywords_bold(self, keywords: list[str]) -> "EntryBase":
+        """Make the given keywords bold in the `summary` and `highlights` fields.
+
+        Args:
+            keywords: The keywords to make bold.
+
+        Returns:
+            An EntryBase with the keywords made bold in the `summary` and `highlights`
+            fields.
+        """
+        if self.summary:
+            self.summary = make_keywords_bold_in_a_string(self.summary, keywords)
+
+        if self.highlights:
+            self.highlights = [
+                make_keywords_bold_in_a_string(highlight, keywords)
+                for highlight in self.highlights
+            ]
+
+        return self
 
 
 class NormalEntryBase(RenderCVBaseModelWithExtraKeys):

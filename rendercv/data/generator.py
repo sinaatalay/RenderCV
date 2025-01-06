@@ -9,7 +9,6 @@ import pathlib
 from typing import Optional
 
 import pydantic
-import ruamel.yaml
 
 from . import models, reader
 
@@ -23,6 +22,13 @@ def dictionary_to_yaml(dictionary: dict) -> str:
     Returns:
         The YAML string.
     """
+    try:
+        import ruamel.yaml
+    except Exception as e:
+        from .. import _parial_install_error_message
+
+        raise ImportError(_parial_install_error_message) from e
+
     yaml_object = ruamel.yaml.YAML()
     yaml_object.encoding = "utf-8"
     yaml_object.width = 60

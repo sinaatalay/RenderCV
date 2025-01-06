@@ -13,7 +13,12 @@ import urllib.request
 from collections.abc import Callable
 from typing import Any, Optional
 
-import typer
+try:
+    import typer
+except ImportError as e:
+    from .. import _parial_install_error_message
+
+    raise ImportError(_parial_install_error_message) from e
 
 from .. import data, renderer
 from ..api import utilities as api_utilities

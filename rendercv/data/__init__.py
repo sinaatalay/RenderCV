@@ -42,6 +42,7 @@ from .models import (
     rendercv_data_model_fields,
 )
 from .reader import (
+    parse_validation_errors,
     read_a_yaml_file,
     read_input_file,
     validate_input_dictionary_and_return_the_data_model,
@@ -73,6 +74,7 @@ __all__ = [
     "generate_json_schema",
     "generate_json_schema_file",
     "get_date_input",
+    "parse_validation_errors",
     "read_a_yaml_file",
     "read_input_file",
     "rendercv_data_model_fields",

@@ -62,7 +62,7 @@ def copy_theme_files_to_output_directory(
                 )
 
 
-def create_typst_contents(
+def create_contents_of_a_typst_file(
     rendercv_data_model: data.RenderCVDataModel,
 ) -> str:
     """Create a Typst file with the given data model and return it as a string.
@@ -99,7 +99,7 @@ def create_a_typst_file(
         The path to the generated Typst file.
     """
 
-    typst_contents = create_typst_contents(rendercv_data_model)
+    typst_contents = create_contents_of_a_typst_file(rendercv_data_model)
 
     # Create output directory if it doesn't exist:
     if not output_directory.is_dir():

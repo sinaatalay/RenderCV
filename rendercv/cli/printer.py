@@ -15,9 +15,13 @@ import rich.panel
 import rich.progress
 import rich.table
 import rich.text
-import ruamel.yaml
-import ruamel.yaml.parser
-import typer
+
+try:
+    import typer
+except ImportError as e:
+    from .. import _parial_install_error_message
+
+    raise ImportError(_parial_install_error_message) from e
 from rich import print
 
 from .. import __version__
@@ -261,6 +265,12 @@ def handle_and_print_raised_exceptions_without_exit(function: Callable) -> Calla
     Returns:
         The wrapped function.
     """
+    try:
+        import ruamel.yaml
+    except Exception as e:
+        from .. import _parial_install_error_message
+
+        raise ImportError(_parial_install_error_message) from e
 
     @functools.wraps(function)
     def wrapper(*args, **kwargs):

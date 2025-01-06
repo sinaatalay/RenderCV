@@ -26,6 +26,7 @@ from .computers import format_date, get_date_input
 from .curriculum_vitae import (
     CurriculumVitae,
     SectionContents,
+    Sections,
     SocialNetwork,
     available_social_networks,
 )
@@ -43,6 +44,7 @@ from .entry_types import (
     PublicationEntry,
     available_entry_models,
     available_entry_type_names,
+    make_keywords_bold_in_a_string,
 )
 from .locale import Locale
 from .rendercv_data_model import RenderCVDataModel, rendercv_data_model_fields
@@ -62,6 +64,7 @@ __all__ = [
     "RenderCVSettings",
     "RenderCommandSettings",
     "SectionContents",
+    "Sections",
     "SocialNetwork",
     "available_entry_models",
     "available_entry_type_names",
@@ -70,5 +73,6 @@ __all__ = [
     "available_themes",
     "format_date",
     "get_date_input",
+    "make_keywords_bold_in_a_string",
     "rendercv_data_model_fields",
 ]
