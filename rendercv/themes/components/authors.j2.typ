@@ -1,1 +1,1 @@
-<<entry.authors|join(", ")>>
+#v(design-highlights-top-margin);<<entry.authors|join(", ")>>
