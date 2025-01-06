@@ -323,9 +323,10 @@ def make_given_keywords_bold_in_a_dictionary(
     for key, value in dictionary.items():
         if isinstance(value, str):
             # Replace keywords in strings
+            temp_value = value
             for keyword in keywords:
-                value = value.replace(keyword, f"**{keyword}**")
-            new_dictionary[key] = value
+                temp_value = temp_value.replace(keyword, f"**{keyword}**")
+            new_dictionary[key] = temp_value
         elif isinstance(value, dict):
             # Recursively process nested dictionaries
             new_dictionary[key] = make_given_keywords_bold_in_a_dictionary(
@@ -336,9 +337,10 @@ def make_given_keywords_bold_in_a_dictionary(
             new_list = []
             for item in value:
                 if isinstance(item, str):
+                    temp_item = item
                     for keyword in keywords:
-                        item = item.replace(keyword, f"**{keyword}**")
-                    new_list.append(item)
+                        temp_item = temp_item.replace(keyword, f"**{keyword}**")
+                    new_list.append(temp_item)
                 elif isinstance(item, dict):
                     new_list.append(
                         make_given_keywords_bold_in_a_dictionary(item, keywords)
