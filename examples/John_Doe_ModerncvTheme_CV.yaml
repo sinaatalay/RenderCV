@@ -177,13 +177,13 @@ design:
       main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
       date_and_location_column_template: DATE
     publication_entry:
-      main_column_second_row_template: "AUTHORS\nURL (JOURNAL)"
-      date_and_location_column_template: "LOCATION\nDATE"
       main_column_first_row_template: '**TITLE**'
+      main_column_second_row_template: "AUTHORS\nURL (JOURNAL)"
       main_column_second_row_without_journal_template: "AUTHORS\n\
         URL"
       main_column_second_row_without_url_template: "AUTHORS\n\
         JOURNAL"
+      date_and_location_column_template: DATE
 locale:
   language: en
   phone_number_format: national
@@ -223,5 +223,5 @@ locale:
     - November
     - December
 rendercv_settings:
-  date: '2025-01-06'
+  date: '2025-01-07'
   bold_keywords: []
