@@ -19,11 +19,13 @@
 #let design-section-titles-type = "with-parial-line"
 #let design-section-titles-vertical-space-above = 0.5cm
 #let design-section-titles-vertical-space-below = 0.3cm
+#let design-section-titles-small-caps = false
 #let design-links-use-external-link-icon = false
 #let design-text-font-size = 10pt
 #let design-text-leading = 0.6em
 #let design-text-font-family = "Noto Sans"
 #let design-text-alignment = "justified"
+#let design-text-date-and-location-column-alignment = right
 #let design-header-photo-width = 3.5cm
 #let design-header-use-icons-for-connections = true
 #let design-header-name-font-size = 30pt
@@ -118,10 +120,55 @@
 }
 #show list: set list(
   marker: design-highlights-bullet,
-  spacing: design-entries-vertical-space-between-entries,
+  spacing: 0pt,
   indent: 0pt,
   body-indent: design-highlights-horizontal-space-between-bullet-and-highlights,
 )
+
+// Entry utilities:
+#let three-col(
+  left-column-width: 1fr,
+  middle-column-width: 1fr,
+  right-column-width: design-entries-date-and-location-width,
+  left-content: "",
+  middle-content: "",
+  right-content: "",
+  alignments: (auto, auto, auto),
+) = [
+  #block(
+    grid(
+      columns: (left-column-width, middle-column-width, right-column-width),
+      column-gutter: design-entries-horizontal-space-between-columns,
+      align: alignments,
+      ([#set par(spacing: design-text-leading); #left-content]),
+      ([#set par(spacing: design-text-leading); #middle-content]),
+      ([#set par(spacing: design-text-leading); #right-content]),
+    ),
+    breakable: true,
+    width: 100%,
+  )
+]
+
+#let two-col(
+  left-column-width: 1fr,
+  right-column-width: design-entries-date-and-location-width,
+  left-content: "",
+  right-content: "",
+  alignments: (auto, auto),
+  column-gutter: design-entries-horizontal-space-between-columns,
+) = [
+  #block(
+    grid(
+      columns: (left-column-width, right-column-width),
+      column-gutter: column-gutter,
+      align: alignments,
+      ([#set par(spacing: design-text-leading); #left-content]),
+      ([#set par(spacing: design-text-leading); #right-content]),
+    ),
+    breakable: true,
+    width: 100%,
+  )
+]
 
 // Main heading settings:
 #let header-font-weight
@@ -131,6 +178,7 @@
   header-font-weight = 400
 }
 #show heading.where(level: 1): it => [
+  #set par(spacing: 0pt)
   #set align(design-header-alignment)
   #set text(
     weight: header-font-weight,
@@ -157,28 +205,47 @@
     weight: section-title-font-weight,
     fill: design-colors-section-titles,
   )
-
+  #let section-title = (
+    if design-section-titles-small-caps [
+      #smallcaps(it.body)
+    ] else [
+      #it.body
+    ]
+  )
   // Vertical space above the section title
   #v(design-section-titles-vertical-space-above, weak: true)
   #block(
     breakable: false,
     width: 100%,
     [
-      #box([
-        #if true [
-          #it.body
-        ] else [
-          #smallcaps(it.body)
-        ]
-        #if design-section-titles-type == "with-parial-line" [
-          #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
-        ] else if design-section-titles-type == "with-full-line" [
+      #if design-section-titles-type == "moderncv" [
+        #two-col(
+          alignments: (right, left),
+          left-column-width: design-entries-date-and-location-width,
+          right-column-width: 1fr,
+          left-content: [
+            #align(horizon, box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles))
+          ],
+          right-content: [
+            #section-title
+          ]
+        )
 
-          #v(design-text-font-size * 0.4)
-          #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
-        ]
-      ])
-    ] + v(1em),
+      ] else [
+        #box(
+          [
+            #section-title
+            #if design-section-titles-type == "with-parial-line" [
+              #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
+            ] else if design-section-titles-type == "with-full-line" [
+
+              #v(design-text-font-size * 0.4)
+              #box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles)
+            ]
+          ]
+        )
+      ]
+     ] + v(1em),
   )
   #v(-1em)
   // Vertical space after the section title
@@ -255,39 +322,113 @@
   left-content: "",
   middle-content: "",
   right-content: "",
-  alignments: (left, left, right),
-) = [
-  #block(
-    grid(
-      columns: (left-column-width, 1fr, right-column-width),
-      column-gutter: design-entries-horizontal-space-between-columns,
-      align: alignments,
-      ([#set par(spacing: design-text-leading); #left-content]),
-      ([#set par(spacing: design-text-leading); #middle-content]),
-      ([#set par(spacing: design-text-leading); #right-content]),
-    ),
-    breakable: true,
-    width: 100%,
-  )
-]
+  alignments: (left, auto, right),
+) = (
+  if design-section-titles-type == "moderncv" [
+    #three-col(
+      left-column-width: right-column-width,
+      middle-column-width: left-column-width,
+      right-column-width: 1fr,
+      left-content: right-content,
+      middle-content: [
+        #block(
+          [
+            #left-content
+          ],
+          inset: (
+            left: design-entries-left-and-right-margin,
+            right: design-entries-left-and-right-margin,
+          ),
+          breakable: design-entries-allow-page-break-in-entries,
+          width: 100%,
+        )
+      ],
+      right-content: middle-content,
+      alignments: (design-text-date-and-location-column-alignment, left, auto),
+    )
+  ] else [
+    #block(
+      [
+        #three-col(
+          left-column-width: left-column-width,
+          right-column-width: right-column-width,
+          left-content: left-content,
+          middle-content: middle-content,
+          right-content: right-content,
+          alignments: alignments,
+        )
+      ],
+      inset: (
+        left: design-entries-left-and-right-margin,
+        right: design-entries-left-and-right-margin,
+      ),
+      breakable: design-entries-allow-page-break-in-entries,
+      width: 100%,
+    )
+  ]
+)
 
 #let two-col-entry(
   left-column-width: 1fr,
   right-column-width: design-entries-date-and-location-width,
   left-content: "",
   right-content: "",
-  alignments: (left, right),
+  alignments: (auto, design-text-date-and-location-column-alignment),
   column-gutter: design-entries-horizontal-space-between-columns,
-) = [
+) = (
+  if design-section-titles-type == "moderncv" [
+    #two-col(
+      left-column-width: right-column-width,
+      right-column-width: left-column-width,
+      left-content: right-content,
+      right-content: [
+        #block(
+          [
+            #left-content
+          ],
+          inset: (
+            left: design-entries-left-and-right-margin,
+            right: design-entries-left-and-right-margin,
+          ),
+          breakable: design-entries-allow-page-break-in-entries,
+          width: 100%,
+        )
+      ],
+      alignments: (design-text-date-and-location-column-alignment, auto),
+    )
+  ] else [
+    #block(
+      [
+        #two-col(
+          left-column-width: left-column-width,
+          right-column-width: right-column-width,
+          left-content: left-content,
+          right-content: right-content,
+          alignments: alignments,
+        )
+      ],
+      inset: (
+        left: design-entries-left-and-right-margin,
+        right: design-entries-left-and-right-margin,
+      ),
+      breakable: design-entries-allow-page-break-in-entries,
+      width: 100%,
+    )
+  ]
+)
+
+#let one-col-entry(content: "") = [
+  #let left-space = design-entries-left-and-right-margin
+  #if design-section-titles-type == "moderncv" [
+    #(left-space = left-space + design-entries-date-and-location-width + design-entries-horizontal-space-between-columns)
+  ]
   #block(
-    grid(
-      columns: (left-column-width, right-column-width),
-      column-gutter: column-gutter,
-      align: alignments,
-      ([#set par(spacing: design-text-leading); #left-content]),
-      ([#set par(spacing: design-text-leading); #right-content]),
+    [#set par(spacing: design-text-leading); #content],
+    breakable: design-entries-allow-page-break-in-entries,
+    inset: (
+      left: left-space,
+      right: design-entries-left-and-right-margin,
     ),
-    breakable: true,
     width: 100%,
   )
 ]
@@ -331,6960 +472,4883 @@
 
 == Text Entries
 
-#block(
-  [
-    This is a #[_TextEntry_]. It is only a text and can be useful for sections like #[*Summary*]. To showcase the TextEntry completely, this sentence is added, but it doesn't contain any information.
-  ],
-  breakable: design-entries-allow-page-break-in-entries,
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  width: 100%,
+#one-col-entry(
+  content: [This is a #[_TextEntry_]. It is only a text and can be useful for sections like #[*Summary*]. To showcase the TextEntry completely, this sentence is added, but it doesn't contain any information.]
 )
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    This is a #[_TextEntry_]. It is only a text and can be useful for sections like #[*Summary*]. To showcase the TextEntry completely, this sentence is added, but it doesn't contain any information.
-  ],
-  breakable: design-entries-allow-page-break-in-entries,
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  width: 100%,
+#one-col-entry(
+  content: [This is a #[_TextEntry_]. It is only a text and can be useful for sections like #[*Summary*]. To showcase the TextEntry completely, this sentence is added, but it doesn't contain any information.]
 )
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    This is a #[_TextEntry_]. It is only a text and can be useful for sections like #[*Summary*]. To showcase the TextEntry completely, this sentence is added, but it doesn't contain any information.
-  ],
-  breakable: design-entries-allow-page-break-in-entries,
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  width: 100%,
+#one-col-entry(
+  content: [This is a #[_TextEntry_]. It is only a text and can be useful for sections like #[*Summary*]. To showcase the TextEntry completely, this sentence is added, but it doesn't contain any information.]
 )
 
 
 == Bullet Entries
 
-#block(
-  [- This is a bullet entry.],
-  breakable: design-entries-allow-page-break-in-entries,
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  width: 100%,
+#one-col-entry(
+  content: [- This is a bullet entry.],
 )
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [- This is a bullet entry.],
-  breakable: design-entries-allow-page-break-in-entries,
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  width: 100%,
+#one-col-entry(
+  content: [- This is a bullet entry.],
 )
 
 
 == Publication Entries
 
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
+#one-col-entry(content:[
+  #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
 
-    #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
+  #v(-design-text-leading)
+  #v(design-highlights-top-margin);J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname])
 
-    J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
+#one-col-entry(content:[
+  #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
 
-    #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
+  #v(-design-text-leading)
+#v(design-highlights-top-margin);J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
 
-J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
+#v(design-highlights-top-margin - design-text-leading)#link("https://doi.org/10.1007/978-3-319-69626-3_101-1")[10.1007/978-3-319-69626-3_101-1]])
 
-#link("https://doi.org/10.1007/978-3-319-69626-3_101-1")[10.1007/978-3-319-69626-3_101-1]  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
+#one-col-entry(content:[
+  #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
 
-    #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
+  #v(-design-text-leading)
+#v(design-highlights-top-margin);J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
 
-J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
+#v(design-highlights-top-margin - design-text-leading)#link("https://example.com")[example.com]])
 
-#link("https://example.com")[example.com]  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
+#one-col-entry(content:[
+  #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
 
-    #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
+  #v(-design-text-leading)
+  #v(design-highlights-top-margin);J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
 
-    J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
+#v(design-highlights-top-margin - design-text-leading)IEEE Transactions on Applied Superconductivity])
 
-IEEE Transactions on Applied Superconductivity  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-    #two-col-entry(
-      left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
-        #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
-
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-      J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-
-    #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
-
-    J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
-
-#two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-
-    #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
-
-J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
-
-#link("https://doi.org/10.1007/978-3-319-69626-3_101-1")[10.1007/978-3-319-69626-3_101-1]  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-
+#two-col-entry(
+  left-content: [
     #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
 
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
+  right-content: [
+    Sept 2021
+  ],
 )
+#v(design-highlights-vertical-space-between-highlights)
+#one-col-entry(content:[
+  #v(-design-text-leading)
+  #v(design-highlights-top-margin);J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname])
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-    #two-col-entry(
-      left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
-        #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
+#one-col-entry(content:[
+  #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
 
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
+  #v(-design-text-leading)
+#v(design-highlights-top-margin);J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
 
-#link("https://doi.org/10.1007/978-3-319-69626-3_101-1")[10.1007/978-3-319-69626-3_101-1]  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
+#v(design-highlights-top-margin - design-text-leading)#link("https://doi.org/10.1007/978-3-319-69626-3_101-1")[10.1007/978-3-319-69626-3_101-1]])
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
+#one-col-entry(content:[
+  #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
 
-    #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
+  #v(-design-text-leading)
+#v(design-highlights-top-margin);J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
 
-J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
+#v(design-highlights-top-margin - design-text-leading)#link("https://doi.org/10.1007/978-3-319-69626-3_101-1")[10.1007/978-3-319-69626-3_101-1] (IEEE Transactions on Applied Superconductivity)])
 
-#link("https://doi.org/10.1007/978-3-319-69626-3_101-1")[10.1007/978-3-319-69626-3_101-1]
-
-#two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-
+#two-col-entry(
+  left-content: [
     #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
 
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
+  right-content: [
+    Sept 2021
+  ],
 )
+#v(design-highlights-vertical-space-between-highlights)
+#one-col-entry(content:[
+  #v(-design-text-leading)
+#v(design-highlights-top-margin);J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
+
+#v(design-highlights-top-margin - design-text-leading)#link("https://doi.org/10.1007/978-3-319-69626-3_101-1")[10.1007/978-3-319-69626-3_101-1]])
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-    #two-col-entry(
-      left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
-        #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
+#one-col-entry(content:[
+  #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
 
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
+  #v(-design-text-leading)
+#v(design-highlights-top-margin);J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
 
-#link("https://example.com")[example.com]  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
+#v(design-highlights-top-margin - design-text-leading)#link("https://example.com")[example.com] (IEEE Transactions on Applied Superconductivity)])
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-
-    #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
-
-J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
-
-#link("https://example.com")[example.com]
-
-#two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-    #two-col-entry(
-      left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
-        #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
-
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-      J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
-
-IEEE Transactions on Applied Superconductivity  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-
-    #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
-
-    J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
-
-IEEE Transactions on Applied Superconductivity
-
-#two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-    #two-col-entry(
-      left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
-        #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
-
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-      J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
-
-#two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-
+#two-col-entry(
+  left-content: [
     #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
 
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-    #two-col-entry(
-      left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
-        #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
-
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
-
-#link("https://doi.org/10.1007/978-3-319-69626-3_101-1")[10.1007/978-3-319-69626-3_101-1]  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-
-    #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
-
-J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
-
-#link("https://doi.org/10.1007/978-3-319-69626-3_101-1")[10.1007/978-3-319-69626-3_101-1]
-
-#two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-    #two-col-entry(
-      left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
-        #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
-
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+  right-content: [
+    Sept 2021
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
+#v(design-highlights-vertical-space-between-highlights)
+#one-col-entry(content:[
+  #v(-design-text-leading)
+#v(design-highlights-top-margin);J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
 
+#v(design-highlights-top-margin - design-text-leading)#link("https://example.com")[example.com]])
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
     #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
 
-#two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-    #two-col-entry(
-      left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
-        #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
-
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
-
-#link("https://doi.org/10.1007/978-3-319-69626-3_101-1")[10.1007/978-3-319-69626-3_101-1]
-
-#two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-    #two-col-entry(
-      left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
-        #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
-
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-
-    #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
-
-#two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-    #two-col-entry(
-      left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
-        #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
-
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
-
-#link("https://example.com")[example.com]
-
-#two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-    #two-col-entry(
-      left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
-        #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
-
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-      J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
-
-IEEE Transactions on Applied Superconductivity
-
-#two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-    #two-col-entry(
-      left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
-        #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
-
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+  right-content: [
+    Sept 2021
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
+#v(design-highlights-vertical-space-between-highlights)
+#one-col-entry(content:[
+  #v(-design-text-leading)
+  #v(design-highlights-top-margin);J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
 
+#v(design-highlights-top-margin - design-text-leading)IEEE Transactions on Applied Superconductivity])
+
+#v(design-entries-vertical-space-between-entries)
+#one-col-entry(content:[
+  #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
+
+  #v(-design-text-leading)
+#v(design-highlights-top-margin);J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
+
+#v(design-highlights-top-margin - design-text-leading)#link("https://doi.org/10.1007/978-3-319-69626-3_101-1")[10.1007/978-3-319-69626-3_101-1] (IEEE Transactions on Applied Superconductivity)])
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
     #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
 
-#two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
+  ],
+  right-content: [
+    Sept 2021
+  ],
 )
+#v(design-highlights-vertical-space-between-highlights)
+#one-col-entry(content:[
+  #v(-design-text-leading)
+#v(design-highlights-top-margin);J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
+
+#v(design-highlights-top-margin - design-text-leading)#link("https://doi.org/10.1007/978-3-319-69626-3_101-1")[10.1007/978-3-319-69626-3_101-1]])
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-    #two-col-entry(
-      left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
-        #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
+#two-col-entry(
+  left-content: [
+    #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
 
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
-
-#link("https://doi.org/10.1007/978-3-319-69626-3_101-1")[10.1007/978-3-319-69626-3_101-1]
-
-#two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
+  ],
+  right-content: [
+    Sept 2021
+  ],
 )
+#v(design-highlights-vertical-space-between-highlights)
+#one-col-entry(content:[
+  #v(-design-text-leading)
+#v(design-highlights-top-margin);J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
+
+#v(design-highlights-top-margin - design-text-leading)#link("https://doi.org/10.1007/978-3-319-69626-3_101-1")[10.1007/978-3-319-69626-3_101-1] (IEEE Transactions on Applied Superconductivity)])
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-    #two-col-entry(
-      left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
-        #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
+#two-col-entry(
+  left-content: [
+    #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
 
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-#two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
+  ],
+  right-content: [
+    Sept 2021
+  ],
 )
+#v(design-highlights-vertical-space-between-highlights)
+#one-col-entry(content:[
+  #v(-design-text-leading)
+#v(design-highlights-top-margin);J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
+
+#v(design-highlights-top-margin - design-text-leading)#link("https://example.com")[example.com] (IEEE Transactions on Applied Superconductivity)])
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-    #two-col-entry(
-      left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
-        #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
+#two-col-entry(
+  left-content: [
+    #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
 
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-#two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
+  ],
+  right-content: [
+    Sept 2021
+  ],
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #set par(spacing: design-highlights-vertical-space-between-highlights)
-    #two-col-entry(
-      left-content: [
-        #set par(spacing: design-highlights-vertical-space-between-highlights)
-        #[*Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis of No-Insulation Coils*]
+#v(design-highlights-vertical-space-between-highlights)
+#one-col-entry(content:[
+  #v(-design-text-leading)
+#v(design-highlights-top-margin);J. Doe, #[*_H. Tom_*], S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname, S. Doe, A. Andsurname
 
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-#two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
+#v(design-highlights-top-margin - design-text-leading)#link("https://doi.org/10.1007/978-3-319-69626-3_101-1")[10.1007/978-3-319-69626-3_101-1] (IEEE Transactions on Applied Superconductivity)])
+
 
 
 == Experience Entries
 
-#block(
-  [
 
+#one-col-entry(
+  content: [
     #[*Software Engineer*], Some #[*Company*] --
 
     
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
     
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
 
+#v(design-entries-vertical-space-between-entries)
+
+#one-col-entry(
+  content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+
+#one-col-entry(
+  content: [
     #[*Software Engineer*], Some #[*Company*] --
 
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #v(-design-text-leading)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
 
-    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+#v(design-entries-vertical-space-between-entries)
 
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-
+#one-col-entry(
+  content: [
     #[*Software Engineer*], Some #[*Company*] --
 
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+    #v(-design-text-leading)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
 
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+
+#one-col-entry(
+  content: [
     #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
 
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #v(-design-text-leading)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
 
+#v(design-entries-vertical-space-between-entries)
+
+#one-col-entry(
+  content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+
+    #v(-design-text-leading)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+
+#one-col-entry(
+  content: [
     #[*Software Engineer*], Some #[*Company*] --
 
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #v(-design-text-leading)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
     
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
     
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
 
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+
+#one-col-entry(
+  content: [
     #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
 
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #v(-design-text-leading)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
 
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
     #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+  right-content: [
+    Sept 2021
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
+#one-col-entry(
+  content: [
     
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
     #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
     #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
     #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
+  right-content: [
+    Sept 2021
+  ],
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
+  right-content: [
+    Sept 2021
+  ],
 )
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+#one-col-entry(
+  content: [
     #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
     #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] --
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
+  right-content: [
+    Sept 2021
+  ],
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
+  right-content: [
+    Sept 2015 – June 2020
+  ],
 )
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*Software Engineer*], Some #[*Company*] -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
 
 
 == Education Entries
 
+// NO DATE, YES DEGREE
+#two-col-entry(
+  left-column-width: 1cm,
+  right-column-width: 1fr,
+  alignments: (left, left),
+  left-content: [
+    
+  ],
+  right-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// NO DATE, YES DEGREE
+#two-col-entry(
+  left-column-width: 1cm,
+  right-column-width: 1fr,
+  alignments: (left, left),
+  left-content: [
+    #[*BS*]
+  ],
+  right-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// NO DATE, YES DEGREE
+#two-col-entry(
+  left-column-width: 1cm,
+  right-column-width: 1fr,
+  alignments: (left, left),
+  left-content: [
+    
+  ],
+  right-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// NO DATE, YES DEGREE
+#two-col-entry(
+  left-column-width: 1cm,
+  right-column-width: 1fr,
+  alignments: (left, left),
+  left-content: [
+    
+  ],
+  right-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+)
 #block(
   [
-    // NO DATE, YES DEGREE
-    #two-col-entry(
-      left-column-width: 1cm,
-      right-column-width: 1fr,
-      alignments: (left, left),
-      left-content: [
-        
-      ],
-      right-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// NO DATE, YES DEGREE
+#two-col-entry(
+  left-column-width: 1cm,
+  right-column-width: 1fr,
+  alignments: (left, left),
+  left-content: [
+    
+  ],
+  right-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+)
 #block(
   [
-    // NO DATE, YES DEGREE
-    #two-col-entry(
-      left-column-width: 1cm,
-      right-column-width: 1fr,
-      alignments: (left, left),
-      left-content: [
-        #[*BS*]
-      ],
-      right-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// NO DATE, YES DEGREE
+#two-col-entry(
+  left-column-width: 1cm,
+  right-column-width: 1fr,
+  alignments: (left, left),
+  left-content: [
+    #[*BS*]
+  ],
+  right-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// NO DATE, YES DEGREE
+#two-col-entry(
+  left-column-width: 1cm,
+  right-column-width: 1fr,
+  alignments: (left, left),
+  left-content: [
+    #[*BS*]
+  ],
+  right-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// NO DATE, YES DEGREE
+#two-col-entry(
+  left-column-width: 1cm,
+  right-column-width: 1fr,
+  alignments: (left, left),
+  left-content: [
+    #[*BS*]
+  ],
+  right-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+)
 #block(
   [
-    // NO DATE, YES DEGREE
-    #two-col-entry(
-      left-column-width: 1cm,
-      right-column-width: 1fr,
-      alignments: (left, left),
-      left-content: [
-        
-      ],
-      right-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // NO DATE, YES DEGREE
-    #two-col-entry(
-      left-column-width: 1cm,
-      right-column-width: 1fr,
-      alignments: (left, left),
-      left-content: [
-        
-      ],
-      right-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// NO DATE, YES DEGREE
+#two-col-entry(
+  left-column-width: 1cm,
+  right-column-width: 1fr,
+  alignments: (left, left),
+  left-content: [
+    
+  ],
+  right-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// NO DATE, YES DEGREE
+#two-col-entry(
+  left-column-width: 1cm,
+  right-column-width: 1fr,
+  alignments: (left, left),
+  left-content: [
+    
+  ],
+  right-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+)
 #block(
   [
-    // NO DATE, YES DEGREE
-    #two-col-entry(
-      left-column-width: 1cm,
-      right-column-width: 1fr,
-      alignments: (left, left),
-      left-content: [
-        
-      ],
-      right-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
 #block(
   [
-    // NO DATE, YES DEGREE
-    #two-col-entry(
-      left-column-width: 1cm,
-      right-column-width: 1fr,
-      alignments: (left, left),
-      left-content: [
-        #[*BS*]
-      ],
-      right-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    June 2020
+  ],
+)
 #block(
   [
-    // NO DATE, YES DEGREE
-    #two-col-entry(
-      left-column-width: 1cm,
-      right-column-width: 1fr,
-      alignments: (left, left),
-      left-content: [
-        #[*BS*]
-      ],
-      right-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
+// NO DATE, YES DEGREE
+#two-col-entry(
+  left-column-width: 1cm,
+  right-column-width: 1fr,
+  alignments: (left, left),
+  left-content: [
+    
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // NO DATE, YES DEGREE
-    #two-col-entry(
-      left-column-width: 1cm,
-      right-column-width: 1fr,
-      alignments: (left, left),
-      left-content: [
-        #[*BS*]
-      ],
-      right-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+  right-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // NO DATE, YES DEGREE
-    #two-col-entry(
-      left-column-width: 1cm,
-      right-column-width: 1fr,
-      alignments: (left, left),
-      left-content: [
-        
-      ],
-      right-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // NO DATE, YES DEGREE
-    #two-col-entry(
-      left-column-width: 1cm,
-      right-column-width: 1fr,
-      alignments: (left, left),
-      left-content: [
-        
-      ],
-      right-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// NO DATE, YES DEGREE
+#two-col-entry(
+  left-column-width: 1cm,
+  right-column-width: 1fr,
+  alignments: (left, left),
+  left-content: [
+    #[*BS*]
+  ],
+  right-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+)
 #block(
   [
-    // NO DATE, YES DEGREE
-    #two-col-entry(
-      left-column-width: 1cm,
-      right-column-width: 1fr,
-      alignments: (left, left),
-      left-content: [
-        
-      ],
-      right-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// NO DATE, YES DEGREE
+#two-col-entry(
+  left-column-width: 1cm,
+  right-column-width: 1fr,
+  alignments: (left, left),
+  left-content: [
+    #[*BS*]
+  ],
+  right-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+// NO DATE, YES DEGREE
+#two-col-entry(
+  left-column-width: 1cm,
+  right-column-width: 1fr,
+  alignments: (left, left),
+  left-content: [
+    #[*BS*]
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+  right-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // NO DATE, YES DEGREE
-    #two-col-entry(
-      left-column-width: 1cm,
-      right-column-width: 1fr,
-      alignments: (left, left),
-      left-content: [
-        #[*BS*]
-      ],
-      right-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // NO DATE, YES DEGREE
-    #two-col-entry(
-      left-column-width: 1cm,
-      right-column-width: 1fr,
-      alignments: (left, left),
-      left-content: [
-        #[*BS*]
-      ],
-      right-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // NO DATE, YES DEGREE
-    #two-col-entry(
-      left-column-width: 1cm,
-      right-column-width: 1fr,
-      alignments: (left, left),
-      left-content: [
-        #[*BS*]
-      ],
-      right-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+  right-content: [
+    Sept 2021
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+// NO DATE, YES DEGREE
+#two-col-entry(
+  left-column-width: 1cm,
+  right-column-width: 1fr,
+  alignments: (left, left),
+  left-content: [
+    
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+  right-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // NO DATE, YES DEGREE
-    #two-col-entry(
-      left-column-width: 1cm,
-      right-column-width: 1fr,
-      alignments: (left, left),
-      left-content: [
-        
-      ],
-      right-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+  inset: (
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
+    right: design-entries-left-and-right-margin,
+  ),
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#block(
+  [
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
+  right-content: [
+    Sept 2021
+  ],
 )
-#v(design-entries-vertical-space-between-entries)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+// NO DATE, YES DEGREE
+#two-col-entry(
+  left-column-width: 1cm,
+  right-column-width: 1fr,
+  alignments: (left, left),
+  left-content: [
+    #[*BS*]
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+  right-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // NO DATE, YES DEGREE
-    #two-col-entry(
-      left-column-width: 1cm,
-      right-column-width: 1fr,
-      alignments: (left, left),
-      left-content: [
-        #[*BS*]
-      ],
-      right-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+  inset: (
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
+    right: design-entries-left-and-right-margin,
+  ),
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#block(
+  [
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+  right-content: [
+    Sept 2021
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+  inset: (
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
+    right: design-entries-left-and-right-margin,
+  ),
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#block(
+  [
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+  right-content: [
+    Sept 2015 – present
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+  inset: (
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
+    right: design-entries-left-and-right-margin,
+  ),
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#block(
+  [
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+  inset: (
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
+    right: design-entries-left-and-right-margin,
+  ),
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#block(
+  [
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+  right-content: [
+    Sept 2015 – present
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
+  right-content: [
+    Sept 2015 – June 2020
+  ],
 )
-#v(design-entries-vertical-space-between-entries)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+    #set par(spacing: 0pt)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+  inset: (
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
+    right: design-entries-left-and-right-margin,
+  ),
+)
+
+#v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#block(
+  [
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering --
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering --
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
+  right-content: [
+    Sept 2015 – June 2020
+  ],
 )
-#v(design-entries-vertical-space-between-entries)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
+// YES DATE, YES DEGREE
+#three-col-entry(
+  left-column-width: 1cm,
+  left-content: [#[*BS*]],
+  middle-content: [
+    #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
 #block(
   [
-    // YES DATE, YES DEGREE
-    #three-col-entry(
-      left-column-width: 1cm,
-      left-content: [#[*BS*]],
-      middle-content: [
-        #[*Boğaziçi University*], Mechanical Engineering -- Istanbul, Turkey
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #block(
-      [
-        #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #set par(spacing: 0pt)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
   #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-      ],
-      inset: (
-        left: 1cm + 0.1cm,
-      ),
-    )
   ],
   inset: (
-    left: design-entries-left-and-right-margin,
+    left: design-theme-specific-education-degree-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 
 
 == Normal Entries
 
-#block(
-  [
 
+#one-col-entry(
+  content: [
     #[*My Project*]
 
     
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
     
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
 
-    #[*My Project*]
-
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-
+#one-col-entry(
+  content: [
     #[*My Project*]
 
     
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
 
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+
+#one-col-entry(
+  content: [
     #[*My Project*]
 
+    #v(-design-text-leading)
     #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
 
+#v(design-entries-vertical-space-between-entries)
+
+#one-col-entry(
+  content: [
     #[*My Project*]
 
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #v(-design-text-leading)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
 
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+
+#one-col-entry(
+  content: [
     #[*My Project*]
 
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #v(-design-text-leading)
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
 
+#one-col-entry(
+  content: [
     #[*My Project*]
 
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+    #v(-design-text-leading)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+#one-col-entry(
+  content: [
     
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
 
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+
+#one-col-entry(
+  content: [
     #[*My Project*]
 
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+    #v(-design-text-leading)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
+  right-content: [
+    Sept 2021
+  ],
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
+#one-col-entry(
+  content: [
     
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  right-content: [
+    Sept 2021
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+#one-col-entry(
+  content: [
     
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
     #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
     #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
     #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2015 – present
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        June 2020
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#one-col-entry(
+  content: [
     #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
+  right-content: [
+    June 2020
+  ],
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
+#one-col-entry(
+  content: [
     #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
-#v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2015 – June 2020
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
 
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
-  ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
-)
 #v(design-entries-vertical-space-between-entries)
-#block(
-  [
-    #two-col-entry(
-      left-content: [
-        #[*My Project*]
-      ],
-      right-content: [
-        Sept 2021
-      ],
-    )
-    #two-col-entry(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [A string])], column-gutter: 0cm)
-
-  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
+  right-content: [
+    June 2020
+  ],
 )
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+
+#one-col-entry(
+  content: [
+    #[*My Project*]
+
+    #v(-design-text-leading)
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2015 – present
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2015 – June 2020
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
+#v(design-entries-vertical-space-between-entries)
+#two-col-entry(
+  left-content: [
+    #[*My Project*]
+  ],
+  right-content: [
+    Sept 2021
+  ],
+)
+#one-col-entry(
+  content: [
+    #two-col(left-column-width: design-highlights-summary-left-margin, right-column-width: 1fr, left-content: [], right-content: [#v(design-highlights-top-margin);#align(left, [Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.])], column-gutter: 0cm)
+
+#v(-design-text-leading)  #v(design-highlights-top-margin);#highlights([Did #[_this_] and this is a #[*bold*] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful.],[Did that. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure.],)
+  ],
+)
+
 
 
 == One Line Entries
 
-#block(
-  [
-    #[*Pro#[*gram*]ming:*] Python, C++, JavaScript, MATLAB
-  ],
-  breakable: design-entries-allow-page-break-in-entries,
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  width: 100%,
+#one-col-entry(
+  content: [#[*Pro#[*gram*]ming:*] Python, C++, JavaScript, MATLAB]
 )
 
 
 == A Section & with \% Special Characters
 
-#block(
-  [
 
+#one-col-entry(
+  content: [
     #[*A Section & with \% Special Characters*]
 
     
   ],
-  inset: (
-    left: design-entries-left-and-right-margin,
-    right: design-entries-left-and-right-margin,
-  ),
-  breakable: design-entries-allow-page-break-in-entries,
-  width: 100%,
 )
+
 
 

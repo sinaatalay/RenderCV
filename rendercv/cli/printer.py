@@ -24,9 +24,8 @@ except ImportError as e:
     raise ImportError(_parial_install_error_message) from e
 from rich import print
 
-from .. import __version__
+from .. import __version__, data
 from . import utilities
-from .. import data
 
 
 class LiveProgressReporter(rich.live.Live):

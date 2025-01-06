@@ -6,7 +6,6 @@ import itertools
 import pathlib
 import shutil
 import typing
-import urllib.request
 from typing import Optional
 
 import jinja2
@@ -199,7 +198,7 @@ def return_a_value_for_a_field_type(
                 " pleasure."
             ),
         ],
-        "company": "Some **Company**",
+        "company": "Some Company",
         "position": "Software Engineer",
         "name": "My Project",
         "label": "Pro**gram**ming",

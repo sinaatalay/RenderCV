@@ -378,6 +378,10 @@ def test_create_a_typst_file_and_copy_theme_files(
     data.available_themes,
 )
 @pytest.mark.parametrize(
+    "short_second_row",
+    [True, False],
+)
+@pytest.mark.parametrize(
     "curriculum_vitae_data_model",
     [
         "rendercv_empty_curriculum_vitae_data_model",
@@ -389,15 +393,15 @@ def test_render_a_pdf_from_typst(
     run_a_function_and_check_if_output_is_the_same_as_reference,
     theme_name,
     curriculum_vitae_data_model,
+    short_second_row,
 ):
     data.RenderCVSettings(date="2024-01-01")  # type: ignore
     name = request.getfixturevalue(curriculum_vitae_data_model).name
     name = str(name).replace(" ", "_")
 
     output_file_name = f"{name}_CV.pdf"
-    reference_name = (
-        f"{theme_name}_{folder_name_dictionary[curriculum_vitae_data_model]}"
-    )
+    short_s_r = "short_second_row" if short_second_row else "long_second_row"
+    reference_name = f"{theme_name}_{folder_name_dictionary[curriculum_vitae_data_model]}_{short_s_r}"
     reference_file_name = f"{reference_name}.pdf"
 
     file_name = f"{name}_CV.typ"
@@ -493,7 +497,7 @@ def test_render_pngs_from_typst(
         typst_folder_path = (
             reference_file_or_directory_path.parent.parent
             / "test_create_a_typst_file_and_copy_theme_files"
-            / "classic_filled"
+            / "classic_filled_long_second_row"
         )
 
         # copy typst folder to the output path

@@ -400,7 +400,7 @@ def input_template_to_typst(
     # Replace all multiple \n with a double \n:
     output = re.sub(r"\n+", r"\n\n", output)
 
-    return  output.strip()
+    return output.strip()
 
 
 def escape_characters(string: str, escape_dictionary: dict[str, str]) -> str:
@@ -651,9 +651,14 @@ def replace_placeholders_with_actual_values(
         if value:
             text = text.replace(placeholder, str(value))
         else:
-            # Replace the placeholder and the new line after it (if there is any) with
-            # an empty string:
-            text = re.sub(rf"{placeholder}\n?", "", text)
+            # Replace the placeholder, all non-alphanumeric characters (including
+            # whitespace) around it (if there are any), and the new line after it (if
+            # there is any) with an empty string:
+            text = re.sub(
+                rf"[^\w\]\[\(\)\s]*{placeholder}[^\w\]\[\(\)\s]*\n?",
+                "",
+                text,
+            )
 
     return text
 

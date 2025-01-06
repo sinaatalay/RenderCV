@@ -27,7 +27,6 @@ from .models import (
     NormalEntry,
     OneLineEntry,
     PublicationEntry,
-    make_keywords_bold_in_a_string,
     RenderCommandSettings,
     RenderCVDataModel,
     RenderCVSettings,
@@ -40,14 +39,15 @@ from .models import (
     available_themes,
     format_date,
     get_date_input,
+    make_keywords_bold_in_a_string,
     rendercv_data_model_fields,
 )
 from .reader import (
+    get_error_message_and_location_and_value_from_a_custom_error,
     parse_validation_errors,
     read_a_yaml_file,
     read_input_file,
     validate_input_dictionary_and_return_the_data_model,
-    get_error_message_and_location_and_value_from_a_custom_error,
 )
 
 __all__ = [
@@ -76,11 +76,11 @@ __all__ = [
     "generate_json_schema",
     "generate_json_schema_file",
     "get_date_input",
+    "get_error_message_and_location_and_value_from_a_custom_error",
+    "make_keywords_bold_in_a_string",
     "parse_validation_errors",
     "read_a_yaml_file",
     "read_input_file",
-    "get_error_message_and_location_and_value_from_a_custom_error",
     "rendercv_data_model_fields",
-    "make_keywords_bold_in_a_string",
     "validate_input_dictionary_and_return_the_data_model",
 ]

@@ -34,7 +34,9 @@ def make_given_keywords_bold_in_sections(
             if isinstance(entry, str):
                 entry_types.make_keywords_bold_in_a_string(entry, keywords)
             elif callable(getattr(entry, "make_keywords_bold", None)):
-                entry = entry.make_keywords_bold(keywords)  # type: ignore
+                entry = entry.make_keywords_bold(  # NOQA: PLW2901 # type: ignore
+                    keywords
+                )
 
     return sections_input
 
