@@ -400,7 +400,7 @@ def input_template_to_typst(
     # Replace all multiple \n with a double \n:
     output = re.sub(r"\n+", r"\n\n", output)
 
-    return output.strip()
+    return  output.strip()
 
 
 def escape_characters(string: str, escape_dictionary: dict[str, str]) -> str:

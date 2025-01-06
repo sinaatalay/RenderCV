@@ -498,7 +498,7 @@ publication_entry_main_column_first_row_template_field_info = pydantic.Field(
     ),
 )
 publication_entry_main_column_second_row_template_field_info = pydantic.Field(
-    default="AUTHORS\nDOIURL (JOURNAL)\nSUMMARY",
+    default="AUTHORS\nURL (JOURNAL)",
     title="First Column, Second Row",
     description=(
         "The content of the second row of the first column. The available placeholders"
@@ -506,7 +506,7 @@ publication_entry_main_column_second_row_template_field_info = pydantic.Field(
     ),
 )
 publication_entry_main_column_second_row_without_journal_template_field_info = pydantic.Field(
-    default="AUTHORS\nDOIURL\nSUMMARY",
+    default="AUTHORS\nURL",
     title="First Column, Second Row Without Journal",
     description=(
         "The content of the first column in case the journal is not given. The"
@@ -514,7 +514,7 @@ publication_entry_main_column_second_row_without_journal_template_field_info = p
     ),
 )
 publication_entry_main_column_second_row_without_url_template_field_info = pydantic.Field(
-    default="AUTHORS\nJOURNAL\nSUMMARY",
+    default="AUTHORS\nJOURNAL",
     title="First Column, Second Row Without URL",
     description=(
         "The content of the first column in case the `doi` or `url is not given. The"
@@ -538,7 +538,7 @@ class PublicationEntryBase(RenderCVBaseModelWithoutExtraKeys):
     )
 
 
-class PublicationEntry(EntryBaseWithDate, PublicationEntryBase):
+class PublicationEntry(PublicationEntryBase, EntryBaseWithDate):
     pass
 
 

@@ -337,6 +337,10 @@ def test_copy_theme_files_to_output_directory_nonexistent_theme():
     data.available_themes,
 )
 @pytest.mark.parametrize(
+    "short_second_row",
+    [True, False],
+)
+@pytest.mark.parametrize(
     "curriculum_vitae_data_model",
     [
         "rendercv_empty_curriculum_vitae_data_model",
@@ -348,15 +352,14 @@ def test_create_a_typst_file_and_copy_theme_files(
     request: pytest.FixtureRequest,
     theme_name,
     curriculum_vitae_data_model,
+    short_second_row,
 ):
     data.RenderCVSettings(date="2024-01-01")  # type: ignore
-    reference_directory_name = (
-        f"{theme_name}_{folder_name_dictionary[curriculum_vitae_data_model]}"
-    )
-
+    short_s_r = "short_second_row" if short_second_row else "long_second_row"
+    reference_directory_name = f"{theme_name}_{folder_name_dictionary[curriculum_vitae_data_model]}_{short_s_r}"
     data_model = data.RenderCVDataModel(
         cv=request.getfixturevalue(curriculum_vitae_data_model),
-        design={"theme": theme_name},
+        design={"theme": theme_name, "entries": {"short_second_row": short_second_row}},
     )
 
     def create_a_typst_file_and_copy_theme_files(output_directory_path, _):

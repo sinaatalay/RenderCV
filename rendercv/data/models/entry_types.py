@@ -242,12 +242,6 @@ class EntryWithDate(RenderCVBaseModelWithExtraKeys):
         ),
         examples=["2020-09-24", "Fall 2023"],
     )
-    summary: Optional[str] = pydantic.Field(
-        default=None,
-        title="Summary",
-        description="The summary of the event.",
-        examples=["Did this and that."],
-    )
 
     @functools.cached_property
     def date_string(self) -> str:
@@ -257,20 +251,6 @@ class EntryWithDate(RenderCVBaseModelWithExtraKeys):
         return computers.compute_date_string(
             start_date=None, end_date=None, date=self.date
         )
-
-    def make_keywords_bold(self, keywords: list[str]) -> "EntryWithDate":
-        """Make the given keywords bold in the `summary` field.
-
-        Args:
-            keywords: The keywords to make bold.
-
-        Returns:
-            An EntryWithDate with the keywords made bold in the `summary` field.
-        """
-        if self.summary:
-            self.summary = make_keywords_bold_in_a_string(self.summary, keywords)
-
-        return self
 
 
 class PublicationEntryBase(RenderCVBaseModelWithExtraKeys):
@@ -381,6 +361,12 @@ class EntryBase(EntryWithDate):
         title="Highlights",
         description="The highlights of the event as a list of strings.",
         examples=["Did this.", "Did that."],
+    )
+    summary: Optional[str] = pydantic.Field(
+        default=None,
+        title="Summary",
+        description="The summary of the event.",
+        examples=["Did this and that."],
     )
 
     @pydantic.model_validator(mode="after")  # type: ignore
