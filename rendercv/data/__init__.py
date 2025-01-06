@@ -46,6 +46,7 @@ from .reader import (
     read_a_yaml_file,
     read_input_file,
     validate_input_dictionary_and_return_the_data_model,
+    get_error_message_and_location_and_value_from_a_custom_error,
 )
 
 __all__ = [
@@ -77,6 +78,7 @@ __all__ = [
     "parse_validation_errors",
     "read_a_yaml_file",
     "read_input_file",
+    "get_error_message_and_location_and_value_from_a_custom_error",
     "rendercv_data_model_fields",
     "validate_input_dictionary_and_return_the_data_model",
 ]

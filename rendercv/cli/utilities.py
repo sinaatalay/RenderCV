@@ -21,7 +21,6 @@ except ImportError as e:
     raise ImportError(_parial_install_error_message) from e
 
 from .. import data, renderer
-from ..api import utilities as api_utilities
 from . import printer
 
 
@@ -325,17 +324,6 @@ def run_rendercv_with_printer(
             input_file_as_a_dict,
             context={"input_file_directory": input_file_path.parent},
         )
-
-        # If the `bold_keywords` field is provided in the `rendercv_settings`, make the
-        # given keywords bold in the `cv.sections` field:
-        if data_model.rendercv_settings and data_model.rendercv_settings.bold_keywords:
-            cv_field_as_dictionary = data_model.cv.model_dump(by_alias=True)
-            new_sections_field = api_utilities.make_given_keywords_bold_in_a_dictionary(
-                cv_field_as_dictionary["sections"],
-                data_model.rendercv_settings.bold_keywords,
-            )
-            cv_field_as_dictionary["sections"] = new_sections_field
-            data_model.cv = data.models.CurriculumVitae(**cv_field_as_dictionary)
 
         # Change the current working directory to the input file's directory (because
         # the template overrides are looked up in the current working directory). The

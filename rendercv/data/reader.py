@@ -200,7 +200,7 @@ def parse_validation_errors(
             input = ""
 
         new_error = {
-            "loc": str(location),
+            "loc": tuple(location.split(".")),
             "msg": message,
             "input": str(input),
         }

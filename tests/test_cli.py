@@ -13,7 +13,6 @@ import pytest
 import ruamel.yaml
 import typer.testing
 
-import rendercv.api.utilities as api_utilities
 import rendercv.cli as cli
 import rendercv.cli.printer as printer
 import rendercv.cli.utilities as utilities
@@ -63,19 +62,19 @@ def test_information():
 
 def test_get_error_message_and_location_and_value_from_a_custom_error():
     error_string = "('error message', 'location', 'value')"
-    result = api_utilities.get_error_message_and_location_and_value_from_a_custom_error(
+    result = data.get_error_message_and_location_and_value_from_a_custom_error(
         error_string
     )
     assert result == ("error message", "location", "value")
 
     error_string = """("er'ror message", 'location', 'value')"""
-    result = api_utilities.get_error_message_and_location_and_value_from_a_custom_error(
+    result = data.get_error_message_and_location_and_value_from_a_custom_error(
         error_string
     )
     assert result == ("er'ror message", "location", "value")
 
     error_string = "error message"
-    result = api_utilities.get_error_message_and_location_and_value_from_a_custom_error(
+    result = data.get_error_message_and_location_and_value_from_a_custom_error(
         error_string
     )
     assert result == (None, None, None)
@@ -1013,27 +1012,10 @@ def test_read_and_construct_the_input(
             ], f"{field} is in dict: {field in input_dict}, expected: {locals()[field]}"
 
 
-def test_make_given_keywords_bold_in_a_dictionary():
-    dictionary = {
-        "name": "John Doe",
-        "email": ["John Doe"],
-        "test": {
-            "test": "John Doe Johnn",
-        },
-    }
-    keywords = ["John"]
-    bolded_dictionary = api_utilities.make_given_keywords_bold_in_a_dictionary(
-        dictionary, keywords
-    )
-    assert bolded_dictionary["name"] == "**John** Doe"
-    assert bolded_dictionary["email"] == ["**John** Doe"]
-    assert bolded_dictionary["test"]["test"] == "**John** Doe Johnn"
-
-
 def test_bold_keywords(input_file_path, tmp_path):
     input_file_path.write_text(
-        "cv:\n  sections:\n    education:\n      - test\nrendercv_settings:\n "
-        " bold_keywords:\n    - test"
+        "cv:\n  sections:\n    education:\n      - test test2\nrendercv_settings:\n "
+        " bold_keywords:\n    - test\n    - test2"
     )
     run_render_command(
         input_file_path,
@@ -1043,3 +1025,4 @@ def test_bold_keywords(input_file_path, tmp_path):
     typst_content = typst_file_path.read_text()
 
     assert "*test*" in typst_content
+    assert "*test2*" in typst_content

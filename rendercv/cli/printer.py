@@ -25,8 +25,8 @@ except ImportError as e:
 from rich import print
 
 from .. import __version__
-from ..api import utilities as api_utilities
 from . import utilities
+from .. import data
 
 
 class LiveProgressReporter(rich.live.Live):
@@ -215,7 +215,7 @@ def print_validation_errors(exception: pydantic.ValidationError):
     Args:
         exception: The Pydantic validation error object.
     """
-    errors = api_utilities.parse_validation_errors(exception)
+    errors = data.parse_validation_errors(exception)
 
     # Print the errors in a nice table:
     table = rich.table.Table(
@@ -229,7 +229,7 @@ def print_validation_errors(exception: pydantic.ValidationError):
 
     for error_object in errors:
         table.add_row(
-            error_object["loc"],
+            ".".join(error_object["loc"]),
             error_object["input"],
             error_object["msg"],
         )
