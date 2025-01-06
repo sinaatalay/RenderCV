@@ -152,7 +152,7 @@
               "main_column_second_row_template": "SUMMARY\nHIGHLIGHTS"
             },
             "publication_entry": {
-              "date_and_location_column_template": "LOCATION\nDATE",
+              "date_and_location_column_template": "DATE",
               "main_column_first_row_template": "**TITLE**",
               "main_column_second_row_template": "AUTHORS\nURL (JOURNAL)",
               "main_column_second_row_without_journal_template": "AUTHORS\nURL",
@@ -445,7 +445,7 @@
               "main_column_second_row_template": "SUMMARY\nHIGHLIGHTS"
             },
             "publication_entry": {
-              "date_and_location_column_template": "LOCATION\nDATE",
+              "date_and_location_column_template": "DATE",
               "main_column_first_row_template": "**TITLE**",
               "main_column_second_row_template": "AUTHORS\nURL (JOURNAL)",
               "main_column_second_row_without_journal_template": "AUTHORS\nURL",
@@ -596,7 +596,7 @@
               "main_column_second_row_template": "SUMMARY\nHIGHLIGHTS"
             },
             "publication_entry": {
-              "date_and_location_column_template": "LOCATION\nDATE",
+              "date_and_location_column_template": "DATE",
               "main_column_first_row_template": "**TITLE**",
               "main_column_second_row_template": "AUTHORS\nURL (JOURNAL)",
               "main_column_second_row_without_journal_template": "AUTHORS\nURL",
@@ -914,7 +914,7 @@
               "main_column_second_row_template": "SUMMARY\nHIGHLIGHTS"
             },
             "publication_entry": {
-              "date_and_location_column_template": "LOCATION\nDATE",
+              "date_and_location_column_template": "DATE",
               "main_column_first_row_template": "**TITLE**",
               "main_column_second_row_template": "AUTHORS\nURL (JOURNAL)",
               "main_column_second_row_without_journal_template": "AUTHORS\nURL",
@@ -933,7 +933,7 @@
       "description": "This class is the data model of the RenderCV settings.",
       "properties": {
         "date": {
-          "default": "2025-01-06",
+          "default": "2025-01-07",
           "description": "The date that will be used everywhere (e.g., in the output file names, last updated date, computation of time spans for the events that are currently happening, etc.). The default value is the current date.",
           "format": "date",
           "title": "Date",
@@ -1222,7 +1222,7 @@
               "main_column_second_row_template": "SUMMARY\nHIGHLIGHTS"
             },
             "publication_entry": {
-              "date_and_location_column_template": "LOCATION\nDATE",
+              "date_and_location_column_template": "DATE",
               "main_column_first_row_template": "**TITLE**",
               "main_column_second_row_template": "AUTHORS\nURL (JOURNAL)",
               "main_column_second_row_without_journal_template": "AUTHORS\nURL",
@@ -1759,8 +1759,8 @@
       "properties": {
         "main_column_first_row_template": {
           "default": "**INSTITUTION**, AREA -- LOCATION",
-          "description": "The content of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, First Row",
+          "description": "The content of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, First Row",
           "type": "string"
         },
         "degree_column_template": {
@@ -1781,14 +1781,14 @@
         },
         "main_column_second_row_template": {
           "default": "SUMMARY\nHIGHLIGHTS",
-          "description": "The content of the second row of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row",
+          "description": "The content of the second row of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row",
           "type": "string"
         },
         "date_and_location_column_template": {
           "default": "DATE",
-          "description": "The content of the second column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "Second Column",
+          "description": "The content of the Date and Location Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Date and Location Column",
           "type": "string"
         }
       },
@@ -1841,11 +1841,11 @@
         "publication_entry": {
           "$ref": "#/$defs/rendercv__themes__options__PublicationEntry",
           "default": {
-            "main_column_second_row_template": "AUTHORS\nURL (JOURNAL)",
-            "date_and_location_column_template": "LOCATION\nDATE",
             "main_column_first_row_template": "**TITLE**",
+            "main_column_second_row_template": "AUTHORS\nURL (JOURNAL)",
             "main_column_second_row_without_journal_template": "AUTHORS\nURL",
-            "main_column_second_row_without_url_template": "AUTHORS\nJOURNAL"
+            "main_column_second_row_without_url_template": "AUTHORS\nJOURNAL",
+            "date_and_location_column_template": "DATE"
           },
           "description": "Options related to publication entries.",
           "title": "Publication Entry"
@@ -1859,20 +1859,20 @@
       "properties": {
         "main_column_first_row_template": {
           "default": "**POSITION**, COMPANY -- LOCATION",
-          "description": "The content of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, First Row",
+          "description": "The content of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, First Row",
           "type": "string"
         },
         "main_column_second_row_template": {
           "default": "SUMMARY\nHIGHLIGHTS",
-          "description": "The content of the second row of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row",
+          "description": "The content of the second row of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row",
           "type": "string"
         },
         "date_and_location_column_template": {
           "default": "DATE",
-          "description": "The content of the second column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "Second Column",
+          "description": "The content of the Date and Location Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Date and Location Column",
           "type": "string"
         }
       },
@@ -2022,20 +2022,20 @@
       "properties": {
         "main_column_first_row_template": {
           "default": "**NAME** -- **LOCATION**",
-          "description": "The content of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, First Row",
+          "description": "The content of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, First Row",
           "type": "string"
         },
         "main_column_second_row_template": {
           "default": "SUMMARY\nHIGHLIGHTS",
-          "description": "The content of the second row of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row",
+          "description": "The content of the second row of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row",
           "type": "string"
         },
         "date_and_location_column_template": {
           "default": "DATE",
-          "description": "The content of the second column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "Second Column",
+          "description": "The content of the Date and Location Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Date and Location Column",
           "type": "string"
         }
       },
@@ -2318,8 +2318,8 @@
       "properties": {
         "main_column_first_row_template": {
           "default": "**INSTITUTION**, DEGREE in AREA -- LOCATION",
-          "description": "The content of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, First Row",
+          "description": "The content of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, First Row",
           "type": "string"
         },
         "degree_column_template": {
@@ -2340,14 +2340,14 @@
         },
         "main_column_second_row_template": {
           "default": "SUMMARY\nHIGHLIGHTS",
-          "description": "The content of the second row of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row",
+          "description": "The content of the second row of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row",
           "type": "string"
         },
         "date_and_location_column_template": {
           "default": "DATE",
-          "description": "The content of the second column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "Second Column",
+          "description": "The content of the Date and Location Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Date and Location Column",
           "type": "string"
         }
       },
@@ -2452,11 +2452,11 @@
         "publication_entry": {
           "$ref": "#/$defs/rendercv__themes__options__PublicationEntry",
           "default": {
-            "main_column_second_row_template": "AUTHORS\nURL (JOURNAL)",
-            "date_and_location_column_template": "LOCATION\nDATE",
             "main_column_first_row_template": "**TITLE**",
+            "main_column_second_row_template": "AUTHORS\nURL (JOURNAL)",
             "main_column_second_row_without_journal_template": "AUTHORS\nURL",
-            "main_column_second_row_without_url_template": "AUTHORS\nJOURNAL"
+            "main_column_second_row_without_url_template": "AUTHORS\nJOURNAL",
+            "date_and_location_column_template": "DATE"
           },
           "description": "Options related to publication entries.",
           "title": "Publication Entry"
@@ -2470,20 +2470,20 @@
       "properties": {
         "main_column_first_row_template": {
           "default": "**POSITION**, COMPANY -- LOCATION",
-          "description": "The content of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, First Row",
+          "description": "The content of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, First Row",
           "type": "string"
         },
         "main_column_second_row_template": {
           "default": "SUMMARY\nHIGHLIGHTS",
-          "description": "The content of the second row of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row",
+          "description": "The content of the second row of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row",
           "type": "string"
         },
         "date_and_location_column_template": {
           "default": "DATE",
-          "description": "The content of the second column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "Second Column",
+          "description": "The content of the Date and Location Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Date and Location Column",
           "type": "string"
         }
       },
@@ -2632,20 +2632,20 @@
       "properties": {
         "main_column_first_row_template": {
           "default": "**NAME** -- **LOCATION**",
-          "description": "The content of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, First Row",
+          "description": "The content of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, First Row",
           "type": "string"
         },
         "main_column_second_row_template": {
           "default": "SUMMARY\nHIGHLIGHTS",
-          "description": "The content of the second row of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row",
+          "description": "The content of the second row of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row",
           "type": "string"
         },
         "date_and_location_column_template": {
           "default": "DATE",
-          "description": "The content of the second column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "Second Column",
+          "description": "The content of the Date and Location Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Date and Location Column",
           "type": "string"
         }
       },
@@ -2859,8 +2859,8 @@
       "properties": {
         "main_column_first_row_template": {
           "default": "**INSTITUTION**, DEGREE in AREA -- LOCATION",
-          "description": "The content of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, First Row",
+          "description": "The content of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, First Row",
           "type": "string"
         },
         "degree_column_template": {
@@ -2881,14 +2881,14 @@
         },
         "main_column_second_row_template": {
           "default": "SUMMARY\nHIGHLIGHTS",
-          "description": "The content of the second row of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row",
+          "description": "The content of the second row of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row",
           "type": "string"
         },
         "date_and_location_column_template": {
           "default": "DATE",
-          "description": "The content of the second column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "Second Column",
+          "description": "The content of the Date and Location Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Date and Location Column",
           "type": "string"
         }
       },
@@ -2993,11 +2993,11 @@
         "publication_entry": {
           "$ref": "#/$defs/rendercv__themes__options__PublicationEntry",
           "default": {
-            "main_column_second_row_template": "AUTHORS\nURL (JOURNAL)",
-            "date_and_location_column_template": "LOCATION\nDATE",
             "main_column_first_row_template": "**TITLE**",
+            "main_column_second_row_template": "AUTHORS\nURL (JOURNAL)",
             "main_column_second_row_without_journal_template": "AUTHORS\nURL",
-            "main_column_second_row_without_url_template": "AUTHORS\nJOURNAL"
+            "main_column_second_row_without_url_template": "AUTHORS\nJOURNAL",
+            "date_and_location_column_template": "DATE"
           },
           "description": "Options related to publication entries.",
           "title": "Publication Entry"
@@ -3011,20 +3011,20 @@
       "properties": {
         "main_column_first_row_template": {
           "default": "**POSITION**, COMPANY -- LOCATION",
-          "description": "The content of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, First Row",
+          "description": "The content of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, First Row",
           "type": "string"
         },
         "main_column_second_row_template": {
           "default": "SUMMARY\nHIGHLIGHTS",
-          "description": "The content of the second row of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row",
+          "description": "The content of the second row of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row",
           "type": "string"
         },
         "date_and_location_column_template": {
           "default": "DATE",
-          "description": "The content of the second column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "Second Column",
+          "description": "The content of the Date and Location Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Date and Location Column",
           "type": "string"
         }
       },
@@ -3173,20 +3173,20 @@
       "properties": {
         "main_column_first_row_template": {
           "default": "**NAME** -- **LOCATION**",
-          "description": "The content of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, First Row",
+          "description": "The content of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, First Row",
           "type": "string"
         },
         "main_column_second_row_template": {
           "default": "SUMMARY\nHIGHLIGHTS",
-          "description": "The content of the second row of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row",
+          "description": "The content of the second row of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row",
           "type": "string"
         },
         "date_and_location_column_template": {
           "default": "DATE",
-          "description": "The content of the second column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "Second Column",
+          "description": "The content of the Date and Location Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Date and Location Column",
           "type": "string"
         }
       },
@@ -3401,8 +3401,8 @@
       "properties": {
         "main_column_first_row_template": {
           "default": "**INSTITUTION**, AREA",
-          "description": "The content of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, First Row",
+          "description": "The content of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, First Row",
           "type": "string"
         },
         "degree_column_template": {
@@ -3423,14 +3423,14 @@
         },
         "main_column_second_row_template": {
           "default": "SUMMARY\nHIGHLIGHTS",
-          "description": "The content of the second row of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row",
+          "description": "The content of the second row of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row",
           "type": "string"
         },
         "date_and_location_column_template": {
           "default": "LOCATION\nDATE",
-          "description": "The content of the second column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "Second Column",
+          "description": "The content of the Date and Location Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Date and Location Column",
           "type": "string"
         }
       },
@@ -3535,11 +3535,11 @@
         "publication_entry": {
           "$ref": "#/$defs/rendercv__themes__options__PublicationEntry",
           "default": {
-            "main_column_second_row_template": "AUTHORS\nURL (JOURNAL)",
-            "date_and_location_column_template": "LOCATION\nDATE",
             "main_column_first_row_template": "**TITLE**",
+            "main_column_second_row_template": "AUTHORS\nURL (JOURNAL)",
             "main_column_second_row_without_journal_template": "AUTHORS\nURL",
-            "main_column_second_row_without_url_template": "AUTHORS\nJOURNAL"
+            "main_column_second_row_without_url_template": "AUTHORS\nJOURNAL",
+            "date_and_location_column_template": "DATE"
           },
           "description": "Options related to publication entries.",
           "title": "Publication Entry"
@@ -3553,20 +3553,20 @@
       "properties": {
         "main_column_first_row_template": {
           "default": "**COMPANY**, POSITION",
-          "description": "The content of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, First Row",
+          "description": "The content of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, First Row",
           "type": "string"
         },
         "main_column_second_row_template": {
           "default": "SUMMARY\nHIGHLIGHTS",
-          "description": "The content of the second row of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row",
+          "description": "The content of the second row of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row",
           "type": "string"
         },
         "date_and_location_column_template": {
           "default": "LOCATION\nDATE",
-          "description": "The content of the second column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "Second Column",
+          "description": "The content of the Date and Location Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Date and Location Column",
           "type": "string"
         }
       },
@@ -3716,20 +3716,20 @@
       "properties": {
         "main_column_first_row_template": {
           "default": "**NAME**",
-          "description": "The content of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, First Row",
+          "description": "The content of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, First Row",
           "type": "string"
         },
         "main_column_second_row_template": {
           "default": "SUMMARY\nHIGHLIGHTS",
-          "description": "The content of the second row of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row",
+          "description": "The content of the second row of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row",
           "type": "string"
         },
         "date_and_location_column_template": {
           "default": "LOCATION\nDATE",
-          "description": "The content of the second column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "Second Column",
+          "description": "The content of the Date and Location Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Date and Location Column",
           "type": "string"
         }
       },
@@ -3820,34 +3820,34 @@
     "rendercv__themes__options__PublicationEntry": {
       "additionalProperties": false,
       "properties": {
-        "main_column_second_row_template": {
-          "default": "AUTHORS\nURL (JOURNAL)",
-          "description": "The content of the second row of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row",
-          "type": "string"
-        },
-        "date_and_location_column_template": {
-          "default": "LOCATION\nDATE",
-          "description": "The content of the second column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "Second Column",
-          "type": "string"
-        },
         "main_column_first_row_template": {
           "default": "**TITLE**",
-          "description": "The content of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column",
+          "description": "The content of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column",
+          "type": "string"
+        },
+        "main_column_second_row_template": {
+          "default": "AUTHORS\nURL (JOURNAL)",
+          "description": "The content of the second row of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row",
           "type": "string"
         },
         "main_column_second_row_without_journal_template": {
           "default": "AUTHORS\nURL",
-          "description": "The content of the first column in case the journal is not given. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row Without Journal",
+          "description": "The content of the Main Column in case the journal is not given. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row Without Journal",
           "type": "string"
         },
         "main_column_second_row_without_url_template": {
           "default": "AUTHORS\nJOURNAL",
-          "description": "The content of the first column in case the `doi` or `url is not given. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row Without URL",
+          "description": "The content of the Main Column in case the `doi` or `url is not given. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row Without URL",
+          "type": "string"
+        },
+        "date_and_location_column_template": {
+          "default": "DATE",
+          "description": "The content of the Date and Location Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Date and Location Column",
           "type": "string"
         }
       },
@@ -4062,8 +4062,8 @@
       "properties": {
         "main_column_first_row_template": {
           "default": "**INSTITUTION**\n*DEGREE in AREA*",
-          "description": "The content of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, First Row",
+          "description": "The content of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, First Row",
           "type": "string"
         },
         "degree_column_template": {
@@ -4084,14 +4084,14 @@
         },
         "main_column_second_row_template": {
           "default": "SUMMARY\nHIGHLIGHTS",
-          "description": "The content of the second row of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row",
+          "description": "The content of the second row of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row",
           "type": "string"
         },
         "date_and_location_column_template": {
           "default": "*LOCATION*\n*DATE*",
-          "description": "The content of the second column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "Second Column",
+          "description": "The content of the Date and Location Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Date and Location Column",
           "type": "string"
         }
       },
@@ -4144,11 +4144,11 @@
         "publication_entry": {
           "$ref": "#/$defs/rendercv__themes__options__PublicationEntry",
           "default": {
-            "main_column_second_row_template": "AUTHORS\nURL (JOURNAL)",
-            "date_and_location_column_template": "LOCATION\nDATE",
             "main_column_first_row_template": "**TITLE**",
+            "main_column_second_row_template": "AUTHORS\nURL (JOURNAL)",
             "main_column_second_row_without_journal_template": "AUTHORS\nURL",
-            "main_column_second_row_without_url_template": "AUTHORS\nJOURNAL"
+            "main_column_second_row_without_url_template": "AUTHORS\nJOURNAL",
+            "date_and_location_column_template": "DATE"
           },
           "description": "Options related to publication entries.",
           "title": "Publication Entry"
@@ -4162,20 +4162,20 @@
       "properties": {
         "main_column_first_row_template": {
           "default": "**POSITION**\n*COMPANY*",
-          "description": "The content of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, First Row",
+          "description": "The content of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, First Row",
           "type": "string"
         },
         "main_column_second_row_template": {
           "default": "SUMMARY\nHIGHLIGHTS",
-          "description": "The content of the second row of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row",
+          "description": "The content of the second row of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row",
           "type": "string"
         },
         "date_and_location_column_template": {
           "default": "*LOCATION*\n*DATE*",
-          "description": "The content of the second column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "Second Column",
+          "description": "The content of the Date and Location Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Date and Location Column",
           "type": "string"
         }
       },
@@ -4240,20 +4240,20 @@
       "properties": {
         "main_column_first_row_template": {
           "default": "**NAME**",
-          "description": "The content of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, First Row",
+          "description": "The content of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, First Row",
           "type": "string"
         },
         "main_column_second_row_template": {
           "default": "SUMMARY\nHIGHLIGHTS",
-          "description": "The content of the second row of the first column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "First Column, Second Row",
+          "description": "The content of the second row of the Main Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Main Column, Second Row",
           "type": "string"
         },
         "date_and_location_column_template": {
           "default": "*LOCATION*\n*DATE*",
-          "description": "The content of the second column. The available placeholders are all the keys used in the entries (in uppercase).",
-          "title": "Second Column",
+          "description": "The content of the Date and Location Column. The available placeholders are all the keys used in the entries (in uppercase).",
+          "title": "Date and Location Column",
           "type": "string"
         }
       },
@@ -4493,7 +4493,7 @@
             "template": "**LABEL:** DETAILS"
           },
           "publication_entry": {
-            "date_and_location_column_template": "LOCATION\nDATE",
+            "date_and_location_column_template": "DATE",
             "main_column_first_row_template": "**TITLE**",
             "main_column_second_row_template": "AUTHORS\nURL (JOURNAL)",
             "main_column_second_row_without_journal_template": "AUTHORS\nURL",
@@ -4540,7 +4540,7 @@
     "rendercv_settings": {
       "$ref": "#/$defs/RenderCVSettings",
       "default": {
-        "date": "2025-01-06",
+        "date": "2025-01-07",
         "render_command": null,
         "bold_keywords": []
       },
