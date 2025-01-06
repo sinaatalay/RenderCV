@@ -22,6 +22,8 @@ modules, each containing a different group of data models.
     main data model that defines the whole input file structure.
 """
 
+import warnings
+
 from .computers import format_date, get_date_input, make_a_url_clean
 from .curriculum_vitae import (
     CurriculumVitae,
@@ -50,6 +52,8 @@ from .locale import Locale
 from .rendercv_data_model import RenderCVDataModel, rendercv_data_model_fields
 from .rendercv_settings import RenderCommandSettings, RenderCVSettings
 
+warnings.filterwarnings("ignore")
+
 __all__ = [
     "BulletEntry",
     "CurriculumVitae",
@@ -57,7 +61,6 @@ __all__ = [
     "Entry",
     "ExperienceEntry",
     "Locale",
-    "make_a_url_clean",
     "NormalEntry",
     "OneLineEntry",
     "PublicationEntry",
@@ -74,6 +77,7 @@ __all__ = [
     "available_themes",
     "format_date",
     "get_date_input",
+    "make_a_url_clean",
     "make_keywords_bold_in_a_string",
     "rendercv_data_model_fields",
 ]

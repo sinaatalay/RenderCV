@@ -39,8 +39,8 @@ from .models import (
     available_themes,
     format_date,
     get_date_input,
-    make_keywords_bold_in_a_string,
     make_a_url_clean,
+    make_keywords_bold_in_a_string,
     rendercv_data_model_fields,
 )
 from .reader import (
@@ -70,7 +70,6 @@ __all__ = [
     "available_entry_type_names",
     "available_social_networks",
     "available_theme_options",
-    "make_a_url_clean",
     "available_themes",
     "create_a_sample_data_model",
     "create_a_sample_yaml_input_file",
@@ -79,6 +78,7 @@ __all__ = [
     "generate_json_schema_file",
     "get_date_input",
     "get_error_message_and_location_and_value_from_a_custom_error",
+    "make_a_url_clean",
     "make_keywords_bold_in_a_string",
     "parse_validation_errors",
     "read_a_yaml_file",

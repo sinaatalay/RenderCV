@@ -6,6 +6,7 @@ import itertools
 import pathlib
 import shutil
 import typing
+import urllib.request
 from typing import Optional
 
 import jinja2
@@ -14,7 +15,6 @@ import pydantic_extra_types.phone_numbers as pydantic_phone_numbers
 import pypdf
 import pytest
 import ruamel.yaml
-import urllib.request
 
 from rendercv import data
 from rendercv.renderer import templater
