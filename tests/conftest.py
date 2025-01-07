@@ -401,8 +401,7 @@ def are_these_two_directories_the_same(
             if not file2.is_dir():
                 return False
             return are_these_two_directories_the_same(file1, file2)
-        else:
-            return are_these_two_files_the_same(file1, file2)
+        return are_these_two_files_the_same(file1, file2)
 
     return True
 
@@ -434,7 +433,7 @@ def are_these_two_files_the_same(file1: pathlib.Path, file2: pathlib.Path) -> bo
                 break
 
         return result
-    elif extension1 == ".png":
+    if extension1 == ".png":
         # fail if the relative difference is greater than 1%
         return (
             file1.stat().st_size - file2.stat().st_size

@@ -1,8 +1,8 @@
 import copy
 import os
 import pathlib
-import sys
 import shutil
+import sys
 
 import jinja2
 import pytest
