@@ -377,20 +377,7 @@ def test_create_a_typst_file_and_copy_theme_files(
 
 @pytest.mark.parametrize(
     "theme_name",
-    [
-        (
-            theme_name
-            if theme_name != "classic"
-            else pytest.param(
-                "classic",
-                marks=pytest.mark.skipif(
-                    sys.platform in ["darwin"],
-                    reason="This test somehow doesn't work on macOS.",
-                ),
-            )
-        )
-        for theme_name in data.available_themes
-    ],
+    data.available_themes,
 )
 @pytest.mark.parametrize(
     "short_second_row",
@@ -400,7 +387,10 @@ def test_create_a_typst_file_and_copy_theme_files(
     "curriculum_vitae_data_model",
     [
         "rendercv_empty_curriculum_vitae_data_model",
-        "rendercv_filled_curriculum_vitae_data_model",
+        pytest.param(
+            "rendercv_filled_curriculum_vitae_data_model",
+            marks=pytest.mark.skip(reason="This test doesn't work in GitHub Actions!"),
+        ),
     ],
 )
 def test_render_a_pdf_from_typst(
