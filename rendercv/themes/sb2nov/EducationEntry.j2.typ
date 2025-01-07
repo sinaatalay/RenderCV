@@ -53,7 +53,7 @@
     <<main_column_second_row_template>>
   ],
   inset: (
-    left: design-entry-types-education-entry-degree-column-width + design-entries-horizontal-space-between-columns + design-entries-left-and-right-margin,
+    left: design-entries-left-and-right-margin,
     right: design-entries-left-and-right-margin,
   ),
 )

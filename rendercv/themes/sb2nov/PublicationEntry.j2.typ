@@ -19,9 +19,7 @@
   ],
 )
   ((* if not (design.entries.short_second_row or date_and_location_column_template.count("\n\n") > main_column_first_row_template.count("\n\n") or design.section_titles.type=="moderncv") *))
-#v(design-highlights-vertical-space-between-highlights)
 #one-col-entry(content:[
-  #v(-design-text-leading)
     ((* if not (entry.doi or entry.url)*))
   <<main_column_second_row_without_url_template|replace("\n\n", "\n\n#v(design-highlights-top-margin - design-text-leading)")>>
     ((*- elif not entry.journal -*))

@@ -23,7 +23,7 @@ class Links(o.Links):
 
 
 o.text_font_family_field_info.default = "XCharter"
-o.text_leading_field_info.default = "0.2em"
+o.text_leading_field_info.default = "0.6em"
 
 
 class Text(o.Text):
@@ -33,8 +33,8 @@ class Text(o.Text):
 
 o.section_titles_type_field_info.default = "moderncv"
 o.section_titles_bold_field_info.default = False
-o.section_titles_vertical_space_above_field_info.default = "0.3cm"
-o.section_titles_vertical_space_below_field_info.default = "0.1cm"
+o.section_titles_vertical_space_above_field_info.default = "0.55cm"
+o.section_titles_vertical_space_below_field_info.default = "0.3cm"
 o.section_titles_font_size_field_info.default = "1.4em"
 o.section_titles_line_thickness_field_info.default = "0.15cm"
 
@@ -52,7 +52,7 @@ class SectionTitles(o.SectionTitles):
     line_thickness: o.TypstDimension = o.section_titles_line_thickness_field_info
 
 
-o.entries_vertical_space_between_entries_field_info.default = "0.30cm"
+o.entries_vertical_space_between_entries_field_info.default = "0.4cm"
 o.entries_left_and_right_margin_field_info.default = "0cm"
 o.entries_horizontal_space_between_columns_field_info.default = "0.4cm"
 
@@ -68,8 +68,8 @@ class Entries(o.Entries):
 
 
 o.highlights_left_margin_field_info.default = "0cm"
-o.highlights_top_margin_field_info.default = "0.1cm"
-o.highlights_vertical_space_between_highlights_field_info.default = "0.13cm"
+o.highlights_top_margin_field_info.default = "0.25cm"
+o.highlights_vertical_space_between_highlights_field_info.default = "0.19cm"
 o.highlights_horizontal_space_between_bullet_and_highlight_field_info.default = "0.3em"
 
 
