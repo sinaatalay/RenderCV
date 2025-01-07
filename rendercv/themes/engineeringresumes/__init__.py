@@ -48,7 +48,7 @@ class Links(o.Links):
     use_external_link_icon: bool = o.links_use_external_link_icon_field_info
 
 
-o.text_font_family_field_info.default = "Charter"
+o.text_font_family_field_info.default = "XCharter"
 o.text_leading_field_info.default = "0.2em"
 
 

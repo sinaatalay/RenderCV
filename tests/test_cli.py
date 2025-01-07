@@ -932,9 +932,10 @@ def test_watcher(tmp_path, input_file_path):
     assert p.is_alive()
     import signal
 
+    p.terminate()
     os.kill(p.pid, signal.SIGINT)  # type: ignore
 
-    p.join()
+    p.join(timeout=12)
     # check if Jane Doe is in the output files:
     assert (tmp_path / "rendercv_output" / "Jane_Doe_CV.pdf").exists()
 

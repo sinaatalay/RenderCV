@@ -38,7 +38,7 @@ FontFamily = Literal[
     "Ubuntu",
     "Noto Sans",
     "Mukta",
-    "Charter",
+    "XCharter",
 ]
 BulletPoint = Literal["•", "◦", "-", "◆", "★", "■", "—", "○"]
 PageSize = Literal[

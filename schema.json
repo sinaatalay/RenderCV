@@ -500,7 +500,7 @@
         "text": {
           "$ref": "#/$defs/rendercv__themes__engineeringresumes__Text",
           "default": {
-            "font_family": "Charter",
+            "font_family": "XCharter",
             "font_size": "10pt",
             "leading": "0.2em",
             "alignment": "justified",
@@ -819,7 +819,7 @@
         "text": {
           "$ref": "#/$defs/rendercv__themes__moderncv__Text",
           "default": {
-            "font_family": "Charter",
+            "font_family": "XCharter",
             "font_size": "10pt",
             "leading": "0.2em",
             "alignment": "justified",
@@ -2185,7 +2185,7 @@
             "Ubuntu",
             "Noto Sans",
             "Mukta",
-            "Charter"
+            "XCharter"
           ],
           "title": "Font Family",
           "type": "string"
@@ -2799,7 +2799,7 @@
       "additionalProperties": false,
       "properties": {
         "font_family": {
-          "default": "Charter",
+          "default": "XCharter",
           "description": "The font family.",
           "enum": [
             "Libertinus Serif",
@@ -2811,7 +2811,7 @@
             "Ubuntu",
             "Noto Sans",
             "Mukta",
-            "Charter"
+            "XCharter"
           ],
           "title": "Font Family",
           "type": "string"
@@ -3256,7 +3256,7 @@
       "additionalProperties": false,
       "properties": {
         "font_family": {
-          "default": "Charter",
+          "default": "XCharter",
           "description": "The font family.",
           "enum": [
             "Libertinus Serif",
@@ -3268,7 +3268,7 @@
             "Ubuntu",
             "Noto Sans",
             "Mukta",
-            "Charter"
+            "XCharter"
           ],
           "title": "Font Family",
           "type": "string"
@@ -3929,7 +3929,7 @@
             "Ubuntu",
             "Noto Sans",
             "Mukta",
-            "Charter"
+            "XCharter"
           ],
           "title": "Font Family",
           "type": "string"
@@ -4351,7 +4351,7 @@
             "Ubuntu",
             "Noto Sans",
             "Mukta",
-            "Charter"
+            "XCharter"
           ],
           "title": "Font Family",
           "type": "string"
