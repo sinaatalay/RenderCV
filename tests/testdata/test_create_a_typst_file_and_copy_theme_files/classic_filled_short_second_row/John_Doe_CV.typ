@@ -224,7 +224,6 @@
           left-column-width: design-entries-date-and-location-width,
           right-column-width: 1fr,
           left-content: [
-            #v(design-text-leading)
             #align(horizon, box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles))
           ],
           right-content: [
@@ -267,10 +266,16 @@
 
 // Last updated date text:
 #if design-page-show-last-updated-date {
+  let dx
+  if design-section-titles-type == "moderncv" {
+    dx = 0cm
+  } else {
+    dx = -design-entries-left-and-right-margin
+  }
   place(
     top + right,
     dy: -design-page-top-margin / 2,
-    dx: -design-entries-left-and-right-margin,
+    dx: dx,
     text(
       [_#locale-catalog-last-updated-date-style _],
       fill: design-colors-last-updated-date-and-page-numbering,

@@ -17,12 +17,12 @@
 #let design-section-titles-line-thickness = 0.5pt
 #let design-section-titles-font-size = 1.2em
 #let design-section-titles-type = "with-parial-line"
-#let design-section-titles-vertical-space-above = 0.3cm
-#let design-section-titles-vertical-space-below = 0.1cm
+#let design-section-titles-vertical-space-above = 0.55cm
+#let design-section-titles-vertical-space-below = 0.3cm
 #let design-section-titles-small-caps = false
 #let design-links-use-external-link-icon = false
 #let design-text-font-size = 10pt
-#let design-text-leading = 0.2em
+#let design-text-leading = 0.6em
 #let design-text-font-family = "XCharter"
 #let design-text-alignment = "justified"
 #let design-text-date-and-location-column-alignment = right
@@ -38,11 +38,11 @@
 #let design-header-alignment = center
 #let design-highlights-summary-left-margin = 0cm
 #let design-highlights-bullet = "•"
-#let design-highlights-top-margin = 0.1cm
+#let design-highlights-top-margin = 0.25cm
 #let design-highlights-left-margin = 0cm
-#let design-highlights-vertical-space-between-highlights = 0.13cm
+#let design-highlights-vertical-space-between-highlights = 0.19cm
 #let design-highlights-horizontal-space-between-bullet-and-highlights = 0.3em
-#let design-entries-vertical-space-between-entries = 0.30cm
+#let design-entries-vertical-space-between-entries = 0.4cm
 #let design-entries-date-and-location-width = 4.15cm
 #let design-entries-allow-page-break-in-entries = true
 #let design-entries-horizontal-space-between-columns = 0.1cm
@@ -224,7 +224,6 @@
           left-column-width: design-entries-date-and-location-width,
           right-column-width: 1fr,
           left-content: [
-            #v(design-text-leading)
             #align(horizon, box(width: 1fr, height: design-section-titles-line-thickness, fill: design-colors-section-titles))
           ],
           right-content: [
@@ -267,10 +266,16 @@
 
 // Last updated date text:
 #if design-page-show-last-updated-date {
+  let dx
+  if design-section-titles-type == "moderncv" {
+    dx = 0cm
+  } else {
+    dx = -design-entries-left-and-right-margin
+  }
   place(
     top + right,
     dy: -design-page-top-margin / 2,
-    dx: -design-entries-left-and-right-margin,
+    dx: dx,
     text(
       [_#locale-catalog-last-updated-date-style _],
       fill: design-colors-last-updated-date-and-page-numbering,
