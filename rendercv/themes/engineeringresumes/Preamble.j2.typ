@@ -277,7 +277,7 @@
 #if design-page-show-last-updated-date {
   let dx
   if design-section-titles-type == "moderncv" {
-    dx = 0
+    dx = 0cm
   } else {
     dx = -design-entries-left-and-right-margin
   }
