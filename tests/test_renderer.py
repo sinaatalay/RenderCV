@@ -163,6 +163,7 @@ def test_create_a_typst_file(
     data_model = data.RenderCVDataModel(
         cv=cv_data_model,
         design={"theme": theme_name},
+        rendercv_settings=data.RenderCVSettings(date="2024-01-01"),  # type: ignore
     )
     output_file_name = f"{str(cv_data_model.name).replace(' ', '_')}_CV.typ"
     reference_file_name = (
@@ -354,12 +355,12 @@ def test_create_a_typst_file_and_copy_theme_files(
     curriculum_vitae_data_model,
     short_second_row,
 ):
-    data.RenderCVSettings(date="2024-01-01")  # type: ignore
     short_s_r = "short_second_row" if short_second_row else "long_second_row"
     reference_directory_name = f"{theme_name}_{folder_name_dictionary[curriculum_vitae_data_model]}_{short_s_r}"
     data_model = data.RenderCVDataModel(
         cv=request.getfixturevalue(curriculum_vitae_data_model),
         design={"theme": theme_name, "entries": {"short_second_row": short_second_row}},
+        rendercv_settings=data.RenderCVSettings(date="2024-01-01"),  # type: ignore
     )
 
     def create_a_typst_file_and_copy_theme_files(output_directory_path, _):
