@@ -24,7 +24,7 @@ from rendercv.renderer import templater
 # the output. Setting update_testdata to True will update the reference files with
 # the latest RenderCV. This should be done with caution, as it will overwrite the
 # reference files with the latest output.
-update_testdata = True
+update_testdata = False
 
 # copy sample entries from docs/update_rendercv_files.py:
 education_entry_dictionary = {
@@ -427,7 +427,7 @@ def are_these_two_files_the_same(file1: pathlib.Path, file2: pathlib.Path) -> bo
     if extension1 == ".pdf":
         pages1 = pypdf.PdfReader(file1).pages
         pages2 = pypdf.PdfReader(file2).pages
-        return len(pages1) != len(pages2)
+        return len(pages1) == len(pages2)
 
         # for i in range(len(pages1)):
         #     if pages1[i].extract_text() != pages2[i].extract_text():
