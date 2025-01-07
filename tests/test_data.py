@@ -135,9 +135,7 @@ def test_generate_json_schema_file(tmp_path):
     assert isinstance(schema, dict)
 
 
-@pytest.mark.skip(
-    reason="We should start using this when we start to use branches for each version."
-)
+@pytest.mark.skip(reason="This tests doesn't work on GitHub Actions!")
 def test_if_the_schema_is_the_latest(root_directory_path):
     original_schema_file_path = root_directory_path / "schema.json"
     original_schema_text = original_schema_file_path.read_text()
