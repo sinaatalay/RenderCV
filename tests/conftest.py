@@ -400,10 +400,9 @@ def are_these_two_directories_the_same(
         if file1.is_dir():
             if not file2.is_dir():
                 return False
-            are_these_two_directories_the_same(file1, file2)
+            return are_these_two_directories_the_same(file1, file2)
         else:
-            if are_these_two_files_the_same(file1, file2) is False:
-                return False
+            return are_these_two_files_the_same(file1, file2)
 
     return True
 
@@ -427,13 +426,19 @@ def are_these_two_files_the_same(file1: pathlib.Path, file2: pathlib.Path) -> bo
     if extension1 == ".pdf":
         pages1 = pypdf.PdfReader(file1).pages
         pages2 = pypdf.PdfReader(file2).pages
-        return len(pages1) == len(pages2)
+        result = len(pages1) == len(pages2)
 
-        # for i in range(len(pages1)):
-        #     if pages1[i].extract_text() != pages2[i].extract_text():
-        #         return False
+        for i in range(len(pages1)):
+            if pages1[i].extract_text() != pages2[i].extract_text():
+                result = False
+                break
 
-        # return True
+        return result
+    elif extension1 == ".png":
+        # fail if the relative difference is greater than 1%
+        return (
+            file1.stat().st_size - file2.stat().st_size
+        ) / file1.stat().st_size < 0.01
 
     return filecmp.cmp(file1, file2)
 

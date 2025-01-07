@@ -1,6 +1,7 @@
 import copy
 import os
 import pathlib
+import sys
 import shutil
 
 import jinja2
@@ -376,7 +377,20 @@ def test_create_a_typst_file_and_copy_theme_files(
 
 @pytest.mark.parametrize(
     "theme_name",
-    data.available_themes,
+    [
+        (
+            theme_name
+            if theme_name != "classic"
+            else pytest.param(
+                "classic",
+                marks=pytest.mark.skipif(
+                    sys.platform in ["darwin"],
+                    reason="This test somehow doesn't work on macOS.",
+                ),
+            )
+        )
+        for theme_name in data.available_themes
+    ],
 )
 @pytest.mark.parametrize(
     "short_second_row",

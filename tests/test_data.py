@@ -806,12 +806,6 @@ def test_create_a_sample_yaml_input_file(tmp_path):
     assert yaml_contents == input_file_path.read_text(encoding="utf-8")
 
 
-@pytest.mark.skip("We want `rendercv_settings` to be in the input file for now.")
-def test_default_input_file_doesnt_have_rendercv_settings():
-    yaml_contents = data.create_a_sample_yaml_input_file()
-    assert "rendercv_settings" not in yaml_contents
-
-
 @pytest.mark.parametrize(
     ("key", "expected_section_title"),
     [
@@ -826,9 +820,6 @@ def test_dictionary_key_to_proper_section_title(key, expected_section_title):
     assert (
         computers.dictionary_key_to_proper_section_title(key) == expected_section_title
     )
-
-
-# def test_if_available_themes_and_avaialble_theme_options_has_the_same_length():
 
 
 @pytest.mark.parametrize(
@@ -932,7 +923,6 @@ def test_bold_keywords():
                     data.PublicationEntry(
                         title="Test Institution",
                         authors=["Test Author"],
-                        summary="test_keyword_3 test_keyword_4",
                     ),
                 ],
                 "test6": [
