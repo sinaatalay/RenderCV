@@ -565,7 +565,10 @@ def markdown_to_typst(markdown_string: str) -> str:
 
             markdown_string = markdown_string.replace(old_italic_text, new_italic_text)
 
-    return markdown_string
+    # convert any remaining asterisks to Typst's `#sym.ast.basic`:
+    markdown_string = markdown_string.replace("*", "#sym.ast.basic ")
+
+    return markdown_string  # noqa: RET504
 
 
 def transform_markdown_sections_to_something_else_sections(
