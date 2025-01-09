@@ -22,6 +22,8 @@ except ImportError as e:
     from .. import _parial_install_error_message
 
     raise ImportError(_parial_install_error_message) from e
+
+from packaging.version import Version
 from rich import print
 
 from .. import __version__, data
@@ -126,7 +128,8 @@ def warn_if_new_version_is_available() -> bool:
         True if there is a new version, and False otherwise.
     """
     latest_version = utilities.get_latest_version_number_from_pypi()
-    if latest_version is not None and __version__ != latest_version:
+    version = Version(__version__)
+    if latest_version is not None and version < latest_version:
         warning(
             f"A new version of RenderCV is available! You are using v{__version__},"
             f" and the latest version is v{latest_version}."
