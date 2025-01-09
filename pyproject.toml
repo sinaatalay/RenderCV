@@ -62,6 +62,7 @@ dependencies = [
     'pydantic==2.9.2',              # to validate and parse the input file
     'pycountry==24.6.1',            # for ISO 639-3 validation
     'pydantic-extra-types==2.10.1', # to validate some extra types
+    "packaging",                    # to validate the version number
 ]
 classifiers = [
     "Intended Audience :: Science/Research",
