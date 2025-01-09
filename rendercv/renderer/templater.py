@@ -542,7 +542,7 @@ def markdown_to_typst(markdown_string: str) -> str:
     if bold_and_italics is not None:
         for bold_and_italic_text in bold_and_italics:
             old_bold_and_italic_text = f"***{bold_and_italic_text}***"
-            new_bold_and_italic_text = f"#[ONE_STAR_{bold_and_italic_text}_ONE_STAR]"
+            new_bold_and_italic_text = f"#strong[#emph[{bold_and_italic_text}]]"
 
             markdown_string = markdown_string.replace(
                 old_bold_and_italic_text, new_bold_and_italic_text
@@ -553,7 +553,7 @@ def markdown_to_typst(markdown_string: str) -> str:
     if bolds is not None:
         for bold_text in bolds:
             old_bold_text = f"**{bold_text}**"
-            new_bold_text = f"#[ONE_STAR{bold_text}ONE_STAR]"
+            new_bold_text = f"#strong[{bold_text}]"
             markdown_string = markdown_string.replace(old_bold_text, new_bold_text)
 
     # convert italic
@@ -561,11 +561,11 @@ def markdown_to_typst(markdown_string: str) -> str:
     if italics is not None:
         for italic_text in italics:
             old_italic_text = f"*{italic_text}*"
-            new_italic_text = f"#[_{italic_text}_]"
+            new_italic_text = f"#emph[{italic_text}]"
 
             markdown_string = markdown_string.replace(old_italic_text, new_italic_text)
 
-    return markdown_string.replace("ONE_STAR", "*")
+    return markdown_string
 
 
 def transform_markdown_sections_to_something_else_sections(
