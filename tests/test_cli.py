@@ -716,6 +716,7 @@ def test_rendercv_version_when_there_is_not_a_new_version(monkeypatch):
 
     result = runner.invoke(cli.app, ["--version"])
 
+    assert "A new version of RenderCV is available!" not in result.stdout
     assert __version__ in result.stdout
 
 
