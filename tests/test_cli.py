@@ -698,6 +698,17 @@ def test_rendercv_version_when_there_is_a_new_version(monkeypatch):
     assert "A new version of RenderCV is available!" in result.stdout
 
 
+def test_rendercv_no_version_when_there_is_no_new_version(monkeypatch):
+    monkeypatch.setattr(
+        utilities, "get_latest_version_number_from_pypi", lambda: Version("00.00.00")
+    )
+
+    result = runner.invoke(cli.app, ["--version"])
+
+    assert "A new version of RenderCV is available!" not in result.stdout
+    assert __version__ in result.stdout
+
+
 def test_rendercv_version_when_there_is_not_a_new_version(monkeypatch):
     monkeypatch.setattr(
         utilities, "get_latest_version_number_from_pypi", lambda: Version(__version__)
