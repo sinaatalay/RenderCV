@@ -366,20 +366,29 @@ def input_template_to_typst(
     if input_template is None:
         return ""
 
+    output = markdown_to_typst(input_template)
+
+    # NOTE: We need the `greedy_on_not_found` flag here. Otherwise,
+    #       if a placeholder is not found, the [] around #emph/strong will be
+    #       removed and its a pain to then filter them out. -MK
     output = replace_placeholders_with_actual_values(
-        markdown_to_typst(input_template), placeholders
+        output,
+        placeholders,
+        greedy_on_not_found=False,
     )
 
     # If \n is escaped, revert:
     output = output.replace("\\n", "\n")
 
     # If there are blank italics and bolds, remove them:
-    output = output.replace("#[__]", "")
-    output = output.replace("#[**]", "")
+    output = output.replace("#emph[]", "")
+    output = output.replace("#strong[]", "")
 
     # Check if there are any letters in the input template. If not, return an empty
     if not re.search(r"[a-zA-Z]", input_template):
         return ""
+
+    # TODO: Make this use #emph and #strong instead of * and _ -MK
 
     # Find italic and bold links and fix them:
     # For example:
@@ -404,7 +413,18 @@ def input_template_to_typst(
     # Replace all multiple \n with a double \n:
     output = re.sub(r"\n+", r"\n\n", output)
 
-    return output.strip()
+    # Strip whitespace
+    output = output.strip()
+
+    # NOTE: Stripping hack to deal with an issue in engineeringclassic experiance entry where **NAME** -- **LOCATION**
+    #       leaved the '--' when location is not specified. We should get rid of this when we fix the engineeringclassic
+    #       template to work kindof like the education entry where it selects the correct template based on the fields.
+    #       -MK
+    # Strip non-alphanumeric, non-typst characters from the beginning and end of the string:
+    output = re.sub(r"^[^\w\s#\[\]\n\(\)]*", "", output)
+    output = re.sub(r"[^\w\s#\[\]\n\(\)]*$", "", output)
+
+    return output  # noqa: RET504
 
 
 def escape_characters(string: str, escape_dictionary: dict[str, str]) -> str:
@@ -537,6 +557,18 @@ def markdown_to_typst(markdown_string: str) -> str:
 
             markdown_string = markdown_string.replace(old_link_string, new_link_string)
 
+    # Process escaped asterisks in the yaml (such that they are actual asterisks,
+    # and not markers for bold/italics). We need to temporarily replace them with
+    # a dummy string.
+
+    ONE_STAR = "ONE_STAR"
+
+    # NOTE: We get a mix of escape levels depending on whether the star is in a quoted
+    #       or unquoted yaml entry. This is a bit of a mess but below seems to work
+    #       as i would instinctively expect.
+    markdown_string = markdown_string.replace("\\\\*", ONE_STAR)
+    markdown_string = markdown_string.replace("\\*", ONE_STAR)
+
     # convert bold and italic:
     bold_and_italics = re.findall(r"\*\*\*(.+?)\*\*\*", markdown_string)
     if bold_and_italics is not None:
@@ -565,8 +597,22 @@ def markdown_to_typst(markdown_string: str) -> str:
 
             markdown_string = markdown_string.replace(old_italic_text, new_italic_text)
 
-    # convert any remaining asterisks to Typst's `#sym.ast.basic`:
-    markdown_string = markdown_string.replace("*", "#sym.ast.basic ")
+    # Revert normal asterisks then convert them to Typst's asterisks
+    markdown_string = markdown_string.replace(ONE_STAR, "*")
+
+    # convert any remaining asterisks to Typst's asterisk
+    # - Asterisk with a space can just be replaced.
+    # - Asterisk without a space needs a zero-width box to delimit it.
+    TYPST_AST = "#sym.ast.basic"
+    ZERO_BOX = "#h(0pt, weak: true)"
+    markdown_string = markdown_string.replace("* ", TYPST_AST + " ")
+    markdown_string = markdown_string.replace("*", TYPST_AST + ZERO_BOX)
+
+    # At this point, the document ought to have absolutely no '*' characters left!
+    # NOTE: The final typst file might still have some asterisks when specifying a
+    #       size, for example `#v(design-text-font-size * 0.4)`
+    # XXX: Maybe put this behind some kind of debug flag? -MK
+    # assert "*" not in markdown_string
 
     return markdown_string  # noqa: RET504
 
@@ -641,7 +687,9 @@ def transform_markdown_sections_to_typst_sections(
 
 
 def replace_placeholders_with_actual_values(
-    text: str, placeholders: dict[str, Optional[str]]
+    text: str,
+    placeholders: dict[str, Optional[str]],
+    greedy_on_not_found: bool = True,
 ) -> str:
     """Replace the placeholders in a string with actual values.
 
@@ -658,14 +706,17 @@ def replace_placeholders_with_actual_values(
         if value:
             text = text.replace(placeholder, str(value))
         else:
-            # Replace the placeholder, all non-alphanumeric characters (including
-            # whitespace) around it (if there are any), and the new line after it (if
-            # there is any) with an empty string:
-            text = re.sub(
-                rf"[^\w\]\(\)]*{placeholder}[^\w\[\(\)\s]*\n?",
-                "",
-                text,
-            )
+            if greedy_on_not_found:
+                # Replace the placeholder, all non-alphanumeric characters (including
+                # whitespace) around it (if there are any), and the new line after it (if
+                # there is any) with an empty string:
+                text = re.sub(
+                    rf"[^\w\]\(\)]*{placeholder}[^\w\[\(\)\s]*\n?",
+                    "",
+                    text,
+                )
+            else:
+                text = text.replace(placeholder, "")
 
     return text
 
