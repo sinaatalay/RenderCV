@@ -388,25 +388,23 @@ def input_template_to_typst(
     if not re.search(r"[a-zA-Z]", input_template):
         return ""
 
-    # TODO: Make this use #emph and #strong instead of * and _ -MK
-
     # Find italic and bold links and fix them:
     # For example:
-    # Convert `#[_#link("https://google.com")[italic link]]`` to
-    # `#link("https://google.com")[_italic link_]`
+    # Convert `#emph[#link("https://google.com")[italic link]]` to
+    # `#link("https://google.com")[#emph[italic link]]`
     output = re.sub(
-        r"#\[_#link\(\"(.*?)\"\)\[(.*?)\]_\]",
-        r'#link("\1")[_\2_]',
+        r"#emph\[#link\(\"(.*?)\"\)\[(.*?)\]\]",
+        r'#link("\1")[#emph[\2]]',
         output,
     )
     output = re.sub(
-        r"#\[\*#link\(\"(.*?)\"\)\[(.*?)\]\*\]",
-        r'#link("\1")[*\2*]',
+        r"#strong\[#link\(\"(.*?)\"\)\[(.*?)\]\]",
+        r'#link("\1")[#strong[\2]]',
         output,
     )
     output = re.sub(
-        r"#\[\*_#link\(\"(.*?)\"\)\[(.*?)\]_\*\]",
-        r'#link("\1")[*_\2_*]',
+        r"#strong\[#emph\[#link\(\"(.*?)\"\)\[(.*?)\]\]\]",
+        r'#link("\1")[#strong[#emph[\2]]]',
         output,
     )
 
