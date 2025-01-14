@@ -71,7 +71,7 @@ RenderCV engine is very easy to install (`pip install "rendercv[full]"`) and eas
 
 ## Motivation
 
-We are developing a [purpose-built app](https://rendercv.com) for writing CVs and resumes that will be available on mobile and web. This Python project is the foundation of that app. Check out [our blog post](https://rendercv.com/introducing-rendercv/) to learn more about why one would use such an app.
+We are developing a [purpose-built app](https://rendercv.com) for writing CVs and resumes that will be available on mobile and web. This Python project is the foundation of that app. Check out [our blog post](https://rendercv.com/rendercv-latex-cv-framework/) to learn more about why one would use such an app.
 
 ## Contributing
 
