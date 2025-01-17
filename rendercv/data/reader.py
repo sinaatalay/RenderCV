@@ -204,7 +204,7 @@ def parse_validation_errors(
         new_error = {
             "loc": tuple(location.split(".")),
             "msg": message,
-            "input": str(input),
+            "input": repr(input),
         }
 
         # if new_error is not in new_errors, then add it to new_errors
