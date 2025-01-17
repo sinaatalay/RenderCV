@@ -45,7 +45,7 @@ app = typer.Typer(
 def cli_command_render(
     input_file_name: Annotated[str, typer.Argument(help="The YAML input file.")],
     design: Annotated[
-        Optional[str],
+        Optional[pathlib.Path],
         typer.Option(
             "--design",
             "-d",
@@ -181,7 +181,6 @@ def cli_command_render(
     watch = input_file_as_a_dict["rendercv_settings"]["render_command"]["watch"]
 
     if watch:
-
         @printer.handle_and_print_raised_exceptions_without_exit
         def run_rendercv():
             input_file_as_a_dict = u.update_render_command_settings_of_the_input_file(

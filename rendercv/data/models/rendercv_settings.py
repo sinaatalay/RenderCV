@@ -5,7 +5,7 @@ The `rendercv.models.rendercv_settings` module contains the data model of the
 
 import datetime
 import pathlib
-from typing import Optional
+from typing import Optional, Union
 
 import pydantic
 
@@ -40,7 +40,7 @@ DATE_INPUT = datetime.date.today()
 class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
     """This class is the data model of the `render` command's settings."""
 
-    design: Optional[str] = pydantic.Field(
+    design: Optional[Union[str, pathlib.Path]] = pydantic.Field(
         default=None,
         title="`design` Field's YAML File",
         description=(

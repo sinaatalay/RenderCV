@@ -7,7 +7,7 @@ the time span between two dates, the date string, the URL of a social network, e
 import pathlib
 import re
 from datetime import date as Date
-from typing import Optional
+from typing import Optional, Union
 
 import phonenumbers
 
@@ -99,8 +99,13 @@ def format_date(date: Date, date_template: Optional[str] = None) -> str:
     return date_template
 
 
-def replace_placeholders(value: str) -> str:
-    """Replaces the placeholders in a string with the corresponding values."""
+def replace_placeholders(value: Union[str, pathlib.Path]) -> str:
+    """Replaces the placeholders in a string or `pathlib.Path` with the
+    corresponding values.
+    """
+    if isinstance(value, pathlib.Path):
+        value = str(value)
+
     name = curriculum_vitae.get("name", "None")
     full_month_names = locale["full_names_of_months"]
     short_month_names = locale["abbreviations_for_months"]
@@ -130,10 +135,11 @@ def replace_placeholders(value: str) -> str:
     return value
 
 
-def convert_string_to_path(value: str) -> pathlib.Path:
-    """Converts a string to a `pathlib.Path` object by replacing the placeholders
-    with the corresponding values. If the path is not an absolute path, it is
-    converted to an absolute path by prepending the current working directory.
+def convert_string_to_path(value: Union[str, pathlib.Path]) -> pathlib.Path:
+    """Converts a string or `pathlib.Path` to a `pathlib.Path` object by
+    replacing the placeholders with the corresponding values. If the path is
+    not an absolute path, it is converted to an absolute path by prepending
+    the current working directory.
     """
     value = replace_placeholders(value)
 
