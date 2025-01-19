@@ -366,15 +366,9 @@ def input_template_to_typst(
     if input_template is None:
         return ""
 
-    output = markdown_to_typst(input_template)
-
-    # NOTE: We need the `greedy_on_not_found` flag here. Otherwise,
-    #       if a placeholder is not found, the [] around #emph/strong will be
-    #       removed and its a pain to then filter them out. -MK
     output = replace_placeholders_with_actual_values(
-        output,
+        markdown_to_typst(input_template),
         placeholders,
-        greedy_on_not_found=False,
     )
 
     # If \n is escaped, revert:
@@ -414,15 +408,13 @@ def input_template_to_typst(
     # Strip whitespace
     output = output.strip()
 
-    # NOTE: Stripping hack to deal with an issue in engineeringclassic experiance entry where **NAME** -- **LOCATION**
-    #       leaved the '--' when location is not specified. We should get rid of this when we fix the engineeringclassic
-    #       template to work kindof like the education entry where it selects the correct template based on the fields.
-    #       -MK
-    # Strip non-alphanumeric, non-typst characters from the beginning and end of the string:
+    # Strip non-alphanumeric, non-typst characters from the beginning and end of the
+    # string. For example, when location is not given in a template like this:
+    # "NAME -- LOCATION", "NAME -- " should become "NAME".
     output = re.sub(r"^[^\w\s#\[\]\n\(\)]*", "", output)
     output = re.sub(r"[^\w\s#\[\]\n\(\)]*$", "", output)
 
-    return output  # noqa: RET504
+    return output
 
 
 def escape_characters(string: str, escape_dictionary: dict[str, str]) -> str:
@@ -687,7 +679,6 @@ def transform_markdown_sections_to_typst_sections(
 def replace_placeholders_with_actual_values(
     text: str,
     placeholders: dict[str, Optional[str]],
-    greedy_on_not_found: bool = True,
 ) -> str:
     """Replace the placeholders in a string with actual values.
 
@@ -704,17 +695,7 @@ def replace_placeholders_with_actual_values(
         if value:
             text = text.replace(placeholder, str(value))
         else:
-            if greedy_on_not_found:
-                # Replace the placeholder, all non-alphanumeric characters (including
-                # whitespace) around it (if there are any), and the new line after it (if
-                # there is any) with an empty string:
-                text = re.sub(
-                    rf"[^\w\]\(\)]*{placeholder}[^\w\[\(\)\s]*\n?",
-                    "",
-                    text,
-                )
-            else:
-                text = text.replace(placeholder, "")
+            text = text.replace(placeholder, "")
 
     return text
 
