@@ -20,7 +20,7 @@ except ImportError as e:
 
     raise ImportError(_parial_install_error_message) from e
 
-from packaging.version import Version
+import packaging.version
 
 from .. import data, renderer
 from . import printer
@@ -124,7 +124,7 @@ def copy_files(paths: list[pathlib.Path] | pathlib.Path, new_path: pathlib.Path)
             shutil.copy2(file_path, png_path_with_page_number)
 
 
-def get_latest_version_number_from_pypi() -> Optional[Version]:
+def get_latest_version_number_from_pypi() -> Optional[packaging.version.Version]:
     """Get the latest version number of RenderCV from PyPI.
 
     Example:
@@ -146,7 +146,7 @@ def get_latest_version_number_from_pypi() -> Optional[Version]:
             encoding = response.info().get_content_charset("utf-8")
             json_data = json.loads(data.decode(encoding))
             version_string = json_data["info"]["version"]
-            version = Version(version_string)
+            version = packaging.version.Version(version_string)
     except Exception:
         pass
 

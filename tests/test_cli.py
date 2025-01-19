@@ -8,11 +8,11 @@ import sys
 import time
 from datetime import date as Date
 
+import packaging.version
 import pydantic
 import pytest
 import ruamel.yaml
 import typer.testing
-from packaging.version import Version
 
 import rendercv.cli as cli
 import rendercv.cli.printer as printer
@@ -671,12 +671,14 @@ def test_main_file():
 
 def test_get_latest_version_number_from_pypi():
     version = utilities.get_latest_version_number_from_pypi()
-    assert isinstance(version, Version)
+    assert isinstance(version, packaging.version.Version)
 
 
 def test_if_welcome_prints_new_version_available(monkeypatch):
     monkeypatch.setattr(
-        utilities, "get_latest_version_number_from_pypi", lambda: Version("99.99.99")
+        utilities,
+        "get_latest_version_number_from_pypi",
+        lambda: packaging.version.Version("99.99.99"),
     )
     import contextlib
     import io
@@ -690,7 +692,9 @@ def test_if_welcome_prints_new_version_available(monkeypatch):
 
 def test_rendercv_version_when_there_is_a_new_version(monkeypatch):
     monkeypatch.setattr(
-        utilities, "get_latest_version_number_from_pypi", lambda: Version("99.99.99")
+        utilities,
+        "get_latest_version_number_from_pypi",
+        lambda: packaging.version.Version("99.99.99"),
     )
 
     result = runner.invoke(cli.app, ["--version"])
@@ -700,7 +704,9 @@ def test_rendercv_version_when_there_is_a_new_version(monkeypatch):
 
 def test_rendercv_no_version_when_there_is_no_new_version(monkeypatch):
     monkeypatch.setattr(
-        utilities, "get_latest_version_number_from_pypi", lambda: Version("00.00.00")
+        utilities,
+        "get_latest_version_number_from_pypi",
+        lambda: packaging.version.Version("00.00.00"),
     )
 
     result = runner.invoke(cli.app, ["--version"])
@@ -711,7 +717,9 @@ def test_rendercv_no_version_when_there_is_no_new_version(monkeypatch):
 
 def test_rendercv_version_when_there_is_not_a_new_version(monkeypatch):
     monkeypatch.setattr(
-        utilities, "get_latest_version_number_from_pypi", lambda: Version(__version__)
+        utilities,
+        "get_latest_version_number_from_pypi",
+        lambda: packaging.version.Version(__version__),
     )
 
     result = runner.invoke(cli.app, ["--version"])
@@ -722,13 +730,17 @@ def test_rendercv_version_when_there_is_not_a_new_version(monkeypatch):
 
 def test_warn_if_new_version_is_available(monkeypatch):
     monkeypatch.setattr(
-        utilities, "get_latest_version_number_from_pypi", lambda: Version(__version__)
+        utilities,
+        "get_latest_version_number_from_pypi",
+        lambda: packaging.version.Version(__version__),
     )
 
     assert not printer.warn_if_new_version_is_available()
 
     monkeypatch.setattr(
-        utilities, "get_latest_version_number_from_pypi", lambda: Version("99.99.99")
+        utilities,
+        "get_latest_version_number_from_pypi",
+        lambda: packaging.version.Version("99.99.99"),
     )
 
     assert printer.warn_if_new_version_is_available()
