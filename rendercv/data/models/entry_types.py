@@ -388,9 +388,7 @@ class EntryBase(EntryWithDate):
 
         Example:
             ```python
-            entry = dm.EntryBase(
-                start_date="2020-10-11", end_date="2021-04-04"
-            ).date_string
+            entry = dm.EntryBase(start_date="2020-10-11", end_date="2021-04-04").date_string
             ```
             returns
             `"Nov 2020 to Apr 2021"`
