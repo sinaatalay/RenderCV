@@ -311,7 +311,7 @@ def cli_command_create_theme(
     if based_on not in data.available_themes:
         printer.error(
             f'The theme "{based_on}" is not in the list of available themes:'
-            f' {", ".join(data.available_themes)}'
+            f" {', '.join(data.available_themes)}"
         )
 
     theme_folder = utilities.copy_templates(

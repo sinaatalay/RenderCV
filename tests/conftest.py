@@ -48,8 +48,8 @@ experience_entry_dictionary = {
     "end_date": "2021-08-12",
     "highlights": [
         (
-            "Developed an [IOS application](https://example.com) that has received"
-            " more than **100,000 downloads**."
+            "Developed an [IOS application](https://example.com) that has received more"
+            " than **100,000 downloads**."
         ),
         "Managed a team of **5** engineers.",
     ],
@@ -172,14 +172,14 @@ def return_a_value_for_a_field_type(
         "end_date": "2020-06",
         "date": "2021-09",
         "summary": (
-            "Did *this* and this is a **bold** [link](https://example.com). But I"
-            " must explain to you how all this mistaken idea of denouncing pleasure"
-            " and praising pain was born and I will give you a complete account of"
-            " the system, and expound the actual teachings of the great explorer of"
-            " the truth, the master-builder of human happiness. No one rejects,"
-            " dislikes, or avoids pleasure itself, because it is pleasure, but"
-            " because those who do not know how to pursue pleasure rationally"
-            " encounter consequences that are extremely painful."
+            "Did *this* and this is a **bold** [link](https://example.com). But I must"
+            " explain to you how all this mistaken idea of denouncing pleasure and"
+            " praising pain was born and I will give you a complete account of the"
+            " system, and expound the actual teachings of the great explorer of the"
+            " truth, the master-builder of human happiness. No one rejects, dislikes,"
+            " or avoids pleasure itself, because it is pleasure, but because those who"
+            " do not know how to pursue pleasure rationally encounter consequences that"
+            " are extremely painful."
         ),
         "highlights": [
             (
@@ -229,14 +229,14 @@ def return_a_value_for_a_field_type(
         pydantic.HttpUrl: "https://example.com",
         pydantic_phone_numbers.PhoneNumber: "+905419999999",
         str: (
-            "Did *this* and this is a **bold** [link](https://example.com). But I"
-            " must explain to you how all this mistaken idea of denouncing pleasure"
-            " and praising pain was born and I will give you a complete account of"
-            " the system, and expound the actual teachings of the great explorer of"
-            " the truth, the master-builder of human happiness. No one rejects,"
-            " dislikes, or avoids pleasure itself, because it is pleasure, but"
-            " because those who do not know how to pursue pleasure rationally"
-            " encounter consequences that are extremely painful."
+            "Did *this* and this is a **bold** [link](https://example.com). But I must"
+            " explain to you how all this mistaken idea of denouncing pleasure and"
+            " praising pain was born and I will give you a complete account of the"
+            " system, and expound the actual teachings of the great explorer of the"
+            " truth, the master-builder of human happiness. No one rejects, dislikes,"
+            " or avoids pleasure itself, because it is pleasure, but because those who"
+            " do not know how to pursue pleasure rationally encounter consequences that"
+            " are extremely painful."
         ),
         list[str]: ["A string", "Another string"],
         int: 1,
