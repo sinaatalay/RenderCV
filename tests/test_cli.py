@@ -1013,6 +1013,16 @@ def test_read_and_construct_the_input(
     locale,
     rendercv_settings,
 ):
+    # create a folder with space in it:
+    folder = input_file_path.parent / "folder with space"
+    folder.mkdir()
+
+    # Copy input, design, locale, and rendercv_settings files to the folder with space:
+    input_file_path = pathlib.Path(shutil.copy(input_file_path, folder))
+    design_file_path = shutil.copy(design_file_path, folder)
+    locale_file_path = shutil.copy(locale_file_path, folder)
+    rendercv_settings_file_path = shutil.copy(rendercv_settings_file_path, folder)
+
     cli_render_arguments = {
         "design": str(design_file_path) if design else None,
         "locale": str(locale_file_path) if locale else None,
@@ -1028,17 +1038,25 @@ def test_read_and_construct_the_input(
         input_file_path=input_file_path, cli_render_arguments=cli_render_arguments
     )
 
+    # validate the input dictionary:
+    data.validate_input_dictionary_and_return_the_data_model(input_dict)
+
+    if rendercv_settings:
+        if design:
+            del input_dict["rendercv_settings"]["render_command"]["design"]
+
+        if locale:
+            del input_dict["rendercv_settings"]["render_command"]["locale"]
+
+        del input_dict["rendercv_settings"]["render_command"]["rendercv_settings"]
+
     fields = list(data.rendercv_data_model_fields)
     fields.remove("cv")
     for field in fields:
-        if field == "rendercv_settings":
-            if locals()[field]:
-                assert input_dict["rendercv_settings"]["render_command"][
-                    "dont_generate_html"
+        if locals()[field]:
+            assert (
+                input_dict[field]
+                == data.read_a_yaml_file(pathlib.Path(locals()[f"{field}_file_path"]))[
+                    field
                 ]
-            else:
-                pass
-        else:
-            assert (field in input_dict) == locals()[
-                field
-            ], f"{field} is in dict: {field in input_dict}, expected: {locals()[field]}"
+            )
