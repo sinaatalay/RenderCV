@@ -433,11 +433,6 @@ def are_these_two_files_the_same(file1: pathlib.Path, file2: pathlib.Path) -> bo
                 break
 
         return result
-    if extension1 == ".png":
-        # fail if the relative difference is greater than 1%
-        return (
-            file1.stat().st_size - file2.stat().st_size
-        ) / file1.stat().st_size < 0.01
 
     return filecmp.cmp(file1, file2)
 
