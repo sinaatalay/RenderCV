@@ -40,7 +40,7 @@ DATE_INPUT = datetime.date.today()
 class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
     """This class is the data model of the `render` command's settings."""
 
-    design: Optional[str] = pydantic.Field(
+    design: Optional[pathlib.Path] = pydantic.Field(
         default=None,
         title="`design` Field's YAML File",
         description=(
@@ -48,7 +48,7 @@ class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
         ),
     )
 
-    rendercv_settings: Optional[str] = pydantic.Field(
+    rendercv_settings: Optional[pathlib.Path] = pydantic.Field(
         default=None,
         title="`rendercv_settings` Field's YAML File",
         description=(
@@ -57,7 +57,7 @@ class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
         ),
     )
 
-    locale: Optional[str] = pydantic.Field(
+    locale: Optional[pathlib.Path] = pydantic.Field(
         default=None,
         title="`locale` Field's YAML File",
         description=(
