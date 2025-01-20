@@ -2,7 +2,6 @@ import copy
 import os
 import pathlib
 import shutil
-import sys
 
 import jinja2
 import pytest
