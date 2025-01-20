@@ -2,7 +2,6 @@ import copy
 import os
 import pathlib
 import shutil
-import sys
 
 import jinja2
 import pytest
@@ -426,10 +425,7 @@ def test_create_a_typst_file_and_copy_theme_files(
     "curriculum_vitae_data_model",
     [
         "rendercv_empty_curriculum_vitae_data_model",
-        pytest.param(
-            "rendercv_filled_curriculum_vitae_data_model",
-            marks=pytest.mark.skip(reason="This test doesn't work on GitHub Actions!"),
-        ),
+        "rendercv_filled_curriculum_vitae_data_model",
     ],
 )
 def test_render_a_pdf_from_typst(
@@ -532,10 +528,6 @@ def test_render_html_from_markdown_nonexistent_markdown_file():
         renderer.render_an_html_from_markdown(file_path)
 
 
-@pytest.mark.skipif(
-    sys.platform == "darwin",
-    reason="This test doesn't work on GitHub Actions MacOS!",
-)
 def test_render_pngs_from_typst(
     run_a_function_and_check_if_output_is_the_same_as_reference,
 ):

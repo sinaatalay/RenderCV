@@ -59,7 +59,7 @@ dependencies = [
     'Jinja2==3.1.5',                # to generate Typst and Markdown files
     'phonenumbers==8.13.52',        # to validate phone numbers
     'email-validator==2.2.0',       # to validate email addresses
-    'pydantic==2.10.5',              # to validate and parse the input file
+    'pydantic==2.10.5',             # to validate and parse the input file
     'pycountry==24.6.1',            # for ISO 639-3 validation
     'pydantic-extra-types==2.10.1', # to validate some extra types
 ]
@@ -84,7 +84,7 @@ full = [
     "markdown==3.7",         # to convert Markdown to HTML
     "watchdog==6.0.0",       # to poll files for updates
     "typst==0.12.2",         # to render PDF from Typst source files
-    "rendercv-fonts==0.2.0", # some font files for RenderCV
+    "rendercv-fonts==0.3.0", # some font files for RenderCV
     "packaging==24.2",       # to validate the version number
 ]
 
@@ -138,7 +138,7 @@ features = ["full"] # to install full optional dependencies
 # Hatch allows us to define scripts that can be run in the activated virtual environment
 # with `hatch run ENV_NAME:SCRIPT_NAME`.
 # Format all the code in the `rendercv` package with `black`:
-format = "ruff check --fix && ruff format && black rendercv docs tests" # hatch run format
+format = "ruff check --fix && black rendercv docs tests && ruff format" # hatch run format
 # Lint the code in the `rendercv` package with `ruff`:
 lint = "ruff check" # hatch run lint
 # Check types in the `rendercv` package with `pyright`:
