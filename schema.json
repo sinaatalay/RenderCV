@@ -23,9 +23,6 @@
           "const": "classic",
           "default": "classic",
           "description": "The theme of the CV. It just changes the default values.",
-          "enum": [
-            "classic"
-          ],
           "title": "Theme",
           "type": "string"
         },
@@ -316,9 +313,6 @@
           "const": "engineeringclassic",
           "default": "engineeringresumes",
           "description": "The theme of the CV. It just changes the default values.",
-          "enum": [
-            "engineeringclassic"
-          ],
           "title": "Theme",
           "type": "string"
         },
@@ -466,9 +460,6 @@
           "const": "engineeringresumes",
           "default": "engineeringresumes",
           "description": "The theme of the CV. It just changes the default values.",
-          "enum": [
-            "engineeringresumes"
-          ],
           "title": "Theme",
           "type": "string"
         },
@@ -785,9 +776,6 @@
           "const": "moderncv",
           "default": "moderncv",
           "description": "The theme of the CV. It just changes the default values.",
-          "enum": [
-            "moderncv"
-          ],
           "title": "Theme",
           "type": "string"
         },
@@ -933,7 +921,7 @@
       "description": "This class is the data model of the RenderCV settings.",
       "properties": {
         "date": {
-          "default": "2025-01-07",
+          "default": "2025-01-19",
           "description": "The date that will be used everywhere (e.g., in the output file names, last updated date, computation of time spans for the events that are currently happening, etc.). The default value is the current date.",
           "format": "date",
           "title": "Date",
@@ -972,6 +960,7 @@
           "title": "`design` Field's YAML File",
           "oneOf": [
             {
+              "format": "path",
               "type": "string"
             }
           ]
@@ -982,6 +971,7 @@
           "title": "`rendercv_settings` Field's YAML File",
           "oneOf": [
             {
+              "format": "path",
               "type": "string"
             }
           ]
@@ -992,6 +982,7 @@
           "title": "`locale` Field's YAML File",
           "oneOf": [
             {
+              "format": "path",
               "type": "string"
             }
           ]
@@ -1092,9 +1083,6 @@
           "const": "sb2nov",
           "default": "sb2nov",
           "description": "The theme of the CV. It just changes the default values.",
-          "enum": [
-            "sb2nov"
-          ],
           "title": "Theme",
           "type": "string"
         },
@@ -1359,9 +1347,6 @@
           "oneOf": [
             {
               "const": "present",
-              "enum": [
-                "present"
-              ],
               "type": "string"
             },
             {
@@ -1483,9 +1468,6 @@
           "oneOf": [
             {
               "const": "present",
-              "enum": [
-                "present"
-              ],
               "type": "string"
             },
             {
@@ -1602,9 +1584,6 @@
           "oneOf": [
             {
               "const": "present",
-              "enum": [
-                "present"
-              ],
               "type": "string"
             },
             {
@@ -4540,7 +4519,7 @@
     "rendercv_settings": {
       "$ref": "#/$defs/RenderCVSettings",
       "default": {
-        "date": "2025-01-07",
+        "date": "2025-01-19",
         "render_command": null,
         "bold_keywords": []
       },
