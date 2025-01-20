@@ -73,18 +73,57 @@ def test_escape_typst_characters(string, expected_string):
     ("markdown_string", "expected_typst_string"),
     [
         ("My Text", "My Text"),
-        ("**My** Text", "#[*My*] Text"),
-        ("*My* Text", "#[_My_] Text"),
-        ("***My*** Text", "#[*_My_*] Text"),
+        ("**My** Text", "#strong[My] Text"),
+        ("*My* Text", "#emph[My] Text"),
+        ("***My*** Text", "#strong[#emph[My]] Text"),
         ("[My](https://myurl.com) Text", '#link("https://myurl.com")[My] Text'),
         ("`My` Text", "`My` Text"),
         (
             "[**My** *Text* ***Is*** `Here`](https://myurl.com)",
-            '#link("https://myurl.com")[#[*My*] #[_Text_] #[*_Is_*] `Here`]',
+            (
+                '#link("https://myurl.com")[#strong[My] #emph[Text] #strong[#emph[Is]]'
+                " `Here`]"
+            ),
         ),
         (
             "Some other *** tests, which should be tricky* to parse!**",
-            "Some other #[*#[_ tests, which should be tricky_] to parse!*]",
+            "Some other #strong[#emph[ tests, which should be tricky] to parse!]",
+        ),
+        (
+            "One asterisk does not a quote* maketh",
+            "One asterisk does not a quote#sym.ast.basic maketh",
+        ),
+        (
+            "We can put asteri*sks in the middle of words",
+            (
+                "We can put asteri#sym.ast.basic#h(0pt, weak: true)sks in the middle of"
+                " words"
+            ),
+        ),
+        (
+            (
+                "If we want to escape \\*'s such that they don't become bold, we use a"
+                " backslash: \\*"
+            ),
+            (
+                "If we want to escape #sym.ast.basic#h(0pt, weak: true)'s such that"
+                " they don't become bold, we use a backslash: #sym.ast.basic#h(0pt,"
+                " weak: true)"
+            ),
+        ),
+        (
+            "Asterisk with a space after it does not need a zero-width space: * test",
+            (
+                "Asterisk with a space after it does not need a zero-width space:"
+                " #sym.ast.basic test"
+            ),
+        ),
+        (
+            "Asterisk with a space after it does not need a zero-width space: *test",
+            (
+                "Asterisk with a space after it does not need a zero-width space:"
+                " #sym.ast.basic#h(0pt, weak: true)test"
+            ),
         ),
     ],
 )
@@ -108,7 +147,7 @@ def test_transform_markdown_sections_to_typst_sections(rendercv_data_model):
 @pytest.mark.parametrize(
     ("string", "placeholders", "expected_string"),
     [
-        ("Hello, {name}!", {"{name}": None}, "Hello"),
+        ("Hello, {name}!", {"{name}": None}, "Hello, !"),
         (
             "{greeting}, {name}!",
             {"{greeting}": "Hello", "{name}": "World"},
@@ -641,3 +680,31 @@ def test_are_all_the_theme_files_the_same(theme_name):
     theme_file_contents = [file.read_text() for file in theme_folder.rglob("*.j2.typ")]
 
     assert source_of_truth_file_contents == theme_file_contents
+
+
+@pytest.mark.parametrize(
+    ("input_template", "placeholders", "expected_output"),
+    [
+        # ("Hello, {name}!", {"{name}": None}, "Hello, "), # currently does not work
+        # ("Hello, {name}!", {"{name}": "World"}, "Hello, World!"), # currently does not work
+        # ("No placeholders here.", {}, "No placeholders here."),  # currently does not work
+        ("*[My](https://myurl.com)*", {}, '#link("https://myurl.com")[#emph[My]]'),
+        ("**[My](https://myurl.com)**", {}, '#link("https://myurl.com")[#strong[My]]'),
+        (
+            "***[My](https://myurl.com)***",
+            {},
+            '#link("https://myurl.com")[#strong[#emph[My]]]',
+        ),
+    ],
+)
+def test_input_template_to_typst(
+    input_template,
+    placeholders,
+    expected_output,
+):
+    output = templater.input_template_to_typst(
+        input_template,
+        placeholders,
+    )
+
+    assert output == expected_output

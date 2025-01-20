@@ -367,15 +367,16 @@ def input_template_to_typst(
         return ""
 
     output = replace_placeholders_with_actual_values(
-        markdown_to_typst(input_template), placeholders
+        markdown_to_typst(input_template),
+        placeholders,
     )
 
     # If \n is escaped, revert:
     output = output.replace("\\n", "\n")
 
     # If there are blank italics and bolds, remove them:
-    output = output.replace("#[__]", "")
-    output = output.replace("#[**]", "")
+    output = output.replace("#emph[]", "")
+    output = output.replace("#strong[]", "")
 
     # Check if there are any letters in the input template. If not, return an empty
     if not re.search(r"[a-zA-Z]", input_template):
@@ -383,28 +384,37 @@ def input_template_to_typst(
 
     # Find italic and bold links and fix them:
     # For example:
-    # Convert `#[_#link("https://google.com")[italic link]]`` to
-    # `#link("https://google.com")[_italic link_]`
+    # Convert `#emph[#link("https://google.com")[italic link]]` to
+    # `#link("https://google.com")[#emph[italic link]]`
     output = re.sub(
-        r"#\[_#link\(\"(.*?)\"\)\[(.*?)\]_\]",
-        r'#link("\1")[_\2_]',
+        r"#emph\[#link\(\"(.*?)\"\)\[(.*?)\]\]",
+        r'#link("\1")[#emph[\2]]',
         output,
     )
     output = re.sub(
-        r"#\[\*#link\(\"(.*?)\"\)\[(.*?)\]\*\]",
-        r'#link("\1")[*\2*]',
+        r"#strong\[#link\(\"(.*?)\"\)\[(.*?)\]\]",
+        r'#link("\1")[#strong[\2]]',
         output,
     )
     output = re.sub(
-        r"#\[\*_#link\(\"(.*?)\"\)\[(.*?)\]_\*\]",
-        r'#link("\1")[*_\2_*]',
+        r"#strong\[#emph\[#link\(\"(.*?)\"\)\[(.*?)\]\]\]",
+        r'#link("\1")[#strong[#emph[\2]]]',
         output,
     )
 
     # Replace all multiple \n with a double \n:
     output = re.sub(r"\n+", r"\n\n", output)
 
-    return output.strip()
+    # Strip whitespace
+    output = output.strip()
+
+    # Strip non-alphanumeric, non-typst characters from the beginning and end of the
+    # string. For example, when location is not given in a template like this:
+    # "NAME -- LOCATION", "NAME -- " should become "NAME".
+    output = re.sub(r"^[^\w\s#\[\]\n\(\)]*", "", output)
+    output = re.sub(r"[^\w\s#\[\]\n\(\)]*$", "", output)
+
+    return output  # noqa: RET504
 
 
 def escape_characters(string: str, escape_dictionary: dict[str, str]) -> str:
@@ -537,12 +547,24 @@ def markdown_to_typst(markdown_string: str) -> str:
 
             markdown_string = markdown_string.replace(old_link_string, new_link_string)
 
+    # Process escaped asterisks in the yaml (such that they are actual asterisks,
+    # and not markers for bold/italics). We need to temporarily replace them with
+    # a dummy string.
+
+    ONE_STAR = "ONE_STAR"
+
+    # NOTE: We get a mix of escape levels depending on whether the star is in a quoted
+    #       or unquoted yaml entry. This is a bit of a mess but below seems to work
+    #       as i would instinctively expect.
+    markdown_string = markdown_string.replace("\\\\*", ONE_STAR)
+    markdown_string = markdown_string.replace("\\*", ONE_STAR)
+
     # convert bold and italic:
     bold_and_italics = re.findall(r"\*\*\*(.+?)\*\*\*", markdown_string)
     if bold_and_italics is not None:
         for bold_and_italic_text in bold_and_italics:
             old_bold_and_italic_text = f"***{bold_and_italic_text}***"
-            new_bold_and_italic_text = f"#[ONE_STAR_{bold_and_italic_text}_ONE_STAR]"
+            new_bold_and_italic_text = f"#strong[#emph[{bold_and_italic_text}]]"
 
             markdown_string = markdown_string.replace(
                 old_bold_and_italic_text, new_bold_and_italic_text
@@ -553,7 +575,7 @@ def markdown_to_typst(markdown_string: str) -> str:
     if bolds is not None:
         for bold_text in bolds:
             old_bold_text = f"**{bold_text}**"
-            new_bold_text = f"#[ONE_STAR{bold_text}ONE_STAR]"
+            new_bold_text = f"#strong[{bold_text}]"
             markdown_string = markdown_string.replace(old_bold_text, new_bold_text)
 
     # convert italic
@@ -561,11 +583,28 @@ def markdown_to_typst(markdown_string: str) -> str:
     if italics is not None:
         for italic_text in italics:
             old_italic_text = f"*{italic_text}*"
-            new_italic_text = f"#[_{italic_text}_]"
+            new_italic_text = f"#emph[{italic_text}]"
 
             markdown_string = markdown_string.replace(old_italic_text, new_italic_text)
 
-    return markdown_string.replace("ONE_STAR", "*")
+    # Revert normal asterisks then convert them to Typst's asterisks
+    markdown_string = markdown_string.replace(ONE_STAR, "*")
+
+    # convert any remaining asterisks to Typst's asterisk
+    # - Asterisk with a space can just be replaced.
+    # - Asterisk without a space needs a zero-width box to delimit it.
+    TYPST_AST = "#sym.ast.basic"
+    ZERO_BOX = "#h(0pt, weak: true)"
+    markdown_string = markdown_string.replace("* ", TYPST_AST + " ")
+    markdown_string = markdown_string.replace("*", TYPST_AST + ZERO_BOX)
+
+    # At this point, the document ought to have absolutely no '*' characters left!
+    # NOTE: The final typst file might still have some asterisks when specifying a
+    #       size, for example `#v(design-text-font-size * 0.4)`
+    # XXX: Maybe put this behind some kind of debug flag? -MK
+    # assert "*" not in markdown_string
+
+    return markdown_string  # noqa: RET504
 
 
 def transform_markdown_sections_to_something_else_sections(
@@ -638,7 +677,8 @@ def transform_markdown_sections_to_typst_sections(
 
 
 def replace_placeholders_with_actual_values(
-    text: str, placeholders: dict[str, Optional[str]]
+    text: str,
+    placeholders: dict[str, Optional[str]],
 ) -> str:
     """Replace the placeholders in a string with actual values.
 
@@ -655,14 +695,7 @@ def replace_placeholders_with_actual_values(
         if value:
             text = text.replace(placeholder, str(value))
         else:
-            # Replace the placeholder, all non-alphanumeric characters (including
-            # whitespace) around it (if there are any), and the new line after it (if
-            # there is any) with an empty string:
-            text = re.sub(
-                rf"[^\w\]\(\)]*{placeholder}[^\w\[\(\)\s]*\n?",
-                "",
-                text,
-            )
+            text = text.replace(placeholder, "")
 
     return text
 
