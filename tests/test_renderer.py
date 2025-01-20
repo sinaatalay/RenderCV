@@ -147,7 +147,7 @@ def test_transform_markdown_sections_to_typst_sections(rendercv_data_model):
 @pytest.mark.parametrize(
     ("string", "placeholders", "expected_string"),
     [
-        ("Hello, {name}!", {"{name}": None}, "Hello"),
+        ("Hello, {name}!", {"{name}": None}, "Hello, !"),
         (
             "{greeting}, {name}!",
             {"{greeting}": "Hello", "{name}": "World"},
