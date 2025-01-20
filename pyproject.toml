@@ -138,7 +138,7 @@ features = ["full"] # to install full optional dependencies
 # Hatch allows us to define scripts that can be run in the activated virtual environment
 # with `hatch run ENV_NAME:SCRIPT_NAME`.
 # Format all the code in the `rendercv` package with `black`:
-format = "ruff check --fix && black rendercv docs tests && ruff format" # hatch run format
+format = "black rendercv docs tests && ruff check --fix && ruff format" # hatch run format
 # Lint the code in the `rendercv` package with `ruff`:
 lint = "ruff check" # hatch run lint
 # Check types in the `rendercv` package with `pyright`:
