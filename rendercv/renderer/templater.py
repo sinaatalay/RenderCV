@@ -414,7 +414,7 @@ def input_template_to_typst(
     output = re.sub(r"^[^\w\s#\[\]\n\(\)]*", "", output)
     output = re.sub(r"[^\w\s#\[\]\n\(\)]*$", "", output)
 
-    return output
+    return output  # noqa: RET504
 
 
 def escape_characters(string: str, escape_dictionary: dict[str, str]) -> str:
