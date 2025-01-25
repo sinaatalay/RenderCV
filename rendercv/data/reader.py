@@ -9,6 +9,7 @@ import re
 from typing import Optional
 
 import pydantic
+import ruamel.yaml
 
 from . import models
 from .models import entry_types
@@ -225,12 +226,6 @@ def read_a_yaml_file(file_path_or_contents: pathlib.Path | str) -> dict:
     Returns:
         The content of the YAML file as a dictionary.
     """
-    try:
-        import ruamel.yaml
-    except Exception as e:
-        from .. import _parial_install_error_message
-
-        raise ImportError(_parial_install_error_message) from e
 
     if isinstance(file_path_or_contents, pathlib.Path):
         # Check if the file exists:
