@@ -216,8 +216,8 @@ def render_a_pdf_from_typst(file_path: pathlib.Path) -> pathlib.Path:
     """
     typst_compiler = TypstCompiler(file_path)
 
-    # Before running LaTeX, make sure the PDF file is not open in another program,
-    # that wouldn't allow LaTeX to write to it. Remove the PDF file if it exists,
+    # Before running Typst, make sure the PDF file is not open in another program,
+    # that wouldn't allow Typst to write to it. Remove the PDF file if it exists,
     # if it's not removable, then raise an error:
     pdf_output_path = file_path.with_suffix(".pdf")
 
