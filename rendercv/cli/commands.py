@@ -7,17 +7,11 @@ import copy
 import pathlib
 from typing import Annotated, Optional
 
+import typer
 from rich import print
 
 from .. import __version__, data
 from . import printer, utilities
-
-try:
-    import typer
-except ImportError as e:
-    from .. import _parial_install_error_message
-
-    raise ImportError(_parial_install_error_message) from e
 
 app = typer.Typer(
     rich_markup_mode="rich",

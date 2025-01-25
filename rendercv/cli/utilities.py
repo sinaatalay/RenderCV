@@ -13,14 +13,10 @@ import urllib.request
 from collections.abc import Callable
 from typing import Any, Optional
 
-try:
-    import typer
-except ImportError as e:
-    from .. import _parial_install_error_message
-
-    raise ImportError(_parial_install_error_message) from e
-
 import packaging.version
+import typer
+import watchdog.events
+import watchdog.observers
 
 from .. import data, renderer
 from . import printer
@@ -424,14 +420,6 @@ def run_a_function_if_a_file_changes(file_path: pathlib.Path, function: Callable
         file_path (pathlib.Path): The path of the file to watch for.
         function (Callable): The function to be called on file modification.
     """
-    try:
-        import watchdog.events
-        import watchdog.observers
-    except Exception as e:
-        from .. import _parial_install_error_message
-
-        raise ImportError(_parial_install_error_message) from e
-
     # Run the function immediately for the first time
     function()
 
