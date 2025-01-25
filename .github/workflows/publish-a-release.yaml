@@ -1,4 +1,4 @@
-name: Publish a New Release
+name: Publish a Release
 
 # GitHub events that triggers the workflow:
 on:
@@ -10,22 +10,20 @@ permissions:
   contents: write
 
 jobs:
-  call_tests_workflow:
+  call_test_workflow:
     name: Run Tests
     uses: ./.github/workflows/test.yaml
 
   publish_to_pypi:
     name: Publish to PyPI
     needs:
-      - call_tests_workflow
+      - call_test_workflow
     runs-on: ubuntu-latest
     environment: release
     permissions:
       id-token: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Install Hatch
         uses: pypa/hatch@install
@@ -49,14 +47,8 @@ jobs:
             dist/*.whl
             dist/*.tar.gz
 
-  call_update_files_workflow:
-    name: Update files
-    needs:
-      - publish_to_pypi
-    uses: ./.github/workflows/update-files.yaml
-
   publish_to_dockerhub:
-    name: Release docker image
+    name: Publish to Docker Hub
     needs:
       - publish_to_pypi
     runs-on: ubuntu-latest
@@ -98,3 +90,9 @@ jobs:
           subject-name: rendercv/rendercv
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+
+  call_update_files_workflow:
+    name: Update files
+    needs:
+      - publish_to_pypi
+    uses: ./.github/workflows/update-files.yaml
