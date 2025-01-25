@@ -393,7 +393,7 @@ def test_render_command_with_invalid_arguments(
     )
 
     assert (
-        "There is a problem with the extra arguments!" in result.stdout
+        "There is a problem with the extra arguments" in result.stdout
         or "should start with double dashes!" in result.stdout
         or "does not exist in the data model!" in result.stdout
         or "There are some errors in the data model!" in result.stdout
