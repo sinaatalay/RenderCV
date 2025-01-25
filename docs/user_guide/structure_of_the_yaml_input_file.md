@@ -271,10 +271,9 @@ Use an IDE that supports JSON schema to avoid missing any available options for 
 An example `design` field for a `classic` theme is shown below:
 
 ```yaml
-design:
-  theme: classic
+theme: classic # (1)!
   page:
-    size: us-letter
+    size: us-letter # (2)!
     top_margin: 2cm
     bottom_margin: 2cm
     left_margin: 2cm
@@ -289,10 +288,11 @@ design:
     links: '#004f90'
     last_updated_date_and_page_numbering: grey
   text:
-    font_family: Source Sans 3
+    font_family: Source Sans 3 # (3)!
     font_size: 10pt
     leading: 0.6em
-    date_and_location_column_alignment: right
+    alignment: justified # (4)!
+    date_and_location_column_alignment: right # (5)!
   links:
     underline: false
     use_external_link_icon: true
@@ -305,9 +305,9 @@ design:
     horizontal_space_between_connections: 0.5cm
     separator_between_connections: ''
     use_icons_for_connections: true
-    alignment: center
+    alignment: center # (6)!
   section_titles:
-    type: with-parial-line
+    type: with-parial-line # (7)!
     font_size: 1.4em
     bold: true
     small_caps: false
@@ -323,7 +323,7 @@ design:
     short_second_row: false
     show_time_spans_in: []
   highlights:
-    bullet: •
+    bullet: • # (8)!
     top_margin: 0.25cm
     left_margin: 0.4cm
     vertical_space_between_highlights: 0.25cm
@@ -333,7 +333,7 @@ design:
     one_line_entry:
       template: '**LABEL:** DETAILS'
     education_entry:
-      main_column_first_row_template: '**INSTITUTION** \n AREA'
+      main_column_first_row_template: '**INSTITUTION**, AREA'
       degree_column_template: '**DEGREE**'
       degree_column_width: 1cm
       main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
@@ -347,14 +347,26 @@ design:
       main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
       date_and_location_column_template: "LOCATION\nDATE"
     publication_entry:
-      main_column_second_row_template: "AUTHORS\nURL (JOURNAL)"
-      date_and_location_column_template: "LOCATION\nDATE"
       main_column_first_row_template: '**TITLE**'
+      main_column_second_row_template: "AUTHORS\nURL (JOURNAL)"
       main_column_second_row_without_journal_template: "AUTHORS\n\
         URL"
       main_column_second_row_without_url_template: "AUTHORS\n\
         JOURNAL"
+      date_and_location_column_template: DATE
 ```
+
+1. The `design.theme` field only changes the default values of all the other fields in the `design` field. Therefore, if you don't change any of the other fields, the output will be the same for all the themes. You can remove all the other fields and just keep the `design.theme` field to use the default values of that theme.
+
+    The available themes are: {{available_themes}}.
+
+2. The available page sizes are: {{available_page_sizes}}.
+3. The available font families are: {{available_font_families}}.
+4. The available text alignments are: {{available_text_alignments}}.
+5. The available date and location column alignments are: {{available_header_alignments}}.
+6. The available header alignments are: {{available_header_alignments}}.
+7. The available section title types are: {{available_section_title_types}}.
+8. The available bullet types are: {{available_bullets}}.
 
 ## "`locale`" field
 

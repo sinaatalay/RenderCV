@@ -9,6 +9,7 @@ import io
 import pathlib
 import shutil
 import tempfile
+from typing import get_args
 
 import fitz
 import pdfCropMargins
@@ -17,6 +18,7 @@ import ruamel.yaml
 
 import rendercv.data as data
 import rendercv.renderer as renderer
+import rendercv.themes.options as theme_options
 
 repository_root = pathlib.Path(__file__).parent.parent
 rendercv_path = repository_root / "rendercv"
@@ -118,6 +120,37 @@ def define_env(env):
         f"`{social_network}`" for social_network in data.available_social_networks
     ]
     env.variables["available_social_networks"] = ", ".join(social_networks)
+
+    # Others:
+    env.variables["available_page_sizes"] = ", ".join(
+        [f"`{page_size}`" for page_size in get_args(theme_options.PageSize)]
+    )
+    env.variables["available_font_families"] = ", ".join(
+        [f"`{font_family}`" for font_family in get_args(theme_options.FontFamily)]
+    )
+    env.variables["available_text_alignments"] = ", ".join(
+        [
+            f"`{text_alignment}`"
+            for text_alignment in get_args(theme_options.TextAlignment)
+        ]
+    )
+    env.variables["available_header_alignments"] = ", ".join(
+        [
+            f"`{header_alignment}`"
+            for header_alignment in get_args(theme_options.Alignment)
+        ]
+    )
+    env.variables["available_section_title_types"] = ", ".join(
+        [
+            f"`{section_title_type}`"
+            for section_title_type in get_args(
+                get_args(theme_options.SectionTitleType)[0]
+            )
+        ]
+    )
+    env.variables["available_bullets"] = ", ".join(
+        [f"`{bullet}`" for bullet in get_args(theme_options.BulletPoint)]
+    )
 
 
 def render_pngs_from_pdf(pdf_file_path: pathlib.Path) -> list[pathlib.Path]:
