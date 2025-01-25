@@ -206,8 +206,9 @@ def parse_render_command_override_arguments(
 
     if len(extra_arguments.args) % 2 != 0:
         message = (
-            "There is a problem with the extra arguments! Each key should have a"
-            " corresponding value."
+            "There is a problem with the extra arguments"
+            f" ({','.join(extra_arguments.args)})! Each key should have a corresponding"
+            " value."
         )
         raise ValueError(message)
 
