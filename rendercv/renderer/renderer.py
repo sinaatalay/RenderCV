@@ -7,6 +7,7 @@ import importlib.resources
 import pathlib
 import re
 import shutil
+import sys
 from typing import Any, Literal, Optional
 
 from .. import data
@@ -215,7 +216,22 @@ def render_a_pdf_from_typst(file_path: pathlib.Path) -> pathlib.Path:
     """
     typst_compiler = TypstCompiler(file_path)
 
+    # Before running Typst, make sure the PDF file is not open in another program,
+    # that wouldn't allow Typst to write to it. Remove the PDF file if it exists,
+    # if it's not removable, then raise an error:
     pdf_output_path = file_path.with_suffix(".pdf")
+
+    if sys.platform == "win32":
+        if pdf_output_path.is_file():
+            try:
+                pdf_output_path.unlink()
+            except PermissionError as e:
+                message = (
+                    f"The PDF file {pdf_output_path} is open in another program and"
+                    " doesn't allow RenderCV to rewrite it. Please close the PDF file."
+                )
+                raise RuntimeError(message) from e
+
     typst_compiler.run(output=pdf_output_path, format="pdf")
 
     return pdf_output_path
