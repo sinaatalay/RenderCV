@@ -921,7 +921,7 @@
       "description": "This class is the data model of the RenderCV settings.",
       "properties": {
         "date": {
-          "default": "2025-01-19",
+          "default": null,
           "description": "The date that will be used everywhere (e.g., in the output file names, last updated date, computation of time spans for the events that are currently happening, etc.). The default value is the current date.",
           "format": "date",
           "title": "Date",
@@ -4519,7 +4519,7 @@
     "rendercv_settings": {
       "$ref": "#/$defs/RenderCVSettings",
       "default": {
-        "date": "2025-01-19",
+        "date": "2025-01-25",
         "render_command": null,
         "bold_keywords": []
       },

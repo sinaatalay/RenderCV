@@ -199,6 +199,9 @@ class RenderCVSettings(RenderCVBaseModelWithoutExtraKeys):
             " last updated date, computation of time spans for the events that are"
             " currently happening, etc.). The default value is the current date."
         ),
+        json_schema_extra={
+            "default": None,
+        },
     )
     render_command: Optional[RenderCommandSettings] = pydantic.Field(
         default=None,
