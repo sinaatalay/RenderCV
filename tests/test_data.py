@@ -967,3 +967,17 @@ def test_bold_keywords():
             elif section.title == "test7":
                 assert "**test_keyword_3**" in entry.details
                 assert "**test_keyword_4**" in entry.details
+
+
+def test_none_entries():
+    with pytest.raises(pydantic.ValidationError):
+        data.RenderCVDataModel(
+            cv=data.CurriculumVitae(
+                name="John Doe",
+                sections={
+                    "test": [
+                        None,
+                    ],
+                },
+            )
+        )

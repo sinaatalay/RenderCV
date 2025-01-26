@@ -112,7 +112,7 @@ def get_characteristic_entry_attributes(
 
 
 def get_entry_type_name_and_section_validator(
-    entry: dict[str, str | list[str]] | str | type, entry_types: tuple[type]
+    entry: Optional[dict[str, str | list[str]] | str | type], entry_types: tuple[type]
 ) -> tuple[str, type[SectionBase]]:
     """Get the entry type name and the section validator based on the entry.
 
@@ -155,6 +155,10 @@ def get_entry_type_name_and_section_validator(
         # Then it is a TextEntry
         entry_type_name = "TextEntry"
         section_type = create_a_section_validator(str)
+
+    elif entry is None:
+        message = "The entry cannot be a null value."
+        raise ValueError(message)
 
     else:
         # Then the entry is already initialized with a data model:
