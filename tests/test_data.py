@@ -141,13 +141,6 @@ def test_if_the_schema_is_the_latest(root_directory_path):
     original_schema_file_path = root_directory_path / "schema.json"
     original_schema_text = original_schema_file_path.read_text()
     original_schema = json.loads(original_schema_text)
-    original_schema["$defs"]["RenderCVSettings"]["properties"]["date"]["default"] = (
-        Date.today().isoformat()
-    )
-    original_schema["properties"]["rendercv_settings"]["default"]["date"] = (
-        Date.today().isoformat()
-    )
-
     new_schema = data.generate_json_schema()
 
     assert original_schema == new_schema
