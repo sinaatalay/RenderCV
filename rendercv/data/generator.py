@@ -25,7 +25,7 @@ def dictionary_to_yaml(dictionary: dict) -> str:
     """
     yaml_object = ruamel.yaml.YAML()
     yaml_object.encoding = "utf-8"
-    yaml_object.width = 60
+    yaml_object.width = 9999
     yaml_object.indent(mapping=2, sequence=4, offset=2)
     with io.StringIO() as string_stream:
         yaml_object.dump(dictionary, string_stream)

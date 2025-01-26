@@ -10,12 +10,8 @@ cv:
       username: john.doe
   sections:
     welcome_to_RenderCV!:
-      - '[RenderCV](https://rendercv.com) is a Typst-based CV
-        framework designed for academics and engineers, with Markdown
-        syntax support.'
-      - Each section title is arbitrary. Each section contains
-        a list of entries, and there are 7 different entry types
-        to choose from.
+      - '[RenderCV](https://rendercv.com) is a Typst-based CV framework designed for academics and engineers, with Markdown syntax support.'
+      - Each section title is arbitrary. Each section contains a list of entries, and there are 7 different entry types to choose from.
     education:
       - institution: Stanford University
         area: Computer Science
@@ -24,8 +20,7 @@ cv:
         start_date: 2023-09
         end_date: present
         highlights:
-          - Working on the optimization of autonomous vehicles
-            in urban environments
+          - Working on the optimization of autonomous vehicles in urban environments
       - institution: Boğaziçi University
         area: Computer Engineering
         degree: BS
@@ -42,47 +37,39 @@ cv:
         start_date: 2024-06
         end_date: 2024-09
         highlights:
-          - Developed deep learning models for the detection of
-            gravitational waves in LIGO data
-          - Published [3 peer-reviewed research papers](https://example.com)
-            about the project and results
+          - Developed deep learning models for the detection of gravitational waves in LIGO data
+          - Published [3 peer-reviewed research papers](https://example.com) about the project and results
       - company: Company B
         position: Summer Intern
         location: Ankara, Türkiye
         start_date: 2023-06
         end_date: 2023-09
         highlights:
-          - Optimized the production line by 15% by implementing
-            a new scheduling algorithm
+          - Optimized the production line by 15% by implementing a new scheduling algorithm
       - company: Company A
         position: Summer Intern
         location: Istanbul, Türkiye
         start_date: 2022-06
         end_date: 2022-09
         highlights:
-          - Designed an inventory management web application for
-            a warehouse
+          - Designed an inventory management web application for a warehouse
     projects:
       - name: '[Example Project](https://example.com)'
         start_date: 2024-05
         end_date: present
         highlights:
-          - Launched an [iOS app](https://example.com) in 09/2024
-            that currently has 10k+ monthly active users
+          - Launched an [iOS app](https://example.com) in 09/2024 that currently has 10k+ monthly active users
           - The app is made open-source (3,000+ stars [on GitHub](https://github.com))
         summary: A web application for writing essays
       - name: '[Teaching on Udemy](https://example.com)'
         date: Fall 2023
         highlights:
-          - Instructed the "Statics" course on Udemy (60,000+
-            students, 200,000+ hours watched)
+          - Instructed the "Statics" course on Udemy (60,000+ students, 200,000+ hours watched)
     skills:
       - label: Programming
-        details: Proficient with Python, C++, and Git; good understanding
-          of Web, app development, and DevOps
+        details: Proficient with Python, C++, and Git; good understanding of Web, app development, and DevOps
       - label: Mathematics
-        details: Good understanding of differential equations,
-          calculus, and linear algebra
+        details: Good understanding of differential equations, calculus, and linear algebra
       - label: Languages
         details: 'English (fluent, TOEFL: 118/120), Turkish (native)'
     publications:
@@ -94,11 +81,8 @@ cv:
         doi: 10.1109/TASC.2023.3340648
         date: 2004-01
     extracurricular_activities:
-      - bullet: 'There are 7 unique entry types in RenderCV: *BulletEntry*,
-          *TextEntry*, *EducationEntry*, *ExperienceEntry*, *NormalEntry*,
-          *PublicationEntry*, and *OneLineEntry*.'
-      - bullet: Each entry type has a different structure and
-          layout. This document demonstrates all of them.
+      - bullet: 'There are 7 unique entry types in RenderCV: *BulletEntry*, *TextEntry*, *EducationEntry*, *ExperienceEntry*, *NormalEntry*, *PublicationEntry*, and *OneLineEntry*.'
+      - bullet: Each entry type has a different structure and layout. This document demonstrates all of them.
 design:
   theme: moderncv
   page:
@@ -162,8 +146,7 @@ design:
     one_line_entry:
       template: '**LABEL:** DETAILS'
     education_entry:
-      main_column_first_row_template: '**INSTITUTION**, DEGREE
-        in AREA -- LOCATION'
+      main_column_first_row_template: '**INSTITUTION**, DEGREE in AREA -- LOCATION'
       degree_column_width: 1cm
       main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
       date_and_location_column_template: DATE
@@ -172,17 +155,14 @@ design:
       main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
       date_and_location_column_template: DATE
     experience_entry:
-      main_column_first_row_template: '**POSITION**, COMPANY --
-        LOCATION'
+      main_column_first_row_template: '**POSITION**, COMPANY -- LOCATION'
       main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
       date_and_location_column_template: DATE
     publication_entry:
       main_column_first_row_template: '**TITLE**'
       main_column_second_row_template: "AUTHORS\nURL (JOURNAL)"
-      main_column_second_row_without_journal_template: "AUTHORS\n\
-        URL"
-      main_column_second_row_without_url_template: "AUTHORS\n\
-        JOURNAL"
+      main_column_second_row_without_journal_template: "AUTHORS\nURL"
+      main_column_second_row_without_url_template: "AUTHORS\nJOURNAL"
       date_and_location_column_template: DATE
 locale:
   language: en
@@ -223,5 +203,5 @@ locale:
     - November
     - December
 rendercv_settings:
-  date: '2025-01-07'
+  date: '2025-01-26'
   bold_keywords: []
