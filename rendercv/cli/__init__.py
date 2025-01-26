@@ -21,7 +21,7 @@ try:
         "cli_command_no_args",
         "cli_command_render",
     ]
-except ImportError as e:
+except ImportError:
     from .. import _parial_install_error_message
 
-    raise ImportError(_parial_install_error_message) from e
+    print(_parial_install_error_message)  # noqa: T201
