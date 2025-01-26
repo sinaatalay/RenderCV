@@ -3,7 +3,7 @@ RenderCV is a Typst-based Python package with a command-line interface (CLI) tha
 you to version-control your CV/resume as source code.
 """
 
-__version__ = "2.0"
+__version__ = "2.1"
 
 from .api import create_contents_of_a_typst_file
 

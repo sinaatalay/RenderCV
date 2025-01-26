@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-[Click here to see the unreleased changes.](https://github.com/rendercv/rendercv/compare/v1.17...HEAD)
+[Click here to see the unreleased changes.](https://github.com/rendercv/rendercv/compare/v2.1...HEAD)
 
 <!--
 ### Added
@@ -17,6 +17,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Removed
 -->
 
+## [2.1] - January 25, 2025
+
+> **Full Changelog**: [v2.0...v2.1]
+
+### Added
+
+- The `rendercv render` error caused by an open output PDF file in Windows is now handled ([#327](https://github.com/rendercv/rendercv/pull/327)).
+
+### Fixed
+
+- The "Font Awesome 6" font family issue (missing icons in the header) has been fixed ([#314](https://github.com/rendercv/rendercv/pull/314)).
+- The Docker image has been fixed to use the latest version of RenderCV ([#321](https://github.com/rendercv/rendercv/pull/321)).
+- Partial installation (`pip install rendercv` instead of `pip install rendercv[full]`) errors have been fixed ([#326](https://github.com/rendercv/rendercv/pull/326)).
+- Path issues in `rendercv_settings` and CLI have been fixed ([#312](https://github.com/rendercv/rendercv/pull/312)).
+- Bold and italic text rendering issues have been fixed ([#303](https://github.com/rendercv/rendercv/pull/303)).
+- Asterisk is now escaped in Typst ([#303](https://github.com/rendercv/rendercv/pull/303)).
+  
 ## [2.0] - January 7, 2025
 
 > **Full Changelog**: [v1.18...v2.0]
@@ -473,6 +490,7 @@ RenderCV has transitioned from using $\LaTeX$ to Typst. RenderCV is now much fas
 
 The first release of RenderCV.
 
+[v2.0...v2.1]: https://github.com/rendercv/rendercv/compare/v2.0...v2.1
 [v1.18...v2.0]: https://github.com/rendercv/rendercv/compare/v1.18...v2.0
 [v1.17...v1.18]: https://github.com/rendercv/rendercv/compare/v1.17...v1.18
 [v1.16...v1.17]: https://github.com/rendercv/rendercv/compare/v1.16...v1.17
@@ -501,6 +519,7 @@ The first release of RenderCV.
 [v0.3...v0.4]: https://github.com/rendercv/rendercv/compare/v0.3...v0.4
 [v0.2...v0.3]: https://github.com/rendercv/rendercv/compare/v0.2...v0.3
 [v0.1...v0.2]: https://github.com/rendercv/rendercv/compare/v0.1...v0.2
+[2.1]: https://github.com/rendercv/rendercv/releases/tag/v2.1
 [2.0]: https://github.com/rendercv/rendercv/releases/tag/v2.0
 [1.18]: https://github.com/rendercv/rendercv/releases/tag/v1.18
 [1.17]: https://github.com/rendercv/rendercv/releases/tag/v1.17
