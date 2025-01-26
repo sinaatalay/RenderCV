@@ -23,10 +23,19 @@ def dictionary_to_yaml(dictionary: dict) -> str:
     Returns:
         The YAML string.
     """
+
+    # Source: https://gist.github.com/alertedsnake/c521bc485b3805aa3839aef29e39f376
+    def str_representer(dumper, data):
+        if len(data.splitlines()) > 1:  # check for multiline string
+            return dumper.represent_scalar("tag:yaml.org,2002:str", data, style="|")
+        return dumper.represent_scalar("tag:yaml.org,2002:str", data)
+
     yaml_object = ruamel.yaml.YAML()
     yaml_object.encoding = "utf-8"
     yaml_object.width = 9999
     yaml_object.indent(mapping=2, sequence=4, offset=2)
+    yaml_object.representer.add_representer(str, str_representer)
+
     with io.StringIO() as string_stream:
         yaml_object.dump(dictionary, string_stream)
         return string_stream.getvalue()

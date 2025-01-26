@@ -149,21 +149,33 @@ design:
     education_entry:
       main_column_first_row_template: '**INSTITUTION**, DEGREE in AREA -- LOCATION'
       degree_column_width: 1cm
-      main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
+      main_column_second_row_template: |-
+        SUMMARY
+        HIGHLIGHTS
       date_and_location_column_template: DATE
     normal_entry:
       main_column_first_row_template: '**NAME** -- **LOCATION**'
-      main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
+      main_column_second_row_template: |-
+        SUMMARY
+        HIGHLIGHTS
       date_and_location_column_template: DATE
     experience_entry:
       main_column_first_row_template: '**POSITION**, COMPANY -- LOCATION'
-      main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
+      main_column_second_row_template: |-
+        SUMMARY
+        HIGHLIGHTS
       date_and_location_column_template: DATE
     publication_entry:
       main_column_first_row_template: '**TITLE**'
-      main_column_second_row_template: "AUTHORS\nURL (JOURNAL)"
-      main_column_second_row_without_journal_template: "AUTHORS\nURL"
-      main_column_second_row_without_url_template: "AUTHORS\nJOURNAL"
+      main_column_second_row_template: |-
+        AUTHORS
+        URL (JOURNAL)
+      main_column_second_row_without_journal_template: |-
+        AUTHORS
+        URL
+      main_column_second_row_without_url_template: |-
+        AUTHORS
+        JOURNAL
       date_and_location_column_template: DATE
 locale:
   language: en
