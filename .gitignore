@@ -184,3 +184,6 @@ rendercv_output/
 
 # Mac:
 .DS_Store
+
+# Profiling:
+render_command.prof

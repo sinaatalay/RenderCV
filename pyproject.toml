@@ -134,6 +134,7 @@ dependencies = [
     "pytest==8.3.4",    # to run the tests
     "coverage==7.6.10", # to generate coverage reports
     "pypdf==5.1.0",     # to read PDF files
+    "snakeviz==2.2.2",  # for profiling
 ]
 features = ["full"] # to install full optional dependencies
 [tool.hatch.envs.default.scripts]
@@ -151,6 +152,8 @@ precommit = "pre-commit run --all-files" # hatch run pre-commit
 test = "pytest" # hatch run test
 # Run the tests and generate the coverage report as HTML:
 test-and-report = "coverage run -m pytest && coverage combine && coverage report && coverage html --show-contexts" # hatch run test-and-report
+# Profile render command
+profile-render-command = "python -m cProfile -o render_command.prof -m rendercv render examples/John_Doe_ClassicTheme_CV.yaml && snakeviz render_command.prof"
 
 [tool.hatch.envs.test]
 template = "default"
@@ -181,7 +184,6 @@ update-schema = "python docs/update_schema.py" # hatch run docs:update-schema
 update-examples = "python docs/update_examples.py" # hatch run docs:update-examples
 # Update entry figures in "Structure of the YAML File" page:
 update-entry-figures = "python docs/update_entry_figures.py" # hatch run docs:update-entry-figures
-
 # ======================================================================================
 # Virtual Environments Above ===========================================================
 # ======================================================================================
