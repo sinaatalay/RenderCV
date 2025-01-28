@@ -6,6 +6,7 @@ field of the input file.
 import functools
 import pathlib
 import re
+from functools import lru_cache
 from typing import Annotated, Any, Literal, Optional, get_args
 
 import pydantic
@@ -244,31 +245,44 @@ def validate_a_social_network_username(username: str, network: str) -> str:
 
     Args:
         username: The username to validate.
+        network: The name of the social network.
 
     Returns:
         The validated username.
     """
-    if network == "Mastodon":
-        mastodon_username_pattern = r"@[^@]+@[^@]+"
-        if not re.fullmatch(mastodon_username_pattern, username):
-            message = 'Mastodon username should be in the format "@username@domain"!'
-            raise ValueError(message)
-    elif network == "StackOverflow":
-        stackoverflow_username_pattern = r"\d+\/[^\/]+"
-        if not re.fullmatch(stackoverflow_username_pattern, username):
-            message = (
-                'StackOverflow username should be in the format "user_id/username"!'
-            )
-            raise ValueError(message)
+    patterns = precompile_patterns()
+    error_messages = get_error_messages()
+
+    if network in patterns:
+        if not patterns[network].fullmatch(username):
+            raise ValueError(error_messages[network])
     elif network == "YouTube":
         if username.startswith("@"):
-            message = (
-                'YouTube username should not start with "@"! Remove "@" from the'
-                " beginning of the username."
-            )
-            raise ValueError(message)
+            raise ValueError(error_messages[network])
 
     return username
+
+
+@lru_cache
+def precompile_patterns():
+    return {
+        "Mastodon": re.compile(r"@[^@]+@[^@]+"),
+        "StackOverflow": re.compile(r"\d+\/[^\/]+"),
+    }
+
+
+@lru_cache
+def get_error_messages():
+    return {
+        "Mastodon": 'Mastodon username should be in the format "@username@domain"!',
+        "StackOverflow": (
+            'StackOverflow username should be in the format "user_id/username"!'
+        ),
+        "YouTube": (
+            'YouTube username should not start with "@"! Remove "@" from the beginning'
+            " of the username."
+        ),
+    }
 
 
 # ======================================================================================
