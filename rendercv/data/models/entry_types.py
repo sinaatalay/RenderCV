@@ -3,6 +3,7 @@ The `rendercv.models.data.entry_types` module contains the data models of all th
 entry types in RenderCV.
 """
 
+import abc
 import functools
 import re
 from datetime import date as Date
@@ -173,6 +174,15 @@ EndDate = Annotated[
 # ======================================================================================
 
 
+class EntryType(abc.ABC):
+    """This class is an abstract class that defines all the methods an entry type should
+    have."""
+
+    @abc.abstractmethod
+    def make_keywords_bold(self, keywords: list[str]) -> "EntryType":
+        pass
+
+
 def make_keywords_bold_in_a_string(string: str, keywords: list[str]) -> str:
     """Make the given keywords bold in the given string."""
     replacement_map = {keyword: f"**{keyword}**" for keyword in keywords}
@@ -182,7 +192,7 @@ def make_keywords_bold_in_a_string(string: str, keywords: list[str]) -> str:
     return string
 
 
-class OneLineEntry(RenderCVBaseModelWithExtraKeys):
+class OneLineEntry(RenderCVBaseModelWithExtraKeys, EntryType):
     """This class is the data model of `OneLineEntry`."""
 
     label: str = pydantic.Field(
@@ -207,12 +217,12 @@ class OneLineEntry(RenderCVBaseModelWithExtraKeys):
         return self
 
 
-class BulletEntry(RenderCVBaseModelWithExtraKeys):
+class BulletEntry(RenderCVBaseModelWithExtraKeys, EntryType):
     """This class is the data model of `BulletEntry`."""
 
     bullet: str = pydantic.Field(
         title="Bullet",
-        description="The bullet of the BulletEntry.",
+        description="The contents of the BulletEntry.",
     )
 
     def make_keywords_bold(self, keywords: list[str]) -> "BulletEntry":
@@ -225,6 +235,50 @@ class BulletEntry(RenderCVBaseModelWithExtraKeys):
             A BulletEntry with the keywords made bold in the `bullet` field.
         """
         self.bullet = make_keywords_bold_in_a_string(self.bullet, keywords)
+        return self
+
+
+class NumberedEntry(RenderCVBaseModelWithExtraKeys, EntryType):
+    """This class is the data model of `NumberedEntry`."""
+
+    number: str = pydantic.Field(
+        title="Number",
+        description="The contents of the NumberedEntry.",
+    )
+
+    def make_keywords_bold(self, keywords: list[str]) -> "NumberedEntry":
+        """Make the given keywords bold in the `number` field.
+
+        Args:
+            keywords: The keywords to make bold.
+
+        Returns:
+            A NumberedEntry with the keywords made bold in the `number` field.
+        """
+        self.number = make_keywords_bold_in_a_string(str(self.number), keywords)
+        return self
+
+
+class ReversedNumberedEntry(RenderCVBaseModelWithExtraKeys, EntryType):
+    """This class is the data model of `ReversedNumberedEntry`."""
+
+    reversed_number: str = pydantic.Field(
+        title="Reverse Number",
+        description="The contents of the ReversedNumberedEntry.",
+    )
+
+    def make_keywords_bold(self, keywords: list[str]) -> "ReversedNumberedEntry":
+        """Make the given keywords bold in the `reversed_number` field.
+
+        Args:
+            keywords: The keywords to make bold.
+
+        Returns:
+            A ReversedNumberedEntry with the keywords made bold in the `reversed_number` field.
+        """
+        self.reversed_number = make_keywords_bold_in_a_string(
+            str(self.reversed_number), keywords
+        )
         return self
 
 
@@ -315,11 +369,14 @@ class PublicationEntryBase(RenderCVBaseModelWithExtraKeys):
             return computers.make_a_url_clean(str(self.url))  # type: ignore
         return ""
 
+    def make_keywords_bold(self, keywords: list[str]) -> "PublicationEntryBase":
+        pass
+
 
 # The following class is to ensure PublicationEntryBase keys come first,
 # then the keys of the EntryWithDate class. The only way to achieve this in Pydantic is
 # to do this. The same thing is done for the other classes as well.
-class PublicationEntry(EntryWithDate, PublicationEntryBase):
+class PublicationEntry(EntryWithDate, PublicationEntryBase, EntryType):
     """This class is the data model of `PublicationEntry`. `PublicationEntry` class is
     created by combining the `EntryWithDate` and `PublicationEntryBase` classes to have
     the fields in the correct order.
@@ -461,7 +518,7 @@ class NormalEntryBase(RenderCVBaseModelWithExtraKeys):
     )
 
 
-class NormalEntry(EntryBase, NormalEntryBase):
+class NormalEntry(EntryBase, NormalEntryBase, EntryType):
     """This class is the data model of `NormalEntry`. `NormalEntry` class is created by
     combining the `EntryBase` and `NormalEntryBase` classes to have the fields in the
     correct order.
@@ -481,7 +538,7 @@ class ExperienceEntryBase(RenderCVBaseModelWithExtraKeys):
     )
 
 
-class ExperienceEntry(EntryBase, ExperienceEntryBase):
+class ExperienceEntry(EntryBase, ExperienceEntryBase, EntryType):
     """This class is the data model of `ExperienceEntry`. `ExperienceEntry` class is
     created by combining the `EntryBase` and `ExperienceEntryBase` classes to have the
     fields in the correct order.
@@ -507,7 +564,7 @@ class EducationEntryBase(RenderCVBaseModelWithExtraKeys):
     )
 
 
-class EducationEntry(EntryBase, EducationEntryBase):
+class EducationEntry(EntryBase, EducationEntryBase, EntryType):
     """This class is the data model of `EducationEntry`. `EducationEntry` class is
     created by combining the `EntryBase` and `EducationEntryBase` classes to have the
     fields in the correct order.
@@ -525,6 +582,8 @@ Entry = (
     | EducationEntry
     | PublicationEntry
     | BulletEntry
+    | NumberedEntry
+    | ReversedNumberedEntry
     | str
 )
 
@@ -536,6 +595,8 @@ ListOfEntries = (
     | list[EducationEntry]
     | list[PublicationEntry]
     | list[BulletEntry]
+    | list[NumberedEntry]
+    | list[ReversedNumberedEntry]
     | list[str]
 )
 

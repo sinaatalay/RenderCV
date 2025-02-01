@@ -119,6 +119,9 @@
   leading: design-text-leading,
   justify: justify,
 )
+#set enum(
+  spacing: design-entries-vertical-space-between-entries,
+)
 
 // Highlights settings:
 #let highlights(..content) = {

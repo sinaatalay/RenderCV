@@ -83,6 +83,14 @@ cv:
     extracurricular_activities:
       - bullet: 'There are 7 unique entry types in RenderCV: *BulletEntry*, *TextEntry*, *EducationEntry*, *ExperienceEntry*, *NormalEntry*, *PublicationEntry*, and *OneLineEntry*.'
       - bullet: Each entry type has a different structure and layout. This document demonstrates all of them.
+    numbered_entries:
+      - number: This is a numbered entry.
+      - number: This is another numbered entry.
+      - number: This is the third numbered entry.
+    reversed_numbered_entries:
+      - reversed_number: This is a reversed numbered entry.
+      - reversed_number: This is another reversed numbered entry.
+      - reversed_number: This is the third reversed numbered entry.
 design:
   theme: sb2nov
   page:
@@ -107,17 +115,17 @@ design:
     alignment: justified
     date_and_location_column_alignment: right
   links:
-    underline: false
-    use_external_link_icon: true
+    underline: true
+    use_external_link_icon: false
   header:
-    name_font_family: Source Sans 3
+    name_font_family: New Computer Modern
     name_font_size: 30pt
     name_bold: true
     photo_width: 3.5cm
     vertical_space_between_name_and_connections: 0.7cm
     vertical_space_between_connections_and_first_section: 0.7cm
     horizontal_space_between_connections: 0.5cm
-    connections_font_family: Source Sans 3
+    connections_font_family: New Computer Modern
     separator_between_connections: ''
     use_icons_for_connections: true
     alignment: center
@@ -229,5 +237,5 @@ locale:
     - November
     - December
 rendercv_settings:
-  date: '2025-02-01'
+  date: '2025-02-02'
   bold_keywords: []

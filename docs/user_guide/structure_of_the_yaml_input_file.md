@@ -131,7 +131,7 @@ The available entry types are: [`EducationEntry`](#educationentry), [`Experience
 
 Each entry type is a different object (a dictionary). Below, you can find all the entry types along with their optional/mandatory fields and how they appear in each built-in theme.
 
-{% for entry_name, entry in showcase_entries.items() %}
+{% for entry_name, entry in sample_entries.items() %}
 #### {{ entry_name }}
 
 {% if entry_name == "EducationEntry" %}
@@ -148,8 +148,8 @@ Each entry type is a different object (a dictionary). Below, you can find all th
 - `start_date`: The start date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format
 - `end_date`: The end date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format or "present"
 - `date`: The date as a custom string or in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format. This will override `start_date` and `end_date`.
-- `highlights`: The list of bullet points
 - `summary`: The summary
+- `highlights`: The list of bullet points
 
 {% elif entry_name == "ExperienceEntry" %}
 
@@ -164,8 +164,8 @@ Each entry type is a different object (a dictionary). Below, you can find all th
 - `start_date`: The start date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format
 - `end_date`: The end date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format or "present"
 - `date`: The date as a custom string or in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format. This will override `start_date` and `end_date`.
-- `highlights`: The list of bullet points
 - `summary`: The summary
+- `highlights`: The list of bullet points
 
 {% elif entry_name == "PublicationEntry" %}
 
@@ -177,6 +177,7 @@ Each entry type is a different object (a dictionary). Below, you can find all th
 **Optional Fields:**
 
 - `doi`: The DOI of the publication
+- `url`: The URL of the publication
 - `journal`: The journal of the publication
 - `date`: The date as a custom string or in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format
 
@@ -193,8 +194,8 @@ Each entry type is a different object (a dictionary). Below, you can find all th
 - `start_date`: The start date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format
 - `end_date`: The end date in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format or "present"
 - `date`: The date as a custom string or in `YYYY-MM-DD`, `YYYY-MM`, or `YYYY` format. This will override `start_date` and `end_date`.
-- `highlights`: The list of bullet points
 - `summary`: The summary
+- `highlights`: The list of bullet points
 
 {% elif entry_name == "OneLineEntry" %}
 
@@ -208,6 +209,20 @@ Each entry type is a different object (a dictionary). Below, you can find all th
 **Mandatory Fields:**
 
 - `bullet`: The bullet point
+
+{% elif entry_name == "NumberedEntry" %}
+
+**Mandatory Fields:**
+
+- `number`: The content of the numbered entry
+
+{% elif entry_name == "ReversedNumberedEntry" %}
+
+The `ReversedNumberedEntry` displays entries in descending numerical order.
+
+**Mandatory Fields:**
+
+- `reversed_number`: The content of the reversed numbered entry
 
 {% elif entry_name == "TextEntry" %}
 

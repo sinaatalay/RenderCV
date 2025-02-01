@@ -32,6 +32,8 @@ class SampleEntries(pydantic.BaseModel):
     publication_entry: data.PublicationEntry
     one_line_entry: data.OneLineEntry
     bullet_entry: data.BulletEntry
+    numbered_entry: data.NumberedEntry
+    reversed_numbered_entry: data.ReversedNumberedEntry
     text_entry: str
 
 
@@ -74,7 +76,7 @@ def define_env(env):
             ],
         }
 
-    env.variables["showcase_entries"] = entries_showcase
+    env.variables["sample_entries"] = entries_showcase
 
     # For theme templates reference docs
     themes_path = rendercv_path / "themes"
@@ -187,6 +189,7 @@ def generate_entry_figures():
     entries = data.read_a_yaml_file(
         repository_root / "docs" / "user_guide" / "sample_entries.yaml"
     )
+    entry_types = entries.keys()
     entries = SampleEntries(**entries)
     themes = data.available_themes
 
@@ -202,15 +205,6 @@ def generate_entry_figures():
                 },
             }
 
-            entry_types = [
-                "education_entry",
-                "experience_entry",
-                "normal_entry",
-                "publication_entry",
-                "one_line_entry",
-                "bullet_entry",
-                "text_entry",
-            ]
             for entry_type in entry_types:
                 # Create data model with only one section and one entry
                 data_model = data.RenderCVDataModel(

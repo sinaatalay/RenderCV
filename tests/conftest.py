@@ -85,6 +85,14 @@ bullet_entry_dictionary = {
     "bullet": "This is a bullet entry.",
 }
 
+numbered_entry_dictionary = {
+    "number": "This is a numbered entry.",
+}
+
+reversed_numbered_entry_dictionary = {
+    "reversed_number": "This is a reversed numbered entry.",
+}
+
 
 @pytest.fixture
 def publication_entry() -> dict[str, str | list[str]]:
@@ -120,6 +128,18 @@ def one_line_entry() -> dict[str, str]:
 def bullet_entry() -> dict[str, str]:
     """Return a sample bullet entry."""
     return copy.deepcopy(bullet_entry_dictionary)
+
+
+@pytest.fixture
+def numbered_entry() -> dict[str, str]:
+    """Return a sample numbered entry."""
+    return copy.deepcopy(numbered_entry_dictionary)
+
+
+@pytest.fixture
+def reversed_numbered_entry() -> dict[str, str]:
+    """Return a sample reversed numbered entry."""
+    return copy.deepcopy(reversed_numbered_entry_dictionary)
 
 
 @pytest.fixture
@@ -339,6 +359,10 @@ def rendercv_filled_curriculum_vitae_data_model(
             "Education Entries": create_combinations_of_a_model(data.EducationEntry),
             "Normal Entries": create_combinations_of_a_model(data.NormalEntry),
             "One Line Entries": create_combinations_of_a_model(data.OneLineEntry),
+            "Numbered Entries": create_combinations_of_a_model(data.NumberedEntry),
+            "Reversed Numbered Entries": create_combinations_of_a_model(
+                data.ReversedNumberedEntry
+            ),
             "A Section & with % Special Characters": [
                 data.NormalEntry(name="A Section & with % Special Characters")
             ],

@@ -24,6 +24,15 @@ class Header(o.Header):
     connections_font_family: o.FontFamily = o.header_connections_font_family_field_info
 
 
+o.links_underline_field_info.default = True
+o.links_use_external_link_icon_field_info.default = False
+
+
+class Links(o.Links):
+    underline: bool = o.links_underline_field_info
+    use_external_link_icon: bool = o.links_use_external_link_icon_field_info
+
+
 o.text_font_family_field_info.default = "New Computer Modern"
 
 
@@ -101,14 +110,18 @@ class EntryTypes(o.EntryTypes):
 
 o.theme_options_text_field_info.default = Text()
 o.theme_options_colors_field_info.default = Colors()
+o.theme_options_links_field_info.default = Links()
 o.theme_options_highlights_field_info.default = Highlights()
 o.theme_options_entry_types_field_info.default = EntryTypes()
 o.theme_options_section_titles_field_info.default = SectionTitles()
+o.theme_options_header_field_info.default = Header()
 o.theme_options_theme_field_info.default = "sb2nov"
 
 
 class Sb2novThemeOptions(o.ThemeOptions):
     theme: Literal["sb2nov"] = o.theme_options_theme_field_info
+    header: Header = o.theme_options_header_field_info
+    links: Links = o.theme_options_links_field_info
     text: Text = o.theme_options_text_field_info
     colors: Colors = o.theme_options_colors_field_info
     highlights: Highlights = o.theme_options_highlights_field_info
