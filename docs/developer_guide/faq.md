@@ -16,3 +16,13 @@ Then, the tests should be implemented for the new social network with the follow
 2. Go to `tests/conftest.py` and add the new social network to `rendercv_filled_curriculum_vitae_data_model`.
 3. Set `update_testdata` to `True` in `conftest.py` and run the tests to update the `testdata` folder.
 4. Review the updated `testdata` folder manually to ensure everything works as expected. Then, set `update_testdata` to `False` and push the changes.
+
+## When should we consider adding a new entry type to RenderCV?
+
+We should add a new entry type if and only if the proposed design of the entry type cannot be achieved using any of the existing entry types. This is because RenderCV's entry types are not designed to function as data models. Their purpose is not to store specific data but rather to determine how a given set of strings will appear in the PDF.
+
+For example, JSON Resume follows a data-oriented approach. In JSON Resume, each entry type acts as a data model specifically designed to store structured information. RenderCV takes a design-oriented approach for two reasons:
+- There would be too many different data models that would ultimately look more or less the same in the PDF.
+- It would be impossible to provide all the different data models people might need.
+
+Therefore, we decided to create entry types solely for their design output.
