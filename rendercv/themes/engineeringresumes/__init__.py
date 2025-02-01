@@ -11,19 +11,23 @@ class Page(o.Page):
     show_page_numbering: bool = o.page_show_page_numbering_field_info
 
 
+o.header_name_font_family_field_info.default = "XCharter"
 o.header_separator_between_connections_field_info.default = "|"
 o.header_use_icons_for_connections_field_info.default = False
 o.header_name_bold_field_info.default = False
 o.header_name_font_size_field_info = "25pt"
+o.header_connections_font_family_field_info.default = "XCharter"
 
 
 class Header(o.Header):
+    name_font_family: o.FontFamily = o.header_name_font_family_field_info
     name_font_size: o.TypstDimension = o.header_name_font_size_field_info
     name_bold: bool = o.header_name_bold_field_info
     separator_between_connections: str = (
         o.header_separator_between_connections_field_info
     )
     use_icons_for_connections: bool = o.header_use_icons_for_connections_field_info
+    connections_font_family: o.FontFamily = o.header_connections_font_family_field_info
 
 
 o.colors_name_field_info.default = "rgb(0,0,0)"
@@ -61,9 +65,11 @@ o.section_titles_type_field_info.default = "with-full-line"
 o.section_titles_vertical_space_above_field_info.default = "0.55cm"
 o.section_titles_vertical_space_below_field_info.default = "0.3cm"
 o.section_titles_font_size_field_info.default = "1.2em"
+o.section_titles_font_family_field_info.default = "XCharter"
 
 
 class SectionTitles(o.SectionTitles):
+    font_family: o.FontFamily = o.section_titles_font_family_field_info
     line_type: o.SectionTitleType = o.section_titles_type_field_info
     vertical_space_above: o.TypstDimension = (
         o.section_titles_vertical_space_above_field_info

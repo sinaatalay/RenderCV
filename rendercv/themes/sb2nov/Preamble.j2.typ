@@ -22,6 +22,7 @@
 #let design-colors-name = <<design.colors.name.as_rgb()>>
 #let design-colors-connections = <<design.colors.connections.as_rgb()>>
 #let design-colors-links = <<design.colors.links.as_rgb()>>
+#let design-section-titles-font-family = "<<design.section_titles.font_family>>"
 #let design-section-titles-bold = <<design.section_titles.bold|lower>>
 #let design-section-titles-line-thickness = <<design.section_titles.line_thickness>>
 #let design-section-titles-font-size = <<design.section_titles.font_size>>
@@ -37,8 +38,10 @@
 #let design-text-date-and-location-column-alignment = <<design.text.date_and_location_column_alignment>>
 #let design-header-photo-width = <<design.header.photo_width>>
 #let design-header-use-icons-for-connections = <<design.header.use_icons_for_connections|lower>>
+#let design-header-name-font-family = "<<design.header.name_font_family>>"
 #let design-header-name-font-size = <<design.header.name_font_size>>
 #let design-header-name-bold = <<design.header.name_bold|lower>>
+#let design-header-connections-font-family = "<<design.header.connections_font_family>>"
 #let design-header-vertical-space-between-name-and-connections = <<design.header.vertical_space_between_name_and_connections>>
 #let design-header-vertical-space-between-connections-and-first-section = <<design.header.vertical_space_between_connections_and_first_section>>
 #let design-header-use-icons-for-connections = <<design.header.use_icons_for_connections|lower>>
@@ -190,6 +193,7 @@
   #set par(spacing: 0pt)
   #set align(design-header-alignment)
   #set text(
+    font: design-header-name-font-family,
     weight: header-font-weight,
     size: design-header-name-font-size,
     fill: design-colors-name,
@@ -210,6 +214,7 @@
   #set align(left)
   #set text(size: (1em / 1.2)) // reset
   #set text(
+    font: design-section-titles-font-family,
     size: (design-section-titles-font-size),
     weight: section-title-font-weight,
     fill: design-colors-section-titles,
@@ -294,6 +299,8 @@
 }
 
 #let connections(connections-list) = context {
+  set text(fill: design-colors-connections, font: design-header-connections-font-family)
+  set par(leading: design-text-leading*1.7, justify: false)
   let list-of-connections = ()
   let separator = (
     h(design-header-horizontal-space-between-connections / 2, weak: true)
@@ -329,8 +336,6 @@
     list-of-connections.push(connections-list.slice(starting-index, ending-index).join(separator))
     starting-index = ending-index
   }
-  set text(fill: design-colors-connections)
-  set par(leading: design-text-leading*1.7, justify: false)
   align(list-of-connections.join(linebreak()), design-header-alignment)
   v(design-header-vertical-space-between-connections-and-first-section - design-section-titles-vertical-space-above)
 }

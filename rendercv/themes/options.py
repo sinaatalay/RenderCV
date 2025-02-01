@@ -9,6 +9,7 @@ from typing import Annotated, Literal, Optional
 
 import pydantic
 import pydantic_extra_types.color as pydantic_color
+import rendercv_fonts
 
 from ..data.models.base import RenderCVBaseModelWithoutExtraKeys
 
@@ -28,18 +29,14 @@ TypstDimension = Annotated[
     str,
     pydantic.AfterValidator(validate_typst_dimension),
 ]
-FontFamily = Literal[
+available_font_families = [
     "Libertinus Serif",
     "New Computer Modern",
     "DejaVu Sans Mono",
-    "Source Sans 3",
-    "Roboto",
-    "Open Sans",
-    "Ubuntu",
-    "Noto Sans",
-    "Mukta",
-    "XCharter",
+    *rendercv_fonts.available_font_families,
 ]
+available_font_families.remove("Font Awesome 6")
+FontFamily = Literal[*available_font_families]
 BulletPoint = Literal["•", "◦", "-", "◆", "★", "■", "—", "○"]
 PageSize = Literal[
     "a0",
@@ -236,6 +233,11 @@ class Links(RenderCVBaseModelWithoutExtraKeys):
     use_external_link_icon: bool = links_use_external_link_icon_field_info
 
 
+header_name_font_family_field_info = pydantic.Field(
+    default="Source Sans 3",
+    title="Name Font Family",
+    description="The font family of the name in the header.",
+)
 header_name_font_size_field_info = pydantic.Field(
     default="30pt",
     title="Name Font Size",
@@ -275,6 +277,11 @@ header_separator_between_connections_field_info = pydantic.Field(
     title="Separator Between Connections",
     description="The separator between the connections in the header.",
 )
+header_connections_font_family_field_info = pydantic.Field(
+    default="Source Sans 3",
+    title="Connections Font Family",
+    description="The font family of the connections in the header.",
+)
 header_use_icons_for_connections_field_info = pydantic.Field(
     default=True,
     title="Use Icons for Connections",
@@ -291,6 +298,7 @@ header_alignment_field_info = pydantic.Field(
 
 
 class Header(RenderCVBaseModelWithoutExtraKeys):
+    name_font_family: FontFamily = header_name_font_family_field_info
     name_font_size: TypstDimension = header_name_font_size_field_info
     name_bold: bool = header_name_bold_field_info
     photo_width: TypstDimension = header_photo_width_field_info
@@ -303,11 +311,17 @@ class Header(RenderCVBaseModelWithoutExtraKeys):
     horizontal_space_between_connections: TypstDimension = (
         header_horizontal_space_connections_field_info
     )
+    connections_font_family: FontFamily = header_connections_font_family_field_info
     separator_between_connections: str = header_separator_between_connections_field_info
     use_icons_for_connections: bool = header_use_icons_for_connections_field_info
     alignment: Alignment = header_alignment_field_info
 
 
+section_titles_font_family_field_info = pydantic.Field(
+    default="Source Sans 3",
+    title="Font Family",
+    description="The font family of the section titles.",
+)
 section_titles_font_size_field_info = pydantic.Field(
     default="1.4em",
     title="Font Size",
@@ -347,6 +361,7 @@ section_titles_small_caps_field_info = pydantic.Field(
 
 class SectionTitles(RenderCVBaseModelWithoutExtraKeys):
     type: SectionTitleType = section_titles_type_field_info
+    font_family: FontFamily = section_titles_font_family_field_info
     font_size: TypstDimension = section_titles_font_size_field_info
     bold: bool = section_titles_bold_field_info
     small_caps: bool = section_titles_small_caps_field_info

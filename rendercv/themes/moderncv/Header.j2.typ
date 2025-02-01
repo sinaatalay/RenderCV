@@ -12,7 +12,7 @@
   right-content: [
 ((* endif *))
 ((* if cv.name *))
-= <<cv.name>>
+= #name
 ((* endif *))
 
 // Print connections:

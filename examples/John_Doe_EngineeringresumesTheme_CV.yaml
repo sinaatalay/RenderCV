@@ -110,17 +110,20 @@ design:
     underline: true
     use_external_link_icon: false
   header:
+    name_font_family: XCharter
     name_font_size: 25pt
     name_bold: false
     photo_width: 3.5cm
     vertical_space_between_name_and_connections: 0.7cm
     vertical_space_between_connections_and_first_section: 0.7cm
     horizontal_space_between_connections: 0.5cm
+    connections_font_family: XCharter
     separator_between_connections: '|'
     use_icons_for_connections: false
     alignment: center
   section_titles:
     type: with-parial-line
+    font_family: XCharter
     font_size: 1.2em
     bold: true
     small_caps: false
@@ -216,5 +219,5 @@ locale:
     - November
     - December
 rendercv_settings:
-  date: '2025-01-26'
+  date: '2025-02-01'
   bold_keywords: []

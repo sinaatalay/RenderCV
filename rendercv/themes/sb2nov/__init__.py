@@ -15,6 +15,15 @@ class Colors(o.Colors):
     section_titles: pydantic_color.Color = o.colors_section_titles_field_info
 
 
+o.header_name_font_family_field_info.default = "New Computer Modern"
+o.header_connections_font_family_field_info.default = "New Computer Modern"
+
+
+class Header(o.Header):
+    name_font_family: o.FontFamily = o.header_name_font_family_field_info
+    connections_font_family: o.FontFamily = o.header_connections_font_family_field_info
+
+
 o.text_font_family_field_info.default = "New Computer Modern"
 
 
@@ -23,9 +32,11 @@ class Text(o.Text):
 
 
 o.section_titles_type_field_info.default = "with-full-line"
+o.section_titles_font_family_field_info.default = "New Computer Modern"
 
 
 class SectionTitles(o.SectionTitles):
+    font_family: o.FontFamily = o.section_titles_font_family_field_info
     line_type: o.SectionTitleType = o.section_titles_type_field_info
 
 

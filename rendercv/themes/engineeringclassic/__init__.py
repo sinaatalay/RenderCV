@@ -9,13 +9,17 @@ class Page(o.Page):
     show_page_numbering: bool = o.page_show_page_numbering_field_info
 
 
+o.header_name_font_family_field_info.default = "Raleway"
+o.header_connections_font_family_field_info.default = "Raleway"
 o.header_name_bold_field_info.default = False
 o.header_alignment_field_info.default = "left"
 
 
 class Header(o.Header):
+    name_font_family: o.FontFamily = o.header_name_font_family_field_info
     name_bold: bool = o.header_name_bold_field_info
     alignment: o.Alignment = o.header_alignment_field_info
+    connections_font_family: o.FontFamily = o.header_connections_font_family_field_info
 
 
 o.links_use_external_link_icon_field_info.default = False
@@ -25,17 +29,19 @@ class Links(o.Links):
     use_external_link_icon: bool = o.links_use_external_link_icon_field_info
 
 
-o.text_font_family_field_info.default = "Noto Sans"
+o.text_font_family_field_info.default = "Raleway"
 
 
 class Text(o.Text):
     font_family: o.FontFamily = o.text_font_family_field_info
 
 
+o.section_titles_font_family_field_info.default = "Raleway"
 o.section_titles_bold_field_info.default = False
 
 
 class SectionTitles(o.SectionTitles):
+    font_family: o.FontFamily = o.section_titles_font_family_field_info
     bold: bool = o.section_titles_bold_field_info
 
 

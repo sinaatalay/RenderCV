@@ -272,88 +272,107 @@ An example `design` field for a `classic` theme is shown below:
 
 ```yaml
 theme: classic # (1)!
-  page:
-    size: us-letter # (2)!
-    top_margin: 2cm
-    bottom_margin: 2cm
-    left_margin: 2cm
-    right_margin: 2cm
-    show_page_numbering: true
-    show_last_updated_date: true
-  colors:
-    text: black
-    name: '#004f90'
-    connections: '#004f90'
-    section_titles: '#004f90'
-    links: '#004f90'
-    last_updated_date_and_page_numbering: grey
-  text:
-    font_family: Source Sans 3 # (3)!
-    font_size: 10pt
-    leading: 0.6em
-    alignment: justified # (4)!
-    date_and_location_column_alignment: right # (5)!
-  links:
-    underline: false
-    use_external_link_icon: true
-  header:
-    name_font_size: 30pt
-    name_bold: true
-    photo_width: 3.5cm
-    vertical_space_between_name_and_connections: 0.7cm
-    vertical_space_between_connections_and_first_section: 0.7cm
-    horizontal_space_between_connections: 0.5cm
-    separator_between_connections: ''
-    use_icons_for_connections: true
-    alignment: center # (6)!
-  section_titles:
-    type: with-parial-line # (7)!
-    font_size: 1.4em
-    bold: true
-    small_caps: false
-    line_thickness: 0.5pt
-    vertical_space_above: 0.5cm
-    vertical_space_below: 0.3cm
-  entries:
-    date_and_location_width: 4.15cm
-    left_and_right_margin: 0.2cm
-    horizontal_space_between_columns: 0.1cm
-    vertical_space_between_entries: 1.2em
-    allow_page_break_in_entries: true
-    short_second_row: false
-    show_time_spans_in: []
-  highlights:
-    bullet: • # (8)!
-    top_margin: 0.25cm
-    left_margin: 0.4cm
-    vertical_space_between_highlights: 0.25cm
-    horizontal_space_between_bullet_and_highlight: 0.5em
-    summary_left_margin: 0cm
-  entry_types:
-    one_line_entry:
-      template: '**LABEL:** DETAILS'
-    education_entry:
-      main_column_first_row_template: '**INSTITUTION**, AREA'
-      degree_column_template: '**DEGREE**'
-      degree_column_width: 1cm
-      main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
-      date_and_location_column_template: "LOCATION\nDATE"
-    normal_entry:
-      main_column_first_row_template: '**NAME**'
-      main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
-      date_and_location_column_template: "LOCATION\nDATE"
-    experience_entry:
-      main_column_first_row_template: '**COMPANY**, POSITION'
-      main_column_second_row_template: "SUMMARY\nHIGHLIGHTS"
-      date_and_location_column_template: "LOCATION\nDATE"
-    publication_entry:
-      main_column_first_row_template: '**TITLE**'
-      main_column_second_row_template: "AUTHORS\nURL (JOURNAL)"
-      main_column_second_row_without_journal_template: "AUTHORS\n\
-        URL"
-      main_column_second_row_without_url_template: "AUTHORS\n\
-        JOURNAL"
-      date_and_location_column_template: DATE
+page:
+  size: us-letter # (2)!
+  top_margin: 2cm
+  bottom_margin: 2cm
+  left_margin: 2cm
+  right_margin: 2cm
+  show_page_numbering: true
+  show_last_updated_date: true
+colors:
+  text: black
+  name: '#004f90'
+  connections: '#004f90'
+  section_titles: '#004f90'
+  links: '#004f90'
+  last_updated_date_and_page_numbering: grey
+text:
+  font_family: Source Sans 3 # (3)!
+  font_size: 10pt
+  leading: 0.6em
+  alignment: justified # (4)!
+  date_and_location_column_alignment: right # (5)!
+links:
+  underline: false
+  use_external_link_icon: true
+header:
+  name_font_family: Source Sans 3
+  name_font_size: 30pt
+  name_bold: true
+  photo_width: 3.5cm
+  vertical_space_between_name_and_connections: 0.7cm
+  vertical_space_between_connections_and_first_section: 0.7cm
+  horizontal_space_between_connections: 0.5cm
+  connections_font_family: Source Sans 3
+  separator_between_connections: ''
+  use_icons_for_connections: true
+  alignment: center # (6)!
+section_titles:
+  type: with-parial-line # (7)!
+  font_family: Source Sans 3
+  font_size: 1.4em
+  bold: true
+  small_caps: false
+  line_thickness: 0.5pt
+  vertical_space_above: 0.5cm
+  vertical_space_below: 0.3cm
+entries:
+  date_and_location_width: 4.15cm
+  left_and_right_margin: 0.2cm
+  horizontal_space_between_columns: 0.1cm
+  vertical_space_between_entries: 1.2em
+  allow_page_break_in_entries: true
+  short_second_row: false
+  show_time_spans_in: []
+highlights:
+  bullet: • # (8)!
+  top_margin: 0.25cm
+  left_margin: 0.4cm
+  vertical_space_between_highlights: 0.25cm
+  horizontal_space_between_bullet_and_highlight: 0.5em
+  summary_left_margin: 0cm
+entry_types:
+  one_line_entry:
+    template: '**LABEL:** DETAILS'
+  education_entry:
+    main_column_first_row_template: '**INSTITUTION**, AREA'
+    degree_column_template: '**DEGREE**'
+    degree_column_width: 1cm
+    main_column_second_row_template: |-
+      SUMMARY
+      HIGHLIGHTS
+    date_and_location_column_template: |-
+      LOCATION
+      DATE
+  normal_entry:
+    main_column_first_row_template: '**NAME**'
+    main_column_second_row_template: |-
+      SUMMARY
+      HIGHLIGHTS
+    date_and_location_column_template: |-
+      LOCATION
+      DATE
+  experience_entry:
+    main_column_first_row_template: '**COMPANY**, POSITION'
+    main_column_second_row_template: |-
+      SUMMARY
+      HIGHLIGHTS
+    date_and_location_column_template: |-
+      LOCATION
+      DATE
+  publication_entry:
+    main_column_first_row_template: '**TITLE**'
+    main_column_second_row_template: |-
+      AUTHORS
+      URL (JOURNAL)
+    main_column_second_row_without_journal_template: |-
+      AUTHORS
+      URL
+    main_column_second_row_without_url_template: |-
+      AUTHORS
+      JOURNAL
+    date_and_location_column_template: DATE
 ```
 
 1. The `design.theme` field only changes the default values of all the other fields in the `design` field. Therefore, if you don't change any of the other fields, the output will be the same for all the themes. You can remove all the other fields and just keep the `design.theme` field to use the default values of that theme.

@@ -110,17 +110,20 @@ design:
     underline: false
     use_external_link_icon: true
   header:
+    name_font_family: Source Sans 3
     name_font_size: 30pt
     name_bold: true
     photo_width: 3.5cm
     vertical_space_between_name_and_connections: 0.7cm
     vertical_space_between_connections_and_first_section: 0.7cm
     horizontal_space_between_connections: 0.5cm
+    connections_font_family: Source Sans 3
     separator_between_connections: ''
     use_icons_for_connections: true
     alignment: center
   section_titles:
     type: with-parial-line
+    font_family: Source Sans 3
     font_size: 1.4em
     bold: true
     small_caps: false
@@ -222,5 +225,5 @@ locale:
     - November
     - December
 rendercv_settings:
-  date: '2025-01-26'
+  date: '2025-02-01'
   bold_keywords: []
