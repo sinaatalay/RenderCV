@@ -344,7 +344,8 @@ def test_render_command_with_custom_png_path_multiple_pages(tmp_path):
         ],
     )
 
-    png_page_file_path = tmp_path / "test.png"
+    png_page_file_path = tmp_path / "test_1.png"
+    png_page_file_path = tmp_path / "test_2.png"
 
     assert png_page_file_path.exists()
 

@@ -251,15 +251,10 @@ def render_pngs_from_typst(
     """
     typst_compiler = TypstCompiler(file_path)
     output_path = file_path.parent / (file_path.stem + "_{p}.png")
-    output = typst_compiler.run(format="png", ppi=ppi, output=output_path)
+    typst_compiler.run(format="png", ppi=ppi, output=output_path)
 
-    if isinstance(output, list):
-        return [
-            output_path.parent / output_path.name.format(p=i)
-            for i in range(len(output))
-        ]
-
-    return [output_path.parent / output_path.name.format(p=1)]
+    # Look at the outtput folder and find the PNG files:
+    return list(output_path.parent.glob(f"{file_path.stem}_*.png"))
 
 
 def render_an_html_from_markdown(markdown_file_path: pathlib.Path) -> pathlib.Path:
