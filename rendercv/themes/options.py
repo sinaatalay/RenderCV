@@ -394,6 +394,13 @@ entries_vertical_space_between_entries_field_info = pydantic.Field(
     title="Vertical Space Between Entries",
     description="The vertical space between the entries.",
 )
+entries_allow_page_break_in_sections_field_info = pydantic.Field(
+    default=True,
+    title="Allow Page Break in Sections",
+    description=(
+        'If this option is "true", a page break will be allowed in the sections.'
+    ),
+)
 entries_allow_page_break_in_entries_field_info = pydantic.Field(
     default=True,
     title="Allow Page Break in Entries",
@@ -427,6 +434,7 @@ class Entries(RenderCVBaseModelWithoutExtraKeys):
     vertical_space_between_entries: TypstDimension = (
         entries_vertical_space_between_entries_field_info
     )
+    allow_page_break_in_sections: bool = entries_allow_page_break_in_sections_field_info
     allow_page_break_in_entries: bool = entries_allow_page_break_in_entries_field_info
     short_second_row: bool = entries_short_second_row_field_info
     show_time_spans_in: list[str] = entries_show_time_spans_in_field_info

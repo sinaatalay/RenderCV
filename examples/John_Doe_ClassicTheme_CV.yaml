@@ -143,6 +143,7 @@ design:
     left_and_right_margin: 0.2cm
     horizontal_space_between_columns: 0.1cm
     vertical_space_between_entries: 1.2em
+    allow_page_break_in_sections: true
     allow_page_break_in_entries: true
     short_second_row: false
     show_time_spans_in: []

@@ -9,3 +9,13 @@
   ],
 )
 ((* endif *))
+((* if not design.entries.allow_page_break_in_sections *))
+  ],
+  breakable: false,
+  inset: (
+    left: 0cm,
+    right: 0cm,
+  ),
+  width: 100%,
+)
+((* endif *))

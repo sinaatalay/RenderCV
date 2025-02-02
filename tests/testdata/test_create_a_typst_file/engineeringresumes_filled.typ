@@ -487,7 +487,6 @@
 == Text Entries
 
 
-
 #one-col-entry(
   content: [This is a #emph[TextEntry]. It is only a text and can be useful for sections like #strong[Summary]. To showcase the TextEntry completely, this sentence is added, but it doesn't contain any information.]
 )
@@ -504,7 +503,6 @@
 == Bullet Entries
 
 
-
 #one-col-entry(
   content: [- This is a bullet entry.],
 )
@@ -515,7 +513,6 @@
 
 
 == Publication Entries
-
 
 
 #one-col-entry(content:[
@@ -708,7 +705,6 @@
 
 
 == Experience Entries
-
 
 
 
@@ -1671,7 +1667,6 @@
 
 
 == Education Entries
-
 
 
 // NO DATE, NO DEGREE
@@ -4283,7 +4278,6 @@
 
 
 
-
 #one-col-entry(
   content: [
     #strong[My Project] 
@@ -5245,14 +5239,12 @@
 == One Line Entries
 
 
-
 #one-col-entry(
   content: [#strong[Pro#strong[gram]ming:] Python, C++, JavaScript, MATLAB]
 )
 
 
 == Numbered Entries
-
 #one-col-entry(
   content: [
 
@@ -5263,7 +5255,6 @@
 )
 
 == Reversed Numbered Entries
-
 #one-col-entry(
   content: [
     #let rev-enum-items = (
@@ -5280,7 +5271,6 @@
 )
 
 == A Section & with \% Special Characters
-
 
 
 
