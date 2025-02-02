@@ -106,7 +106,10 @@ def create_a_typst_file(
     if not output_directory.is_dir():
         output_directory.mkdir(parents=True)
 
-    file_name = f"{str(rendercv_data_model.cv.name).replace(' ', '_')}_CV.typ"
+    name_without_typst_commands = templater.remove_typst_commands(
+        str(rendercv_data_model.cv.name)
+    )
+    file_name = f"{name_without_typst_commands.replace(' ', '_')}_CV.typ"
     file_path = output_directory / file_name
     file_path.write_text(typst_contents, encoding="utf-8")
 

@@ -458,7 +458,7 @@
   ],
   column-gutter: 0cm,
   right-content: [
-= #name
+= John Doe
 
 // Print connections:
 #let connections-list = (

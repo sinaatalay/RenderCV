@@ -62,6 +62,10 @@ def test_markdown_file_class(tmp_path, rendercv_data_model, jinja2_environment):
             "$###$",
             "\\$\\#\\#\\#\\$",
         ),
+        (
+            "#test-typst-command[argument]",
+            "#test-typst-command[argument]",
+        ),
     ],
 )
 def test_escape_typst_characters(string, expected_string):

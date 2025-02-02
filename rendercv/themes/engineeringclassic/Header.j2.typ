@@ -12,7 +12,7 @@
   right-content: [
 ((* endif *))
 ((* if cv.name *))
-= #name
+= <<cv.name|escape_typst_characters>>
 ((* endif *))
 
 // Print connections:

@@ -10,7 +10,7 @@
 } *))
 #import "@preview/fontawesome:0.5.0": fa-icon
 
-#let name = "<<cv.name>>"
+#let name = "<<cv.name|remove_typst_commands>>"
 #let locale-catalog-page-numbering-style = context { "<<locale.page_numbering_template|replace_placeholders_with_actual_values(page_numbering_template_placeholders)>>" }
 #let locale-catalog-last-updated-date-style = "<<locale.last_updated_date_template|replace_placeholders_with_actual_values(last_updated_date_template_placeholders)>>"
 #let locale-catalog-language = "<<locale.language>>"

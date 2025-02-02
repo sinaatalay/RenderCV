@@ -421,6 +421,25 @@ def input_template_to_typst(
     return output  # noqa: RET504
 
 
+def remove_typst_commands(string: Optional[str]) -> Optional[str]:
+    """Remove Typst commands from a string.
+
+    Args:
+        string: The string to remove Typst commands from.
+
+    Returns:
+        The string without Typst commands.
+    """
+    if string:
+        commands = re.findall(r"\#.*?\[.*?\]", string)
+        for command in commands:
+            string = string.replace(command, "")
+
+        return string
+
+    return None
+
+
 def escape_characters(string: str, escape_dictionary: dict[str, str]) -> str:
     """Escape characters in a string by using `escape_dictionary`, where keys are
     characters to escape and values are their escaped versions.
@@ -470,6 +489,11 @@ def escape_characters(string: str, escape_dictionary: dict[str, str]) -> str:
         new_equation = equation.replace("$$", "$")
         new_equations.append(new_equation)
 
+    # If there are Typst commands, don't escape the special characters:
+    commands = re.findall(r"(\#.*?\[.*?\])", string)
+    for i, command in enumerate(commands):
+        string = string.replace(command, f"!!-command{i}-!!")
+
     # Loop through the letters of the sentence and if you find an escape character,
     # replace it with their equivalent:
     string = string.translate(translation_map)
@@ -481,6 +505,10 @@ def escape_characters(string: str, escape_dictionary: dict[str, str]) -> str:
     # Replace !!-equation{i}-!!" with the original equations:
     for i, new_equation in enumerate(new_equations):
         string = string.replace(f"!!-equation{i}-!!", new_equation)
+
+    # Replace !!-command{i}-!!" with the original commands:
+    for i, command in enumerate(commands):
+        string = string.replace(f"!!-command{i}-!!", command)
 
     return string
 
@@ -741,6 +769,7 @@ class Jinja2Environment:
             environment.filters["escape_typst_characters"] = escape_typst_characters
             environment.filters["markdown_to_typst"] = markdown_to_typst
             environment.filters["make_a_url_clean"] = data.make_a_url_clean
+            environment.filters["remove_typst_commands"] = remove_typst_commands
 
             cls.environment = environment
 
