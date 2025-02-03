@@ -22,7 +22,7 @@ class Locale(RenderCVBaseModelWithoutExtraKeys):
         title="Language",
         description=(
             "The language as an ISO 639 alpha-2 code. It is used for hyphenation"
-            " patterns."
+            " patterns. The default value is 'en'."
         ),
     )
     phone_number_format: Optional[Literal["national", "international", "E164"]] = (
@@ -32,7 +32,7 @@ class Locale(RenderCVBaseModelWithoutExtraKeys):
             description=(
                 "If 'national', phone numbers are formatted without the country code."
                 " If 'international', phone numbers are formatted with the country"
-                ' code. The default value is "national"'
+                " code. The default value is 'national'."
             ),
         )
     )
@@ -70,32 +70,32 @@ class Locale(RenderCVBaseModelWithoutExtraKeys):
     )
     month: Optional[str] = pydantic.Field(
         default="month",
-        title='Translation of "Month"',
+        title='Translation of "month"',
         description='Translation of the word "month" in the locale.',
     )
     months: Optional[str] = pydantic.Field(
         default="months",
-        title='Translation of "Months"',
+        title='Translation of "months"',
         description='Translation of the word "months" in the locale.',
     )
     year: Optional[str] = pydantic.Field(
         default="year",
-        title='Translation of "Year"',
+        title='Translation of "year"',
         description='Translation of the word "year" in the locale.',
     )
     years: Optional[str] = pydantic.Field(
         default="years",
-        title='Translation of "Years"',
+        title='Translation of "years"',
         description='Translation of the word "years" in the locale.',
     )
     present: Optional[str] = pydantic.Field(
         default="present",
-        title='Translation of "Present"',
+        title='Translation of "present"',
         description='Translation of the word "present" in the locale.',
     )
     to: Optional[str] = pydantic.Field(
         default="–",  # NOQA: RUF001
-        title='Translation of "To"',
+        title='Translation of "to"',
         description=(
             "The word or character used to indicate a range in the locale (e.g.,"
             ' "2020 - 2021").'

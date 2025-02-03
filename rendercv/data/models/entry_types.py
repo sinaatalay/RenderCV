@@ -179,8 +179,7 @@ class EntryType(abc.ABC):
     have."""
 
     @abc.abstractmethod
-    def make_keywords_bold(self, keywords: list[str]) -> "EntryType":
-        pass
+    def make_keywords_bold(self, keywords: list[str]) -> "EntryType": ...
 
 
 def make_keywords_bold_in_a_string(string: str, keywords: list[str]) -> str:
@@ -196,12 +195,10 @@ class OneLineEntry(RenderCVBaseModelWithExtraKeys, EntryType):
     """This class is the data model of `OneLineEntry`."""
 
     label: str = pydantic.Field(
-        title="Name",
-        description="The label of the OneLineEntry.",
+        title="Label",
     )
     details: str = pydantic.Field(
         title="Details",
-        description="The details of the OneLineEntry.",
     )
 
     def make_keywords_bold(self, keywords: list[str]) -> "OneLineEntry":
@@ -222,7 +219,6 @@ class BulletEntry(RenderCVBaseModelWithExtraKeys, EntryType):
 
     bullet: str = pydantic.Field(
         title="Bullet",
-        description="The contents of the BulletEntry.",
     )
 
     def make_keywords_bold(self, keywords: list[str]) -> "BulletEntry":
@@ -243,7 +239,6 @@ class NumberedEntry(RenderCVBaseModelWithExtraKeys, EntryType):
 
     number: str = pydantic.Field(
         title="Number",
-        description="The contents of the NumberedEntry.",
     )
 
     def make_keywords_bold(self, keywords: list[str]) -> "NumberedEntry":
@@ -263,8 +258,7 @@ class ReversedNumberedEntry(RenderCVBaseModelWithExtraKeys, EntryType):
     """This class is the data model of `ReversedNumberedEntry`."""
 
     reversed_number: str = pydantic.Field(
-        title="Reverse Number",
-        description="The contents of the ReversedNumberedEntry.",
+        title="Reversed Number",
     )
 
     def make_keywords_bold(self, keywords: list[str]) -> "ReversedNumberedEntry":
@@ -291,8 +285,8 @@ class EntryWithDate(RenderCVBaseModelWithExtraKeys):
         default=None,
         title="Date",
         description=(
-            "The date field can be filled in YYYY-MM-DD, YYYY-MM, or YYYY formats or as"
-            ' an arbitrary string like "Fall 2023".'
+            "The date can be written in the formats YYYY-MM-DD, YYYY-MM, or YYYY, or as"
+            ' an arbitrary string such as "Fall 2023."'
         ),
         examples=["2020-09-24", "Fall 2023"],
     )
@@ -312,29 +306,23 @@ class PublicationEntryBase(RenderCVBaseModelWithExtraKeys):
 
     title: str = pydantic.Field(
         title="Publication Title",
-        description="The title of the publication.",
     )
     authors: list[str] = pydantic.Field(
         title="Authors",
-        description="The authors of the publication in order as a list of strings.",
     )
     doi: Optional[Annotated[str, pydantic.Field(pattern=r"\b10\..*")]] = pydantic.Field(
         default=None,
         title="DOI",
-        description="The DOI of the publication.",
         examples=["10.48550/arXiv.2310.03138"],
     )
     url: Optional[pydantic.HttpUrl] = pydantic.Field(
         default=None,
         title="URL",
-        description=(
-            "The URL of the publication. If DOI is provided, it will be ignored."
-        ),
+        description="If DOI is provided, it will be ignored.",
     )
     journal: Optional[str] = pydantic.Field(
         default=None,
         title="Journal",
-        description="The journal or conference name.",
     )
 
     @pydantic.model_validator(mode="after")  # type: ignore
@@ -369,8 +357,11 @@ class PublicationEntryBase(RenderCVBaseModelWithExtraKeys):
             return computers.make_a_url_clean(str(self.url))  # type: ignore
         return ""
 
-    def make_keywords_bold(self, keywords: list[str]) -> "PublicationEntryBase":
-        pass
+    def make_keywords_bold(
+        self,
+        keywords: list[str],  # NOQA: ARG002
+    ) -> "PublicationEntryBase":
+        return self
 
 
 # The following class is to ensure PublicationEntryBase keys come first,
@@ -389,17 +380,11 @@ class EntryBase(EntryWithDate):
     etc.
     """
 
-    location: Optional[str] = pydantic.Field(
-        default=None,
-        title="Location",
-        description="The location of the event.",
-        examples=["Istanbul, Türkiye"],
-    )
     start_date: StartDate = pydantic.Field(
         default=None,
         title="Start Date",
         description=(
-            "The start date of the event in YYYY-MM-DD, YYYY-MM, or YYYY format."
+            "The event's start date, written in YYYY-MM-DD, YYYY-MM, or YYYY format."
         ),
         examples=["2020-09-24"],
     )
@@ -407,23 +392,25 @@ class EntryBase(EntryWithDate):
         default=None,
         title="End Date",
         description=(
-            "The end date of the event in YYYY-MM-DD, YYYY-MM, or YYYY format. If the"
-            ' event is still ongoing, then type "present" or provide only the'
-            " start_date."
+            "The event's end date, written in YYYY-MM-DD, YYYY-MM, or YYYY format. If"
+            " the event is ongoing, type “present” or provide only the start date."
         ),
         examples=["2020-09-24", "present"],
     )
-    highlights: Optional[list[str]] = pydantic.Field(
+    location: Optional[str] = pydantic.Field(
         default=None,
-        title="Highlights",
-        description="The highlights of the event as a list of strings.",
-        examples=["Did this.", "Did that."],
+        title="Location",
+        examples=["Istanbul, Türkiye"],
     )
     summary: Optional[str] = pydantic.Field(
         default=None,
         title="Summary",
-        description="The summary of the event.",
         examples=["Did this and that."],
+    )
+    highlights: Optional[list[str]] = pydantic.Field(
+        default=None,
+        title="Highlights",
+        examples=["Did this.", "Did that."],
     )
 
     @pydantic.model_validator(mode="after")  # type: ignore
@@ -514,7 +501,6 @@ class NormalEntryBase(RenderCVBaseModelWithExtraKeys):
 
     name: str = pydantic.Field(
         title="Name",
-        description="The name of the NormalEntry.",
     )
 
 
@@ -530,11 +516,9 @@ class ExperienceEntryBase(RenderCVBaseModelWithExtraKeys):
 
     company: str = pydantic.Field(
         title="Company",
-        description="The company name.",
     )
     position: str = pydantic.Field(
         title="Position",
-        description="The position.",
     )
 
 
@@ -550,16 +534,14 @@ class EducationEntryBase(RenderCVBaseModelWithExtraKeys):
 
     institution: str = pydantic.Field(
         title="Institution",
-        description="The institution name.",
     )
     area: str = pydantic.Field(
         title="Area",
-        description="The area of study.",
     )
     degree: Optional[str] = pydantic.Field(
         default=None,
         title="Degree",
-        description="The type of the degree.",
+        description="The type of the degree, such as BS, BA, PhD, MS.",
         examples=["BS", "BA", "PhD", "MS"],
     )
 

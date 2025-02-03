@@ -175,6 +175,17 @@ class Colors(RenderCVBaseModelWithoutExtraKeys):
         colors_last_updated_date_and_page_numbering_field_info
     )
 
+    @pydantic.field_serializer(
+        "text",
+        "name",
+        "connections",
+        "section_titles",
+        "links",
+        "last_updated_date_and_page_numbering",
+    )
+    def serialize_color(self, value: pydantic_color.Color) -> str:
+        return value.as_rgb()
+
 
 text_font_family_field_info = pydantic.Field(
     default="Source Sans 3",

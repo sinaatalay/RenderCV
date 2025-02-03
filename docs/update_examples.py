@@ -60,7 +60,7 @@ def generate_examples():
 
         # Convert first page of PDF to image
         png_file_paths = renderer.render_pngs_from_typst(output_typst_file)
-        firt_page_png_file_path = png_file_paths[0]
+        first_page_png_file_path = png_file_paths[0]
         if len(png_file_paths) > 1:
             # Remove other pages
             for png_file_path in png_file_paths[1:]:
@@ -73,7 +73,7 @@ def generate_examples():
             desired_png_file_path.unlink()
 
         # Move image to desired location
-        firt_page_png_file_path.rename(desired_png_file_path)
+        first_page_png_file_path.rename(desired_png_file_path)
 
         # Remove rendercv_output directory
         rendercv_output_directory = examples_directory_path / "rendercv_output"

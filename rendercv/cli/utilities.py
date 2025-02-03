@@ -266,7 +266,10 @@ def update_render_command_settings_of_the_input_file(
     if "rendercv_settings" not in input_file_as_a_dict:
         input_file_as_a_dict["rendercv_settings"] = {}
 
-    if "render_command" not in input_file_as_a_dict["rendercv_settings"]:
+    if (
+        "render_command" not in input_file_as_a_dict["rendercv_settings"]
+        or input_file_as_a_dict["rendercv_settings"]["render_command"] is None
+    ):
         input_file_as_a_dict["rendercv_settings"]["render_command"] = {}
 
     render_command_field = input_file_as_a_dict["rendercv_settings"]["render_command"]

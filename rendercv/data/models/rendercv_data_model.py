@@ -25,14 +25,14 @@ class RenderCVDataModel(RenderCVBaseModelWithoutExtraKeys):
     # `design` or `locale` fields to have individual YAML files.
     model_config = pydantic.ConfigDict(json_schema_extra={"required": []})
     cv: CurriculumVitae = pydantic.Field(
-        title="Curriculum Vitae",
-        description="The data of the CV.",
+        title="CV",
+        description="The content of the CV.",
     )
     design: RenderCVDesign = pydantic.Field(
         default=ClassicThemeOptions(theme="classic"),
         title="Design",
         description=(
-            "The design information of the CV. The default is the classic theme."
+            "The design information of the CV. The default is the `classic` theme."
         ),
     )
     locale: Locale = pydantic.Field(

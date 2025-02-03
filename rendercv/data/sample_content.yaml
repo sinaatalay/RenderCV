@@ -2,7 +2,7 @@
 name: John Doe
 location: Location
 email: john.doe@example.com
-phone: tel:+1-609-999-9995
+phone: +1-609-999-9995
 social_networks:
   - network: LinkedIn
     username: john.doe

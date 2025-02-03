@@ -2,7 +2,8 @@ cv:
   name: John Doe
   location: Location
   email: john.doe@example.com
-  phone: tel:+1-609-999-9995
+  phone: +1-609-999-9995
+  website:
   social_networks:
     - network: LinkedIn
       username: john.doe
@@ -16,53 +17,69 @@ cv:
       - institution: Stanford University
         area: Computer Science
         degree: PhD
-        location: Stanford, CA, USA
+        date:
         start_date: 2023-09
         end_date: present
+        location: Stanford, CA, USA
+        summary:
         highlights:
           - Working on the optimization of autonomous vehicles in urban environments
       - institution: Boğaziçi University
         area: Computer Engineering
         degree: BS
-        location: Istanbul, Türkiye
+        date:
         start_date: 2018-09
         end_date: 2022-06
+        location: Istanbul, Türkiye
+        summary:
         highlights:
           - 'GPA: 3.9/4.0, ranked 1st out of 100 students'
           - 'Awards: Best Senior Project, High Honor'
     experience:
       - company: Company C
         position: Summer Intern
-        location: Livingston, LA, USA
+        date:
         start_date: 2024-06
         end_date: 2024-09
+        location: Livingston, LA, USA
+        summary:
         highlights:
           - Developed deep learning models for the detection of gravitational waves in LIGO data
           - Published [3 peer-reviewed research papers](https://example.com) about the project and results
       - company: Company B
         position: Summer Intern
-        location: Ankara, Türkiye
+        date:
         start_date: 2023-06
         end_date: 2023-09
+        location: Ankara, Türkiye
+        summary:
         highlights:
           - Optimized the production line by 15% by implementing a new scheduling algorithm
       - company: Company A
         position: Summer Intern
-        location: Istanbul, Türkiye
+        date:
         start_date: 2022-06
         end_date: 2022-09
+        location: Istanbul, Türkiye
+        summary:
         highlights:
           - Designed an inventory management web application for a warehouse
     projects:
       - name: '[Example Project](https://example.com)'
+        date:
         start_date: 2024-05
         end_date: present
+        location:
+        summary: A web application for writing essays
         highlights:
           - Launched an [iOS app](https://example.com) in 09/2024 that currently has 10k+ monthly active users
           - The app is made open-source (3,000+ stars [on GitHub](https://github.com))
-        summary: A web application for writing essays
       - name: '[Teaching on Udemy](https://example.com)'
         date: Fall 2023
+        start_date:
+        end_date:
+        location:
+        summary:
         highlights:
           - Instructed the "Statics" course on Udemy (60,000+ students, 200,000+ hours watched)
     skills:
@@ -79,6 +96,8 @@ cv:
           - '***John Doe***'
           - Samwise Gamgee
         doi: 10.1109/TASC.2023.3340648
+        url:
+        journal:
         date: 2004-01
     extracurricular_activities:
       - bullet: 'There are 7 unique entry types in RenderCV: *BulletEntry*, *TextEntry*, *EducationEntry*, *ExperienceEntry*, *NormalEntry*, *PublicationEntry*, and *OneLineEntry*.'
@@ -102,12 +121,12 @@ design:
     show_page_numbering: false
     show_last_updated_date: true
   colors:
-    text: black
-    name: '#004f90'
-    connections: '#004f90'
-    section_titles: '#004f90'
-    links: '#004f90'
-    last_updated_date_and_page_numbering: grey
+    text: rgb(0, 0, 0)
+    name: rgb(0, 79, 144)
+    connections: rgb(0, 79, 144)
+    section_titles: rgb(0, 79, 144)
+    links: rgb(0, 79, 144)
+    last_updated_date_and_page_numbering: rgb(128, 128, 128)
   text:
     font_family: Raleway
     font_size: 10pt
@@ -229,4 +248,5 @@ locale:
     - December
 rendercv_settings:
   date: '2025-02-02'
+  render_command:
   bold_keywords: []

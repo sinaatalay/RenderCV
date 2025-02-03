@@ -271,6 +271,11 @@ def validate_a_social_network_username(username: str, network: str) -> str:
                 " beginning of the username."
             )
             raise ValueError(message)
+    elif network == "ORCID":
+        orcid_username_pattern = r"\d{4}-\d{4}-\d{4}-\d{3}[\dX]"
+        if not re.fullmatch(orcid_username_pattern, username):
+            message = "ORCID username should be in the format 'XXXX-XXXX-XXXX-XXX'!"
+            raise ValueError(message)
 
     return username
 
@@ -323,11 +328,13 @@ class SocialNetwork(RenderCVBaseModelWithoutExtraKeys):
 
     network: SocialNetworkName = pydantic.Field(
         title="Social Network",
-        description="Name of the social network.",
     )
     username: str = pydantic.Field(
         title="Username",
-        description="The username of the social network. The link will be generated.",
+        description=(
+            "The username used in the social network. The link will be generated"
+            " automatically."
+        ),
     )
 
     @pydantic.field_validator("username")
@@ -387,42 +394,39 @@ class CurriculumVitae(RenderCVBaseModelWithExtraKeys):
     name: Optional[str] = pydantic.Field(
         default=None,
         title="Name",
-        description="The name of the person.",
     )
     location: Optional[str] = pydantic.Field(
         default=None,
         title="Location",
-        description="The location of the person.",
     )
     email: Optional[pydantic.EmailStr] = pydantic.Field(
         default=None,
         title="Email",
-        description="The email address of the person.",
     )
     photo: Optional[pathlib.Path] = pydantic.Field(
         default=None,
         title="Photo",
-        description="Path to the photo of the person, relatie to the input file.",
+        description="Path to the photo of the person, relative to the input file.",
     )
     phone: Optional[pydantic_phone_numbers.PhoneNumber] = pydantic.Field(
         default=None,
         title="Phone",
-        description="The phone number of the person, including the country code.",
+        description=(
+            "Country code should be included. For example, +1 for the United States."
+        ),
     )
     website: Optional[pydantic.HttpUrl] = pydantic.Field(
         default=None,
         title="Website",
-        description="The website of the person.",
     )
     social_networks: Optional[list[SocialNetwork]] = pydantic.Field(
         default=None,
         title="Social Networks",
-        description="The social networks of the person.",
     )
     sections_input: Sections = pydantic.Field(
         default=None,
         title="Sections",
-        description="The sections of the CV.",
+        description="The sections of the CV, like Education, Experience, etc.",
         # This is an alias to allow users to use `sections` in the YAML file:
         # `sections` key is preserved for RenderCV's internal use.
         alias="sections",
@@ -576,6 +580,16 @@ class CurriculumVitae(RenderCVBaseModelWithExtraKeys):
                 sections.append(section)
 
         return sections
+
+    @pydantic.field_serializer("phone")
+    def serialize_phone(
+        self, phone: Optional[pydantic_phone_numbers.PhoneNumber]
+    ) -> Optional[str]:
+        """Serialize the phone number."""
+        if phone is not None:
+            return phone.replace("tel:", "")
+
+        return phone
 
 
 # The dictionary below will be overwritten by CurriculumVitae class, which will contain

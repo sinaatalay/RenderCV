@@ -8,7 +8,7 @@ import copy
 import pathlib
 import re
 from collections.abc import Callable
-from typing import Optional
+from typing import Optional, overload
 
 import jinja2
 import pydantic
@@ -421,6 +421,14 @@ def input_template_to_typst(
     return output  # noqa: RET504
 
 
+@overload
+def remove_typst_commands(string: None) -> None: ...
+
+
+@overload
+def remove_typst_commands(string: str) -> str: ...
+
+
 def remove_typst_commands(string: Optional[str]) -> Optional[str]:
     """Remove Typst commands from a string.
 
@@ -513,7 +521,15 @@ def escape_characters(string: str, escape_dictionary: dict[str, str]) -> str:
     return string
 
 
-def escape_typst_characters(string: str) -> str:
+@overload
+def escape_typst_characters(string: None) -> None: ...
+
+
+@overload
+def escape_typst_characters(string: str) -> str: ...
+
+
+def escape_typst_characters(string: Optional[str]) -> Optional[str]:
     """Escape Typst characters in a string by adding a backslash before them.
 
     Example:
@@ -529,6 +545,9 @@ def escape_typst_characters(string: str) -> str:
     Returns:
         The escaped string.
     """
+    if string is None:
+        return None
+
     escape_dictionary = {
         "[": "\\[",
         "]": "\\]",

@@ -704,3 +704,29 @@ def test_input_template_to_typst(
     )
 
     assert output == expected_output
+
+
+def test_render_a_typst_file_with_none_name(tmp_path):
+    cv = data.CurriculumVitae(
+        name=None,
+        sections={
+            "Normal Entries": [
+                data.NormalEntry(
+                    name="Test",
+                    start_date="2024-01-01",
+                    end_date="present",
+                ),
+            ]
+        },
+    )
+
+    data_model = data.RenderCVDataModel(
+        cv=cv,
+        design={"theme": "classic"},
+    )
+
+    file = renderer.create_a_typst_file(data_model, tmp_path)
+
+    contents = file.read_text()
+
+    assert "Test" in contents

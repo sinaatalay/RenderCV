@@ -5,7 +5,6 @@
       "description": "This class is the data model of `BulletEntry`.",
       "properties": {
         "bullet": {
-          "description": "The bullet of the BulletEntry.",
           "title": "Bullet",
           "type": "string"
         }
@@ -73,12 +72,14 @@
         "header": {
           "$ref": "#/$defs/rendercv__themes__options__Header",
           "default": {
+            "name_font_family": "Source Sans 3",
             "name_font_size": "30pt",
             "name_bold": true,
             "photo_width": "3.5cm",
             "vertical_space_between_name_and_connections": "0.7cm",
             "vertical_space_between_connections_and_first_section": "0.7cm",
             "horizontal_space_between_connections": "0.5cm",
+            "connections_font_family": "Source Sans 3",
             "separator_between_connections": "",
             "use_icons_for_connections": true,
             "alignment": "center"
@@ -90,6 +91,7 @@
           "$ref": "#/$defs/rendercv__themes__options__SectionTitles",
           "default": {
             "type": "with-parial-line",
+            "font_family": "Source Sans 3",
             "font_size": "1.4em",
             "bold": true,
             "small_caps": false,
@@ -107,6 +109,7 @@
             "left_and_right_margin": "0.2cm",
             "horizontal_space_between_columns": "0.1cm",
             "vertical_space_between_entries": "1.2em",
+            "allow_page_break_in_sections": true,
             "allow_page_break_in_entries": true,
             "short_second_row": false,
             "show_time_spans_in": []
@@ -169,60 +172,71 @@
       "properties": {
         "name": {
           "default": null,
-          "description": "The name of the person.",
           "title": "Name",
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "location": {
           "default": null,
-          "description": "The location of the person.",
           "title": "Location",
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "email": {
           "default": null,
-          "description": "The email address of the person.",
           "title": "Email",
           "oneOf": [
             {
               "format": "email",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "photo": {
           "default": null,
-          "description": "Path to the photo of the person, relatie to the input file.",
+          "description": "Path to the photo of the person, relative to the input file.",
           "title": "Photo",
           "oneOf": [
             {
               "format": "path",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "phone": {
           "default": null,
-          "description": "The phone number of the person, including the country code.",
+          "description": "Country code should be included. For example, +1 for the United States.",
           "title": "Phone",
           "oneOf": [
             {
               "format": "phone",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "website": {
           "default": null,
-          "description": "The website of the person.",
           "title": "Website",
           "oneOf": [
             {
@@ -230,12 +244,14 @@
               "maxLength": 2083,
               "minLength": 1,
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "social_networks": {
           "default": null,
-          "description": "The social networks of the person.",
           "title": "Social Networks",
           "oneOf": [
             {
@@ -243,12 +259,15 @@
                 "$ref": "#/$defs/SocialNetwork"
               },
               "type": "array"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "sections": {
           "default": null,
-          "description": "The sections of the CV.",
+          "description": "The sections of the CV, like Education, Experience, etc.",
           "title": "Sections",
           "oneOf": [
             {
@@ -292,6 +311,18 @@
                   },
                   {
                     "items": {
+                      "$ref": "#/$defs/NumberedEntry"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "items": {
+                      "$ref": "#/$defs/ReversedNumberedEntry"
+                    },
+                    "type": "array"
+                  },
+                  {
+                    "items": {
                       "type": "string"
                     },
                     "type": "array"
@@ -299,6 +330,9 @@
                 ]
               },
               "type": "object"
+            },
+            {
+              "type": "null"
             }
           ]
         }
@@ -344,7 +378,7 @@
         "text": {
           "$ref": "#/$defs/rendercv__themes__engineeringclassic__Text",
           "default": {
-            "font_family": "Noto Sans",
+            "font_family": "Raleway",
             "font_size": "10pt",
             "leading": "0.6em",
             "alignment": "justified",
@@ -363,12 +397,14 @@
         "header": {
           "$ref": "#/$defs/rendercv__themes__engineeringclassic__Header",
           "default": {
+            "name_font_family": "Raleway",
             "name_font_size": "30pt",
             "name_bold": false,
             "photo_width": "3.5cm",
             "vertical_space_between_name_and_connections": "0.7cm",
             "vertical_space_between_connections_and_first_section": "0.7cm",
             "horizontal_space_between_connections": "0.5cm",
+            "connections_font_family": "Raleway",
             "separator_between_connections": "",
             "use_icons_for_connections": true,
             "alignment": "left"
@@ -380,6 +416,7 @@
           "$ref": "#/$defs/rendercv__themes__engineeringclassic__SectionTitles",
           "default": {
             "type": "with-parial-line",
+            "font_family": "Raleway",
             "font_size": "1.4em",
             "bold": false,
             "small_caps": false,
@@ -397,6 +434,7 @@
             "left_and_right_margin": "0.2cm",
             "horizontal_space_between_columns": "0.1cm",
             "vertical_space_between_entries": "1.2em",
+            "allow_page_break_in_sections": true,
             "allow_page_break_in_entries": true,
             "short_second_row": false,
             "show_time_spans_in": []
@@ -510,12 +548,14 @@
         "header": {
           "$ref": "#/$defs/rendercv__themes__engineeringresumes__Header",
           "default": {
+            "name_font_family": "XCharter",
             "name_font_size": "25pt",
             "name_bold": false,
             "photo_width": "3.5cm",
             "vertical_space_between_name_and_connections": "0.7cm",
             "vertical_space_between_connections_and_first_section": "0.7cm",
             "horizontal_space_between_connections": "0.5cm",
+            "connections_font_family": "XCharter",
             "separator_between_connections": "|",
             "use_icons_for_connections": false,
             "alignment": "center"
@@ -527,6 +567,7 @@
           "$ref": "#/$defs/rendercv__themes__engineeringresumes__SectionTitles",
           "default": {
             "type": "with-parial-line",
+            "font_family": "XCharter",
             "font_size": "1.2em",
             "bold": true,
             "small_caps": false,
@@ -545,6 +586,7 @@
             "left_and_right_margin": "0cm",
             "horizontal_space_between_columns": "0.1cm",
             "vertical_space_between_entries": "0.4cm",
+            "allow_page_break_in_sections": true,
             "allow_page_break_in_entries": true,
             "short_second_row": false,
             "show_time_spans_in": []
@@ -607,14 +649,14 @@
       "properties": {
         "language": {
           "default": "en",
-          "description": "The language as an ISO 639 alpha-2 code. It is used for hyphenation patterns.",
+          "description": "The language as an ISO 639 alpha-2 code. It is used for hyphenation patterns. The default value is 'en'.",
           "pattern": "^\\w{2}$",
           "title": "Language",
           "type": "string"
         },
         "phone_number_format": {
           "default": "national",
-          "description": "If 'national', phone numbers are formatted without the country code. If 'international', phone numbers are formatted with the country code. The default value is \"national\"",
+          "description": "If 'national', phone numbers are formatted without the country code. If 'international', phone numbers are formatted with the country code. The default value is 'national'.",
           "title": "Phone Number Format",
           "oneOf": [
             {
@@ -624,6 +666,9 @@
                 "E164"
               ],
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -646,66 +691,87 @@
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "month": {
           "default": "month",
           "description": "Translation of the word \"month\" in the locale.",
-          "title": "Translation of \"Month\"",
+          "title": "Translation of \"month\"",
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "months": {
           "default": "months",
           "description": "Translation of the word \"months\" in the locale.",
-          "title": "Translation of \"Months\"",
+          "title": "Translation of \"months\"",
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "year": {
           "default": "year",
           "description": "Translation of the word \"year\" in the locale.",
-          "title": "Translation of \"Year\"",
+          "title": "Translation of \"year\"",
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "years": {
           "default": "years",
           "description": "Translation of the word \"years\" in the locale.",
-          "title": "Translation of \"Years\"",
+          "title": "Translation of \"years\"",
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "present": {
           "default": "present",
           "description": "Translation of the word \"present\" in the locale.",
-          "title": "Translation of \"Present\"",
+          "title": "Translation of \"present\"",
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "to": {
           "default": "–",
           "description": "The word or character used to indicate a range in the locale (e.g., \"2020 - 2021\").",
-          "title": "Translation of \"To\"",
+          "title": "Translation of \"to\"",
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -734,6 +800,9 @@
               "maxItems": 12,
               "minItems": 12,
               "type": "array"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -762,6 +831,9 @@
               "maxItems": 12,
               "minItems": 12,
               "type": "array"
+            },
+            {
+              "type": "null"
             }
           ]
         }
@@ -807,7 +879,7 @@
         "text": {
           "$ref": "#/$defs/rendercv__themes__moderncv__Text",
           "default": {
-            "font_family": "XCharter",
+            "font_family": "Fontin",
             "font_size": "10pt",
             "leading": "0.6em",
             "alignment": "justified",
@@ -826,12 +898,14 @@
         "header": {
           "$ref": "#/$defs/rendercv__themes__moderncv__Header",
           "default": {
+            "name_font_family": "Fontin",
             "name_font_size": "25pt",
             "name_bold": false,
             "photo_width": "3.5cm",
             "vertical_space_between_name_and_connections": "0.7cm",
             "vertical_space_between_connections_and_first_section": "0.7cm",
             "horizontal_space_between_connections": "0.5cm",
+            "connections_font_family": "Fontin",
             "separator_between_connections": "",
             "use_icons_for_connections": true,
             "alignment": "left"
@@ -843,6 +917,7 @@
           "$ref": "#/$defs/rendercv__themes__moderncv__SectionTitles",
           "default": {
             "type": "moderncv",
+            "font_family": "Fontin",
             "font_size": "1.4em",
             "bold": false,
             "small_caps": false,
@@ -860,6 +935,7 @@
             "left_and_right_margin": "0cm",
             "horizontal_space_between_columns": "0.4cm",
             "vertical_space_between_entries": "0.4cm",
+            "allow_page_break_in_sections": true,
             "allow_page_break_in_entries": true,
             "short_second_row": false,
             "show_time_spans_in": []
@@ -916,6 +992,21 @@
       "title": "ModerncvThemeOptions",
       "type": "object"
     },
+    "NumberedEntry": {
+      "additionalProperties": true,
+      "description": "This class is the data model of `NumberedEntry`.",
+      "properties": {
+        "number": {
+          "title": "Number",
+          "type": "string"
+        }
+      },
+      "required": [
+        "number"
+      ],
+      "title": "NumberedEntry",
+      "type": "object"
+    },
     "RenderCVSettings": {
       "additionalProperties": false,
       "description": "This class is the data model of the RenderCV settings.",
@@ -934,6 +1025,9 @@
           "oneOf": [
             {
               "$ref": "#/$defs/RenderCommandSettings"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -962,6 +1056,9 @@
             {
               "format": "path",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -973,6 +1070,9 @@
             {
               "format": "path",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -984,6 +1084,9 @@
             {
               "format": "path",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -1001,6 +1104,9 @@
             {
               "format": "path",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -1012,6 +1118,9 @@
             {
               "format": "path",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -1023,6 +1132,9 @@
             {
               "format": "path",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -1034,6 +1146,9 @@
             {
               "format": "path",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -1045,6 +1160,9 @@
             {
               "format": "path",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -1074,6 +1192,21 @@
         }
       },
       "title": "RenderCommandSettings",
+      "type": "object"
+    },
+    "ReversedNumberedEntry": {
+      "additionalProperties": true,
+      "description": "This class is the data model of `ReversedNumberedEntry`.",
+      "properties": {
+        "reversed_number": {
+          "title": "Reversed Number",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reversed_number"
+      ],
+      "title": "ReversedNumberedEntry",
       "type": "object"
     },
     "Sb2novThemeOptions": {
@@ -1123,22 +1256,24 @@
           "description": "Options related to text."
         },
         "links": {
-          "$ref": "#/$defs/rendercv__themes__options__Links",
+          "$ref": "#/$defs/rendercv__themes__sb2nov__Links",
           "default": {
-            "underline": false,
-            "use_external_link_icon": true
+            "underline": true,
+            "use_external_link_icon": false
           },
           "description": "Options related to links."
         },
         "header": {
-          "$ref": "#/$defs/rendercv__themes__options__Header",
+          "$ref": "#/$defs/rendercv__themes__sb2nov__Header",
           "default": {
+            "name_font_family": "New Computer Modern",
             "name_font_size": "30pt",
             "name_bold": true,
             "photo_width": "3.5cm",
             "vertical_space_between_name_and_connections": "0.7cm",
             "vertical_space_between_connections_and_first_section": "0.7cm",
             "horizontal_space_between_connections": "0.5cm",
+            "connections_font_family": "New Computer Modern",
             "separator_between_connections": "",
             "use_icons_for_connections": true,
             "alignment": "center"
@@ -1150,6 +1285,7 @@
           "$ref": "#/$defs/rendercv__themes__sb2nov__SectionTitles",
           "default": {
             "type": "with-parial-line",
+            "font_family": "New Computer Modern",
             "font_size": "1.4em",
             "bold": true,
             "small_caps": false,
@@ -1168,6 +1304,7 @@
             "left_and_right_margin": "0.2cm",
             "horizontal_space_between_columns": "0.1cm",
             "vertical_space_between_entries": "1.2em",
+            "allow_page_break_in_sections": true,
             "allow_page_break_in_entries": true,
             "short_second_row": false,
             "show_time_spans_in": []
@@ -1229,7 +1366,6 @@
       "description": "This class is the data model of a social network.",
       "properties": {
         "network": {
-          "description": "Name of the social network.",
           "enum": [
             "LinkedIn",
             "GitHub",
@@ -1247,7 +1383,7 @@
           "type": "string"
         },
         "username": {
-          "description": "The username of the social network. The link will be generated.",
+          "description": "The username used in the social network. The link will be generated automatically.",
           "title": "Username",
           "type": "string"
         }
@@ -1264,18 +1400,16 @@
       "description": "This class is the data model of `EducationEntry`. `EducationEntry` class is\ncreated by combining the `EntryBase` and `EducationEntryBase` classes to have the\nfields in the correct order.",
       "properties": {
         "institution": {
-          "description": "The institution name.",
           "title": "Institution",
           "type": "string"
         },
         "area": {
-          "description": "The area of study.",
           "title": "Area",
           "type": "string"
         },
         "degree": {
           "default": null,
-          "description": "The type of the degree.",
+          "description": "The type of the degree, such as BS, BA, PhD, MS.",
           "examples": [
             "BS",
             "BA",
@@ -1286,12 +1420,15 @@
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "date": {
           "default": null,
-          "description": "The date field can be filled in YYYY-MM-DD, YYYY-MM, or YYYY formats or as an arbitrary string like \"Fall 2023\".",
+          "description": "The date can be written in the formats YYYY-MM-DD, YYYY-MM, or YYYY, or as an arbitrary string such as \"Fall 2023.\"",
           "examples": [
             "2020-09-24",
             "Fall 2023"
@@ -1303,12 +1440,14 @@
             },
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "location": {
           "default": null,
-          "description": "The location of the event.",
           "examples": [
             "Istanbul, Türkiye"
           ],
@@ -1316,12 +1455,15 @@
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "start_date": {
           "default": null,
-          "description": "The start date of the event in YYYY-MM-DD, YYYY-MM, or YYYY format.",
+          "description": "The event's start date, written in YYYY-MM-DD, YYYY-MM, or YYYY format.",
           "examples": [
             "2020-09-24"
           ],
@@ -1333,12 +1475,15 @@
             {
               "pattern": "\\d{4}-\\d{2}(-\\d{2})?",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "end_date": {
           "default": null,
-          "description": "The end date of the event in YYYY-MM-DD, YYYY-MM, or YYYY format. If the event is still ongoing, then type \"present\" or provide only the start_date.",
+          "description": "The event's end date, written in YYYY-MM-DD, YYYY-MM, or YYYY format. If the event is ongoing, type “present” or provide only the start date.",
           "examples": [
             "2020-09-24",
             "present"
@@ -1355,12 +1500,14 @@
             {
               "pattern": "\\d{4}-\\d{2}(-\\d{2})?",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "highlights": {
           "default": null,
-          "description": "The highlights of the event as a list of strings.",
           "examples": [
             "Did this.",
             "Did that."
@@ -1372,12 +1519,14 @@
                 "type": "string"
               },
               "type": "array"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "summary": {
           "default": null,
-          "description": "The summary of the event.",
           "examples": [
             "Did this and that."
           ],
@@ -1385,6 +1534,9 @@
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         }
@@ -1401,18 +1553,16 @@
       "description": "This class is the data model of `ExperienceEntry`. `ExperienceEntry` class is\ncreated by combining the `EntryBase` and `ExperienceEntryBase` classes to have the\nfields in the correct order.",
       "properties": {
         "company": {
-          "description": "The company name.",
           "title": "Company",
           "type": "string"
         },
         "position": {
-          "description": "The position.",
           "title": "Position",
           "type": "string"
         },
         "date": {
           "default": null,
-          "description": "The date field can be filled in YYYY-MM-DD, YYYY-MM, or YYYY formats or as an arbitrary string like \"Fall 2023\".",
+          "description": "The date can be written in the formats YYYY-MM-DD, YYYY-MM, or YYYY, or as an arbitrary string such as \"Fall 2023.\"",
           "examples": [
             "2020-09-24",
             "Fall 2023"
@@ -1424,12 +1574,14 @@
             },
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "location": {
           "default": null,
-          "description": "The location of the event.",
           "examples": [
             "Istanbul, Türkiye"
           ],
@@ -1437,12 +1589,15 @@
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "start_date": {
           "default": null,
-          "description": "The start date of the event in YYYY-MM-DD, YYYY-MM, or YYYY format.",
+          "description": "The event's start date, written in YYYY-MM-DD, YYYY-MM, or YYYY format.",
           "examples": [
             "2020-09-24"
           ],
@@ -1454,12 +1609,15 @@
             {
               "pattern": "\\d{4}-\\d{2}(-\\d{2})?",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "end_date": {
           "default": null,
-          "description": "The end date of the event in YYYY-MM-DD, YYYY-MM, or YYYY format. If the event is still ongoing, then type \"present\" or provide only the start_date.",
+          "description": "The event's end date, written in YYYY-MM-DD, YYYY-MM, or YYYY format. If the event is ongoing, type “present” or provide only the start date.",
           "examples": [
             "2020-09-24",
             "present"
@@ -1476,12 +1634,14 @@
             {
               "pattern": "\\d{4}-\\d{2}(-\\d{2})?",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "highlights": {
           "default": null,
-          "description": "The highlights of the event as a list of strings.",
           "examples": [
             "Did this.",
             "Did that."
@@ -1493,12 +1653,14 @@
                 "type": "string"
               },
               "type": "array"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "summary": {
           "default": null,
-          "description": "The summary of the event.",
           "examples": [
             "Did this and that."
           ],
@@ -1506,6 +1668,9 @@
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         }
@@ -1522,13 +1687,12 @@
       "description": "This class is the data model of `NormalEntry`. `NormalEntry` class is created by\ncombining the `EntryBase` and `NormalEntryBase` classes to have the fields in the\ncorrect order.",
       "properties": {
         "name": {
-          "description": "The name of the NormalEntry.",
           "title": "Name",
           "type": "string"
         },
         "date": {
           "default": null,
-          "description": "The date field can be filled in YYYY-MM-DD, YYYY-MM, or YYYY formats or as an arbitrary string like \"Fall 2023\".",
+          "description": "The date can be written in the formats YYYY-MM-DD, YYYY-MM, or YYYY, or as an arbitrary string such as \"Fall 2023.\"",
           "examples": [
             "2020-09-24",
             "Fall 2023"
@@ -1540,12 +1704,14 @@
             },
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "location": {
           "default": null,
-          "description": "The location of the event.",
           "examples": [
             "Istanbul, Türkiye"
           ],
@@ -1553,12 +1719,15 @@
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "start_date": {
           "default": null,
-          "description": "The start date of the event in YYYY-MM-DD, YYYY-MM, or YYYY format.",
+          "description": "The event's start date, written in YYYY-MM-DD, YYYY-MM, or YYYY format.",
           "examples": [
             "2020-09-24"
           ],
@@ -1570,12 +1739,15 @@
             {
               "pattern": "\\d{4}-\\d{2}(-\\d{2})?",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "end_date": {
           "default": null,
-          "description": "The end date of the event in YYYY-MM-DD, YYYY-MM, or YYYY format. If the event is still ongoing, then type \"present\" or provide only the start_date.",
+          "description": "The event's end date, written in YYYY-MM-DD, YYYY-MM, or YYYY format. If the event is ongoing, type “present” or provide only the start date.",
           "examples": [
             "2020-09-24",
             "present"
@@ -1592,12 +1764,14 @@
             {
               "pattern": "\\d{4}-\\d{2}(-\\d{2})?",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "highlights": {
           "default": null,
-          "description": "The highlights of the event as a list of strings.",
           "examples": [
             "Did this.",
             "Did that."
@@ -1609,12 +1783,14 @@
                 "type": "string"
               },
               "type": "array"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "summary": {
           "default": null,
-          "description": "The summary of the event.",
           "examples": [
             "Did this and that."
           ],
@@ -1622,6 +1798,9 @@
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         }
@@ -1637,12 +1816,10 @@
       "description": "This class is the data model of `OneLineEntry`.",
       "properties": {
         "label": {
-          "description": "The label of the OneLineEntry.",
-          "title": "Name",
+          "title": "Label",
           "type": "string"
         },
         "details": {
-          "description": "The details of the OneLineEntry.",
           "title": "Details",
           "type": "string"
         }
@@ -1659,12 +1836,10 @@
       "description": "This class is the data model of `PublicationEntry`. `PublicationEntry` class is\ncreated by combining the `EntryWithDate` and `PublicationEntryBase` classes to have\nthe fields in the correct order.",
       "properties": {
         "title": {
-          "description": "The title of the publication.",
           "title": "Publication Title",
           "type": "string"
         },
         "authors": {
-          "description": "The authors of the publication in order as a list of strings.",
           "items": {
             "type": "string"
           },
@@ -1673,7 +1848,6 @@
         },
         "doi": {
           "default": null,
-          "description": "The DOI of the publication.",
           "examples": [
             "10.48550/arXiv.2310.03138"
           ],
@@ -1682,12 +1856,15 @@
             {
               "pattern": "\\b10\\..*",
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "url": {
           "default": null,
-          "description": "The URL of the publication. If DOI is provided, it will be ignored.",
+          "description": "If DOI is provided, it will be ignored.",
           "title": "URL",
           "oneOf": [
             {
@@ -1695,22 +1872,27 @@
               "maxLength": 2083,
               "minLength": 1,
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "journal": {
           "default": null,
-          "description": "The journal or conference name.",
           "title": "Journal",
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
         "date": {
           "default": null,
-          "description": "The date field can be filled in YYYY-MM-DD, YYYY-MM, or YYYY formats or as an arbitrary string like \"Fall 2023\".",
+          "description": "The date can be written in the formats YYYY-MM-DD, YYYY-MM, or YYYY, or as an arbitrary string such as \"Fall 2023.\"",
           "examples": [
             "2020-09-24",
             "Fall 2023"
@@ -1722,6 +1904,9 @@
             },
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         }
@@ -1749,6 +1934,9 @@
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -1861,6 +2049,31 @@
     "rendercv__themes__engineeringclassic__Header": {
       "additionalProperties": false,
       "properties": {
+        "name_font_family": {
+          "default": "Raleway",
+          "description": "The font family of the name in the header.",
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Name Font Family",
+          "type": "string"
+        },
         "name_font_size": {
           "default": "30pt",
           "description": "The font size of the name in the header.",
@@ -1895,6 +2108,31 @@
           "default": "0.5cm",
           "description": "The space between the connections (like phone, email, and website).",
           "title": "Space Between Connections",
+          "type": "string"
+        },
+        "connections_font_family": {
+          "default": "Raleway",
+          "description": "The font family of the connections in the header.",
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Connections Font Family",
           "type": "string"
         },
         "separator_between_connections": {
@@ -2105,8 +2343,36 @@
                 "moderncv"
               ],
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
+        },
+        "font_family": {
+          "default": "Raleway",
+          "description": "The font family of the section titles.",
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Font Family",
+          "type": "string"
         },
         "font_size": {
           "default": "1.4em",
@@ -2152,18 +2418,25 @@
       "additionalProperties": false,
       "properties": {
         "font_family": {
-          "default": "Noto Sans",
+          "default": "Raleway",
           "description": "The font family.",
           "enum": [
             "Libertinus Serif",
             "New Computer Modern",
             "DejaVu Sans Mono",
-            "Source Sans 3",
-            "Roboto",
-            "Open Sans",
-            "Ubuntu",
-            "Noto Sans",
             "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
             "XCharter"
           ],
           "title": "Font Family",
@@ -2308,6 +2581,9 @@
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -2359,6 +2635,12 @@
           "description": "The vertical space between the entries.",
           "title": "Vertical Space Between Entries",
           "type": "string"
+        },
+        "allow_page_break_in_sections": {
+          "default": true,
+          "description": "If this option is \"true\", a page break will be allowed in the sections.",
+          "title": "Allow Page Break in Sections",
+          "type": "boolean"
         },
         "allow_page_break_in_entries": {
           "default": true,
@@ -2472,6 +2754,31 @@
     "rendercv__themes__engineeringresumes__Header": {
       "additionalProperties": false,
       "properties": {
+        "name_font_family": {
+          "default": "XCharter",
+          "description": "The font family of the name in the header.",
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Name Font Family",
+          "type": "string"
+        },
         "name_font_size": {
           "default": "25pt",
           "title": "Name Font Size",
@@ -2505,6 +2812,31 @@
           "default": "0.5cm",
           "description": "The space between the connections (like phone, email, and website).",
           "title": "Space Between Connections",
+          "type": "string"
+        },
+        "connections_font_family": {
+          "default": "XCharter",
+          "description": "The font family of the connections in the header.",
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Connections Font Family",
           "type": "string"
         },
         "separator_between_connections": {
@@ -2715,8 +3047,36 @@
                 "moderncv"
               ],
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
+        },
+        "font_family": {
+          "default": "XCharter",
+          "description": "The font family of the section titles.",
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Font Family",
+          "type": "string"
         },
         "font_size": {
           "default": "1.2em",
@@ -2767,6 +3127,9 @@
                 "moderncv"
               ],
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         }
@@ -2784,12 +3147,19 @@
             "Libertinus Serif",
             "New Computer Modern",
             "DejaVu Sans Mono",
-            "Source Sans 3",
-            "Roboto",
-            "Open Sans",
-            "Ubuntu",
-            "Noto Sans",
             "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
             "XCharter"
           ],
           "title": "Font Family",
@@ -2849,6 +3219,9 @@
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -2900,6 +3273,12 @@
           "description": "The vertical space between the entries.",
           "title": "Vertical Space Between Entries",
           "type": "string"
+        },
+        "allow_page_break_in_sections": {
+          "default": true,
+          "description": "If this option is \"true\", a page break will be allowed in the sections.",
+          "title": "Allow Page Break in Sections",
+          "type": "boolean"
         },
         "allow_page_break_in_entries": {
           "default": true,
@@ -3013,6 +3392,31 @@
     "rendercv__themes__moderncv__Header": {
       "additionalProperties": false,
       "properties": {
+        "name_font_family": {
+          "default": "Fontin",
+          "description": "The font family of the name in the header.",
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Name Font Family",
+          "type": "string"
+        },
         "name_font_size": {
           "default": "25pt",
           "title": "Name Font Size",
@@ -3046,6 +3450,31 @@
           "default": "0.5cm",
           "description": "The space between the connections (like phone, email, and website).",
           "title": "Space Between Connections",
+          "type": "string"
+        },
+        "connections_font_family": {
+          "default": "Fontin",
+          "description": "The font family of the connections in the header.",
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Connections Font Family",
           "type": "string"
         },
         "separator_between_connections": {
@@ -3188,8 +3617,36 @@
                 "moderncv"
               ],
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
+        },
+        "font_family": {
+          "default": "Fontin",
+          "description": "The font family of the section titles.",
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Font Family",
+          "type": "string"
         },
         "font_size": {
           "default": "1.4em",
@@ -3235,18 +3692,25 @@
       "additionalProperties": false,
       "properties": {
         "font_family": {
-          "default": "XCharter",
+          "default": "Fontin",
           "description": "The font family.",
           "enum": [
             "Libertinus Serif",
             "New Computer Modern",
             "DejaVu Sans Mono",
-            "Source Sans 3",
-            "Roboto",
-            "Open Sans",
-            "Ubuntu",
-            "Noto Sans",
             "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
             "XCharter"
           ],
           "title": "Font Family",
@@ -3391,6 +3855,9 @@
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -3442,6 +3909,12 @@
           "description": "The vertical space between the entries.",
           "title": "Vertical Space Between Entries",
           "type": "string"
+        },
+        "allow_page_break_in_sections": {
+          "default": true,
+          "description": "If this option is \"true\", a page break will be allowed in the sections.",
+          "title": "Allow Page Break in Sections",
+          "type": "boolean"
         },
         "allow_page_break_in_entries": {
           "default": true,
@@ -3555,6 +4028,31 @@
     "rendercv__themes__options__Header": {
       "additionalProperties": false,
       "properties": {
+        "name_font_family": {
+          "default": "Source Sans 3",
+          "description": "The font family of the name in the header.",
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Name Font Family",
+          "type": "string"
+        },
         "name_font_size": {
           "default": "30pt",
           "description": "The font size of the name in the header.",
@@ -3589,6 +4087,31 @@
           "default": "0.5cm",
           "description": "The space between the connections (like phone, email, and website).",
           "title": "Space Between Connections",
+          "type": "string"
+        },
+        "connections_font_family": {
+          "default": "Source Sans 3",
+          "description": "The font family of the connections in the header.",
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Connections Font Family",
           "type": "string"
         },
         "separator_between_connections": {
@@ -3849,8 +4372,36 @@
                 "moderncv"
               ],
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
+        },
+        "font_family": {
+          "default": "Source Sans 3",
+          "description": "The font family of the section titles.",
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Font Family",
+          "type": "string"
         },
         "font_size": {
           "default": "1.4em",
@@ -3902,12 +4453,19 @@
             "Libertinus Serif",
             "New Computer Modern",
             "DejaVu Sans Mono",
-            "Source Sans 3",
-            "Roboto",
-            "Open Sans",
-            "Ubuntu",
-            "Noto Sans",
             "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
             "XCharter"
           ],
           "title": "Font Family",
@@ -4052,6 +4610,9 @@
           "oneOf": [
             {
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         },
@@ -4161,6 +4722,122 @@
       "title": "ExperienceEntry",
       "type": "object"
     },
+    "rendercv__themes__sb2nov__Header": {
+      "additionalProperties": false,
+      "properties": {
+        "name_font_family": {
+          "default": "New Computer Modern",
+          "description": "The font family of the name in the header.",
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Name Font Family",
+          "type": "string"
+        },
+        "name_font_size": {
+          "default": "30pt",
+          "description": "The font size of the name in the header.",
+          "title": "Name Font Size",
+          "type": "string"
+        },
+        "name_bold": {
+          "default": true,
+          "description": "If this option is \"true\", the name in the header will be bold.",
+          "title": "Bold Name",
+          "type": "boolean"
+        },
+        "photo_width": {
+          "default": "3.5cm",
+          "description": "The width of the photo in the header.",
+          "title": "Width of the Photo",
+          "type": "string"
+        },
+        "vertical_space_between_name_and_connections": {
+          "default": "0.7cm",
+          "description": "The vertical margin between the name of the person and the connections.",
+          "title": "Vertical Margin Between the Name and Connections",
+          "type": "string"
+        },
+        "vertical_space_between_connections_and_first_section": {
+          "default": "0.7cm",
+          "description": "The vertical margin between the connections and the first section title.",
+          "title": "Vertical Margin Between Connections and First Section",
+          "type": "string"
+        },
+        "horizontal_space_between_connections": {
+          "default": "0.5cm",
+          "description": "The space between the connections (like phone, email, and website).",
+          "title": "Space Between Connections",
+          "type": "string"
+        },
+        "connections_font_family": {
+          "default": "New Computer Modern",
+          "description": "The font family of the connections in the header.",
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Connections Font Family",
+          "type": "string"
+        },
+        "separator_between_connections": {
+          "default": "",
+          "description": "The separator between the connections in the header.",
+          "title": "Separator Between Connections",
+          "type": "string"
+        },
+        "use_icons_for_connections": {
+          "default": true,
+          "description": "If this option is \"true\", icons will be used for the connections (phone number, email, social networks, etc.) in the header.",
+          "title": "Use Icons for Connections",
+          "type": "boolean"
+        },
+        "alignment": {
+          "default": "center",
+          "description": "The alignment of the header.",
+          "enum": [
+            "left",
+            "center",
+            "right"
+          ],
+          "title": "Alignment of the Header",
+          "type": "string"
+        }
+      },
+      "title": "Header",
+      "type": "object"
+    },
     "rendercv__themes__sb2nov__Highlights": {
       "additionalProperties": false,
       "properties": {
@@ -4214,6 +4891,25 @@
       "title": "Highlights",
       "type": "object"
     },
+    "rendercv__themes__sb2nov__Links": {
+      "additionalProperties": false,
+      "properties": {
+        "underline": {
+          "default": true,
+          "description": "If this option is \"true\", links will be underlined.",
+          "title": "Underline Links",
+          "type": "boolean"
+        },
+        "use_external_link_icon": {
+          "default": false,
+          "description": "If this option is \"true\", an external link icon will be shown next to the links.",
+          "title": "Use External Link Icon",
+          "type": "boolean"
+        }
+      },
+      "title": "Links",
+      "type": "object"
+    },
     "rendercv__themes__sb2nov__NormalEntry": {
       "additionalProperties": false,
       "properties": {
@@ -4255,8 +4951,36 @@
                 "moderncv"
               ],
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
+        },
+        "font_family": {
+          "default": "New Computer Modern",
+          "description": "The font family of the section titles.",
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Font Family",
+          "type": "string"
         },
         "font_size": {
           "default": "1.4em",
@@ -4307,6 +5031,9 @@
                 "moderncv"
               ],
               "type": "string"
+            },
+            {
+              "type": "null"
             }
           ]
         }
@@ -4324,12 +5051,19 @@
             "Libertinus Serif",
             "New Computer Modern",
             "DejaVu Sans Mono",
-            "Source Sans 3",
-            "Roboto",
-            "Open Sans",
-            "Ubuntu",
-            "Noto Sans",
             "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
             "XCharter"
           ],
           "title": "Font Family",
@@ -4379,8 +5113,8 @@
   "properties": {
     "cv": {
       "$ref": "#/$defs/CurriculumVitae",
-      "description": "The data of the CV.",
-      "title": "Curriculum Vitae"
+      "description": "The content of the CV.",
+      "title": "CV"
     },
     "design": {
       "default": {
@@ -4415,8 +5149,10 @@
         },
         "header": {
           "alignment": "center",
+          "connections_font_family": "Source Sans 3",
           "horizontal_space_between_connections": "0.5cm",
           "name_bold": true,
+          "name_font_family": "Source Sans 3",
           "name_font_size": "30pt",
           "photo_width": "3.5cm",
           "separator_between_connections": "",
@@ -4426,6 +5162,7 @@
         },
         "section_titles": {
           "bold": true,
+          "font_family": "Source Sans 3",
           "font_size": "1.4em",
           "line_thickness": "0.5pt",
           "small_caps": false,
@@ -4435,6 +5172,7 @@
         },
         "entries": {
           "allow_page_break_in_entries": true,
+          "allow_page_break_in_sections": true,
           "date_and_location_width": "4.15cm",
           "horizontal_space_between_columns": "0.1cm",
           "left_and_right_margin": "0.2cm",
@@ -4480,7 +5218,7 @@
           }
         }
       },
-      "description": "The design information of the CV. The default is the classic theme.",
+      "description": "The design information of the CV. The default is the `classic` theme.",
       "discriminator": {
         "mapping": {
           "classic": "#/$defs/ClassicThemeOptions",
@@ -4519,7 +5257,7 @@
     "rendercv_settings": {
       "$ref": "#/$defs/RenderCVSettings",
       "default": {
-        "date": "2025-01-25",
+        "date": "2025-02-02",
         "render_command": null,
         "bold_keywords": []
       },
