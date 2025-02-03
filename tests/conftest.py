@@ -348,6 +348,7 @@ def rendercv_filled_curriculum_vitae_data_model(
             data.SocialNetwork(network="ResearchGate", username="johndoe"),
             data.SocialNetwork(network="YouTube", username="johndoe"),
             data.SocialNetwork(network="Telegram", username="johndoe"),
+            data.SocialNetwork(network="X", username="johndoe"),
         ],
         sections={
             "Text Entries": [text_entry, text_entry, text_entry],

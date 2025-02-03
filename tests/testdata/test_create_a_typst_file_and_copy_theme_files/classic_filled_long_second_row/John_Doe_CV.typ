@@ -477,6 +477,7 @@
   [#box(original-link("https://researchgate.net/profile/johndoe")[#fa-icon("researchgate", size: 0.9em) #h(0.05cm)johndoe])],
   [#box(original-link("https://youtube.com/@johndoe")[#fa-icon("youtube", size: 0.9em) #h(0.05cm)johndoe])],
   [#box(original-link("https://t.me/johndoe")[#fa-icon("telegram", size: 0.9em) #h(0.05cm)johndoe])],
+  [#box(original-link("https://x.com/johndoe")[#fa-icon("x-twitter", size: 0.9em) #h(0.05cm)johndoe])],
 )
 #connections(connections-list)
 

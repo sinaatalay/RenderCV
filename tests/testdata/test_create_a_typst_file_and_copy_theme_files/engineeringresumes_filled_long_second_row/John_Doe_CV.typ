@@ -477,6 +477,7 @@
   [#box(original-link("https://researchgate.net/profile/johndoe")[researchgate.net/profile/johndoe])],
   [#box(original-link("https://youtube.com/@johndoe")[youtube.com/\@johndoe])],
   [#box(original-link("https://t.me/johndoe")[t.me/johndoe])],
+  [#box(original-link("https://x.com/johndoe")[x.com/johndoe])],
 )
 #connections(connections-list)
 
