@@ -9,7 +9,6 @@ from typing import Annotated, Literal, Optional
 
 import pydantic
 import pydantic_extra_types.color as pydantic_color
-import rendercv_fonts
 
 from ..data.models.base import RenderCVBaseModelWithoutExtraKeys
 
@@ -29,13 +28,36 @@ TypstDimension = Annotated[
     str,
     pydantic.AfterValidator(validate_typst_dimension),
 ]
-available_font_families = [
-    "Libertinus Serif",
-    "New Computer Modern",
-    "DejaVu Sans Mono",
-    *rendercv_fonts.available_font_families,
-]
-available_font_families.remove("Font Awesome 6")
+try:
+    import rendercv_fonts
+
+    available_font_families = [
+        "Libertinus Serif",
+        "New Computer Modern",
+        "DejaVu Sans Mono",
+        *rendercv_fonts.available_font_families,
+    ]
+    available_font_families.remove("Font Awesome 6")
+except ImportError:
+    available_font_families = [
+        "Libertinus Serif",
+        "New Computer Modern",
+        "DejaVu Sans Mono",
+        "Mukta",
+        "Open Sans",
+        "Gentium Book Plus",
+        "Noto Sans",
+        "Lato",
+        "Source Sans 3",
+        "EB Garamond",
+        "Open Sauce Sans",
+        "Fontin",
+        "Roboto",
+        "Ubuntu",
+        "Poppins",
+        "Raleway",
+        "XCharter",
+    ]
 FontFamily = Literal[tuple(available_font_families)]
 BulletPoint = Literal["•", "◦", "-", "◆", "★", "■", "—", "○"]
 PageSize = Literal[
