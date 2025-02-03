@@ -36,7 +36,7 @@ available_font_families = [
     *rendercv_fonts.available_font_families,
 ]
 available_font_families.remove("Font Awesome 6")
-FontFamily = Literal[*available_font_families]
+FontFamily = Literal[tuple(available_font_families)]
 BulletPoint = Literal["•", "◦", "-", "◆", "★", "■", "—", "○"]
 PageSize = Literal[
     "a0",
