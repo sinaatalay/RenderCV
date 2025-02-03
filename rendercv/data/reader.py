@@ -10,6 +10,7 @@ from typing import Optional
 
 import pydantic
 import ruamel.yaml
+from ruamel.yaml.comments import CommentedMap
 
 from . import models
 from .models import entry_types
@@ -69,8 +70,74 @@ def get_error_message_and_location_and_value_from_a_custom_error(
     return None, None, None
 
 
+def get_coordinates_of_a_key_in_a_yaml_file(
+    yaml_file_as_string: str, location: list[str]
+) -> tuple[tuple[int, int], tuple[int, int]]:
+    """Find the coordinates of a key in a YAML file.
+
+    Args:
+        yaml_file_as_string: The YAML file as a string.
+        location: The location of the key in the YAML file. For example,
+            `['cv', 'sections', 'education', '0', 'degree']`.
+
+    Returns:
+        The coordinates of the key in the YAML file in the format
+        ((start_line, start_column), (end_line, end_column)).
+        (Line and column numbers are 0-indexed.)
+    """
+
+    def get_inner_yaml_object_from_its_key(
+        yaml_object: CommentedMap, location_key: str
+    ) -> tuple[CommentedMap, tuple[tuple[int, int], tuple[int, int]]]:
+        # If the part is numeric, interpret it as a list index:
+        try:
+            index = int(location_key)
+            if not isinstance(yaml_object, list):
+                message = (
+                    f"Expected a list for index '{location_key}', but got"
+                    f" {type(yaml_object)}"
+                )
+                raise KeyError(message)
+            try:
+                inner_yaml_object = yaml_object[index]
+                # Get the coordinates from the list's lc.data (which is a list of tuples).
+                start_line, start_col = yaml_object.lc.data[index]
+                end_line, end_col = start_line, start_col
+                coordinates = ((start_line + 1, start_col - 1), (end_line + 1, end_col))
+            except IndexError as e:
+                message = f"Index {index} is out of range in the YAML file."
+                raise KeyError(message) from e
+        except ValueError as e:
+            # Otherwise, the part is a key in a mapping.
+            if not isinstance(yaml_object, CommentedMap):
+                message = (
+                    f"Expected a mapping for key '{location_key}', but got"
+                    f" {type(yaml_object)}"
+                )
+                raise KeyError(message) from e
+            if location_key not in yaml_object:
+                message = f"Key '{location_key}' not found in the YAML file."
+                raise KeyError(message) from e
+
+            inner_yaml_object = yaml_object[location_key]
+            start_line, start_col, end_line, end_col = yaml_object.lc.data[location_key]
+            coordinates = ((start_line + 1, start_col + 1), (end_line + 1, end_col))
+
+        return inner_yaml_object, coordinates
+
+    current_yaml_object: CommentedMap = read_a_yaml_file(yaml_file_as_string)  # type: ignore
+    coordinates = ((0, 0), (0, 0))
+    # start from the first key and move forward:
+    for location_key in location:
+        current_yaml_object, coordinates = get_inner_yaml_object_from_its_key(
+            current_yaml_object, location_key
+        )
+
+    return coordinates
+
+
 def parse_validation_errors(
-    exception: pydantic.ValidationError,
+    exception: pydantic.ValidationError, yaml_file_as_string: Optional[str] = None
 ) -> list[dict[str, str]]:
     """Take a Pydantic validation error, parse it, and return a list of error
     dictionaries that contain the error messages, locations, and the input values.
@@ -207,6 +274,12 @@ def parse_validation_errors(
             "msg": message,
             "input": str(input),
         }
+
+        if yaml_file_as_string:
+            coordinates = get_coordinates_of_a_key_in_a_yaml_file(
+                yaml_file_as_string, list(new_error["loc"])
+            )
+            new_error["yaml_loc"] = coordinates
 
         # if new_error is not in new_errors, then add it to new_errors
         if new_error not in new_errors:

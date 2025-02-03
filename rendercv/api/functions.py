@@ -29,6 +29,6 @@ def create_contents_of_a_typst_file(
             input_file_as_a_dict,
         )
     except pydantic.ValidationError as e:
-        return data.parse_validation_errors(e)
+        return data.parse_validation_errors(e, yaml_file_as_string)
 
     return renderer.create_contents_of_a_typst_file(data_model)
