@@ -256,9 +256,8 @@ def validate_a_social_network_username(username: str, network: str) -> str:
     if network in patterns:
         if not patterns[network].fullmatch(username):
             raise ValueError(error_messages[network])
-    elif network == "YouTube":
-        if username.startswith("@"):
-            raise ValueError(error_messages[network])
+    elif network == "YouTube" and username.startswith("@"):
+        raise ValueError(error_messages[network])
 
     return username
 
