@@ -27,14 +27,14 @@ jobs:
       - name: Update schema.json
         continue-on-error: true
         run: |
-          hatch run docs:update-schema
+          hatch run update-schema
           git add schema.json
           git commit -m "docs: update schema.json"
 
       - name: Update `examples` folder
         continue-on-error: true
         run: |
-          hatch run docs:update-examples
+          hatch run update-examples
           git add examples/*
           git add docs/assets/images/*.png
           git commit -m "docs: update examples"

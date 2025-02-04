@@ -14,6 +14,34 @@ jobs:
     name: Run Tests
     uses: ./.github/workflows/test.yaml
 
+  create_executables:
+    name: Create Executables
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, windows, macos]
+
+    runs-on: ${{ matrix.os }}-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Hatch
+        uses: pypa/hatch@install
+
+      - name: Create executable
+        run: |
+          hatch run create-executable
+
+      - name: Upload executable
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            bin/*
+
   publish_to_pypi:
     name: Publish to PyPI
     needs:
@@ -37,15 +65,15 @@ jobs:
         run: |
           hatch build
 
-      - name: Upload package to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-
       - name: Upload wheel and source distribution
         uses: softprops/action-gh-release@v2
         with:
           files: |
             dist/*.whl
             dist/*.tar.gz
+
+      - name: Upload package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
 
   publish_to_dockerhub:
     name: Publish to Docker Hub

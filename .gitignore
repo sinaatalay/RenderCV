@@ -187,3 +187,6 @@ rendercv_output/
 
 # Profiling:
 render_command.prof
+
+# Executables:
+bin/

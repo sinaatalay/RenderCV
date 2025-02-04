@@ -1,5 +1,4 @@
 import subprocess
-import sys
 
 import pytest
 
@@ -9,16 +8,19 @@ import pytest
     [
         "format",
         "lint",
-        "sort-imports",
         "check-types",
+        "precommit",
+        "update-schema",
+        "update-examples",
+        "create-executable",
         "docs:build",
-        "docs:update-schema",
-        "docs:update-examples",
         "docs:update-entry-figures",
-        # "docs:serve",
-        # "test:run",
-        # "test:run-and-report",
     ],
 )
 def test_default_format(script_name):
-    subprocess.run([sys.executable, "-m", "hatch", "run", script_name], check=False)
+    # Check if hatch is installed:
+    try:
+        subprocess.run(["hatch", "--version"], check=True)
+        subprocess.run(["hatch", "run", script_name], check=True)
+    except FileNotFoundError:
+        pass

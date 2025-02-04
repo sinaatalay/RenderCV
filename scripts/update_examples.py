@@ -10,7 +10,7 @@ import rendercv.renderer as renderer
 
 repository_root = pathlib.Path(__file__).parent.parent
 rendercv_path = repository_root / "rendercv"
-image_assets_directory = pathlib.Path(__file__).parent / "assets" / "images"
+image_assets_directory = repository_root / "docs" / "assets" / "images"
 
 
 def generate_examples():

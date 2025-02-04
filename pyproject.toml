@@ -126,15 +126,16 @@ rendercv = 'rendercv.cli:app'
 installer = "uv"
 python = "3.13"
 dependencies = [
-    "ruff",             # to lint and format the code
-    "black",            # to format the code
-    "ipython",          # for ipython shell
-    "pyright",          # to check the types
-    "pre-commit",       # to run the checks before committing
-    "pytest==8.3.4",    # to run the tests
-    "coverage==7.6.10", # to generate coverage reports
-    "pypdf==5.1.0",     # to read PDF files
-    "snakeviz==2.2.2",  # for profiling
+    "ruff",                # to lint and format the code
+    "black",               # to format the code
+    "ipython",             # for ipython shell
+    "pyright",             # to check the types
+    "pre-commit",          # to run the checks before committing
+    "pytest==8.3.4",       # to run the tests
+    "coverage==7.6.10",    # to generate coverage reports
+    "pypdf==5.1.0",        # to read PDF files
+    "snakeviz==2.2.2",     # for profiling
+    "pyinstaller==6.11.1", # to build the executable
 ]
 features = ["full"] # to install full optional dependencies
 [tool.hatch.envs.default.scripts]
@@ -154,6 +155,12 @@ test = "pytest" # hatch run test
 test-and-report = "coverage run -m pytest && coverage combine && coverage report && coverage html --show-contexts" # hatch run test-and-report
 # Profile render command
 profile-render-command = "python -m cProfile -o render_command.prof -m rendercv render examples/John_Doe_ClassicTheme_CV.yaml && snakeviz render_command.prof"
+# Update schema.json:
+update-schema = "python scripts/update_schema.py" # hatch run update-schema
+# Update `examples` folder:
+update-examples = "python scripts/update_examples.py" # hatch run update-examples
+# Create executables
+create-executable = "python scripts/create_executable.py" # hatch run create-executables
 
 [tool.hatch.envs.test]
 template = "default"
@@ -178,12 +185,8 @@ features = ["full"] # to install full optional dependencies
 build = "mkdocs build --clean --strict" # hatch run docs:build
 # Start the development server for the documentation with `mkdocs`:
 serve = "mkdocs serve" # hatch run docs:serve
-# Update schema.json:
-update-schema = "python docs/update_schema.py" # hatch run docs:update-schema
-# Update `examples` folder:
-update-examples = "python docs/update_examples.py" # hatch run docs:update-examples
 # Update entry figures in "Structure of the YAML File" page:
-update-entry-figures = "python docs/update_entry_figures.py" # hatch run docs:update-entry-figures
+update-entry-figures = "python scripts/update_entry_figures.py" # hatch run docs:update-entry-figures
 # ======================================================================================
 # Virtual Environments Above ===========================================================
 # ======================================================================================

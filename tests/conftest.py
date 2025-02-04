@@ -26,7 +26,6 @@ from rendercv.renderer import templater
 # reference files with the latest output.
 update_testdata = False
 
-# copy sample entries from docs/update_rendercv_files.py:
 education_entry_dictionary = {
     "institution": "Boğaziçi University",
     "location": "Istanbul, Turkey",
