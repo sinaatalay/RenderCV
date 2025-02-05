@@ -159,8 +159,6 @@ profile-render-command = "python -m cProfile -o render_command.prof -m rendercv 
 update-schema = "python scripts/update_schema.py" # hatch run update-schema
 # Update `examples` folder:
 update-examples = "python scripts/update_examples.py" # hatch run update-examples
-# Create executables
-create-executable = "python scripts/create_executable.py" # hatch run create-executables
 
 [tool.hatch.envs.test]
 template = "default"
@@ -187,6 +185,17 @@ build = "mkdocs build --clean --strict" # hatch run docs:build
 serve = "mkdocs serve" # hatch run docs:serve
 # Update entry figures in "Structure of the YAML File" page:
 update-entry-figures = "python scripts/update_entry_figures.py" # hatch run docs:update-entry-figures
+
+
+[tool.hatch.envs.exe]
+installer = "uv"
+python = "3.13"
+dependencies = [
+    "pyinstaller==6.11.1", # to build the executable
+]
+features = ["full"]
+[tool.hatch.envs.exe.scripts]
+create = "python scripts/create_executable.py" # hatch run exe:create
 # ======================================================================================
 # Virtual Environments Above ===========================================================
 # ======================================================================================

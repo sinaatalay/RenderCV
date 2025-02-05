@@ -14,14 +14,22 @@ from ..data.models.base import RenderCVBaseModelWithoutExtraKeys
 
 
 # Custom field types:
-def validate_typst_dimension(value: str) -> str:
-    if not re.fullmatch(r"\d+\.?\d*(cm|in|pt|mm|ex|em)", value):
+def validate_typst_dimension(dimension: str) -> str:
+    """Check if the input string is a valid dimension for the Typst theme.
+
+    Args:
+        dimension: The input string to be validated.
+
+    Returns:
+        The input string itself if it is a valid dimension.
+    """
+    if not re.fullmatch(r"\d+\.?\d*(cm|in|pt|mm|ex|em)", dimension):
         message = (
             "The value must be a number followed by a unit (cm, in, pt, mm, ex, em)."
             " For example, 0.1cm."
         )
         raise ValueError(message)
-    return value
+    return dimension
 
 
 TypstDimension = Annotated[
@@ -127,6 +135,8 @@ page_show_last_updated_date_field_info = pydantic.Field(
 
 
 class Page(RenderCVBaseModelWithoutExtraKeys):
+    """Options related to the page."""
+
     size: PageSize = page_size_field_info
     top_margin: TypstDimension = page_top_margin_field_info
     bottom_margin: TypstDimension = page_bottom_margin_field_info
@@ -188,6 +198,8 @@ colors_last_updated_date_and_page_numbering_field_info = pydantic.Field(
 
 
 class Colors(RenderCVBaseModelWithoutExtraKeys):
+    """Color used throughout the CV."""
+
     text: pydantic_color.Color = colors_text_field_info
     name: pydantic_color.Color = colors_name_field_info
     connections: pydantic_color.Color = colors_connections_field_info
@@ -237,6 +249,8 @@ text_date_and_location_column_alignment_field_info = pydantic.Field(
 
 
 class Text(RenderCVBaseModelWithoutExtraKeys):
+    """Options related to text."""
+
     font_family: FontFamily = text_font_family_field_info
     font_size: TypstDimension = text_font_size_field_info
     leading: TypstDimension = text_leading_field_info
@@ -262,6 +276,8 @@ links_use_external_link_icon_field_info = pydantic.Field(
 
 
 class Links(RenderCVBaseModelWithoutExtraKeys):
+    """Options related to links."""
+
     underline: bool = links_underline_field_info
     use_external_link_icon: bool = links_use_external_link_icon_field_info
 
@@ -331,6 +347,8 @@ header_alignment_field_info = pydantic.Field(
 
 
 class Header(RenderCVBaseModelWithoutExtraKeys):
+    """Options related to headers."""
+
     name_font_family: FontFamily = header_name_font_family_field_info
     name_font_size: TypstDimension = header_name_font_size_field_info
     name_bold: bool = header_name_bold_field_info
@@ -393,6 +411,8 @@ section_titles_small_caps_field_info = pydantic.Field(
 
 
 class SectionTitles(RenderCVBaseModelWithoutExtraKeys):
+    """Options related to section titles."""
+
     type: SectionTitleType = section_titles_type_field_info
     font_family: FontFamily = section_titles_font_family_field_info
     font_size: TypstDimension = section_titles_font_size_field_info
@@ -459,6 +479,8 @@ entries_show_time_spans_in_field_info = pydantic.Field(
 
 
 class Entries(RenderCVBaseModelWithoutExtraKeys):
+    """Options related to entries."""
+
     date_and_location_width: TypstDimension = entries_date_and_location_width_field_info
     left_and_right_margin: TypstDimension = entries_left_and_right_margin_field_info
     horizontal_space_between_columns: TypstDimension = (
@@ -506,6 +528,8 @@ highlights_summary_left_margin_field_info = pydantic.Field(
 
 
 class Highlights(RenderCVBaseModelWithoutExtraKeys):
+    """Options related to highlights."""
+
     bullet: BulletPoint = highlights_bullet_field_info
     top_margin: TypstDimension = highlights_top_margin_field_info
     left_margin: TypstDimension = highlights_left_margin_field_info
@@ -537,6 +561,8 @@ entry_base_with_date_date_and_location_column_template_field_info = pydantic.Fie
 
 
 class EntryBaseWithDate(RenderCVBaseModelWithoutExtraKeys):
+    """Base options for entries with a date."""
+
     main_column_second_row_template: str = (
         entry_base_with_date_main_column_second_row_template_field_info
     )
@@ -588,6 +614,8 @@ publication_entry_date_and_location_column_template_field_info = pydantic.Field(
 
 
 class PublicationEntry(RenderCVBaseModelWithoutExtraKeys):
+    """Options related to publication entries."""
+
     main_column_first_row_template: str = (
         publication_entry_main_column_first_row_template_field_info
     )
@@ -632,6 +660,8 @@ education_entry_degree_column_width_field_info = pydantic.Field(
 
 
 class EducationEntryBase(RenderCVBaseModelWithoutExtraKeys):
+    """Base options for education entries."""
+
     main_column_first_row_template: str = (
         education_entry_main_column_first_row_template_field_info
     )
@@ -642,7 +672,7 @@ class EducationEntryBase(RenderCVBaseModelWithoutExtraKeys):
 
 
 class EducationEntry(EntryBaseWithDate, EducationEntryBase):
-    pass
+    """Options related to education entries."""
 
 
 normal_entry_main_column_first_row_template_field_info = pydantic.Field(
@@ -656,13 +686,15 @@ normal_entry_main_column_first_row_template_field_info = pydantic.Field(
 
 
 class NormalEntryBase(RenderCVBaseModelWithoutExtraKeys):
+    """Base options for normal entries."""
+
     main_column_first_row_template: str = (
         normal_entry_main_column_first_row_template_field_info
     )
 
 
 class NormalEntry(EntryBaseWithDate, NormalEntryBase):
-    pass
+    """Options related to normal entries."""
 
 
 experience_entry_main_column_first_row_template_field_info = pydantic.Field(
@@ -676,13 +708,15 @@ experience_entry_main_column_first_row_template_field_info = pydantic.Field(
 
 
 class ExperienceEntryBase(RenderCVBaseModelWithoutExtraKeys):
+    """Base options for experience entries."""
+
     main_column_first_row_template: str = (
         experience_entry_main_column_first_row_template_field_info
     )
 
 
 class ExperienceEntry(EntryBaseWithDate, ExperienceEntryBase):
-    pass
+    """Options related to experience entries."""
 
 
 one_line_entry_template_field_info = pydantic.Field(
@@ -696,6 +730,8 @@ one_line_entry_template_field_info = pydantic.Field(
 
 
 class OneLineEntry(RenderCVBaseModelWithoutExtraKeys):
+    """Options related to one-line entries."""
+
     template: str = one_line_entry_template_field_info
 
 
@@ -727,6 +763,8 @@ entry_types_publication_entry_field_info = pydantic.Field(
 
 
 class EntryTypes(RenderCVBaseModelWithoutExtraKeys):
+    """Options related to the templates."""
+
     one_line_entry: OneLineEntry = entry_types_one_line_entry_field_info
     education_entry: EducationEntry = entry_types_education_entry_field_info
     normal_entry: NormalEntry = entry_types_normal_entry_field_info
@@ -787,6 +825,8 @@ theme_options_entry_types_field_info = pydantic.Field(
 
 
 class ThemeOptions(RenderCVBaseModelWithoutExtraKeys):
+    """Full design options."""
+
     theme: Literal["tobeoverwritten"] = theme_options_theme_field_info
     page: Page = theme_options_page_field_info
     colors: Colors = theme_options_colors_field_info

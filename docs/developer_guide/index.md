@@ -94,7 +94,7 @@ These commands are defined in the [`pyproject.toml`](https://github.com/rendercv
     ```
 - Create an executable version of RenderCV with [PyInstaller](https://www.pyinstaller.org/)
     ```bash
-    hatch run create-executables
+    hatch run exe:creates
     ```
 - Preview the documentation as you write it
     ```bash

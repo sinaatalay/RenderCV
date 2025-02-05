@@ -34,7 +34,7 @@ jobs:
 
       - name: Create executable
         run: |
-          hatch run create-executable
+          hatch run exe:create
 
       - name: Upload executable
         uses: softprops/action-gh-release@v2

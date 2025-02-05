@@ -55,6 +55,12 @@ This command will generate a directory called `rendercv_output`, which contains 
 -   The CV in Markdown format, `Your_Name_CV.md`.
 -   The CV in HTML format, `Your_Name_CV.html`. You can open this file in a web browser and copy-paste the content to Grammarly for proofreading.
 
+To have RenderCV run automatically whenever the YAML input file is updated, use the `--watch` option.
+
+```bash
+rendercv render --watch "Your_Name_CV.yaml"
+```
+
 !!! info
     Refer to the [here](cli.md#rendercv-render-command) for the complete list of CLI options available for the `render` command.
 

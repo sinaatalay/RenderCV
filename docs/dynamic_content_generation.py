@@ -81,7 +81,8 @@ def define_env(env):
         for theme_file in themes_path.glob(f"{theme}/*.typ"):
             theme_templates[theme][theme_file.stem] = theme_file.read_text()
 
-        # Update ordering of theme templates
+        # Update ordering of theme templates, if there are more files, add them to the
+        # end
         order = [
             "Preamble.j2",
             "Header.j2",
@@ -89,12 +90,16 @@ def define_env(env):
             "SectionEnding.j2",
             "TextEntry.j2",
             "BulletEntry.j2",
+            "NumberedEntry.j2",
+            "ReversedNumberedEntry.j2",
             "OneLineEntry.j2",
             "EducationEntry.j2",
             "ExperienceEntry.j2",
             "NormalEntry.j2",
             "PublicationEntry.j2",
         ]
+        remaining_files = set(theme_templates[theme].keys()) - set(order)
+        order += list(remaining_files)
         theme_templates[theme] = {key: theme_templates[theme][key] for key in order}
 
         if theme != "markdown":
@@ -107,6 +112,13 @@ def define_env(env):
             }
 
     env.variables["theme_templates"] = theme_templates
+
+    theme_components = {}
+    for theme_file in themes_path.glob("components/*.typ"):
+        theme_components[theme_file.stem] = theme_file.read_text()
+    theme_components = {f"{key}.typ": value for key, value in theme_components.items()}
+
+    env.variables["theme_components"] = theme_components
 
     # Available themes strings (put available themes between ``)
     themes = [f"`{theme}`" for theme in data.available_themes]

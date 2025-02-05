@@ -98,6 +98,7 @@ nav:
           - sb2nov: reference/themes/sb2nov.md
           - moderncv: reference/themes/moderncv.md
           - engineeringclassic: reference/themes/engineeringclassic.md
+          - components: reference/themes/components.md
   - Changelog:
       - Changelog: changelog/index.md
 
