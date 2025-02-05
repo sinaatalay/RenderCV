@@ -1,59 +1,59 @@
-import os
 import pathlib
+import platform
+import shutil
 import subprocess
 import sys
+import tempfile
 
 
 def create_executable():
     # Make sure the current working directory is the root of the project:
     root = pathlib.Path(__file__).parent.parent
-    os.chdir(root)
 
-    rendercv_file_path = root / "rendercv.py"
-    rendercv_file_path.touch()
-    rendercv_file_path.write_text("import rendercv.cli as cli; cli.app()")
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # copy rendercv to temp directory
+        shutil.copytree(root / "rendercv", pathlib.Path(temp_dir) / "rendercv")
+        temp_directory = pathlib.Path(temp_dir)
+        rendercv_file_path = temp_directory / "rendercv.py"
+        rendercv_file_path.touch()
+        rendercv_file_path.write_text("import rendercv.cli as cli; cli.app()")
 
-    # Run pyinstaller:
-    subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "PyInstaller",
-            "--onefile",
-            "--clean",
-            "--collect-all",
-            "rendercv",
-            "--collect-all",
-            "rendercv_fonts",
-            "--distpath",
-            "bin",
-            str(rendercv_file_path),
-        ],
-        check=True,
-    )
+        # Run pyinstaller:
+        subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "PyInstaller",
+                "--onefile",
+                "--clean",
+                "--collect-all",
+                "rendercv",
+                "--collect-all",
+                "rendercv_fonts",
+                "--distpath",
+                "bin",
+                str(rendercv_file_path),
+            ],
+            check=True,
+        )
 
-    # Remove the temporary file:
-    rendercv_file_path.unlink()
-    (root / "rendercv.spec").unlink()
-
-    # Rename the executable:
-    platform = {
-        "linux": "linux",
-        "darwin": "macos",
-        "win32": "windows",
-    }
-    if sys.platform == "win32":
-        executable_path = root / "bin" / "rendercv.exe"
-        executable_path.rename(
+        # Rename the executable:
+        platform_name = {
+            "linux": "linux",
+            "darwin": "macos",
+            "win32": "windows",
+        }
+        executable_path = {
+            "linux": root / "bin" / "rendercv",
+            "darwin": root / "bin" / "rendercv",
+            "win32": root / "bin" / "rendercv.exe",
+        }
+        new_executable_path = (
             root
             / "bin"
-            / f"rendercv-{platform[sys.platform]}-{os.environ['PROCESSOR_ARCHITECTURE']}"
+            / f"rendercv-{platform_name[sys.platform]}-{platform.machine()}"
         )
-    else:
-        executable_path = root / "bin" / "rendercv"
-        executable_path.rename(
-            root / "bin" / f"rendercv-{platform[sys.platform]}-{os.uname().machine}"
-        )
+        executable_path[sys.platform].rename(new_executable_path)
 
     print('Executable created at "bin" folder.')  # NOQA: T201
 

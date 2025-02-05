@@ -2,7 +2,7 @@ name: Update files
 
 # GitHub events that triggers the workflow:
 on:
-  workflow_call: # to make the workflow triggerable from other workflows (on-publish.yaml)
+  workflow_call: # to make the workflow triggerable from other workflows (publish-a-release.yaml)
   workflow_dispatch: # to make the workflow triggerable manually
 
 jobs:
@@ -29,7 +29,6 @@ jobs:
         run: |
           hatch run update-schema
           git add schema.json
-          git commit -m "docs: update schema.json"
 
       - name: Update `examples` folder
         continue-on-error: true
@@ -37,16 +36,15 @@ jobs:
           hatch run update-examples
           git add examples/*
           git add docs/assets/images/*.png
-          git commit -m "docs: update examples"
 
       - name: Update entry figures
         continue-on-error: true
         run: |
           hatch run docs:update-entry-figures
           git add docs/assets/images/**/*.png
-          git commit -m "docs: update entry figures"
 
       - name: Push changes
         continue-on-error: true
         run: |
+          git commit -m "Update schema.json, examples, and entry figures"
           git push origin HEAD:main
