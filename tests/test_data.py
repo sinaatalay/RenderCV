@@ -895,81 +895,93 @@ def test_make_keywords_bold_in_a_string():
 
 
 def test_bold_keywords():
-    data_model = data.RenderCVDataModel(
-        cv=data.CurriculumVitae(
-            name="John Doe",
-            sections={
-                "test": [
-                    "test_keyword_1",
-                ],
+    data_model_as_dict = {
+        "cv": {
+            "sections": {
+                "test": ["test_keyword_1"],
                 "test2": [
-                    data.EducationEntry(
-                        institution="Test Institution",
-                        area="Test Area",
-                        highlights=["test_keyword_2"],
-                        summary="test_keyword_3 test_keyword_4",
-                    ),
+                    {
+                        "institution": "Test Institution",
+                        "area": "Test Area",
+                        "degree": None,
+                        "date": None,
+                        "start_date": None,
+                        "end_date": None,
+                        "location": None,
+                        "summary": "test_keyword_3 test_keyword_4",
+                        "highlights": ["test_keyword_2"],
+                    }
                 ],
                 "test3": [
-                    data.ExperienceEntry(
-                        company="Test Company",
-                        position="Test Position",
-                        highlights=["test_keyword_5", "test_keyword_6"],
-                        summary="test_keyword_6 test_keyword_7",
-                    ),
+                    {
+                        "company": "Test Company",
+                        "position": "Test Position",
+                        "date": None,
+                        "start_date": None,
+                        "end_date": None,
+                        "location": None,
+                        "summary": "test_keyword_6 test_keyword_7",
+                        "highlights": ["test_keyword_5", "test_keyword_6"],
+                    }
                 ],
                 "test4": [
-                    data.NormalEntry(
-                        name="Test",
-                        highlights=["test_keyword_2"],
-                        summary="test_keyword_3 test_keyword_4",
-                    ),
+                    {
+                        "name": "Test",
+                        "date": None,
+                        "start_date": None,
+                        "end_date": None,
+                        "location": None,
+                        "summary": "test_keyword_3 test_keyword_4",
+                        "highlights": ["test_keyword_2"],
+                    }
                 ],
-                "test5": [
-                    data.PublicationEntry(
-                        title="Test Institution",
-                        authors=["Test Author"],
-                    ),
-                ],
-                "test6": [
-                    data.BulletEntry(
-                        bullet="test_keyword_3 test_keyword_4",
-                    ),
-                ],
+                "test6": [{"bullet": "test_keyword_3 test_keyword_4"}],
                 "test7": [
-                    data.OneLineEntry(
-                        label="Test Institution",
-                        details="test_keyword_3 test_keyword_4",
-                    ),
+                    {
+                        "label": "Test Institution",
+                        "details": "test_keyword_3 test_keyword_4",
+                    }
                 ],
             },
-        )
+        },
+        "rendercv_settings": {
+            "bold_keywords": [
+                "test_keyword_1",
+                "test_keyword_2",
+                "test_keyword_3",
+                "test_keyword_4",
+                "test_keyword_5",
+                "test_keyword_6",
+                "test_keyword_7",
+            ],
+        },
+    }
+
+    data_model = data.validate_input_dictionary_and_return_the_data_model(
+        data_model_as_dict
     )
 
     for section in data_model.cv.sections:
         for entry in section.entries:
-            if section.title == "test":
+            if section.title == "Test":
                 assert "**test_keyword_1**" in entry
-            elif section.title == "test2":
+            elif section.title == "Test2":
                 assert "**test_keyword_2**" in entry.highlights[0]
                 assert "**test_keyword_3**" in entry.summary
                 assert "**test_keyword_4**" in entry.summary
-            elif section.title == "test3":
+            elif section.title == "Test3":
                 assert "**test_keyword_5**" in entry.highlights[0]
                 assert "**test_keyword_6**" in entry.highlights[1]
                 assert "**test_keyword_6**" in entry.summary
                 assert "**test_keyword_7**" in entry.summary
-            elif section.title == "test4":
+            elif section.title == "Test4":
                 assert "**test_keyword_2**" in entry.highlights[0]
                 assert "**test_keyword_3**" in entry.summary
                 assert "**test_keyword_4**" in entry.summary
-            elif section.title == "test5":
-                assert "**test_keyword_3**" in entry.summary
-                assert "**test_keyword_4**" in entry.summary
-            elif section.title == "test6":
+            elif section.title == "Test6":
                 assert "**test_keyword_3**" in entry.bullet
                 assert "**test_keyword_4**" in entry.bullet
-            elif section.title == "test7":
+            elif section.title == "Test7":
                 assert "**test_keyword_3**" in entry.details
                 assert "**test_keyword_4**" in entry.details
 

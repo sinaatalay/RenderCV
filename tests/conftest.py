@@ -3,6 +3,7 @@
 import copy
 import filecmp
 import itertools
+import json
 import pathlib
 import shutil
 import typing
@@ -155,6 +156,17 @@ def text_entry() -> str:
 def rendercv_data_model() -> data.RenderCVDataModel:
     """Return a sample RenderCV data model."""
     return data.create_a_sample_data_model()
+
+
+@pytest.fixture
+def rendercv_data_as_python_dictionary(
+    rendercv_data_model,
+) -> dict:
+    """Return a sample RenderCV data as a Python dictionary."""
+    data_model_as_json = rendercv_data_model.model_dump_json(
+        exclude_none=False, by_alias=True, exclude={"cv": {"sections", "photo"}}
+    )
+    return json.loads(data_model_as_json)
 
 
 @pytest.fixture

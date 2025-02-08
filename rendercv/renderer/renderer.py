@@ -14,6 +14,43 @@ from .. import data
 from . import templater
 
 
+def create_a_file_name_without_extension_from_name(name: Optional[str]) -> str:
+    """Create a file name from the given name by replacing the spaces with underscores
+    and removing typst commands.
+
+    Args:
+        name: The name to be converted.
+
+    Returns:
+        The converted name (without the extension).
+    """
+    name_without_typst_commands = templater.remove_typst_commands(str(name))
+    return f"{name_without_typst_commands.replace(' ', '_')}_CV"
+
+
+def create_a_file_and_write_contents_to_it(
+    contents: str, file_name: str, output_directory: pathlib.Path
+) -> pathlib.Path:
+    """Create a file with the given contents in the output directory.
+
+    Args:
+        contents: The contents of the file.
+        file_name: The name of the file.
+        output_directory: Path to the output directory.
+
+    Returns:
+        The path to the created file.
+    """
+    # Create output directory if it doesn't exist:
+    if not output_directory.is_dir():
+        output_directory.mkdir(parents=True)
+
+    file_path = output_directory / file_name
+    file_path.write_text(contents, encoding="utf-8")
+
+    return file_path
+
+
 def copy_theme_files_to_output_directory(
     theme_name: str,
     output_directory_path: pathlib.Path,
@@ -102,18 +139,37 @@ def create_a_typst_file(
 
     typst_contents = create_contents_of_a_typst_file(rendercv_data_model)
 
-    # Create output directory if it doesn't exist:
-    if not output_directory.is_dir():
-        output_directory.mkdir(parents=True)
-
-    name_without_typst_commands = templater.remove_typst_commands(
-        str(rendercv_data_model.cv.name)
+    file_name_without_extension = create_a_file_name_without_extension_from_name(
+        rendercv_data_model.cv.name
     )
-    file_name = f"{name_without_typst_commands.replace(' ', '_')}_CV.typ"
-    file_path = output_directory / file_name
-    file_path.write_text(typst_contents, encoding="utf-8")
+    file_name = f"{file_name_without_extension}.typ"
 
-    return file_path
+    return create_a_file_and_write_contents_to_it(
+        typst_contents,
+        file_name,
+        output_directory,
+    )
+
+
+def create_contents_of_a_markdown_file(
+    rendercv_data_model: data.RenderCVDataModel,
+) -> str:
+    """Create a Markdown file with the given data model and return it as a string.
+
+    Args:
+        rendercv_data_model: The data model.
+
+    Returns:
+        The path to the generated Markdown file.
+    """
+    jinja2_environment = templater.Jinja2Environment().environment
+
+    markdown_file_object = templater.MarkdownFile(
+        rendercv_data_model,
+        jinja2_environment,
+    )
+
+    return markdown_file_object.get_full_code()
 
 
 def create_a_markdown_file(
@@ -129,21 +185,18 @@ def create_a_markdown_file(
     Returns:
         The path to the rendered Markdown file.
     """
-    # create output directory if it doesn't exist:
-    if not output_directory.is_dir():
-        output_directory.mkdir(parents=True)
+    markdown_contents = create_contents_of_a_markdown_file(rendercv_data_model)
 
-    jinja2_environment = templater.Jinja2Environment().environment
-    markdown_file_object = templater.MarkdownFile(
-        rendercv_data_model,
-        jinja2_environment,
+    file_name_without_extension = create_a_file_name_without_extension_from_name(
+        rendercv_data_model.cv.name
     )
+    file_name = f"{file_name_without_extension}.typ"
 
-    markdown_file_name = f"{str(rendercv_data_model.cv.name).replace(' ', '_')}_CV.md"
-    markdown_file_path = output_directory / markdown_file_name
-    markdown_file_object.create_file(markdown_file_path)
-
-    return markdown_file_path
+    return create_a_file_and_write_contents_to_it(
+        markdown_contents,
+        file_name,
+        output_directory,
+    )
 
 
 def create_a_typst_file_and_copy_theme_files(
