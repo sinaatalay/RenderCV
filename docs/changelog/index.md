@@ -6,9 +6,7 @@ toc_depth: 1
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
-
-[Click here to see the unreleased changes.](https://github.com/rendercv/rendercv/compare/v2.1...HEAD)
+[Click here to see the unreleased changes.](https://github.com/rendercv/rendercv/compare/v2.2...HEAD)
 
 <!--
 ### Added
@@ -16,6 +14,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 ### Removed
 -->
+
+## [2.2] - January 25, 2025
+
+> **Full Changelog**: [v2.1...v2.2]
+
+### Added
+
+- Two new entry types have been added: `NumberedEntry` and `ReversedNumberedEntry`.
+- Four new fields have been added to the YAML input file: `design.section_titles.font_family`, `design.header.name_font_family`, `design.header.connections_font_family`, and `design.entries.allow_page_break_in_sections`.
+- New fonts have been added: EB Garamond, Fontin, Gentium Book Plus, Lato, Noto Sans, Open Sans, Raleway, and Open Sauce Sans.
+- Users are now allowed to use custom fonts, by providing font files in the `fonts` folder next to the YAML input file.
+- Typst commands are now allowed in the YAML input file. For example, a text can be converted to a subscript with `#sub[text]`.
+- A new social network has been added: `X` ([#212](https://github.com/rendercv/rendercv/pull/212), [#187](https://github.com/rendercv/rendercv/issues/187), [#109](https://github.com/rendercv/rendercv/issues/109), [#107](https://github.com/rendercv/rendercv/issues/107)).
+- Executable files for Windows, MacOS, and Linux are now available with each release.
+
+### Fixed
+
+- `None` values in the entries are now handled correctly.
+- `--png-path` option of the `rendercv render` command has been fixed ([#332](https://github.com/rendercv/rendercv/issues/332)).
+- Issues with escaping Markdown characters have been fixed ([#347](https://github.com/rendercv/rendercv/issues/347)).
+  
 
 ## [2.1] - January 25, 2025
 
@@ -490,6 +509,7 @@ RenderCV has transitioned from using $\LaTeX$ to Typst. RenderCV is now much fas
 
 The first release of RenderCV.
 
+[v2.1...v2.2]: https://github.com/rendercv/rendercv/compare/v2.1...v2.2
 [v2.0...v2.1]: https://github.com/rendercv/rendercv/compare/v2.0...v2.1
 [v1.18...v2.0]: https://github.com/rendercv/rendercv/compare/v1.18...v2.0
 [v1.17...v1.18]: https://github.com/rendercv/rendercv/compare/v1.17...v1.18
@@ -519,6 +539,7 @@ The first release of RenderCV.
 [v0.3...v0.4]: https://github.com/rendercv/rendercv/compare/v0.3...v0.4
 [v0.2...v0.3]: https://github.com/rendercv/rendercv/compare/v0.2...v0.3
 [v0.1...v0.2]: https://github.com/rendercv/rendercv/compare/v0.1...v0.2
+[2.2]: https://github.com/rendercv/rendercv/releases/tag/v2.2
 [2.1]: https://github.com/rendercv/rendercv/releases/tag/v2.1
 [2.0]: https://github.com/rendercv/rendercv/releases/tag/v2.0
 [1.18]: https://github.com/rendercv/rendercv/releases/tag/v1.18
