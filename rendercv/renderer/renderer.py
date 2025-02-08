@@ -190,7 +190,7 @@ def create_a_markdown_file(
     file_name_without_extension = create_a_file_name_without_extension_from_name(
         rendercv_data_model.cv.name
     )
-    file_name = f"{file_name_without_extension}.typ"
+    file_name = f"{file_name_without_extension}.md"
 
     return create_a_file_and_write_contents_to_it(
         markdown_contents,

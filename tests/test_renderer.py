@@ -59,8 +59,8 @@ def test_markdown_file_class(tmp_path, rendercv_data_model, jinja2_environment):
             "$a=5_4^3 % & #$ \\# $aaaa ___ &&$",
         ),
         (
-            "$###$",
-            "\\$\\#\\#\\#\\$",
+            "$###$////",
+            "\\$\\#\\#\\#\\$\\/\\/\\/\\/",
         ),
         (
             "#test-typst-command[argument]",
@@ -99,8 +99,8 @@ def test_escape_typst_characters(string, expected_string):
         (
             "We can put asteri*sks in the middle of words",
             (
-                "We can put asteri#sym.ast.basic#h(0pt, weak: true)sks in the middle of"
-                " words"
+                "We can put asteri#sym.ast.basic#h(0pt, weak: true) sks in the middle"
+                " of words"
             ),
         ),
         (
@@ -109,9 +109,9 @@ def test_escape_typst_characters(string, expected_string):
                 " backslash: \\*"
             ),
             (
-                "If we want to escape #sym.ast.basic#h(0pt, weak: true)'s such that"
+                "If we want to escape #sym.ast.basic#h(0pt, weak: true) 's such that"
                 " they don't become bold, we use a backslash: #sym.ast.basic#h(0pt,"
-                " weak: true)"
+                " weak: true) "
             ),
         ),
         (
@@ -125,8 +125,27 @@ def test_escape_typst_characters(string, expected_string):
             "Asterisk with a space after it does not need a zero-width space: *test",
             (
                 "Asterisk with a space after it does not need a zero-width space:"
-                " #sym.ast.basic#h(0pt, weak: true)test"
+                " #sym.ast.basic#h(0pt, weak: true) test"
             ),
+        ),
+        (
+            "\\* Asterisk should not be escaped\\*.Hey?",
+            (
+                "#sym.ast.basic Asterisk should not be escaped#sym.ast.basic#h(0pt,"
+                " weak: true) .Hey?"
+            ),
+        ),
+        (
+            "I would like to not have any \\*\\*bold\\*\\* text",
+            (
+                "I would like to not have any #sym.ast.basic#h(0pt, weak: true)"
+                " #sym.ast.basic#h(0pt, weak: true) bold#sym.ast.basic#h(0pt,"
+                " weak: true) #sym.ast.basic text"
+            ),
+        ),
+        (
+            "Keep Typst commands #test-typst-command[argument] as they are.",
+            "Keep Typst commands #test-typst-command[argument] as they are.",
         ),
     ],
 )

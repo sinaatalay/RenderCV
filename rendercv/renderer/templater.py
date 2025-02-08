@@ -561,6 +561,7 @@ def escape_typst_characters(string: Optional[str]) -> Optional[str]:
         "%": "\\%",
         "~": "\\~",
         "_": "\\_",
+        "/": "\\/",
     }
 
     return escape_characters(string, escape_dictionary)
@@ -644,10 +645,10 @@ def markdown_to_typst(markdown_string: str) -> str:
     # convert any remaining asterisks to Typst's asterisk
     # - Asterisk with a space can just be replaced.
     # - Asterisk without a space needs a zero-width box to delimit it.
-    TYPST_AST = "#sym.ast.basic"
-    ZERO_BOX = "#h(0pt, weak: true)"
-    markdown_string = markdown_string.replace("* ", TYPST_AST + " ")
-    markdown_string = markdown_string.replace("*", TYPST_AST + ZERO_BOX)
+    typst_asterisk = "#sym.ast.basic"
+    zero_box = "#h(0pt, weak: true) "
+    markdown_string = markdown_string.replace("* ", typst_asterisk + " ")
+    markdown_string = markdown_string.replace("*", typst_asterisk + zero_box)
 
     # At this point, the document ought to have absolutely no '*' characters left!
     # NOTE: The final typst file might still have some asterisks when specifying a
@@ -688,7 +689,7 @@ def transform_markdown_sections_to_something_else_sections(
                 transformed_list.append(result)
             else:
                 # Then it means it's one of the other entries.
-                fields_to_skip = ["doi"]
+                fields_to_skip = ["doi", "url"]
                 entry_as_dict = entry.model_dump()
                 for entry_key, inner_value in entry_as_dict.items():
                     if entry_key in fields_to_skip:
