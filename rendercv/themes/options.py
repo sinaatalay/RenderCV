@@ -4,6 +4,7 @@ themes' design options. To avoid code duplication, the themes are encouraged to 
 from these data models.
 """
 
+import pathlib
 import re
 from typing import Annotated, Literal, Optional
 
@@ -66,7 +67,38 @@ except ImportError:
         "Raleway",
         "XCharter",
     ]
-FontFamily = Literal[tuple(available_font_families)]
+font_family_validator = pydantic.TypeAdapter(Literal[tuple(available_font_families)])
+
+
+def validate_font_family(font_family: str) -> str:
+    """Check if the input string is a valid font family.
+
+    Args:
+        font_family: The input string to be validated.
+
+    Returns:
+        The input string itself if it is a valid font family.
+    """
+    if (pathlib.Path("fonts")).exists():
+        # Then allow custom font families.
+        return font_family
+
+    try:
+        font_family_validator.validate_strings(font_family)
+    except pydantic.ValidationError as e:
+        message = (
+            "The font family must be one of the following:"
+            f" {', '.join(available_font_families)}."
+        )
+        raise ValueError(message) from e
+
+    return font_family_validator.validate_strings(font_family)
+
+
+FontFamily = Annotated[
+    str,
+    pydantic.PlainValidator(validate_font_family),
+]
 BulletPoint = Literal["•", "◦", "-", "◆", "★", "■", "—", "○"]
 PageSize = Literal[
     "a0",

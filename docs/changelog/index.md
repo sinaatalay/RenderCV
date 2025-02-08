@@ -447,7 +447,7 @@ RenderCV has transitioned from using $\LaTeX$ to Typst. RenderCV is now much fas
 
 ### Fixed
 
-- DOI validation bug has been fixed by [@LabAsim](https://github.com/LabAsim) in [#3](https://github.com/rendercv/rendercv/pull/3)/
+- DOI validation bug has been fixed by [@LabAsim](https://github.com/LabAsim) in [#3](https://github.com/rendercv/rendercv/pull/3).
 
 ## [0.5] - October 27, 2023
 
