@@ -43,6 +43,12 @@ def create_executable():
             "darwin": "macos",
             "win32": "windows",
         }
+        machine_name = {
+            "AMD64": "x86_64",
+            "x86_64": "x86_64",
+            "aarch64": "ARM64",
+            "arm64": "ARM64",
+        }
         executable_path = {
             "linux": root / "bin" / "rendercv",
             "darwin": root / "bin" / "rendercv",
@@ -51,8 +57,10 @@ def create_executable():
         new_executable_path = (
             root
             / "bin"
-            / f"rendercv-{platform_name[sys.platform]}-{platform.machine()}"
+            / f"rendercv-{platform_name[sys.platform]}-{machine_name[platform.machine()]}"
         )
+        if sys.platform == "win32":
+            new_executable_path = new_executable_path.with_suffix(".exe")
         executable_path[sys.platform].rename(new_executable_path)
 
     print('Executable created at "bin" folder.')  # NOQA: T201

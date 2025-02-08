@@ -11,10 +11,50 @@ jobs:
     name: Run Tests
     uses: ./.github/workflows/test.yaml
 
+  call_create_executables_workflow:
+    name: Create Executables
+    needs:
+      - call_test_workflow
+    uses: ./.github/workflows/create-executables.yaml
+
+  upload_release_files:
+    name: Create release files
+    needs:
+      - call_create_executables_workflow
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download the executables
+        uses: actions/download-artifact@v4
+
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+
+      - name: Install Hatch
+        uses: pypa/hatch@install
+
+      - name: Build
+        run: |
+          hatch build
+
+      - name: Upload the executables as release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            renderc-*/rendercv-linux-ARM64
+            renderc-*/rendercv-linux-x86_64
+            renderc-*/rendercv-macos-ARM64
+            renderc-*/rendercv-windows-x86_64.exe
+            dist/rendercv-*.tar.gz
+            dist/rendercv-*.whl
+
   publish_to_pypi:
     name: Publish to PyPI
     needs:
-      - call_test_workflow
+      - upload_release_files
     runs-on: ubuntu-latest
     environment: release
     permissions:
@@ -95,26 +135,7 @@ jobs:
 
   call_update_files_workflow:
     name: Update files
-    needs:
-      - publish_to_pypi
     uses: ./.github/workflows/update-files.yaml
-
-  call_create_executables_workflow:
-    name: Create Executables
     needs:
+      - publish_to_dockerhub_and_ghcr
       - publish_to_pypi
-    uses: ./.github/workflows/create-executables.yaml
-
-  upload_release_files:
-    name: Create release files
-    needs:
-      - publish_to_pypi
-      - call_create_executables_workflow
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Download the executables
-        uses: actions/download-artifact@v2
-        with:
-          name: executables
