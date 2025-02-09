@@ -183,10 +183,22 @@ class EntryType(abc.ABC):
 
 
 def make_keywords_bold_in_a_string(string: str, keywords: list[str]) -> str:
-    """Make the given keywords bold in the given string."""
-    replacement_map = {keyword: f"**{keyword}**" for keyword in keywords}
-    for keyword, replacement in replacement_map.items():
-        string = string.replace(keyword, replacement)
+    """Make the given keywords bold in the given string, handling capitalization and substring issues.
+    
+    Examples:
+        >>> make_keywords_bold_in_a_string("I know java and javascript", ["java"])
+        'I know **java** and javascript'
+        
+        >>> make_keywords_bold_in_a_string("Experience with aws, Aws and AWS", ["aws"]) 
+        'Experience with **aws**, **Aws** and **AWS**'
+    """
+    def bold_match(match):
+        return f"**{match.group(0)}**"
+
+    for keyword in keywords:
+        # Use re.escape to ensure special characters in keywords are handled
+        pattern = r'\b' + re.escape(keyword) + r'\b'
+        string = re.sub(pattern, bold_match, string, flags=re.IGNORECASE)
 
     return string
 
