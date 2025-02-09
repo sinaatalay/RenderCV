@@ -31,19 +31,12 @@ def make_given_keywords_bold_in_sections(
     if sections_input is None:
         return None
 
-    for section_title, entries in sections_input.items():
-        new_entries = []
-        for entry in entries:
+    for entries in sections_input.values():
+        for i, entry in enumerate(entries):
             if isinstance(entry, str):
-                new_entry = entry_types.make_keywords_bold_in_a_string(entry, keywords)
+                entries[i] = entry_types.make_keywords_bold_in_a_string(entry, keywords)
             elif callable(getattr(entry, "make_keywords_bold", None)):
-                new_entry = entry.make_keywords_bold(keywords)  # type: ignore
-            else:
-                new_entry = entry
-
-            new_entries.append(new_entry)
-
-        sections_input[section_title] = new_entries
+                entries[i] = entry.make_keywords_bold(keywords)  # type: ignore
 
     return sections_input
 
