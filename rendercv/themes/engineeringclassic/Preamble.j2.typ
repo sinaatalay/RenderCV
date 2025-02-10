@@ -51,6 +51,7 @@
 #let design-header-alignment = <<design.header.alignment>>
 #let design-highlights-summary-left-margin = <<design.highlights.summary_left_margin>>
 #let design-highlights-bullet = "<<design.highlights.bullet>>"
+#let design-highlights-nested-bullet = "<<design.highlights.nested_bullet>>"
 #let design-highlights-top-margin = <<design.highlights.top_margin>>
 #let design-highlights-left-margin = <<design.highlights.left_margin>>
 #let design-highlights-vertical-space-between-highlights = <<design.highlights.vertical_space_between_highlights>>
@@ -135,13 +136,22 @@
   )
 }
 #show list: set list(
-  marker: design-highlights-bullet,
-  spacing: 0pt,
+  marker: design-highlights-nested-bullet,
+  spacing: design-highlights-vertical-space-between-highlights,
   indent: 0pt,
   body-indent: design-highlights-horizontal-space-between-bullet-and-highlights,
 )
 
 // Entry utilities:
+#let bullet-entry(..content) = {
+  list(
+    ..content,
+    marker: design-highlights-bullet,
+    spacing: 0pt,
+    indent: 0pt,
+    body-indent: design-highlights-horizontal-space-between-bullet-and-highlights,
+  )
+}
 #let three-col(
   left-column-width: 1fr,
   middle-column-width: 1fr,

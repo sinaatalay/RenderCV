@@ -44,10 +44,10 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            renderc-*/rendercv-linux-ARM64
-            renderc-*/rendercv-linux-x86_64
-            renderc-*/rendercv-macos-ARM64
-            renderc-*/rendercv-windows-x86_64.exe
+            rendercv-*/rendercv-linux-ARM64
+            rendercv-*/rendercv-linux-x86_64
+            rendercv-*/rendercv-macos-ARM64
+            rendercv-*/rendercv-windows-x86_64.exe
             dist/rendercv-*.tar.gz
             dist/rendercv-*.whl
 

@@ -32,6 +32,7 @@
 #let design-header-name-font-family = "New Computer Modern"
 #let design-header-name-font-size = 30pt
 #let design-header-name-bold = true
+#let design-header-small-caps-for-name = false
 #let design-header-connections-font-family = "New Computer Modern"
 #let design-header-vertical-space-between-name-and-connections = 0.7cm
 #let design-header-vertical-space-between-connections-and-first-section = 0.7cm
@@ -41,6 +42,7 @@
 #let design-header-alignment = center
 #let design-highlights-summary-left-margin = 0cm
 #let design-highlights-bullet = "◦"
+#let design-highlights-nested-bullet = "-"
 #let design-highlights-top-margin = 0.25cm
 #let design-highlights-left-margin = 0.4cm
 #let design-highlights-vertical-space-between-highlights = 0.25cm
@@ -125,13 +127,22 @@
   )
 }
 #show list: set list(
-  marker: design-highlights-bullet,
-  spacing: 0pt,
+  marker: design-highlights-nested-bullet,
+  spacing: design-highlights-vertical-space-between-highlights,
   indent: 0pt,
   body-indent: design-highlights-horizontal-space-between-bullet-and-highlights,
 )
 
 // Entry utilities:
+#let bullet-entry(..content) = {
+  list(
+    ..content,
+    marker: design-highlights-bullet,
+    spacing: 0pt,
+    indent: 0pt,
+    body-indent: design-highlights-horizontal-space-between-bullet-and-highlights,
+  )
+}
 #let three-col(
   left-column-width: 1fr,
   middle-column-width: 1fr,
@@ -192,7 +203,11 @@
     size: design-header-name-font-size,
     fill: design-colors-name,
   )
-  #it.body
+  #if design-header-small-caps-for-name [
+    #smallcaps(it.body)
+  ] else [
+    #it.body
+  ]
   // Vertical space after the name
   #v(design-header-vertical-space-between-name-and-connections)
 ]
@@ -504,13 +519,9 @@
 == Bullet Entries
 
 
-#one-col-entry(
-  content: [- This is a bullet entry.],
-)
+#one-col-entry(content: [#bullet-entry[This is a bullet entry.]])
 #v(design-entries-vertical-space-between-entries)
-#one-col-entry(
-  content: [- This is a bullet entry.],
-)
+#one-col-entry(content: [#bullet-entry[This is a bullet entry.]])
 
 
 == Publication Entries

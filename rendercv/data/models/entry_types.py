@@ -184,20 +184,21 @@ class EntryType(abc.ABC):
 
 def make_keywords_bold_in_a_string(string: str, keywords: list[str]) -> str:
     """Make the given keywords bold in the given string, handling capitalization and substring issues.
-    
+
     Examples:
         >>> make_keywords_bold_in_a_string("I know java and javascript", ["java"])
         'I know **java** and javascript'
-        
-        >>> make_keywords_bold_in_a_string("Experience with aws, Aws and AWS", ["aws"]) 
+
+        >>> make_keywords_bold_in_a_string("Experience with aws, Aws and AWS", ["aws"])
         'Experience with **aws**, **Aws** and **AWS**'
     """
+
     def bold_match(match):
         return f"**{match.group(0)}**"
 
     for keyword in keywords:
         # Use re.escape to ensure special characters in keywords are handled
-        pattern = r'\b' + re.escape(keyword) + r'\b'
+        pattern = r"\b" + re.escape(keyword) + r"\b"
         string = re.sub(pattern, bold_match, string, flags=re.IGNORECASE)
 
     return string
@@ -424,6 +425,17 @@ class EntryBase(EntryWithDate):
         title="Highlights",
         examples=["Did this.", "Did that."],
     )
+
+    @pydantic.field_validator("highlights", mode="after")
+    @classmethod
+    def handle_nested_bullets_in_highlights(
+        cls, highlights: Optional[list[str]]
+    ) -> Optional[list[str]]:
+        """Handle nested bullets in the `highlights` field."""
+        if highlights:
+            return [highlight.replace(" - ", "\n    - ") for highlight in highlights]
+
+        return highlights
 
     @pydantic.model_validator(mode="after")  # type: ignore
     def check_and_adjust_dates(self) -> "EntryBase":

@@ -65,7 +65,7 @@ o.entry_base_with_date_date_and_location_column_template_field_info.default = (
 )
 
 
-class EducationEntry(o.EducationEntry):
+class EducationEntryOptions(o.EducationEntryOptions):
     main_column_first_row_template: str = (
         o.education_entry_main_column_first_row_template_field_info
     )
@@ -77,7 +77,7 @@ class EducationEntry(o.EducationEntry):
     )
 
 
-class NormalEntry(o.NormalEntry):
+class NormalEntryOptions(o.NormalEntryOptions):
     date_and_location_column_template: str = (
         o.entry_base_with_date_date_and_location_column_template_field_info
     )
@@ -88,7 +88,7 @@ o.experience_entry_main_column_first_row_template_field_info.default = (
 )
 
 
-class ExperienceEntry(o.ExperienceEntry):
+class ExperienceEntryOptions(o.ExperienceEntryOptions):
     main_column_first_row_template: str = (
         o.experience_entry_main_column_first_row_template_field_info
     )
@@ -97,22 +97,22 @@ class ExperienceEntry(o.ExperienceEntry):
     )
 
 
-o.entry_types_education_entry_field_info.default = EducationEntry()
-o.entry_types_normal_entry_field_info.default = NormalEntry()
-o.entry_types_experience_entry_field_info.default = ExperienceEntry()
+o.entry_types_education_entry_field_info.default = EducationEntryOptions()
+o.entry_types_normal_entry_field_info.default = NormalEntryOptions()
+o.entry_types_experience_entry_field_info.default = ExperienceEntryOptions()
 
 
-class EntryTypes(o.EntryTypes):
-    education_entry: EducationEntry = o.entry_types_education_entry_field_info
-    normal_entry: NormalEntry = o.entry_types_normal_entry_field_info
-    experience_entry: ExperienceEntry = o.entry_types_experience_entry_field_info
+class EntryOptionsTypes(o.EntryTypes):
+    education_entry: EducationEntryOptions = o.entry_types_education_entry_field_info
+    normal_entry: NormalEntryOptions = o.entry_types_normal_entry_field_info
+    experience_entry: ExperienceEntryOptions = o.entry_types_experience_entry_field_info
 
 
 o.theme_options_text_field_info.default = Text()
 o.theme_options_colors_field_info.default = Colors()
 o.theme_options_links_field_info.default = Links()
 o.theme_options_highlights_field_info.default = Highlights()
-o.theme_options_entry_types_field_info.default = EntryTypes()
+o.theme_options_entry_types_field_info.default = EntryOptionsTypes()
 o.theme_options_section_titles_field_info.default = SectionTitles()
 o.theme_options_header_field_info.default = Header()
 o.theme_options_theme_field_info.default = "sb2nov"
@@ -125,5 +125,5 @@ class Sb2novThemeOptions(o.ThemeOptions):
     text: Text = o.theme_options_text_field_info
     colors: Colors = o.theme_options_colors_field_info
     highlights: Highlights = o.theme_options_highlights_field_info
-    entry_types: EntryTypes = o.theme_options_entry_types_field_info
+    entry_types: EntryOptionsTypes = o.theme_options_entry_types_field_info
     section_titles: SectionTitles = o.theme_options_section_titles_field_info

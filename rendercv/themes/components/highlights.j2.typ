@@ -2,7 +2,7 @@
   ((* if loop.first *))
   #v(design-highlights-top-margin);#highlights(
   ((*- endif -*))
-    [<<item>>], 
+    [<<item|replace("\n", "!!LINEBREAK!!")>>], 
   ((*- if loop.last -*))
   )
   ((* endif *))

@@ -10,7 +10,7 @@
     #v(-design-text-leading)
     ((* endif *))
 
-    <<main_column_second_row_template|replace("\n\n", "\n\n#v(-design-text-leading)")>>
+    <<main_column_second_row_template|replace("\n\n", "\n\n#v(-design-text-leading)")|replace("!!LINEBREAK!!", "\n\n")>>
     ((* endif *))
   ],
   right-content: [
@@ -39,7 +39,7 @@
     #v(-design-text-leading)
     ((* endif *))
 
-    <<main_column_second_row_template|replace("\n\n", "\n\n#v(-design-text-leading)")>>
+    <<main_column_second_row_template|replace("\n\n", "\n\n#v(-design-text-leading)")|replace("!!LINEBREAK!!", "\n\n")>>
     ((* endif *))
   ],
   right-content: [
@@ -74,7 +74,7 @@
     #v(-design-text-leading)
     ((* endif *))
   
-    <<main_column_second_row_template|replace("\n\n", "\n\n#v(-design-text-leading)")>>
+    <<main_column_second_row_template|replace("\n\n", "\n\n#v(-design-text-leading)")|replace("!!LINEBREAK!!", "\n\n")>>
     ((* endif *))
   ],
 )
@@ -100,7 +100,7 @@
     ((* if main_column_second_row_template *))
     #v(-design-text-leading)
     ((* endif *))
-    <<main_column_second_row_template|replace("\n\n", "\n\n#v(-design-text-leading)")>>
+    <<main_column_second_row_template|replace("\n\n", "\n\n#v(-design-text-leading)")|replace("!!LINEBREAK!!", "\n\n")>>
   ],
 )
 ((* endif *))

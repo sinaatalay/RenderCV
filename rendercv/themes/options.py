@@ -361,7 +361,7 @@ header_horizontal_space_connections_field_info = pydantic.Field(
     description="The space between the connections (like phone, email, and website).",
 )
 header_separator_between_connections_field_info = pydantic.Field(
-    default="",
+    default=None,
     title="Separator Between Connections",
     description="The separator between the connections in the header.",
 )
@@ -377,6 +377,19 @@ header_use_icons_for_connections_field_info = pydantic.Field(
         'If this option is "true", icons will be used for the connections'
         " (phone number, email, social networks, etc.) in the header."
     ),
+)
+header_use_urls_as_placeholders_for_connections_field_info = pydantic.Field(
+    default=False,
+    title="Use URLs as Placeholders for Connections",
+    description=(
+        'If this option is "true", the URLs will be used as placeholders for the'
+        " connections."
+    ),
+)
+make_connections_links_field_info = pydantic.Field(
+    default=True,
+    title="Make Connections Links",
+    description='If this option is "true", the connections will be clickable links.',
 )
 header_alignment_field_info = pydantic.Field(
     default="center",
@@ -403,9 +416,21 @@ class Header(RenderCVBaseModelWithoutExtraKeys):
         header_horizontal_space_connections_field_info
     )
     connections_font_family: FontFamily = header_connections_font_family_field_info
-    separator_between_connections: str = header_separator_between_connections_field_info
+    separator_between_connections: Optional[str] = (
+        header_separator_between_connections_field_info
+    )
     use_icons_for_connections: bool = header_use_icons_for_connections_field_info
+    use_urls_as_placeholders_for_connections: bool = (
+        header_use_urls_as_placeholders_for_connections_field_info
+    )
+    make_connections_links: bool = make_connections_links_field_info
     alignment: Alignment = header_alignment_field_info
+
+    @pydantic.field_validator("separator_between_connections")
+    def validate_separator_between_connections(cls, value: Optional[str]) -> str:
+        if value is None:
+            return ""
+        return value
 
 
 section_titles_font_family_field_info = pydantic.Field(
@@ -540,6 +565,11 @@ highlights_bullet_field_info = pydantic.Field(
     title="Bullet",
     description="The bullet used for the highlights and bullet entries.",
 )
+highlights_nested_bullet_field_info = pydantic.Field(
+    default="-",
+    title="Nested Bullet",
+    description="The bullet used for the nested highlights.",
+)
 highlights_top_margin_field_info = pydantic.Field(
     default="0.25cm",
     title="Top Margin",
@@ -571,6 +601,7 @@ class Highlights(RenderCVBaseModelWithoutExtraKeys):
     """Options related to highlights."""
 
     bullet: BulletPoint = highlights_bullet_field_info
+    nested_bullet: BulletPoint = highlights_nested_bullet_field_info
     top_margin: TypstDimension = highlights_top_margin_field_info
     left_margin: TypstDimension = highlights_left_margin_field_info
     vertical_space_between_highlights: TypstDimension = (
@@ -653,7 +684,7 @@ publication_entry_date_and_location_column_template_field_info = pydantic.Field(
 )
 
 
-class PublicationEntry(RenderCVBaseModelWithoutExtraKeys):
+class PublicationEntryOptions(RenderCVBaseModelWithoutExtraKeys):
     """Options related to publication entries."""
 
     main_column_first_row_template: str = (
@@ -711,7 +742,7 @@ class EducationEntryBase(RenderCVBaseModelWithoutExtraKeys):
     degree_column_width: TypstDimension = education_entry_degree_column_width_field_info
 
 
-class EducationEntry(EntryBaseWithDate, EducationEntryBase):
+class EducationEntryOptions(EntryBaseWithDate, EducationEntryBase):
     """Options related to education entries."""
 
 
@@ -733,7 +764,7 @@ class NormalEntryBase(RenderCVBaseModelWithoutExtraKeys):
     )
 
 
-class NormalEntry(EntryBaseWithDate, NormalEntryBase):
+class NormalEntryOptions(EntryBaseWithDate, NormalEntryBase):
     """Options related to normal entries."""
 
 
@@ -755,7 +786,7 @@ class ExperienceEntryBase(RenderCVBaseModelWithoutExtraKeys):
     )
 
 
-class ExperienceEntry(EntryBaseWithDate, ExperienceEntryBase):
+class ExperienceEntryOptions(EntryBaseWithDate, ExperienceEntryBase):
     """Options related to experience entries."""
 
 
@@ -769,34 +800,34 @@ one_line_entry_template_field_info = pydantic.Field(
 )
 
 
-class OneLineEntry(RenderCVBaseModelWithoutExtraKeys):
+class OneLineEntryOptions(RenderCVBaseModelWithoutExtraKeys):
     """Options related to one-line entries."""
 
     template: str = one_line_entry_template_field_info
 
 
 entry_types_one_line_entry_field_info = pydantic.Field(
-    default=OneLineEntry(),
+    default=OneLineEntryOptions(),
     title="One-Line Entry",
     description="Options related to one-line entries.",
 )
 entry_types_education_entry_field_info = pydantic.Field(
-    default=EducationEntry(),
+    default=EducationEntryOptions(),
     title="Education Entry",
     description="Options related to education entries.",
 )
 entry_types_normal_entry_field_info = pydantic.Field(
-    default=NormalEntry(),
+    default=NormalEntryOptions(),
     title="Normal Entry",
     description="Options related to normal entries.",
 )
 entry_types_experience_entry_field_info = pydantic.Field(
-    default=ExperienceEntry(),
+    default=ExperienceEntryOptions(),
     title="Experience Entry",
     description="Options related to experience entries.",
 )
 entry_types_publication_entry_field_info = pydantic.Field(
-    default=PublicationEntry(),
+    default=PublicationEntryOptions(),
     title="Publication Entry",
     description="Options related to publication entries.",
 )
@@ -805,11 +836,13 @@ entry_types_publication_entry_field_info = pydantic.Field(
 class EntryTypes(RenderCVBaseModelWithoutExtraKeys):
     """Options related to the templates."""
 
-    one_line_entry: OneLineEntry = entry_types_one_line_entry_field_info
-    education_entry: EducationEntry = entry_types_education_entry_field_info
-    normal_entry: NormalEntry = entry_types_normal_entry_field_info
-    experience_entry: ExperienceEntry = entry_types_experience_entry_field_info
-    publication_entry: PublicationEntry = entry_types_publication_entry_field_info
+    one_line_entry: OneLineEntryOptions = entry_types_one_line_entry_field_info
+    education_entry: EducationEntryOptions = entry_types_education_entry_field_info
+    normal_entry: NormalEntryOptions = entry_types_normal_entry_field_info
+    experience_entry: ExperienceEntryOptions = entry_types_experience_entry_field_info
+    publication_entry: PublicationEntryOptions = (
+        entry_types_publication_entry_field_info
+    )
 
 
 theme_options_theme_field_info = pydantic.Field(

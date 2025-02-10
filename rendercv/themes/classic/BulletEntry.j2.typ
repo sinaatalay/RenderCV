@@ -1,3 +1,1 @@
-#one-col-entry(
-  content: [- <<entry.bullet>>],
-)
+#one-col-entry(content: [#bullet-entry[<<entry.bullet>>]])

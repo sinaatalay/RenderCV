@@ -247,7 +247,11 @@ class TypstCompiler:
             cls.instance = super().__new__(cls)
             cls.instance.file_path = file_path
             cls.instance.compiler = typst.Compiler(
-                file_path, font_paths=rendercv_fonts.paths_to_font_folders
+                file_path,
+                font_paths=[
+                    *rendercv_fonts.paths_to_font_folders,
+                    pathlib.Path.cwd() / "fonts",
+                ],
             )
 
         return cls.instance

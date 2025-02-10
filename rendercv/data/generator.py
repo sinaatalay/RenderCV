@@ -11,6 +11,7 @@ from typing import Optional
 import pydantic
 import ruamel.yaml
 
+from .. import __version__
 from . import models, reader
 
 
@@ -111,6 +112,13 @@ def create_a_sample_yaml_input_file(
     data_model_as_dictionary = json.loads(data_model_as_json)
 
     yaml_string = dictionary_to_yaml(data_model_as_dictionary)
+
+    # Add a comment to the first line, for JSON Schema:
+    comment_to_add = (
+        "# yaml-language-server:"
+        f" $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v{__version__}/schema.json\n"
+    )
+    yaml_string = comment_to_add + yaml_string
 
     if input_file_path is not None:
         input_file_path.write_text(yaml_string, encoding="utf-8")

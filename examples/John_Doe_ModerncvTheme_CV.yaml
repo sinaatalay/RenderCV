@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.2/schema.json
 cv:
   name: John Doe
   location: Location
@@ -148,6 +149,8 @@ design:
     connections_font_family: Fontin
     separator_between_connections: ''
     use_icons_for_connections: true
+    use_urls_as_placeholders_for_connections: false
+    make_connections_links: true
     alignment: left
   section_titles:
     type: moderncv
@@ -169,6 +172,7 @@ design:
     show_time_spans_in: []
   highlights:
     bullet: •
+    nested_bullet: '-'
     top_margin: 0.25cm
     left_margin: 0cm
     vertical_space_between_highlights: 0.19cm
@@ -248,6 +252,6 @@ locale:
     - November
     - December
 rendercv_settings:
-  date: '2025-02-09'
+  date: '2025-02-16'
   render_command:
   bold_keywords: []

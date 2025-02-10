@@ -17,6 +17,7 @@ o.header_use_icons_for_connections_field_info.default = False
 o.header_name_bold_field_info.default = False
 o.header_name_font_size_field_info = "25pt"
 o.header_connections_font_family_field_info.default = "XCharter"
+o.header_use_urls_as_placeholders_for_connections_field_info.default = True
 
 
 class Header(o.Header):
@@ -27,6 +28,9 @@ class Header(o.Header):
         o.header_separator_between_connections_field_info
     )
     use_icons_for_connections: bool = o.header_use_icons_for_connections_field_info
+    use_urls_as_placeholders_for_connections: bool = (
+        o.header_use_urls_as_placeholders_for_connections_field_info
+    )
     connections_font_family: o.FontFamily = o.header_connections_font_family_field_info
 
 
@@ -115,7 +119,7 @@ o.education_entry_degree_column_template_field_info.default = None
 o.entry_base_with_date_date_and_location_column_template_field_info.default = "DATE"
 
 
-class EducationEntry(o.EducationEntry):
+class EducationEntryOptions(o.EducationEntryOptions):
     main_column_first_row_template: str = (
         o.education_entry_main_column_first_row_template_field_info
     )
@@ -132,7 +136,7 @@ o.normal_entry_main_column_first_row_template_field_info.default = (
 )
 
 
-class NormalEntry(o.NormalEntry):
+class NormalEntryOptions(o.NormalEntryOptions):
     main_column_first_row_template: str = (
         o.normal_entry_main_column_first_row_template_field_info
     )
@@ -146,7 +150,7 @@ o.experience_entry_main_column_first_row_template_field_info.default = (
 )
 
 
-class ExperienceEntry(o.ExperienceEntry):
+class ExperienceEntryOptions(o.ExperienceEntryOptions):
     main_column_first_row_template: str = (
         o.experience_entry_main_column_first_row_template_field_info
     )
@@ -155,15 +159,15 @@ class ExperienceEntry(o.ExperienceEntry):
     )
 
 
-o.entry_types_education_entry_field_info.default = EducationEntry()
-o.entry_types_normal_entry_field_info.default = NormalEntry()
-o.entry_types_experience_entry_field_info.default = ExperienceEntry()
+o.entry_types_education_entry_field_info.default = EducationEntryOptions()
+o.entry_types_normal_entry_field_info.default = NormalEntryOptions()
+o.entry_types_experience_entry_field_info.default = ExperienceEntryOptions()
 
 
-class EntryTypes(o.EntryTypes):
-    education_entry: EducationEntry = o.entry_types_education_entry_field_info
-    normal_entry: NormalEntry = o.entry_types_normal_entry_field_info
-    experience_entry: ExperienceEntry = o.entry_types_experience_entry_field_info
+class EntryOptionsTypes(o.EntryTypes):
+    education_entry: EducationEntryOptions = o.entry_types_education_entry_field_info
+    normal_entry: NormalEntryOptions = o.entry_types_normal_entry_field_info
+    experience_entry: ExperienceEntryOptions = o.entry_types_experience_entry_field_info
 
 
 o.theme_options_theme_field_info.default = "engineeringresumes"
@@ -171,7 +175,7 @@ o.theme_options_page_field_info.default = Page()
 o.theme_options_header_field_info.default = Header()
 o.theme_options_text_field_info.default = Text()
 o.theme_options_colors_field_info.default = Colors()
-o.theme_options_entry_types_field_info.default = EntryTypes()
+o.theme_options_entry_types_field_info.default = EntryOptionsTypes()
 o.theme_options_section_titles_field_info.default = SectionTitles()
 o.theme_options_highlights_field_info.default = Highlights()
 o.theme_options_links_field_info.default = Links()
@@ -187,5 +191,5 @@ class EngineeringresumesThemeOptions(o.ThemeOptions):
     colors: Colors = o.theme_options_colors_field_info
     links: Links = o.theme_options_links_field_info
     entries: Entries = o.theme_options_entries_field_info
-    entry_types: EntryTypes = o.theme_options_entry_types_field_info
+    entry_types: EntryOptionsTypes = o.theme_options_entry_types_field_info
     section_titles: SectionTitles = o.theme_options_section_titles_field_info
