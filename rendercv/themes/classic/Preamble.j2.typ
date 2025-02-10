@@ -41,6 +41,7 @@
 #let design-header-name-font-family = "<<design.header.name_font_family>>"
 #let design-header-name-font-size = <<design.header.name_font_size>>
 #let design-header-name-bold = <<design.header.name_bold|lower>>
+#let design-header-small-caps-for-name = <<design.header.small_caps_for_name|lower>>
 #let design-header-connections-font-family = "<<design.header.connections_font_family>>"
 #let design-header-vertical-space-between-name-and-connections = <<design.header.vertical_space_between_name_and_connections>>
 #let design-header-vertical-space-between-connections-and-first-section = <<design.header.vertical_space_between_connections_and_first_section>>
@@ -201,7 +202,11 @@
     size: design-header-name-font-size,
     fill: design-colors-name,
   )
-  #it.body
+  #if design-header-small-caps-for-name [
+    #smallcaps(it.body)
+  ] else [
+    #it.body
+  ]
   // Vertical space after the name
   #v(design-header-vertical-space-between-name-and-connections)
 ]

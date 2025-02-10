@@ -315,6 +315,7 @@ header:
   name_font_family: Source Sans 3
   name_font_size: 30pt
   name_bold: true
+  small_caps_for_name: false
   photo_width: 3.5cm
   vertical_space_between_name_and_connections: 0.7cm
   vertical_space_between_connections_and_first_section: 0.7cm

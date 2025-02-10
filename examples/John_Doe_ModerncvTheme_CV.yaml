@@ -140,6 +140,7 @@ design:
     name_font_family: Fontin
     name_font_size: 25pt
     name_bold: false
+    small_caps_for_name: false
     photo_width: 3.5cm
     vertical_space_between_name_and_connections: 0.7cm
     vertical_space_between_connections_and_first_section: 0.7cm
