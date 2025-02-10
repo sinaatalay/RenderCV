@@ -150,6 +150,11 @@ def generate_json_schema() -> dict:
                         field["oneOf"] = field["anyOf"]
                         del field["anyOf"]
 
+                if "description" in value and value["description"].startswith(
+                    "This class is"
+                ):
+                    del value["description"]
+
             return json_schema
 
     return models.RenderCVDataModel.model_json_schema(

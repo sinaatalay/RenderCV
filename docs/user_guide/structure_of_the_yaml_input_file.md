@@ -324,7 +324,7 @@ header:
   use_icons_for_connections: true
   alignment: center # (6)!
 section_titles:
-  type: with-parial-line # (7)!
+  type: with-partial-line # (7)!
   font_family: Source Sans 3
   font_size: 1.4em
   bold: true

@@ -122,7 +122,7 @@ PageSize = Literal[
 Alignment = Literal["left", "center", "right"]
 TextAlignment = Literal["left", "justified", "justified-with-no-hyphenation"]
 SectionTitleType = Optional[
-    Literal["with-parial-line", "with-full-line", "without-line", "moderncv"]
+    Literal["with-partial-line", "with-full-line", "without-line", "moderncv"]
 ]
 
 page_size_field_info = pydantic.Field(
@@ -416,7 +416,7 @@ section_titles_bold_field_info = pydantic.Field(
     description='If this option is "true", the section titles will be bold.',
 )
 section_titles_type_field_info = pydantic.Field(
-    default="with-parial-line",
+    default="with-partial-line",
     title="Line Type",
     description="The type of the section titles.",
 )
