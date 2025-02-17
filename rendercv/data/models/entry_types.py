@@ -207,6 +207,7 @@ def make_keywords_bold_in_a_string(string: str, keywords: list[str]) -> str:
 class OneLineEntry(RenderCVBaseModelWithExtraKeys, EntryType):
     """This class is the data model of `OneLineEntry`."""
 
+    model_config = pydantic.ConfigDict(title="One Line Entry")
     label: str = pydantic.Field(
         title="Label",
     )
@@ -230,6 +231,7 @@ class OneLineEntry(RenderCVBaseModelWithExtraKeys, EntryType):
 class BulletEntry(RenderCVBaseModelWithExtraKeys, EntryType):
     """This class is the data model of `BulletEntry`."""
 
+    model_config = pydantic.ConfigDict(title="Bullet Entry")
     bullet: str = pydantic.Field(
         title="Bullet",
     )
@@ -249,6 +251,8 @@ class BulletEntry(RenderCVBaseModelWithExtraKeys, EntryType):
 
 class NumberedEntry(RenderCVBaseModelWithExtraKeys, EntryType):
     """This class is the data model of `NumberedEntry`."""
+
+    model_config = pydantic.ConfigDict(title="Numbered Entry")
 
     number: str = pydantic.Field(
         title="Number",
@@ -270,6 +274,7 @@ class NumberedEntry(RenderCVBaseModelWithExtraKeys, EntryType):
 class ReversedNumberedEntry(RenderCVBaseModelWithExtraKeys, EntryType):
     """This class is the data model of `ReversedNumberedEntry`."""
 
+    model_config = pydantic.ConfigDict(title="Reversed Numbered Entry")
     reversed_number: str = pydantic.Field(
         title="Reversed Number",
     )
@@ -385,6 +390,8 @@ class PublicationEntry(EntryWithDate, PublicationEntryBase, EntryType):
     created by combining the `EntryWithDate` and `PublicationEntryBase` classes to have
     the fields in the correct order.
     """
+
+    model_config = pydantic.ConfigDict(title="Publication Entry")
 
 
 class EntryBase(EntryWithDate):
@@ -534,6 +541,8 @@ class NormalEntry(EntryBase, NormalEntryBase, EntryType):
     correct order.
     """
 
+    model_config = pydantic.ConfigDict(title="Normal Entry")
+
 
 class ExperienceEntryBase(RenderCVBaseModelWithExtraKeys):
     """This class is the parent class of the `ExperienceEntry` class."""
@@ -551,6 +560,8 @@ class ExperienceEntry(EntryBase, ExperienceEntryBase, EntryType):
     created by combining the `EntryBase` and `ExperienceEntryBase` classes to have the
     fields in the correct order.
     """
+
+    model_config = pydantic.ConfigDict(title="Experience Entry")
 
 
 class EducationEntryBase(RenderCVBaseModelWithExtraKeys):
@@ -575,6 +586,8 @@ class EducationEntry(EntryBase, EducationEntryBase, EntryType):
     created by combining the `EntryBase` and `EducationEntryBase` classes to have the
     fields in the correct order.
     """
+
+    model_config = pydantic.ConfigDict(title="Education Entry")
 
 
 # ======================================================================================

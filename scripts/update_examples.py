@@ -32,6 +32,9 @@ def generate_examples():
         )
         yaml_file_path = examples_directory_path / "John_Doe_CV.yaml"
 
+        # Remove the first line from the YAML file (Json Schema):
+        yaml_file_path.write_text(yaml_file_path.read_text().split("\n", 1)[1])
+
         # Rename John_Doe_CV.yaml
         proper_theme_name = theme.capitalize() + "Theme"
         new_yaml_file_path = (

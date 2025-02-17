@@ -191,6 +191,8 @@ class RenderCommandSettings(RenderCVBaseModelWithoutExtraKeys):
 class RenderCVSettings(RenderCVBaseModelWithoutExtraKeys):
     """This class is the data model of the RenderCV settings."""
 
+    model_config = pydantic.ConfigDict(title="RenderCV Settings")
+
     date: datetime.date = pydantic.Field(
         default=datetime.date.today(),
         title="Date",

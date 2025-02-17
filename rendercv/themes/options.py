@@ -97,7 +97,10 @@ def validate_font_family(font_family: str) -> str:
 
 FontFamily = Annotated[
     str,
-    pydantic.PlainValidator(validate_font_family),
+    pydantic.PlainValidator(
+        validate_font_family,
+        json_schema_input_type=Literal[tuple(available_font_families)],
+    ),
 ]
 BulletPoint = Literal["•", "◦", "-", "◆", "★", "■", "—", "○"]
 PageSize = Literal[
@@ -121,9 +124,10 @@ PageSize = Literal[
 ]
 Alignment = Literal["left", "center", "right"]
 TextAlignment = Literal["left", "justified", "justified-with-no-hyphenation"]
-SectionTitleType = Optional[
-    Literal["with-partial-line", "with-full-line", "without-line", "moderncv"]
+SectionTitleType = Literal[
+    "with-partial-line", "with-full-line", "without-line", "moderncv"
 ]
+
 
 page_size_field_info = pydantic.Field(
     default="us-letter",
@@ -168,6 +172,8 @@ page_show_last_updated_date_field_info = pydantic.Field(
 
 class Page(RenderCVBaseModelWithoutExtraKeys):
     """Options related to the page."""
+
+    model_config = pydantic.ConfigDict(title="Page")
 
     size: PageSize = page_size_field_info
     top_margin: TypstDimension = page_top_margin_field_info
@@ -232,6 +238,8 @@ colors_last_updated_date_and_page_numbering_field_info = pydantic.Field(
 class Colors(RenderCVBaseModelWithoutExtraKeys):
     """Color used throughout the CV."""
 
+    model_config = pydantic.ConfigDict(title="Colors")
+
     text: pydantic_color.Color = colors_text_field_info
     name: pydantic_color.Color = colors_name_field_info
     connections: pydantic_color.Color = colors_connections_field_info
@@ -283,6 +291,8 @@ text_date_and_location_column_alignment_field_info = pydantic.Field(
 class Text(RenderCVBaseModelWithoutExtraKeys):
     """Options related to text."""
 
+    model_config = pydantic.ConfigDict(title="Text")
+
     font_family: FontFamily = text_font_family_field_info
     font_size: TypstDimension = text_font_size_field_info
     leading: TypstDimension = text_leading_field_info
@@ -310,6 +320,7 @@ links_use_external_link_icon_field_info = pydantic.Field(
 class Links(RenderCVBaseModelWithoutExtraKeys):
     """Options related to links."""
 
+    model_config = pydantic.ConfigDict(title="Links")
     underline: bool = links_underline_field_info
     use_external_link_icon: bool = links_use_external_link_icon_field_info
 
@@ -401,6 +412,7 @@ header_alignment_field_info = pydantic.Field(
 class Header(RenderCVBaseModelWithoutExtraKeys):
     """Options related to headers."""
 
+    model_config = pydantic.ConfigDict(title="Header")
     name_font_family: FontFamily = header_name_font_family_field_info
     name_font_size: TypstDimension = header_name_font_size_field_info
     name_bold: bool = header_name_bold_field_info
@@ -450,7 +462,7 @@ section_titles_bold_field_info = pydantic.Field(
 )
 section_titles_type_field_info = pydantic.Field(
     default="with-partial-line",
-    title="Line Type",
+    title="Type",
     description="The type of the section titles.",
 )
 section_titles_line_thickness_field_info = pydantic.Field(
@@ -477,6 +489,8 @@ section_titles_small_caps_field_info = pydantic.Field(
 
 class SectionTitles(RenderCVBaseModelWithoutExtraKeys):
     """Options related to section titles."""
+
+    model_config = pydantic.ConfigDict(title="Section Titles")
 
     type: SectionTitleType = section_titles_type_field_info
     font_family: FontFamily = section_titles_font_family_field_info
@@ -546,6 +560,8 @@ entries_show_time_spans_in_field_info = pydantic.Field(
 class Entries(RenderCVBaseModelWithoutExtraKeys):
     """Options related to entries."""
 
+    model_config = pydantic.ConfigDict(title="Entries")
+
     date_and_location_width: TypstDimension = entries_date_and_location_width_field_info
     left_and_right_margin: TypstDimension = entries_left_and_right_margin_field_info
     horizontal_space_between_columns: TypstDimension = (
@@ -599,6 +615,8 @@ highlights_summary_left_margin_field_info = pydantic.Field(
 
 class Highlights(RenderCVBaseModelWithoutExtraKeys):
     """Options related to highlights."""
+
+    model_config = pydantic.ConfigDict(title="Highlights")
 
     bullet: BulletPoint = highlights_bullet_field_info
     nested_bullet: BulletPoint = highlights_nested_bullet_field_info
@@ -687,6 +705,8 @@ publication_entry_date_and_location_column_template_field_info = pydantic.Field(
 class PublicationEntryOptions(RenderCVBaseModelWithoutExtraKeys):
     """Options related to publication entries."""
 
+    model_config = pydantic.ConfigDict(title="Publication Entry Options")
+
     main_column_first_row_template: str = (
         publication_entry_main_column_first_row_template_field_info
     )
@@ -745,6 +765,8 @@ class EducationEntryBase(RenderCVBaseModelWithoutExtraKeys):
 class EducationEntryOptions(EntryBaseWithDate, EducationEntryBase):
     """Options related to education entries."""
 
+    model_config = pydantic.ConfigDict(title="Education Entry Options")
+
 
 normal_entry_main_column_first_row_template_field_info = pydantic.Field(
     default="**NAME**",
@@ -766,6 +788,8 @@ class NormalEntryBase(RenderCVBaseModelWithoutExtraKeys):
 
 class NormalEntryOptions(EntryBaseWithDate, NormalEntryBase):
     """Options related to normal entries."""
+
+    model_config = pydantic.ConfigDict(title="Normal Entry Options")
 
 
 experience_entry_main_column_first_row_template_field_info = pydantic.Field(
@@ -789,6 +813,8 @@ class ExperienceEntryBase(RenderCVBaseModelWithoutExtraKeys):
 class ExperienceEntryOptions(EntryBaseWithDate, ExperienceEntryBase):
     """Options related to experience entries."""
 
+    model_config = pydantic.ConfigDict(title="Experience Entry Options")
+
 
 one_line_entry_template_field_info = pydantic.Field(
     default="**LABEL:** DETAILS",
@@ -803,6 +829,7 @@ one_line_entry_template_field_info = pydantic.Field(
 class OneLineEntryOptions(RenderCVBaseModelWithoutExtraKeys):
     """Options related to one-line entries."""
 
+    model_config = pydantic.ConfigDict(title="One Line Entry Options")
     template: str = one_line_entry_template_field_info
 
 
@@ -836,6 +863,7 @@ entry_types_publication_entry_field_info = pydantic.Field(
 class EntryTypes(RenderCVBaseModelWithoutExtraKeys):
     """Options related to the templates."""
 
+    model_config = pydantic.ConfigDict(title="Entry Types")
     one_line_entry: OneLineEntryOptions = entry_types_one_line_entry_field_info
     education_entry: EducationEntryOptions = entry_types_education_entry_field_info
     normal_entry: NormalEntryOptions = entry_types_normal_entry_field_info
@@ -900,6 +928,7 @@ theme_options_entry_types_field_info = pydantic.Field(
 class ThemeOptions(RenderCVBaseModelWithoutExtraKeys):
     """Full design options."""
 
+    model_config = pydantic.ConfigDict(title="Theme Options")
     theme: Literal["tobeoverwritten"] = theme_options_theme_field_info
     page: Page = theme_options_page_field_info
     colors: Colors = theme_options_colors_field_info

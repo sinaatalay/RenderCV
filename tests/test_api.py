@@ -1,6 +1,3 @@
-import pathlib
-import tempfile
-
 import rendercv
 import rendercv.data
 
@@ -24,9 +21,9 @@ def test_create_contents_of_a_typst_file_with_errors(
     )
 
 
-def test_create_a_typst_file_from_a_yaml_string(input_file_path):
+def test_create_a_typst_file_from_a_yaml_string(input_file_path, tmp_path):
     yaml_string = input_file_path.read_text()
-    output_file_path = pathlib.Path(tempfile.mktemp(suffix=".typst"))
+    output_file_path = tmp_path / "output.typ"
     errors = rendercv.create_a_typst_file_from_a_yaml_string(
         yaml_string, output_file_path
     )
@@ -35,9 +32,9 @@ def test_create_a_typst_file_from_a_yaml_string(input_file_path):
 
 
 def test_create_a_typst_file_from_a_python_dictionary(
-    rendercv_data_as_python_dictionary,
+    rendercv_data_as_python_dictionary, tmp_path
 ):
-    output_file_path = pathlib.Path(tempfile.mktemp(suffix=".typst"))
+    output_file_path = tmp_path / "output.typ"
     errors = rendercv.create_a_typst_file_from_a_python_dictionary(
         rendercv_data_as_python_dictionary, output_file_path
     )
@@ -60,9 +57,9 @@ def test_create_contents_of_a_markdown_file_from_a_python_dictionary(
     assert isinstance(result, str)
 
 
-def test_create_a_markdown_file_from_a_yaml_string(input_file_path):
+def test_create_a_markdown_file_from_a_yaml_string(input_file_path, tmp_path):
     yaml_string = input_file_path.read_text()
-    output_file_path = pathlib.Path(tempfile.mktemp(suffix=".md"))
+    output_file_path = tmp_path / "output.md"
     errors = rendercv.create_a_markdown_file_from_a_yaml_string(
         yaml_string, output_file_path
     )
@@ -71,9 +68,9 @@ def test_create_a_markdown_file_from_a_yaml_string(input_file_path):
 
 
 def test_create_a_markdown_file_from_a_python_dictionary(
-    rendercv_data_as_python_dictionary,
+    rendercv_data_as_python_dictionary, tmp_path
 ):
-    output_file_path = pathlib.Path(tempfile.mktemp(suffix=".md"))
+    output_file_path = tmp_path / "output.md"
     errors = rendercv.create_a_markdown_file_from_a_python_dictionary(
         rendercv_data_as_python_dictionary, output_file_path
     )
@@ -81,9 +78,9 @@ def test_create_a_markdown_file_from_a_python_dictionary(
     assert output_file_path.exists()
 
 
-def test_create_an_html_file_from_a_yaml_string(input_file_path):
+def test_create_an_html_file_from_a_yaml_string(input_file_path, tmp_path):
     yaml_string = input_file_path.read_text()
-    output_file_path = pathlib.Path(tempfile.mktemp(suffix=".html"))
+    output_file_path = tmp_path / "output.html"
     errors = rendercv.create_an_html_file_from_a_yaml_string(
         yaml_string, output_file_path
     )
@@ -92,9 +89,9 @@ def test_create_an_html_file_from_a_yaml_string(input_file_path):
 
 
 def test_create_an_html_file_from_a_python_dictionary(
-    rendercv_data_as_python_dictionary,
+    rendercv_data_as_python_dictionary, tmp_path
 ):
-    output_file_path = pathlib.Path(tempfile.mktemp(suffix=".html"))
+    output_file_path = tmp_path / "output.html"
     errors = rendercv.create_an_html_file_from_a_python_dictionary(
         rendercv_data_as_python_dictionary, output_file_path
     )
@@ -102,16 +99,18 @@ def test_create_an_html_file_from_a_python_dictionary(
     assert output_file_path.exists()
 
 
-def test_create_a_pdf_from_a_yaml_string(input_file_path):
+def test_create_a_pdf_from_a_yaml_string(input_file_path, tmp_path):
     yaml_string = input_file_path.read_text()
-    output_file_path = pathlib.Path(tempfile.mktemp(suffix=".pdf"))
+    output_file_path = tmp_path / "output.pdf"
     errors = rendercv.create_a_pdf_from_a_yaml_string(yaml_string, output_file_path)
     assert errors is None
     assert output_file_path.exists()
 
 
-def test_create_a_pdf_from_a_python_dictionary(rendercv_data_as_python_dictionary):
-    output_file_path = pathlib.Path(tempfile.mktemp(suffix=".pdf"))
+def test_create_a_pdf_from_a_python_dictionary(
+    rendercv_data_as_python_dictionary, tmp_path
+):
+    output_file_path = tmp_path / "output.pdf"
     errors = rendercv.create_a_pdf_from_a_python_dictionary(
         rendercv_data_as_python_dictionary, output_file_path
     )

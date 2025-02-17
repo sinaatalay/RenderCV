@@ -107,9 +107,15 @@ def create_a_sample_yaml_input_file(
     # process easier. "cv.sections_input" exists for the convenience of the user.
     # Also, we don't want to show the cv.photo field in the Web app.
     data_model_as_json = data_model.model_dump_json(
-        exclude_none=False, by_alias=True, exclude={"cv": {"sections", "photo"}}
+        exclude_none=False,
+        by_alias=True,
+        exclude={
+            "cv": {"sections", "photo"},
+            "rendercv_settings": {"render_command"},
+        },
     )
     data_model_as_dictionary = json.loads(data_model_as_json)
+    data_model_as_dictionary["design"] = {"theme": theme}
 
     yaml_string = dictionary_to_yaml(data_model_as_dictionary)
 

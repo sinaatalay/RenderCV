@@ -65,8 +65,8 @@ def _create_a_file_from_something(
 
     with tempfile.TemporaryDirectory() as temp_dir:
         temporary_output_path = pathlib.Path(temp_dir)
-        typst_file = renderer(data_model, temporary_output_path)
-        shutil.move(typst_file, output_file_path)
+        file = renderer(data_model, temporary_output_path)
+        shutil.move(file, output_file_path)
 
     return None
 
@@ -350,7 +350,9 @@ def create_a_pdf_from_a_yaml_string(
     return _create_a_file_from_something(
         yaml_file_as_string,
         read_a_yaml_string_and_return_a_data_model,
-        renderer.create_a_typst_file,
+        lambda x, y: renderer.render_a_pdf_from_typst(
+            renderer.create_a_typst_file(x, y)
+        ),
         output_file_path,
     )
 
@@ -373,6 +375,8 @@ def create_a_pdf_from_a_python_dictionary(
     return _create_a_file_from_something(
         input_file_as_a_dict,
         read_a_python_dictionary_and_return_a_data_model,
-        renderer.create_a_typst_file,
+        lambda x, y: renderer.render_a_pdf_from_typst(
+            renderer.create_a_typst_file(x, y),
+        ),
         output_file_path,
     )

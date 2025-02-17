@@ -327,6 +327,9 @@ available_social_networks = get_args(SocialNetworkName)
 class SocialNetwork(RenderCVBaseModelWithoutExtraKeys):
     """This class is the data model of a social network."""
 
+    model_config = pydantic.ConfigDict(
+        title="Social Network",
+    )
     network: SocialNetworkName = pydantic.Field(
         title="Social Network",
     )
@@ -393,6 +396,9 @@ class SocialNetwork(RenderCVBaseModelWithoutExtraKeys):
 class CurriculumVitae(RenderCVBaseModelWithExtraKeys):
     """This class is the data model of the `cv` field."""
 
+    model_config = pydantic.ConfigDict(
+        title="CV",
+    )
     name: Optional[str] = pydantic.Field(
         default=None,
         title="Name",

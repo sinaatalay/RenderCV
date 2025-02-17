@@ -17,6 +17,8 @@ class Locale(RenderCVBaseModelWithoutExtraKeys):
     updates the `locale` dictionary.
     """
 
+    model_config = pydantic.ConfigDict(title="Locale")
+
     language: pydantic_extra_types.language_code.LanguageAlpha2 = pydantic.Field(
         default="en",  # type: ignore
         title="Language",

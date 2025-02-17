@@ -11,7 +11,7 @@
       "required": [
         "bullet"
       ],
-      "title": "BulletEntry",
+      "title": "Bullet Entry",
       "type": "object"
     },
     "ClassicThemeOptions": {
@@ -95,8 +95,7 @@
             "line_thickness": "0.5pt",
             "vertical_space_above": "0.5cm",
             "vertical_space_below": "0.3cm"
-          },
-          "title": "Section Titles"
+          }
         },
         "entries": {
           "$ref": "#/$defs/rendercv__themes__options__Entries",
@@ -157,7 +156,7 @@
           "title": "Templates"
         }
       },
-      "title": "ClassicThemeOptions",
+      "title": "Theme Options",
       "type": "object"
     },
     "CurriculumVitae": {
@@ -330,7 +329,7 @@
           ]
         }
       },
-      "title": "CurriculumVitae",
+      "title": "CV",
       "type": "object"
     },
     "EducationEntry": {
@@ -482,7 +481,7 @@
         "institution",
         "area"
       ],
-      "title": "EducationEntry",
+      "title": "Education Entry",
       "type": "object"
     },
     "EngineeringclassicThemeOptions": {
@@ -571,8 +570,7 @@
             "vertical_space_above": "0.5cm",
             "vertical_space_below": "0.3cm"
           },
-          "description": "Options related to section titles.",
-          "title": "Section Titles"
+          "description": "Options related to section titles."
         },
         "entries": {
           "$ref": "#/$defs/rendercv__themes__options__Entries",
@@ -635,7 +633,7 @@
           "title": "Templates"
         }
       },
-      "title": "EngineeringclassicThemeOptions",
+      "title": "Theme Options",
       "type": "object"
     },
     "EngineeringresumesThemeOptions": {
@@ -726,8 +724,7 @@
             "vertical_space_below": "0.3cm",
             "line_type": "with-full-line"
           },
-          "description": "Options related to section titles.",
-          "title": "Section Titles"
+          "description": "Options related to section titles."
         },
         "entries": {
           "$ref": "#/$defs/rendercv__themes__engineeringresumes__Entries",
@@ -791,7 +788,7 @@
           "title": "Templates"
         }
       },
-      "title": "EngineeringresumesThemeOptions",
+      "title": "Theme Options",
       "type": "object"
     },
     "EntryTypes": {
@@ -846,7 +843,7 @@
           "title": "Publication Entry"
         }
       },
-      "title": "EntryTypes",
+      "title": "Entry Types",
       "type": "object"
     },
     "ExperienceEntry": {
@@ -979,7 +976,7 @@
         "company",
         "position"
       ],
-      "title": "ExperienceEntry",
+      "title": "Experience Entry",
       "type": "object"
     },
     "Locale": {
@@ -1264,8 +1261,7 @@
             "vertical_space_above": "0.55cm",
             "vertical_space_below": "0.3cm"
           },
-          "description": "Options related to section titles.",
-          "title": "Section Titles"
+          "description": "Options related to section titles."
         },
         "entries": {
           "$ref": "#/$defs/rendercv__themes__moderncv__Entries",
@@ -1329,7 +1325,7 @@
           "title": "Templates"
         }
       },
-      "title": "ModerncvThemeOptions",
+      "title": "Theme Options",
       "type": "object"
     },
     "NormalEntry": {
@@ -1457,7 +1453,7 @@
       "required": [
         "name"
       ],
-      "title": "NormalEntry",
+      "title": "Normal Entry",
       "type": "object"
     },
     "NumberedEntry": {
@@ -1471,7 +1467,7 @@
       "required": [
         "number"
       ],
-      "title": "NumberedEntry",
+      "title": "Numbered Entry",
       "type": "object"
     },
     "OneLineEntry": {
@@ -1490,7 +1486,7 @@
         "label",
         "details"
       ],
-      "title": "OneLineEntry",
+      "title": "One Line Entry",
       "type": "object"
     },
     "OneLineEntryOptions": {
@@ -1504,7 +1500,7 @@
           "type": "string"
         }
       },
-      "title": "OneLineEntryOptions",
+      "title": "One Line Entry Options",
       "type": "object"
     },
     "PublicationEntry": {
@@ -1590,7 +1586,7 @@
         "title",
         "authors"
       ],
-      "title": "PublicationEntry",
+      "title": "Publication Entry",
       "type": "object"
     },
     "PublicationEntryOptions": {
@@ -1628,7 +1624,7 @@
           "type": "string"
         }
       },
-      "title": "PublicationEntryOptions",
+      "title": "Publication Entry Options",
       "type": "object"
     },
     "RenderCVSettings": {
@@ -1664,7 +1660,7 @@
           "type": "array"
         }
       },
-      "title": "RenderCVSettings",
+      "title": "RenderCV Settings",
       "type": "object"
     },
     "RenderCommandSettings": {
@@ -1827,7 +1823,7 @@
       "required": [
         "reversed_number"
       ],
-      "title": "ReversedNumberedEntry",
+      "title": "Reversed Numbered Entry",
       "type": "object"
     },
     "Sb2novThemeOptions": {
@@ -1917,8 +1913,7 @@
             "vertical_space_below": "0.3cm",
             "line_type": "with-full-line"
           },
-          "description": "Options related to section titles.",
-          "title": "Section Titles"
+          "description": "Options related to section titles."
         },
         "entries": {
           "$ref": "#/$defs/rendercv__themes__options__Entries",
@@ -1981,7 +1976,7 @@
           "title": "Templates"
         }
       },
-      "title": "Sb2novThemeOptions",
+      "title": "Theme Options",
       "type": "object"
     },
     "SocialNetwork": {
@@ -2015,7 +2010,7 @@
         "network",
         "username"
       ],
-      "title": "SocialNetwork",
+      "title": "Social Network",
       "type": "object"
     },
     "rendercv__themes__engineeringclassic__EducationEntryOptions": {
@@ -2059,7 +2054,7 @@
           "type": "string"
         }
       },
-      "title": "EducationEntryOptions",
+      "title": "Education Entry Options",
       "type": "object"
     },
     "rendercv__themes__engineeringclassic__EntryOptionsTypes": {
@@ -2116,7 +2111,7 @@
           "title": "Publication Entry"
         }
       },
-      "title": "EntryOptionsTypes",
+      "title": "Entry Types",
       "type": "object"
     },
     "rendercv__themes__engineeringclassic__ExperienceEntryOptions": {
@@ -2141,7 +2136,7 @@
           "type": "string"
         }
       },
-      "title": "ExperienceEntryOptions",
+      "title": "Experience Entry Options",
       "type": "object"
     },
     "rendercv__themes__engineeringclassic__Header": {
@@ -2150,7 +2145,27 @@
         "name_font_family": {
           "default": "Raleway",
           "description": "The font family of the name in the header.",
-          "title": "Name Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Name Font Family",
+          "type": "string"
         },
         "name_font_size": {
           "default": "30pt",
@@ -2197,7 +2212,27 @@
         "connections_font_family": {
           "default": "Raleway",
           "description": "The font family of the connections in the header.",
-          "title": "Connections Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Connections Font Family",
+          "type": "string"
         },
         "separator_between_connections": {
           "default": null,
@@ -2355,7 +2390,7 @@
           "type": "string"
         }
       },
-      "title": "NormalEntryOptions",
+      "title": "Normal Entry Options",
       "type": "object"
     },
     "rendercv__themes__engineeringclassic__Page": {
@@ -2432,26 +2467,39 @@
         "type": {
           "default": "with-partial-line",
           "description": "The type of the section titles.",
-          "title": "Line Type",
-          "oneOf": [
-            {
-              "enum": [
-                "with-partial-line",
-                "with-full-line",
-                "without-line",
-                "moderncv"
-              ],
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "enum": [
+            "with-partial-line",
+            "with-full-line",
+            "without-line",
+            "moderncv"
+          ],
+          "title": "Type",
+          "type": "string"
         },
         "font_family": {
           "default": "Raleway",
           "description": "The font family of the section titles.",
-          "title": "Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Font Family",
+          "type": "string"
         },
         "font_size": {
           "default": "1.4em",
@@ -2490,7 +2538,7 @@
           "type": "string"
         }
       },
-      "title": "SectionTitles",
+      "title": "Section Titles",
       "type": "object"
     },
     "rendercv__themes__engineeringclassic__Text": {
@@ -2499,7 +2547,27 @@
         "font_family": {
           "default": "Raleway",
           "description": "The font family.",
-          "title": "Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Font Family",
+          "type": "string"
         },
         "font_size": {
           "default": "10pt",
@@ -2665,7 +2733,7 @@
           "type": "string"
         }
       },
-      "title": "EducationEntryOptions",
+      "title": "Education Entry Options",
       "type": "object"
     },
     "rendercv__themes__engineeringresumes__Entries": {
@@ -2780,7 +2848,7 @@
           "title": "Publication Entry"
         }
       },
-      "title": "EntryOptionsTypes",
+      "title": "Entry Types",
       "type": "object"
     },
     "rendercv__themes__engineeringresumes__ExperienceEntryOptions": {
@@ -2805,7 +2873,7 @@
           "type": "string"
         }
       },
-      "title": "ExperienceEntryOptions",
+      "title": "Experience Entry Options",
       "type": "object"
     },
     "rendercv__themes__engineeringresumes__Header": {
@@ -2814,7 +2882,27 @@
         "name_font_family": {
           "default": "XCharter",
           "description": "The font family of the name in the header.",
-          "title": "Name Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Name Font Family",
+          "type": "string"
         },
         "name_font_size": {
           "default": "25pt",
@@ -2860,7 +2948,27 @@
         "connections_font_family": {
           "default": "XCharter",
           "description": "The font family of the connections in the header.",
-          "title": "Connections Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Connections Font Family",
+          "type": "string"
         },
         "separator_between_connections": {
           "default": "|",
@@ -3011,7 +3119,7 @@
           "type": "string"
         }
       },
-      "title": "NormalEntryOptions",
+      "title": "Normal Entry Options",
       "type": "object"
     },
     "rendercv__themes__engineeringresumes__Page": {
@@ -3088,26 +3196,39 @@
         "type": {
           "default": "with-partial-line",
           "description": "The type of the section titles.",
-          "title": "Line Type",
-          "oneOf": [
-            {
-              "enum": [
-                "with-partial-line",
-                "with-full-line",
-                "without-line",
-                "moderncv"
-              ],
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "enum": [
+            "with-partial-line",
+            "with-full-line",
+            "without-line",
+            "moderncv"
+          ],
+          "title": "Type",
+          "type": "string"
         },
         "font_family": {
           "default": "XCharter",
           "description": "The font family of the section titles.",
-          "title": "Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Font Family",
+          "type": "string"
         },
         "font_size": {
           "default": "1.2em",
@@ -3148,24 +3269,17 @@
         "line_type": {
           "default": "with-full-line",
           "description": "The type of the section titles.",
-          "title": "Line Type",
-          "oneOf": [
-            {
-              "enum": [
-                "with-partial-line",
-                "with-full-line",
-                "without-line",
-                "moderncv"
-              ],
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "enum": [
+            "with-partial-line",
+            "with-full-line",
+            "without-line",
+            "moderncv"
+          ],
+          "title": "Type",
+          "type": "string"
         }
       },
-      "title": "SectionTitles",
+      "title": "Section Titles",
       "type": "object"
     },
     "rendercv__themes__engineeringresumes__Text": {
@@ -3174,7 +3288,27 @@
         "font_family": {
           "default": "XCharter",
           "description": "The font family.",
-          "title": "Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Font Family",
+          "type": "string"
         },
         "font_size": {
           "default": "10pt",
@@ -3255,7 +3389,7 @@
           "type": "string"
         }
       },
-      "title": "EducationEntryOptions",
+      "title": "Education Entry Options",
       "type": "object"
     },
     "rendercv__themes__moderncv__Entries": {
@@ -3370,7 +3504,7 @@
           "title": "Publication Entry"
         }
       },
-      "title": "EntryOptionsTypes",
+      "title": "Entry Types",
       "type": "object"
     },
     "rendercv__themes__moderncv__ExperienceEntryOptions": {
@@ -3395,7 +3529,7 @@
           "type": "string"
         }
       },
-      "title": "ExperienceEntryOptions",
+      "title": "Experience Entry Options",
       "type": "object"
     },
     "rendercv__themes__moderncv__Header": {
@@ -3404,7 +3538,27 @@
         "name_font_family": {
           "default": "Fontin",
           "description": "The font family of the name in the header.",
-          "title": "Name Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Name Font Family",
+          "type": "string"
         },
         "name_font_size": {
           "default": "25pt",
@@ -3450,7 +3604,27 @@
         "connections_font_family": {
           "default": "Fontin",
           "description": "The font family of the connections in the header.",
-          "title": "Connections Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Connections Font Family",
+          "type": "string"
         },
         "separator_between_connections": {
           "default": null,
@@ -3608,7 +3782,7 @@
           "type": "string"
         }
       },
-      "title": "NormalEntryOptions",
+      "title": "Normal Entry Options",
       "type": "object"
     },
     "rendercv__themes__moderncv__SectionTitles": {
@@ -3617,26 +3791,39 @@
         "type": {
           "default": "moderncv",
           "description": "The type of the section titles.",
-          "title": "Line Type",
-          "oneOf": [
-            {
-              "enum": [
-                "with-partial-line",
-                "with-full-line",
-                "without-line",
-                "moderncv"
-              ],
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "enum": [
+            "with-partial-line",
+            "with-full-line",
+            "without-line",
+            "moderncv"
+          ],
+          "title": "Type",
+          "type": "string"
         },
         "font_family": {
           "default": "Fontin",
           "description": "The font family of the section titles.",
-          "title": "Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Font Family",
+          "type": "string"
         },
         "font_size": {
           "default": "1.4em",
@@ -3675,7 +3862,7 @@
           "type": "string"
         }
       },
-      "title": "SectionTitles",
+      "title": "Section Titles",
       "type": "object"
     },
     "rendercv__themes__moderncv__Text": {
@@ -3684,7 +3871,27 @@
         "font_family": {
           "default": "Fontin",
           "description": "The font family.",
-          "title": "Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Font Family",
+          "type": "string"
         },
         "font_size": {
           "default": "10pt",
@@ -3852,7 +4059,7 @@
           "type": "string"
         }
       },
-      "title": "EducationEntryOptions",
+      "title": "Education Entry Options",
       "type": "object"
     },
     "rendercv__themes__options__Entries": {
@@ -3937,7 +4144,7 @@
           "type": "string"
         }
       },
-      "title": "ExperienceEntryOptions",
+      "title": "Experience Entry Options",
       "type": "object"
     },
     "rendercv__themes__options__Header": {
@@ -3947,7 +4154,27 @@
         "name_font_family": {
           "default": "Source Sans 3",
           "description": "The font family of the name in the header.",
-          "title": "Name Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Name Font Family",
+          "type": "string"
         },
         "name_font_size": {
           "default": "30pt",
@@ -3994,7 +4221,27 @@
         "connections_font_family": {
           "default": "Source Sans 3",
           "description": "The font family of the connections in the header.",
-          "title": "Connections Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Connections Font Family",
+          "type": "string"
         },
         "separator_between_connections": {
           "default": null,
@@ -4155,7 +4402,7 @@
           "type": "string"
         }
       },
-      "title": "NormalEntryOptions",
+      "title": "Normal Entry Options",
       "type": "object"
     },
     "rendercv__themes__options__Page": {
@@ -4234,26 +4481,39 @@
         "type": {
           "default": "with-partial-line",
           "description": "The type of the section titles.",
-          "title": "Line Type",
-          "oneOf": [
-            {
-              "enum": [
-                "with-partial-line",
-                "with-full-line",
-                "without-line",
-                "moderncv"
-              ],
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "enum": [
+            "with-partial-line",
+            "with-full-line",
+            "without-line",
+            "moderncv"
+          ],
+          "title": "Type",
+          "type": "string"
         },
         "font_family": {
           "default": "Source Sans 3",
           "description": "The font family of the section titles.",
-          "title": "Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Font Family",
+          "type": "string"
         },
         "font_size": {
           "default": "1.4em",
@@ -4292,7 +4552,7 @@
           "type": "string"
         }
       },
-      "title": "SectionTitles",
+      "title": "Section Titles",
       "type": "object"
     },
     "rendercv__themes__options__Text": {
@@ -4302,7 +4562,27 @@
         "font_family": {
           "default": "Source Sans 3",
           "description": "The font family.",
-          "title": "Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Font Family",
+          "type": "string"
         },
         "font_size": {
           "default": "10pt",
@@ -4468,7 +4748,7 @@
           "type": "string"
         }
       },
-      "title": "EducationEntryOptions",
+      "title": "Education Entry Options",
       "type": "object"
     },
     "rendercv__themes__sb2nov__EntryOptionsTypes": {
@@ -4525,7 +4805,7 @@
           "title": "Publication Entry"
         }
       },
-      "title": "EntryOptionsTypes",
+      "title": "Entry Types",
       "type": "object"
     },
     "rendercv__themes__sb2nov__ExperienceEntryOptions": {
@@ -4550,7 +4830,7 @@
           "type": "string"
         }
       },
-      "title": "ExperienceEntryOptions",
+      "title": "Experience Entry Options",
       "type": "object"
     },
     "rendercv__themes__sb2nov__Header": {
@@ -4559,7 +4839,27 @@
         "name_font_family": {
           "default": "New Computer Modern",
           "description": "The font family of the name in the header.",
-          "title": "Name Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Name Font Family",
+          "type": "string"
         },
         "name_font_size": {
           "default": "30pt",
@@ -4606,7 +4906,27 @@
         "connections_font_family": {
           "default": "New Computer Modern",
           "description": "The font family of the connections in the header.",
-          "title": "Connections Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Connections Font Family",
+          "type": "string"
         },
         "separator_between_connections": {
           "default": null,
@@ -4764,7 +5084,7 @@
           "type": "string"
         }
       },
-      "title": "NormalEntryOptions",
+      "title": "Normal Entry Options",
       "type": "object"
     },
     "rendercv__themes__sb2nov__SectionTitles": {
@@ -4773,26 +5093,39 @@
         "type": {
           "default": "with-partial-line",
           "description": "The type of the section titles.",
-          "title": "Line Type",
-          "oneOf": [
-            {
-              "enum": [
-                "with-partial-line",
-                "with-full-line",
-                "without-line",
-                "moderncv"
-              ],
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "enum": [
+            "with-partial-line",
+            "with-full-line",
+            "without-line",
+            "moderncv"
+          ],
+          "title": "Type",
+          "type": "string"
         },
         "font_family": {
           "default": "New Computer Modern",
           "description": "The font family of the section titles.",
-          "title": "Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Font Family",
+          "type": "string"
         },
         "font_size": {
           "default": "1.4em",
@@ -4833,24 +5166,17 @@
         "line_type": {
           "default": "with-full-line",
           "description": "The type of the section titles.",
-          "title": "Line Type",
-          "oneOf": [
-            {
-              "enum": [
-                "with-partial-line",
-                "with-full-line",
-                "without-line",
-                "moderncv"
-              ],
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "enum": [
+            "with-partial-line",
+            "with-full-line",
+            "without-line",
+            "moderncv"
+          ],
+          "title": "Type",
+          "type": "string"
         }
       },
-      "title": "SectionTitles",
+      "title": "Section Titles",
       "type": "object"
     },
     "rendercv__themes__sb2nov__Text": {
@@ -4859,7 +5185,27 @@
         "font_family": {
           "default": "New Computer Modern",
           "description": "The font family.",
-          "title": "Font Family"
+          "enum": [
+            "Libertinus Serif",
+            "New Computer Modern",
+            "DejaVu Sans Mono",
+            "Mukta",
+            "Open Sans",
+            "Gentium Book Plus",
+            "Noto Sans",
+            "Lato",
+            "Source Sans 3",
+            "EB Garamond",
+            "Open Sauce Sans",
+            "Fontin",
+            "Roboto",
+            "Ubuntu",
+            "Poppins",
+            "Raleway",
+            "XCharter"
+          ],
+          "title": "Font Family",
+          "type": "string"
         },
         "font_size": {
           "default": "10pt",
@@ -4905,8 +5251,7 @@
   "properties": {
     "cv": {
       "$ref": "#/$defs/CurriculumVitae",
-      "description": "The content of the CV.",
-      "title": "CV"
+      "description": "The content of the CV."
     },
     "design": {
       "default": {
@@ -5057,8 +5402,7 @@
         "render_command": null,
         "bold_keywords": []
       },
-      "description": "The settings of the RenderCV.",
-      "title": "RenderCV Settings"
+      "description": "The settings of the RenderCV."
     }
   },
   "required": [],
