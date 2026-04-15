@@ -84,7 +84,7 @@ class TestBaseEntryWithComplexFields:
             )
 
     @settings(deadline=None)
-    @given(date=valid_date_strings())  # ty: ignore[missing-argument]
+    @given(date=valid_date_strings())
     def test_date_only_clears_start_and_end(self, date: str) -> None:
         entry = BaseEntryWithComplexFields(
             date=date, start_date="2020-01", end_date="2021-01"
@@ -103,7 +103,7 @@ class TestBaseEntryWithComplexFields:
         assert entry.end_date == "present"
 
     @settings(deadline=None)
-    @given(end_date=valid_date_strings())  # ty: ignore[missing-argument]
+    @given(end_date=valid_date_strings())
     def test_end_only_becomes_date(self, end_date: str) -> None:
         entry = BaseEntryWithComplexFields(end_date=end_date)
         assert entry.date == end_date
@@ -113,7 +113,7 @@ class TestBaseEntryWithComplexFields:
 
 class TestValidateArbitraryDate:
     @settings(deadline=None)
-    @given(date_str=valid_date_strings())  # ty: ignore[missing-argument]
+    @given(date_str=valid_date_strings())
     def test_valid_date_strings_pass_through(self, date_str: str) -> None:
         result = validate_arbitrary_date(date_str)
         assert result == date_str

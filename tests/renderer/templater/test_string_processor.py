@@ -144,7 +144,7 @@ class TestSubstitutePlaceholders:
         assert substitute_placeholders(text, {}) == text
 
     @settings(deadline=None)
-    @given(placeholders=placeholder_dicts())  # ty: ignore[missing-argument]
+    @given(placeholders=placeholder_dicts())
     def test_all_keys_absent_from_output(self, placeholders: dict[str, str]) -> None:
         assume(placeholders)
         keys = set(placeholders.keys())
@@ -171,19 +171,19 @@ class TestCleanUrl:
         assert clean_url(url) == expected_clean_url
 
     @settings(deadline=None)
-    @given(url=urls())  # ty: ignore[missing-argument]
+    @given(url=urls())
     def test_is_idempotent(self, url: str) -> None:
         assert clean_url(clean_url(url)) == clean_url(url)
 
     @settings(deadline=None)
-    @given(url=urls())  # ty: ignore[missing-argument]
+    @given(url=urls())
     def test_removes_protocol(self, url: str) -> None:
         result = clean_url(url)
         assert "https://" not in result
         assert "http://" not in result
 
     @settings(deadline=None)
-    @given(url=urls())  # ty: ignore[missing-argument]
+    @given(url=urls())
     def test_removes_trailing_slashes(self, url: str) -> None:
         result = clean_url(url)
         if result:

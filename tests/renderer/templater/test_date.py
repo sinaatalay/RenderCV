@@ -684,7 +684,7 @@ class TestComputeTimeSpanString:
 
     @settings(deadline=None)
     @given(
-        start=valid_date_strings(),  # ty: ignore[missing-argument]
+        start=valid_date_strings(),
         delta_days=st.integers(min_value=0, max_value=36500),
     )
     def test_non_negative_duration(self, start: str, delta_days: int) -> None:
@@ -733,7 +733,7 @@ class TestComputeTimeSpanString:
 
 class TestGetDateObject:
     @settings(deadline=None)
-    @given(date_str=valid_date_strings())  # ty: ignore[missing-argument]
+    @given(date_str=valid_date_strings())
     def test_valid_strings_produce_date_objects(self, date_str: str) -> None:
         result = get_date_object(date_str)
         assert isinstance(result, Date)

@@ -207,7 +207,9 @@ def test_raises_error_when_typst_returns_none_bytes(
 
 
 class TestGeneratePdfAndPngWithoutTypstOutput:
-    def test_generate_pdf(self, tmp_path: pathlib.Path, minimal_rendercv_model: RenderCVModel):
+    def test_generate_pdf(
+        self, tmp_path: pathlib.Path, minimal_rendercv_model: RenderCVModel
+    ):
         model = RenderCVModel(
             cv=minimal_rendercv_model.cv,
             design={"theme": "classic"},
@@ -229,7 +231,9 @@ class TestGeneratePdfAndPngWithoutTypstOutput:
         assert compile_input.suffix == ".typ"
         assert compile_input.name == "rendercv.typ"
 
-    def test_generate_png(self, tmp_path: pathlib.Path, minimal_rendercv_model: RenderCVModel):
+    def test_generate_png(
+        self, tmp_path: pathlib.Path, minimal_rendercv_model: RenderCVModel
+    ):
         model = RenderCVModel(
             cv=minimal_rendercv_model.cv,
             design={"theme": "classic"},

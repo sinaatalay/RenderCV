@@ -144,9 +144,7 @@ def cli_command_render(
         typer.Option(
             "--dont-generate-typst",
             "-notyp",
-            help=(
-                "If provided, the Typst file will not be written to disk."
-            ),
+            help=("If provided, the Typst file will not be written to disk."),
         ),
     ] = None,
     dont_generate_pdf: Annotated[

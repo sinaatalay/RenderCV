@@ -198,12 +198,12 @@ def render_entry_templates[EntryType: Entry](
     if "URL" in entry_fields:
         # entry is guaranteed to be an EntryModel (not str) here because str entries
         # have no URL field. The ty:ignore is due to Entry = EntryModel | str union.
-        entry_fields["URL"] = process_url(entry)  # ty: ignore[invalid-argument-type]
+        entry_fields["URL"] = process_url(entry)
 
     if "DOI" in entry_fields:
         # Same as above: entry is an EntryModel with doi/url fields.
-        entry_fields["URL"] = process_url(entry)  # ty: ignore[invalid-argument-type]
-        entry_fields["DOI"] = process_doi(entry)  # ty: ignore[invalid-argument-type]
+        entry_fields["URL"] = process_url(entry)
+        entry_fields["DOI"] = process_doi(entry)
 
     if "SUMMARY" in entry_fields:
         summary_is_standalone = any(

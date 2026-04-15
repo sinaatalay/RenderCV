@@ -77,7 +77,7 @@ class TestTypstDimension:
         assert result == dimension
 
     @settings(deadline=None)
-    @given(dim=typst_dimensions())  # ty: ignore[missing-argument]
+    @given(dim=typst_dimensions())
     def test_accepts_random_valid_dimensions(self, dim: str) -> None:
         assert validate_typst_dimension(dim) == dim
 
