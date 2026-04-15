@@ -6,6 +6,22 @@ from .path_resolver import resolve_rendercv_file_path
 from .templater.templater import render_full_template
 
 
+def generate_typst_contents(rendercv_model: RenderCVModel) -> str:
+    """Generate Typst source contents from CV model via Jinja2 templates.
+
+    Why:
+        PDF and PNG rendering can compile Typst without writing a `.typ` file.
+        Exposing shared content generation avoids duplicated template rendering logic.
+
+    Args:
+        rendercv_model: Validated CV model with content and design.
+
+    Returns:
+        Generated Typst source as a string.
+    """
+    return render_full_template(rendercv_model, "typst")
+
+
 def generate_typst(rendercv_model: RenderCVModel) -> pathlib.Path | None:
     """Generate Typst source file from CV model via Jinja2 templates.
 
@@ -25,6 +41,5 @@ def generate_typst(rendercv_model: RenderCVModel) -> pathlib.Path | None:
     typst_path = resolve_rendercv_file_path(
         rendercv_model, rendercv_model.settings.render_command.typst_path
     )
-    typst_contents = render_full_template(rendercv_model, "typst")
-    typst_path.write_text(typst_contents, encoding="utf-8")
+    typst_path.write_text(generate_typst_contents(rendercv_model), encoding="utf-8")
     return typst_path

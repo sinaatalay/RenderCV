@@ -204,3 +204,50 @@ def test_raises_error_when_typst_returns_none_bytes(
         pytest.raises(RenderCVInternalError, match="Typst compiler returned None"),
     ):
         generate_png(model, typst_path)
+
+
+class TestGeneratePdfAndPngWithoutTypstOutput:
+    def test_generate_pdf(self, tmp_path: pathlib.Path, minimal_rendercv_model: RenderCVModel):
+        model = RenderCVModel(
+            cv=minimal_rendercv_model.cv,
+            design={"theme": "classic"},
+            locale=minimal_rendercv_model.locale,
+            settings=minimal_rendercv_model.settings,
+        )
+        model.settings.render_command.dont_generate_typst = True
+        model.settings.render_command.pdf_path = tmp_path / "John_Doe_CV.pdf"
+
+        mock_compiler = MagicMock()
+        with patch(
+            "rendercv.renderer.pdf_png.get_typst_compiler", return_value=mock_compiler
+        ):
+            result = generate_pdf(model, None)
+
+        assert result == tmp_path / "John_Doe_CV.pdf"
+        compile_input = mock_compiler.compile.call_args.kwargs["input"]
+        assert isinstance(compile_input, pathlib.Path)
+        assert compile_input.suffix == ".typ"
+        assert compile_input.name == "rendercv.typ"
+
+    def test_generate_png(self, tmp_path: pathlib.Path, minimal_rendercv_model: RenderCVModel):
+        model = RenderCVModel(
+            cv=minimal_rendercv_model.cv,
+            design={"theme": "classic"},
+            locale=minimal_rendercv_model.locale,
+            settings=minimal_rendercv_model.settings,
+        )
+        model.settings.render_command.dont_generate_typst = True
+        model.settings.render_command.png_path = tmp_path / "John_Doe_CV.png"
+
+        mock_compiler = MagicMock()
+        mock_compiler.compile.return_value = [b"png1"]
+        with patch(
+            "rendercv.renderer.pdf_png.get_typst_compiler", return_value=mock_compiler
+        ):
+            result = generate_png(model, None)
+
+        assert result == [tmp_path / "John_Doe_CV_1.png"]
+        compile_input = mock_compiler.compile.call_args.kwargs["input"]
+        assert isinstance(compile_input, pathlib.Path)
+        assert compile_input.suffix == ".typ"
+        assert compile_input.name == "rendercv.typ"

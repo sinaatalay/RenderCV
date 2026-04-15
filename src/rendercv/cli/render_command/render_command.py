@@ -145,8 +145,7 @@ def cli_command_render(
             "--dont-generate-typst",
             "-notyp",
             help=(
-                "If provided, the Typst file will not be generated. Disabling Typst"
-                " generation implicitly disables PDF and PNG."
+                "If provided, the Typst file will not be written to disk."
             ),
         ),
     ] = None,

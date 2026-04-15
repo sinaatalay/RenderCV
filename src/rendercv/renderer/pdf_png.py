@@ -1,4 +1,5 @@
 import atexit
+import contextlib
 import functools
 import pathlib
 import shutil
@@ -12,6 +13,36 @@ from rendercv.exception import RenderCVInternalError
 from rendercv.schema.models.rendercv_model import RenderCVModel
 
 from .path_resolver import resolve_rendercv_file_path
+from .typst import generate_typst_contents
+
+
+@contextlib.contextmanager
+def get_typst_source_path(
+    rendercv_model: RenderCVModel, typst_path: pathlib.Path | None
+):
+    """Provide a Typst file path for compilation, creating a temporary one if needed.
+
+    Why:
+        Users may disable writing the `.typ` output file while still requesting PDF/PNG.
+        In that case, the compiler still needs a Typst source file path.
+
+    Args:
+        rendercv_model: CV model used to generate Typst contents.
+        typst_path: Existing Typst path when `.typ` output is enabled.
+
+    Yields:
+        Path to Typst source file that exists for the duration of compilation.
+    """
+    if typst_path is not None:
+        yield typst_path
+        return
+
+    with tempfile.TemporaryDirectory(prefix="rendercv-typst-") as temporary_directory:
+        temporary_typst_path = pathlib.Path(temporary_directory) / "rendercv.typ"
+        temporary_typst_path.write_text(
+            generate_typst_contents(rendercv_model), encoding="utf-8"
+        )
+        yield temporary_typst_path
 
 
 def generate_pdf(
@@ -31,16 +62,17 @@ def generate_pdf(
     Returns:
         Path to generated PDF file, or None if generation disabled.
     """
-    if rendercv_model.settings.render_command.dont_generate_pdf or typst_path is None:
+    if rendercv_model.settings.render_command.dont_generate_pdf:
         return None
     pdf_path = resolve_rendercv_file_path(
         rendercv_model, rendercv_model.settings.render_command.pdf_path
     )
-    typst_compiler = get_typst_compiler(
-        rendercv_model._input_file_path, typst_path.parent
-    )
-    copy_photo_next_to_typst_file(rendercv_model, typst_path)
-    typst_compiler.compile(input=typst_path, format="pdf", output=pdf_path)
+    with get_typst_source_path(rendercv_model, typst_path) as source_typst_path:
+        typst_compiler = get_typst_compiler(
+            rendercv_model._input_file_path, source_typst_path.parent
+        )
+        copy_photo_next_to_typst_file(rendercv_model, source_typst_path)
+        typst_compiler.compile(input=source_typst_path, format="pdf", output=pdf_path)
 
     return pdf_path
 
@@ -61,7 +93,7 @@ def generate_png(
     Returns:
         List of paths to generated PNG files, or None if generation disabled.
     """
-    if rendercv_model.settings.render_command.dont_generate_png or typst_path is None:
+    if rendercv_model.settings.render_command.dont_generate_png:
         return None
     png_path = resolve_rendercv_file_path(
         rendercv_model, rendercv_model.settings.render_command.png_path
@@ -72,11 +104,12 @@ def generate_png(
         if existing_png_file.is_file():
             existing_png_file.unlink()
 
-    typst_compiler = get_typst_compiler(
-        rendercv_model._input_file_path, typst_path.parent
-    )
-    copy_photo_next_to_typst_file(rendercv_model, typst_path)
-    png_files_bytes = typst_compiler.compile(input=typst_path, format="png")
+    with get_typst_source_path(rendercv_model, typst_path) as source_typst_path:
+        typst_compiler = get_typst_compiler(
+            rendercv_model._input_file_path, source_typst_path.parent
+        )
+        copy_photo_next_to_typst_file(rendercv_model, source_typst_path)
+        png_files_bytes = typst_compiler.compile(input=source_typst_path, format="png")
 
     if not isinstance(png_files_bytes, list):
         png_files_bytes = [png_files_bytes]
