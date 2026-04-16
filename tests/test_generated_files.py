@@ -7,7 +7,6 @@ Why:
     every PR instead of silently regenerating in CI.
 """
 
-import json
 import pathlib
 import subprocess
 import sys
@@ -43,7 +42,7 @@ def test_schema_json_is_up_to_date() -> None:
     # Restore original content
     schema_path.write_text(before, encoding="utf-8")
 
-    assert json.loads(before) == json.loads(after), (
+    assert before == after, (
         "schema.json is stale. Run `just update-schema` to regenerate."
     )
 

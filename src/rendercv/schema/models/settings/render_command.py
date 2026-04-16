@@ -101,8 +101,8 @@ class RenderCommand(BaseModelWithoutExtraKeys):
         default=False,
         title="Don't Generate Typst",
         description=(
-            "Skip writing the Typst file to disk. PDF and PNG generation can still run"
-            " if enabled. The default value is `false`."
+            "Skip Typst generation. This also disables PDF and PNG generation. The"
+            " default value is `false`."
         ),
     )
     dont_generate_pdf: bool = pydantic.Field(
