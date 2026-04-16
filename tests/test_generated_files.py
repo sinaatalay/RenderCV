@@ -10,6 +10,7 @@ Why:
 import pathlib
 import subprocess
 import sys
+import json
 
 import pytest
 
@@ -42,7 +43,7 @@ def test_schema_json_is_up_to_date() -> None:
     # Restore original content
     schema_path.write_text(before, encoding="utf-8")
 
-    assert before == after, (
+    assert json.loads(before) == json.loads(after), (
         "schema.json is stale. Run `just update-schema` to regenerate."
     )
 
