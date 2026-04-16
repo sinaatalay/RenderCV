@@ -7,10 +7,10 @@ Why:
     every PR instead of silently regenerating in CI.
 """
 
+import json
 import pathlib
 import subprocess
 import sys
-import json
 
 import pytest
 
