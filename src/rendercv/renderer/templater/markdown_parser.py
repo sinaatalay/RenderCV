@@ -164,7 +164,9 @@ def markdown_to_typst(markdown_string: str) -> str:
         emphasis markers on adjacent lines from interacting in the Markdown
         parser (single-newline-separated lines form one paragraph in Markdown,
         causing cross-line marker interference). Admonition blocks are kept
-        together since they span multiple lines by design.
+        together since they span multiple lines by design. Leading whitespace
+        on each line is preserved so that indented nested list items produced
+        by entry template processing retain their depth in the Typst output.
 
     Args:
         markdown_string: Markdown content.
@@ -186,8 +188,10 @@ def markdown_to_typst(markdown_string: str) -> str:
             md.reset()
             result_parts.append(md.convert("\n".join(block)))
         else:
+            indent = len(lines[i]) - len(lines[i].lstrip())
             md.reset()
-            result_parts.append(md.convert(lines[i]))
+            converted = md.convert(lines[i])
+            result_parts.append(" " * indent + converted)
             i += 1
     return "\n".join(result_parts)
 
