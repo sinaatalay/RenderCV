@@ -38,7 +38,7 @@ jobs:
         run: just build-docs
 
       - name: Upload the website as an artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
