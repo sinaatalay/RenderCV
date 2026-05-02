@@ -6,6 +6,7 @@
 - Website: [example.com](https://example.com/)
 - LinkedIn: [johndoe](https://linkedin.com/in/johndoe)
 - GitHub: [johndoe](https://github.com/johndoe)
+- HuggingFace: [johndoe](https://huggingface.co/johndoe)
 - IMDB: [nm0000001](https://imdb.com/name/nm0000001)
 - Instagram: [johndoe](https://instagram.com/johndoe)
 - ORCID: [0000-0000-0000-0000](https://orcid.org/0000-0000-0000-0000)

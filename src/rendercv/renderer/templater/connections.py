@@ -13,6 +13,7 @@ fontawesome_icons = {
     "LinkedIn": "linkedin",
     "GitHub": "github",
     "GitLab": "gitlab",
+    "HuggingFace": "hugging-face",
     "IMDB": "imdb",
     "Instagram": "instagram",
     "Mastodon": "mastodon",

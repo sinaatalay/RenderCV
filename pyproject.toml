@@ -62,7 +62,7 @@ full = [
   "typer>=0.24.1",  # Command-line interface
   "watchdog>=6.0.0",  # Monitor files for updates
   "typst>=0.14.8",  # Render PDF from Typst source files
-  "rendercv-fonts>=0.5.1",  # Font files for RenderCV
+  "rendercv-fonts>=0.5.2",  # Font files for RenderCV
   "packaging>=26.0",  # For version checking
 ]
 
