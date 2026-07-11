@@ -89,10 +89,37 @@ class TestCliCommandRender:
                 ],
                 ["John_Doe_CV.html"],
             ),
-            # dont_generate_typst: skips Typst, PDF, and PNG
+            # dont_generate_typst: skips only the standalone Typst file;
+            # PDF/PNG compilation still happens from the rendered Typst
+            # source, since it doesn't depend on that file being persisted.
             (
                 False,
                 {"dont_generate_typst": True},
+                [
+                    "John_Doe_CV.pdf",
+                    "John_Doe_CV_1.png",
+                    "John_Doe_CV.md",
+                    "John_Doe_CV.html",
+                ],
+                ["John_Doe_CV.typ"],
+            ),
+            # dont_generate_typst + dont_generate_png: skips Typst and PNG,
+            # but PDF is still generated (reproduces issue #730).
+            (
+                False,
+                {"dont_generate_typst": True, "dont_generate_png": True},
+                ["John_Doe_CV.pdf", "John_Doe_CV.md", "John_Doe_CV.html"],
+                ["John_Doe_CV.typ", "John_Doe_CV_1.png"],
+            ),
+            # dont_generate_typst + dont_generate_pdf + dont_generate_png:
+            # nothing Typst-related is generated at all.
+            (
+                False,
+                {
+                    "dont_generate_typst": True,
+                    "dont_generate_pdf": True,
+                    "dont_generate_png": True,
+                },
                 ["John_Doe_CV.md", "John_Doe_CV.html"],
                 ["John_Doe_CV.typ", "John_Doe_CV.pdf", "John_Doe_CV_1.png"],
             ),

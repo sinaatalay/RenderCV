@@ -3307,7 +3307,7 @@
         },
         "dont_generate_typst": {
           "default": false,
-          "description": "Skip Typst generation. This also disables PDF and PNG generation. The default value is `false`.",
+          "description": "Skip persisting the standalone Typst file. PDF and PNG generation are unaffected and still compile from Typst source internally. The default value is `false`.",
           "title": "Don't Generate Typst",
           "type": "boolean"
         },
