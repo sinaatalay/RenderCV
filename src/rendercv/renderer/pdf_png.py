@@ -1,9 +1,11 @@
 import atexit
+import contextlib
 import functools
 import pathlib
 import shutil
 import tempfile
 import tomllib
+from collections.abc import Iterator
 
 import rendercv_fonts
 import typst
@@ -12,6 +14,45 @@ from rendercv.exception import RenderCVInternalError
 from rendercv.schema.models.rendercv_model import RenderCVModel
 
 from .path_resolver import resolve_rendercv_file_path
+from .templater.templater import render_full_template
+
+
+@contextlib.contextmanager
+def ensure_typst_source_for_compilation(
+    rendercv_model: RenderCVModel, typst_path: pathlib.Path | None
+) -> Iterator[pathlib.Path]:
+    """Guarantee a Typst source file on disk for the compiler to read from.
+
+    Why:
+        `dont_generate_typst` only controls whether the standalone `.typ`
+        file is persisted as a user-facing artifact (see `generate_typst`).
+        It must not prevent PDF/PNG compilation, which needs Typst source
+        content on disk regardless of whether that content was persisted at
+        the user-facing path. When no persisted file exists (`typst_path` is
+        None), the Typst source is rendered fresh and written to a private
+        temporary file solely so the compiler has something to read. That
+        temporary file (and its directory) only needs to exist for the
+        duration of the compile call, so it's scoped as a context manager
+        and removed as soon as the caller's `with` block exits, whether
+        compilation succeeded or raised.
+
+    Args:
+        rendercv_model: CV model to render Typst source from if needed.
+        typst_path: Path to an already-persisted Typst file, or None if
+            `dont_generate_typst` suppressed that artifact.
+
+    Yields:
+        Path to a Typst source file suitable for compilation.
+    """
+    if typst_path is not None:
+        yield typst_path
+        return
+
+    typst_contents = render_full_template(rendercv_model, "typst")
+    with tempfile.TemporaryDirectory(prefix="rendercv-typst-") as temp_dir:
+        temp_typst_path = pathlib.Path(temp_dir) / "cv.typ"
+        temp_typst_path.write_text(typst_contents, encoding="utf-8")
+        yield temp_typst_path
 
 
 def generate_pdf(
@@ -26,21 +67,26 @@ def generate_pdf(
 
     Args:
         rendercv_model: CV model for path resolution and photo handling.
-        typst_path: Path to Typst source file to compile.
+        typst_path: Path to Typst source file to compile, or None if the
+            standalone `.typ` file wasn't persisted (`dont_generate_typst`);
+            in that case, source is rendered on the fly for compilation.
 
     Returns:
         Path to generated PDF file, or None if generation disabled.
     """
-    if rendercv_model.settings.render_command.dont_generate_pdf or typst_path is None:
+    if rendercv_model.settings.render_command.dont_generate_pdf:
         return None
-    pdf_path = resolve_rendercv_file_path(
-        rendercv_model, rendercv_model.settings.render_command.pdf_path
-    )
-    typst_compiler = get_typst_compiler(
-        rendercv_model._input_file_path, typst_path.parent
-    )
-    copy_photo_next_to_typst_file(rendercv_model, typst_path)
-    typst_compiler.compile(input=typst_path, format="pdf", output=pdf_path)
+    with ensure_typst_source_for_compilation(
+        rendercv_model, typst_path
+    ) as resolved_typst_path:
+        pdf_path = resolve_rendercv_file_path(
+            rendercv_model, rendercv_model.settings.render_command.pdf_path
+        )
+        typst_compiler = get_typst_compiler(
+            rendercv_model._input_file_path, resolved_typst_path.parent
+        )
+        copy_photo_next_to_typst_file(rendercv_model, resolved_typst_path)
+        typst_compiler.compile(input=resolved_typst_path, format="pdf", output=pdf_path)
 
     return pdf_path
 
@@ -56,27 +102,34 @@ def generate_png(
 
     Args:
         rendercv_model: CV model for path resolution and photo handling.
-        typst_path: Path to Typst source file to compile.
+        typst_path: Path to Typst source file to compile, or None if the
+            standalone `.typ` file wasn't persisted (`dont_generate_typst`);
+            in that case, source is rendered on the fly for compilation.
 
     Returns:
         List of paths to generated PNG files, or None if generation disabled.
     """
-    if rendercv_model.settings.render_command.dont_generate_png or typst_path is None:
+    if rendercv_model.settings.render_command.dont_generate_png:
         return None
-    png_path = resolve_rendercv_file_path(
-        rendercv_model, rendercv_model.settings.render_command.png_path
-    )
+    with ensure_typst_source_for_compilation(
+        rendercv_model, typst_path
+    ) as resolved_typst_path:
+        png_path = resolve_rendercv_file_path(
+            rendercv_model, rendercv_model.settings.render_command.png_path
+        )
 
-    pattern = f"{png_path.stem}_*.png"
-    for existing_png_file in png_path.parent.glob(pattern):
-        if existing_png_file.is_file():
-            existing_png_file.unlink()
+        pattern = f"{png_path.stem}_*.png"
+        for existing_png_file in png_path.parent.glob(pattern):
+            if existing_png_file.is_file():
+                existing_png_file.unlink()
 
-    typst_compiler = get_typst_compiler(
-        rendercv_model._input_file_path, typst_path.parent
-    )
-    copy_photo_next_to_typst_file(rendercv_model, typst_path)
-    png_files_bytes = typst_compiler.compile(input=typst_path, format="png")
+        typst_compiler = get_typst_compiler(
+            rendercv_model._input_file_path, resolved_typst_path.parent
+        )
+        copy_photo_next_to_typst_file(rendercv_model, resolved_typst_path)
+        png_files_bytes = typst_compiler.compile(
+            input=resolved_typst_path, format="png"
+        )
 
     if not isinstance(png_files_bytes, list):
         png_files_bytes = [png_files_bytes]

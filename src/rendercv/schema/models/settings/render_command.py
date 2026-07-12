@@ -101,7 +101,8 @@ class RenderCommand(BaseModelWithoutExtraKeys):
         default=False,
         title="Don't Generate Typst",
         description=(
-            "Skip Typst generation. This also disables PDF and PNG generation. The"
+            "Skip persisting the standalone Typst file. PDF and PNG generation are"
+            " unaffected and still compile from Typst source internally. The"
             " default value is `false`."
         ),
     )
