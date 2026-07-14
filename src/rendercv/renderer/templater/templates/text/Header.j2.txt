@@ -1,0 +1,23 @@
+{% if cv.name %}
+{% set header_title = cv.name ~ "'s CV" %}
+{{ header_title }}
+{{ "=" * header_title|length }}
+{% endif %}
+
+{% if cv.phone %}
+- Phone: {{cv.phone|replace("tel:", "")|replace("-"," ")}}
+{% endif %}
+{% if cv.email %}
+- Email: {{cv.email}}
+{% endif %}
+{% if cv.location %}
+- Location: {{cv.location}}
+{% endif %}
+{% if cv.website %}
+- Website: {{cv.website}}
+{% endif %}
+{% if cv.social_networks %}
+    {% for network in cv.social_networks %}
+- {{network.network}}: {{network.url}}
+    {% endfor %}
+{% endif %}

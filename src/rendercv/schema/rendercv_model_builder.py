@@ -29,11 +29,13 @@ class BuildRendercvModelArguments(TypedDict, total=False):
     typst_path: pathlib.Path | str | None
     pdf_path: pathlib.Path | str | None
     markdown_path: pathlib.Path | str | None
+    text_path: pathlib.Path | str | None
     html_path: pathlib.Path | str | None
     png_path: pathlib.Path | str | None
     dont_generate_typst: bool | None
     dont_generate_html: bool | None
     dont_generate_markdown: bool | None
+    dont_generate_text: bool | None
     dont_generate_pdf: bool | None
     dont_generate_png: bool | None
     overrides: dict[str, str] | None
@@ -137,11 +139,13 @@ def build_rendercv_dictionary(
         "typst_path": kwargs.get("typst_path"),
         "pdf_path": kwargs.get("pdf_path"),
         "markdown_path": kwargs.get("markdown_path"),
+        "text_path": kwargs.get("text_path"),
         "html_path": kwargs.get("html_path"),
         "png_path": kwargs.get("png_path"),
         "dont_generate_typst": kwargs.get("dont_generate_typst"),
         "dont_generate_html": kwargs.get("dont_generate_html"),
         "dont_generate_markdown": kwargs.get("dont_generate_markdown"),
+        "dont_generate_text": kwargs.get("dont_generate_text"),
         "dont_generate_pdf": kwargs.get("dont_generate_pdf"),
         "dont_generate_png": kwargs.get("dont_generate_png"),
     }

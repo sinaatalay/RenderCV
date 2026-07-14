@@ -68,6 +68,15 @@ class RenderCommand(BaseModelWithoutExtraKeys):
             f"{file_path_placeholders_description}"
         ),
     )
+    text_path: PlannedPathRelativeToInput = pydantic.Field(
+        default=pathlib.Path("OUTPUT_FOLDER/NAME_IN_SNAKE_CASE_CV.txt"),
+        title="Text Path",
+        description=(
+            "Output path for the plain text file, relative to the input YAML file."
+            " The default value is `OUTPUT_FOLDER/NAME_IN_SNAKE_CASE_CV.txt`.\n\n"
+            f"{file_path_placeholders_description}"
+        ),
+    )
     html_path: PlannedPathRelativeToInput = pydantic.Field(
         default=pathlib.Path("OUTPUT_FOLDER/NAME_IN_SNAKE_CASE_CV.html"),
         description=(
@@ -91,6 +100,11 @@ class RenderCommand(BaseModelWithoutExtraKeys):
             "Skip Markdown generation. This also disables HTML generation. The default"
             " value is `false`."
         ),
+    )
+    dont_generate_text: bool = pydantic.Field(
+        default=False,
+        title="Don't Generate Text",
+        description="Skip plain text generation. The default value is `false`.",
     )
     dont_generate_html: bool = pydantic.Field(
         default=False,

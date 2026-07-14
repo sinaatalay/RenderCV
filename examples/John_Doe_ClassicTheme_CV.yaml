@@ -358,9 +358,11 @@ settings:
     typst_path: OUTPUT_FOLDER/NAME_IN_SNAKE_CASE_CV.typ
     pdf_path: OUTPUT_FOLDER/NAME_IN_SNAKE_CASE_CV.pdf
     markdown_path: OUTPUT_FOLDER/NAME_IN_SNAKE_CASE_CV.md
+    text_path: OUTPUT_FOLDER/NAME_IN_SNAKE_CASE_CV.txt
     html_path: OUTPUT_FOLDER/NAME_IN_SNAKE_CASE_CV.html
     png_path: OUTPUT_FOLDER/NAME_IN_SNAKE_CASE_CV.png
     dont_generate_markdown: false
+    dont_generate_text: false
     dont_generate_html: false
     dont_generate_typst: false
     dont_generate_pdf: false

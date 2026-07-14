@@ -1,0 +1,1 @@
+{{ entries_count - entry_index }}. {{entry.reversed_number}}
