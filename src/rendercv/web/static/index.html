@@ -1,0 +1,2228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RenderCV — Live YAML Editor</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- JS-YAML for Form Editor -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+
+    <!-- RequireJS for Monaco Editor -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+
+    <style>
+        :root {
+            --bg-base: #0a0b0e;
+            --bg-surface: #12141c;
+            --bg-surface-elevated: #1a1d29;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.16);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --primary: #8b5cf6;
+            --primary-hover: #a78bfa;
+            --primary-glow: rgba(139, 92, 246, 0.15);
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styling */
+        header {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-logo {
+            background: linear-gradient(135deg, var(--primary), #ec4899);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .brand-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            background: linear-gradient(to right, #ffffff, #d1d5db);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-tag {
+            font-size: 0.75rem;
+            padding: 0.15rem 0.4rem;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Status Badge */
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.825rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            padding-right: 0.5rem;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .status-dot.ready { background-color: var(--success); box-shadow: 0 0 8px var(--success); }
+        .status-dot.compiling { background-color: var(--warning); box-shadow: 0 0 8px var(--warning); animation: pulse 1.5s infinite; }
+        .status-dot.error { background-color: var(--error); box-shadow: 0 0 8px var(--error); }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        /* Select controls */
+        .select-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .select-wrapper select {
+            appearance: none;
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            padding: 0.5rem 2.25rem 0.5rem 1rem;
+            font-family: var(--font-sans);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .select-wrapper select:hover {
+            border-color: var(--border-hover);
+            background-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .select-wrapper select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .select-wrapper .chevron {
+            position: absolute;
+            right: 0.75rem;
+            pointer-events: none;
+            color: var(--text-secondary);
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Dropdowns */
+        .dropdown-wrapper {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            right: 0;
+            background-color: var(--bg-surface-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            width: 220px;
+            display: none;
+            z-index: 100;
+            padding: 0.5rem 0;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .dropdown-menu.visible {
+            display: block;
+        }
+
+        .dropdown-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 0.5rem 1rem 0.25rem 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            margin-bottom: 0.25rem;
+        }
+
+        .dropdown-body {
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.875rem;
+            user-select: none;
+            color: var(--text-secondary);
+        }
+
+        .checkbox-item:hover {
+            background-color: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.02);
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkbox-item input[type="checkbox"]:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .checkbox-item input[type="checkbox"]:checked::after {
+            content: '';
+            width: 4px;
+            height: 8px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+            margin-bottom: 2px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-family: var(--font-sans);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: rgba(255, 255, 255, 0.04);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: var(--border-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Main Workspace split layout */
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Panels */
+        .panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .editor-panel {
+            width: 50%;
+            border-right: 1px solid var(--border-color);
+            background-color: var(--bg-surface);
+            position: relative;
+        }
+
+        .preview-panel {
+            width: 50%;
+            background-color: var(--bg-base);
+            position: relative;
+        }
+
+        #editor-container {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Form Editor Styles */
+        .editor-tabs {
+            display: flex;
+            background-color: var(--bg-surface-elevated);
+            border-bottom: 1px solid var(--border-color);
+            height: 48px;
+            flex-shrink: 0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            font-family: var(--font-sans);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .tab-btn.active {
+            color: var(--primary-hover);
+            border-bottom-color: var(--primary);
+            background-color: rgba(139, 92, 246, 0.05);
+        }
+
+        .tab-btn i {
+            width: 16px;
+            height: 16px;
+        }
+
+        .form-editor-layout {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            background-color: var(--bg-surface);
+        }
+
+        .form-sidebar {
+            width: 220px;
+            border-right: 1px solid var(--border-color);
+            background-color: rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 0.75rem 0.5rem;
+            gap: 0.25rem;
+            flex-shrink: 0;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            user-select: none;
+        }
+
+        .sidebar-item:hover {
+            background-color: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--primary-glow);
+            color: var(--text-primary);
+            border-left: 3px solid var(--primary);
+            padding-left: calc(0.75rem - 3px);
+        }
+
+        .sidebar-item i {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .form-main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .form-section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .form-section-title input {
+            background: transparent;
+            border: none;
+            font-size: inherit;
+            font-weight: inherit;
+            color: inherit;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            width: 100%;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-section-title input:focus {
+            background: rgba(255, 255, 255, 0.04);
+            box-shadow: 0 0 0 1px var(--primary);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            padding: 0.5rem 0.75rem;
+            font-family: var(--font-sans);
+            font-size: 0.875rem;
+            outline: none;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-card {
+            background-color: var(--bg-surface-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .form-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .form-card-header {
+            padding: 0.75rem 1rem;
+            background-color: rgba(255, 255, 255, 0.01);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .form-card-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-card-body {
+            padding: 1rem;
+            display: none;
+            flex-direction: column;
+            gap: 0.75rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .form-card.expanded .form-card-body {
+            display: flex;
+        }
+
+        .list-editor {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .list-editor-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.25rem;
+            border-radius: 4px;
+        }
+
+        .btn-icon:hover {
+            color: var(--text-primary);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-icon.btn-danger:hover {
+            color: var(--error);
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .btn-icon i {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-sm {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.75rem;
+            border-radius: 6px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .warning-banner {
+            background-color: rgba(245, 158, 11, 0.06);
+            border: 1px solid rgba(245, 158, 11, 0.15);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+            color: #fbd38d;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .warning-banner i {
+            flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Error/Logs Console Section */
+        .console-panel {
+            background-color: #0b0c10;
+            border-top: 1px solid var(--border-color);
+            max-height: 250px;
+            min-height: 48px;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        .console-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.25rem;
+            cursor: pointer;
+            user-select: none;
+            background-color: rgba(255, 255, 255, 0.01);
+            font-size: 0.825rem;
+            font-weight: 600;
+            border-bottom: 1px solid transparent;
+        }
+
+        .console-panel.expanded .console-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .console-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .console-title.has-error {
+            color: var(--error);
+        }
+
+        .console-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.75rem 1.25rem;
+            display: none;
+            font-family: var(--font-mono);
+            font-size: 0.825rem;
+            line-height: 1.5;
+        }
+
+        .console-panel.expanded .console-content {
+            display: block;
+        }
+
+        .error-item {
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            background-color: rgba(239, 68, 68, 0.06);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .error-item:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .error-meta {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .error-line-badge {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            padding: 0.05rem 0.3rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .no-errors {
+            color: var(--text-muted);
+            text-align: center;
+            padding: 1.5rem;
+            font-family: var(--font-sans);
+        }
+
+        /* PDF Preview Section */
+        .preview-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: var(--bg-base);
+        }
+
+        .preview-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            gap: 1rem;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .preview-placeholder i {
+            color: var(--text-muted);
+            width: 48px;
+            height: 48px;
+        }
+
+        .preview-placeholder h3 {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .preview-placeholder p {
+            font-size: 0.875rem;
+            max-width: 320px;
+            line-height: 1.5;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 11, 14, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .loading-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.05);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .toast {
+            background-color: var(--bg-surface-elevated);
+            border: 1px solid var(--border-color);
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: toast-in 0.3s forwards cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 350px;
+        }
+
+        @keyframes toast-in {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success { border-left: 3px solid var(--success); }
+        .toast.error { border-left: 3px solid var(--error); }
+        .toast.info { border-left: 3px solid var(--primary); }
+
+        .toast-close {
+            margin-left: auto;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .toast-close:hover {
+            color: var(--text-primary);
+        }
+
+        /* Sidebar Section Reordering Action Buttons */
+        .sidebar-item-actions {
+            display: flex;
+            gap: 2px;
+            margin-left: auto;
+            opacity: 0;
+            transform: translateX(5px);
+            transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-item:hover .sidebar-item-actions {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .btn-sidebar-action {
+            background: none;
+            border: none;
+            padding: 2px;
+            border-radius: 4px;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .btn-sidebar-action:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: var(--primary);
+        }
+
+        .btn-sidebar-action[disabled] {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .sidebar-item.hidden-section span,
+        .sidebar-item.hidden-section i[data-lucide="folder"] {
+            opacity: 0.5;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <div class="brand-logo">R</div>
+            <span class="brand-name">RenderCV</span>
+            <span class="brand-tag">Live Editor</span>
+        </div>
+
+        <div class="controls">
+            <div class="status-container">
+                <span class="status-dot" id="status-dot"></span>
+                <span id="status-text">Loading editor...</span>
+            </div>
+
+            <div class="select-wrapper">
+                <select id="theme-selector" disabled>
+                    <option value="" disabled selected>Load example theme...</option>
+                </select>
+                <i data-lucide="chevron-down" class="chevron"></i>
+            </div>
+
+            <!-- Sections Visibility Toggle Dropdown -->
+            <div class="dropdown-wrapper hidden-section" style="display: none">
+                <button id="btn-sections" class="btn btn-secondary" disabled>
+                    <i data-lucide="eye"></i>
+                    <span>Sections</span>
+                    <i data-lucide="chevron-down" style="width: 14px; height: 14px; margin-left: 0.1rem;"></i>
+                </button>
+                <div class="dropdown-menu" id="sections-dropdown">
+                    <div class="dropdown-header">Show/Hide Sections</div>
+                    <div class="dropdown-body" id="sections-checkbox-list">
+                        <div style="color: var(--text-muted); font-size: 0.8rem; padding: 0.5rem 0; text-align: center;">No sections found</div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-render" class="btn btn-primary" disabled>
+                <i data-lucide="refresh-cw"></i>
+                <span>Render PDF</span>
+            </button>
+
+            <button id="btn-download" class="btn btn-secondary" disabled>
+                <i data-lucide="download"></i>
+                <span>Download</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="workspace">
+        <!-- Left Panel: Editor & Logs -->
+        <div class="panel editor-panel">
+            <div class="editor-tabs">
+                <button class="tab-btn active" id="btn-tab-form">
+                    <i data-lucide="edit-3"></i>
+                    <span>Form Editor</span>
+                </button>
+                <button class="tab-btn" id="btn-tab-yaml">
+                    <i data-lucide="code"></i>
+                    <span>YAML Code</span>
+                </button>
+            </div>
+
+            <!-- Form Editor Container -->
+            <div id="form-editor-container" class="form-editor-layout">
+                <div class="form-sidebar" id="form-sidebar"></div>
+                <div class="form-main" id="form-main"></div>
+            </div>
+
+            <div id="editor-container" style="display: none;"></div>
+
+            <!-- Collapsible Console/Error panel -->
+            <div class="console-panel" id="console-panel">
+                <div class="console-header" id="console-header">
+                    <div class="console-title" id="console-title">
+                        <i data-lucide="terminal"></i>
+                        <span>Validation Log</span>
+                        <span id="error-count" style="display:none; background-color: var(--error); color: white; border-radius: 10px; padding: 0.05rem 0.4rem; font-size: 0.7rem; font-weight: 700;">0</span>
+                    </div>
+                    <i data-lucide="chevron-up" id="console-chevron" style="transition: var(--transition)"></i>
+                </div>
+                <div class="console-content" id="console-content">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: PDF Preview -->
+        <div class="panel preview-panel">
+            <div class="loading-overlay" id="loading-overlay">
+                <div class="spinner"></div>
+                <div style="font-weight: 600;">Compiling Typst to PDF...</div>
+                <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.25rem;">This takes less than a second</div>
+            </div>
+
+            <div class="preview-placeholder" id="preview-placeholder">
+                <i data-lucide="file-text"></i>
+                <h3>PDF Preview</h3>
+                <p>Click <strong>Render PDF</strong> or press <kbd style="background: rgba(255,255,255,0.06); padding: 0.1rem 0.3rem; border-radius: 4px; font-size: 0.75rem; border: 1px solid var(--border-color);">Cmd + Enter</kbd> to compile your YAML resume.</p>
+            </div>
+
+            <iframe class="preview-iframe" id="preview-iframe" style="display: none;"></iframe>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // DOM Elements
+        const themeSelector = document.getElementById('theme-selector');
+        const btnSections = document.getElementById('btn-sections');
+        const sectionsDropdown = document.getElementById('sections-dropdown');
+        const sectionsCheckboxList = document.getElementById('sections-checkbox-list');
+        const btnRender = document.getElementById('btn-render');
+        const btnDownload = document.getElementById('btn-download');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        const previewIframe = document.getElementById('preview-iframe');
+        const previewPlaceholder = document.getElementById('preview-placeholder');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const consolePanel = document.getElementById('console-panel');
+        const consoleHeader = document.getElementById('console-header');
+        const consoleContent = document.getElementById('console-content');
+        const consoleChevron = document.getElementById('console-chevron');
+        const consoleTitle = document.getElementById('console-title');
+        const errorCountBadge = document.getElementById('error-count');
+        const toastContainer = document.getElementById('toast-container');
+
+        let currentPdfBlob = null;
+        let isConsoleExpanded = false;
+
+        // Sections state
+        let allSections = [];
+        let hiddenSections = [];
+
+        // CV Form Controller definition
+        const cvForm = {
+            data: null,
+            activeTab: 'form',
+            activeSection: 'basic_info',
+            expandedItems: {},
+
+            schemas: {
+                education: { institution: '', area: '', degree: '', location: '', start_date: '', end_date: '', highlights: [] },
+                experience: { company: '', position: '', location: '', start_date: '', end_date: '', highlights: [] },
+                projects: { name: '', summary: '', start_date: '', end_date: '', highlights: [] },
+                publications: { title: '', authors: [], journal: '', date: '', doi: '', url: '' },
+                skills: { label: '', details: '' },
+                selected_honors: { bullet: '' },
+                patents: { number: '' },
+                invited_talks: { reversed_number: '' }
+            },
+
+            init() {
+                const btnTabForm = document.getElementById('btn-tab-form');
+                const btnTabYaml = document.getElementById('btn-tab-yaml');
+                const formEditorContainer = document.getElementById('form-editor-container');
+                const editorContainer = document.getElementById('editor-container');
+
+                btnTabForm.addEventListener('click', () => {
+                    this.switchTab('form');
+                });
+
+                btnTabYaml.addEventListener('click', () => {
+                    this.switchTab('yaml');
+                });
+            },
+
+            switchTab(tab) {
+                this.activeTab = tab;
+                const btnTabForm = document.getElementById('btn-tab-form');
+                const btnTabYaml = document.getElementById('btn-tab-yaml');
+                const formEditorContainer = document.getElementById('form-editor-container');
+                const editorContainer = document.getElementById('editor-container');
+
+                if (tab === 'form') {
+                    btnTabForm.classList.add('active');
+                    btnTabYaml.classList.remove('active');
+                    formEditorContainer.style.display = 'flex';
+                    editorContainer.style.display = 'none';
+                    this.loadFromEditor();
+                } else {
+                    btnTabYaml.classList.add('active');
+                    btnTabForm.classList.remove('active');
+                    editorContainer.style.display = 'block';
+                    formEditorContainer.style.display = 'none';
+                    if (window.editor) {
+                        window.editor.layout();
+                    }
+                }
+            },
+
+            loadFromEditor() {
+                if (!window.editor) return;
+                const yamlText = window.editor.getValue();
+                try {
+                    const parsed = jsyaml.load(yamlText);
+                    if (parsed && typeof parsed === 'object') {
+                        this.data = parsed;
+                        if (!this.data.cv) this.data.cv = {};
+                        if (!this.data.cv.sections) this.data.cv.sections = {};
+                        this.render();
+                    }
+                } catch (e) {
+                    console.error("YAML parsing error inside Form Editor", e);
+                    const formMain = document.getElementById('form-main');
+                    formMain.innerHTML = `
+                        <div class="empty-state">
+                            <i data-lucide="alert-triangle" style="color: var(--warning); width: 48px; height: 48px;"></i>
+                            <h3>Cannot Load Form Editor</h3>
+                            <p style="max-width: 400px; margin: 0.5rem auto;">The YAML in the code editor has syntax errors or is invalid. Please fix the syntax errors in the <strong>YAML Code</strong> tab first.</p>
+                            <div style="font-family: var(--font-mono); font-size: 0.8rem; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 4px; color: var(--error); margin-top: 0.5rem; text-align: left; max-width: 450px; overflow-x: auto; white-space: pre-wrap;">
+                                ${this.escapeHtml(e.message)}
+                            </div>
+                            <button class="btn btn-secondary btn-sm" style="margin-top: 1rem;" onclick="cvForm.switchTab('yaml')">Switch to YAML Code</button>
+                        </div>
+                    `;
+                    const formSidebar = document.getElementById('form-sidebar');
+                    formSidebar.innerHTML = '';
+                    lucide.createIcons({ node: formMain });
+                }
+            },
+
+            updateEditor() {
+                if (!window.editor || !this.data) return;
+                try {
+                    const yamlText = jsyaml.dump(this.data, {
+                        indent: 2,
+                        noArrayIndent: false,
+                        lineWidth: -1,
+                        quotingType: '"',
+                        forceQuotes: false
+                    });
+                    window.editor.setValue(yamlText);
+                } catch (e) {
+                    console.error("YAML serialization error", e);
+                }
+            },
+
+            render() {
+                this.renderSidebar();
+                this.renderActiveSection();
+            },
+
+            renderSidebar() {
+                const formSidebar = document.getElementById('form-sidebar');
+                formSidebar.innerHTML = '';
+
+                const staticItems = [
+                    { id: 'basic_info', label: 'Basic Info', icon: 'user' },
+                    { id: 'social_networks', label: 'Social Networks', icon: 'share-2' }
+                ];
+
+                staticItems.forEach(item => {
+                    const el = document.createElement('div');
+                    el.className = `sidebar-item ${this.activeSection === item.id ? 'active' : ''}`;
+                    el.innerHTML = `<i data-lucide="${item.icon}"></i><span>${item.label}</span>`;
+                    el.onclick = () => {
+                        this.activeSection = item.id;
+                        this.render();
+                    };
+                    formSidebar.appendChild(el);
+                });
+
+                const separator = document.createElement('div');
+                separator.style.height = '1px';
+                separator.style.background = 'var(--border-color)';
+                separator.style.margin = '0.5rem 0';
+                formSidebar.appendChild(separator);
+
+                const sectionsHeader = document.createElement('div');
+                sectionsHeader.style.fontSize = '0.75rem';
+                sectionsHeader.style.fontWeight = '600';
+                sectionsHeader.style.textTransform = 'uppercase';
+                sectionsHeader.style.letterSpacing = '0.05em';
+                sectionsHeader.style.color = 'var(--text-muted)';
+                sectionsHeader.style.padding = '0.25rem 0.75rem';
+                sectionsHeader.innerHTML = '<span>CV Sections</span>';
+                formSidebar.appendChild(sectionsHeader);
+
+                const sections = this.data.cv.sections || {};
+                const sectionNames = Object.keys(sections);
+
+                sectionNames.forEach((secName, idx) => {
+                    const isVisible = !hiddenSections.includes(secName);
+                    const el = document.createElement('div');
+                    el.className = `sidebar-item ${this.activeSection === secName ? 'active' : ''} ${isVisible ? '' : 'hidden-section'}`;
+                    el.innerHTML = `
+                        <i data-lucide="folder"></i>
+                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0;">${this.escapeHtml(secName)}</span>
+                        <div class="sidebar-item-actions">
+                            <button class="btn-sidebar-action" title="${isVisible ? 'Hide Section' : 'Show Section'}" onclick="event.stopPropagation(); cvForm.toggleVisibility('${this.escapeHtml(secName)}')">
+                                <i data-lucide="${isVisible ? 'eye' : 'eye-off'}" style="width: 12px; height: 12px;"></i>
+                            </button>
+                            <button class="btn-sidebar-action" title="Move Up" ${idx === 0 ? 'disabled' : ''} onclick="event.stopPropagation(); cvForm.moveSectionUp('${this.escapeHtml(secName)}')">
+                                <i data-lucide="chevron-up" style="width: 12px; height: 12px;"></i>
+                            </button>
+                            <button class="btn-sidebar-action" title="Move Down" ${idx === sectionNames.length - 1 ? 'disabled' : ''} onclick="event.stopPropagation(); cvForm.moveSectionDown('${this.escapeHtml(secName)}')">
+                                <i data-lucide="chevron-down" style="width: 12px; height: 12px;"></i>
+                            </button>
+                        </div>
+                    `;
+                    el.onclick = () => {
+                        this.activeSection = secName;
+                        this.render();
+                    };
+                    formSidebar.appendChild(el);
+                });
+
+                const addSecBtn = document.createElement('button');
+                addSecBtn.className = 'btn btn-secondary btn-sm';
+                addSecBtn.style.margin = '0.5rem 0.25rem 0 0.25rem';
+                addSecBtn.innerHTML = '<i data-lucide="plus" style="width: 14px; height: 14px; margin-right: 0.25rem;"></i>Add Section';
+                addSecBtn.onclick = () => this.addNewSectionPrompt();
+                formSidebar.appendChild(addSecBtn);
+
+                lucide.createIcons({ node: formSidebar });
+            },
+
+            renderActiveSection() {
+                const formMain = document.getElementById('form-main');
+                formMain.innerHTML = '';
+
+                if (this.activeSection === 'basic_info') {
+                    this.renderBasicInfo(formMain);
+                } else if (this.activeSection === 'social_networks') {
+                    this.renderSocialNetworks(formMain);
+                } else {
+                    this.renderCVSection(formMain, this.activeSection);
+                }
+
+                lucide.createIcons({ node: formMain });
+            },
+
+            renderBasicInfo(container) {
+                const cv = this.data.cv;
+
+                container.innerHTML = `
+                    <div class="form-section-title">
+                        <span>Basic Info</span>
+                    </div>
+
+                    <div class="warning-banner">
+                        <i data-lucide="info"></i>
+                        <span>Editing fields here instantly synchronizes with the YAML Code.</span>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="basic-name">Full Name</label>
+                            <input type="text" id="basic-name" class="form-control" value="${this.escapeHtml(cv.name || '')}" placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label for="basic-headline">Headline</label>
+                            <input type="text" id="basic-headline" class="form-control" value="${this.escapeHtml(cv.headline || '')}" placeholder="Software Engineer">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="basic-email">Email Address</label>
+                            <input type="email" id="basic-email" class="form-control" value="${this.escapeHtml(cv.email || '')}" placeholder="john.doe@gmail.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="basic-phone">Phone Number</label>
+                            <input type="text" id="basic-phone" class="form-control" value="${this.escapeHtml(cv.phone || '')}" placeholder="+1 (555) 000-0000">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="basic-location">Location</label>
+                            <input type="text" id="basic-location" class="form-control" value="${this.escapeHtml(cv.location || '')}" placeholder="San Francisco, CA">
+                        </div>
+                        <div class="form-group">
+                            <label for="basic-website">Website</label>
+                            <input type="text" id="basic-website" class="form-control" value="${this.escapeHtml(cv.website || '')}" placeholder="https://example.com">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="basic-photo">Photo URL/Path</label>
+                        <input type="text" id="basic-photo" class="form-control" value="${this.escapeHtml(cv.photo || '')}" placeholder="photo.jpg">
+                    </div>
+                `;
+
+                const fields = ['name', 'headline', 'email', 'phone', 'location', 'website', 'photo'];
+                fields.forEach(f => {
+                    const input = document.getElementById(`basic-${f}`);
+                    input.addEventListener('input', (e) => {
+                        cv[f] = e.target.value || null;
+                        this.updateEditor();
+                    });
+                });
+            },
+
+            renderSocialNetworks(container) {
+                const cv = this.data.cv;
+                if (!cv.social_networks) cv.social_networks = [];
+
+                container.innerHTML = `
+                    <div class="form-section-title">
+                        <span>Social Networks</span>
+                        <button class="btn btn-secondary btn-sm" onclick="cvForm.addSocialNetwork()">
+                            <i data-lucide="plus" style="width: 14px; height: 14px; margin-right: 0.25rem;"></i>Add Network
+                        </button>
+                    </div>
+
+                    <div class="warning-banner">
+                        <i data-lucide="info"></i>
+                        <span>Manage LinkedIn, GitHub, Twitter/X and custom social profiles.</span>
+                    </div>
+
+                    <div id="social-list" style="display:flex; flex-direction:column; gap:0.75rem;"></div>
+                `;
+
+                const socialList = document.getElementById('social-list');
+                if (cv.social_networks.length === 0) {
+                    socialList.innerHTML = `<div class="empty-state">No social networks added. Click 'Add Network' to add one.</div>`;
+                    return;
+                }
+
+                cv.social_networks.forEach((net, idx) => {
+                    const row = document.createElement('div');
+                    row.className = 'form-card expanded';
+                    row.innerHTML = `
+                        <div class="form-card-body" style="display:flex; flex-direction:row; gap:1rem; align-items:flex-end;">
+                            <div class="form-group" style="flex:1; margin-bottom:0;">
+                                <label>Network</label>
+                                <input type="text" class="form-control social-net-name" data-idx="${idx}" value="${this.escapeHtml(net.network || '')}" placeholder="GitHub, LinkedIn...">
+                            </div>
+                            <div class="form-group" style="flex:1; margin-bottom:0;">
+                                <label>Username / ID</label>
+                                <input type="text" class="form-control social-net-user" data-idx="${idx}" value="${this.escapeHtml(net.username || '')}" placeholder="username">
+                            </div>
+                            <button class="btn-icon btn-danger" onclick="cvForm.deleteSocialNetwork(${idx})" style="height:38px; width:38px; flex-shrink:0;">
+                                <i data-lucide="trash-2"></i>
+                            </button>
+                        </div>
+                    `;
+                    socialList.appendChild(row);
+                });
+
+                socialList.querySelectorAll('.social-net-name').forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        const idx = parseInt(e.target.dataset.idx);
+                        cv.social_networks[idx].network = e.target.value;
+                        this.updateEditor();
+                    });
+                });
+
+                socialList.querySelectorAll('.social-net-user').forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        const idx = parseInt(e.target.dataset.idx);
+                        cv.social_networks[idx].username = e.target.value;
+                        this.updateEditor();
+                    });
+                });
+            },
+
+            addSocialNetwork() {
+                this.data.cv.social_networks.push({ network: 'GitHub', username: '' });
+                this.updateEditor();
+                this.renderActiveSection();
+            },
+
+            deleteSocialNetwork(idx) {
+                this.data.cv.social_networks.splice(idx, 1);
+                this.updateEditor();
+                this.renderActiveSection();
+            },
+
+            renderCVSection(container, sectionName) {
+                const sections = this.data.cv.sections;
+                const items = sections[sectionName] || [];
+
+                container.innerHTML = `
+                    <div class="form-section-title">
+                        <input type="text" value="${this.escapeHtml(sectionName)}" onchange="cvForm.renameSection('${this.escapeHtml(sectionName)}', this.value)">
+                        <div style="display:flex; gap:0.5rem; align-items:center;">
+                            <button class="btn btn-secondary btn-sm" onclick="cvForm.addItemToSection('${this.escapeHtml(sectionName)}')">
+                                <i data-lucide="plus" style="width: 14px; height: 14px; margin-right: 0.25rem;"></i>Add Item
+                            </button>
+                            <button class="btn-icon btn-danger" onclick="event.stopPropagation(); cvForm.deleteSection('${this.escapeHtml(sectionName)}')" title="Delete section">
+                                <i data-lucide="trash-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="section-items" style="display:flex; flex-direction:column; gap:0.75rem;"></div>
+                `;
+
+                const itemsContainer = document.getElementById('section-items');
+
+                if (items.length === 0) {
+                    itemsContainer.innerHTML = `<div class="empty-state">No items in this section. Click 'Add Item' to create one.</div>`;
+                    return;
+                }
+
+                items.forEach((item, idx) => {
+                    const isTextItem = typeof item === 'string';
+                    const expandedKey = `${sectionName}_${idx}`;
+                    const isExpanded = this.expandedItems[expandedKey] !== false;
+
+                    const card = document.createElement('div');
+                    card.className = `form-card ${isExpanded ? 'expanded' : ''}`;
+
+                    let headerText = `Item #${idx + 1}`;
+                    if (isTextItem) {
+                        headerText = item.substring(0, 50) + (item.length > 50 ? '...' : '');
+                    } else if (item) {
+                        headerText = item.institution || item.company || item.name || item.title || item.label || item.bullet || item.number || item.reversed_number || headerText;
+                        if (typeof headerText !== 'string') {
+                            headerText = `Item #${idx + 1}`;
+                        }
+                    }
+
+                    card.innerHTML = `
+                        <div class="form-card-header" onclick="cvForm.toggleItemExpand('${expandedKey}')">
+                            <span class="form-card-title">
+                                <i data-lucide="${isExpanded ? 'chevron-down' : 'chevron-right'}" style="width: 16px; height:16px;"></i>
+                                <span>${this.escapeHtml(headerText)}</span>
+                            </span>
+                            <button class="btn-icon btn-danger" onclick="event.stopPropagation(); cvForm.deleteItemFromSection('${this.escapeHtml(sectionName)}', ${idx})">
+                                <i data-lucide="trash-2"></i>
+                            </button>
+                        </div>
+                        <div class="form-card-body"></div>
+                    `;
+
+                    const cardBody = card.querySelector('.form-card-body');
+
+                    if (isTextItem) {
+                        cardBody.innerHTML = `
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label>Content</label>
+                                <textarea class="form-control text-item-input" style="min-height:80px;" data-idx="${idx}">${this.escapeHtml(item)}</textarea>
+                            </div>
+                        `;
+                        cardBody.querySelector('.text-item-input').addEventListener('input', (e) => {
+                            sections[sectionName][idx] = e.target.value;
+                            this.updateEditor();
+                            const headText = e.target.value.substring(0, 50) + (e.target.value.length > 50 ? '...' : '');
+                            card.querySelector('.form-card-title span').textContent = headText || `Item #${idx + 1}`;
+                        });
+                    } else if (item && typeof item === 'object') {
+                        const keys = Object.keys(item);
+
+                        keys.forEach(key => {
+                            const val = item[key];
+                            const formGroup = document.createElement('div');
+                            formGroup.className = 'form-group';
+
+                            const label = document.createElement('label');
+                            label.textContent = key.replace(/_/g, ' ');
+                            formGroup.appendChild(label);
+
+                            if (Array.isArray(val)) {
+                                const listEditor = document.createElement('div');
+                                listEditor.className = 'list-editor';
+
+                                val.forEach((subval, subidx) => {
+                                    const itemRow = document.createElement('div');
+                                    itemRow.className = 'list-editor-item';
+                                    itemRow.innerHTML = `
+                                        <input type="text" class="form-control list-subitem-input" data-key="${key}" data-idx="${idx}" data-subidx="${subidx}" value="${this.escapeHtml(subval)}">
+                                        <button class="btn-icon btn-danger" onclick="cvForm.deleteListSubitem('${this.escapeHtml(sectionName)}', ${idx}, '${key}', ${subidx})">
+                                            <i data-lucide="minus"></i>
+                                        </button>
+                                    `;
+                                    listEditor.appendChild(itemRow);
+                                });
+
+                                const addSubBtn = document.createElement('button');
+                                addSubBtn.className = 'btn btn-secondary btn-sm';
+                                addSubBtn.style.alignSelf = 'flex-start';
+                                addSubBtn.innerHTML = '<i data-lucide="plus" style="width: 12px; height: 12px; margin-right: 0.25rem;"></i>Add Bullet/Author';
+                                addSubBtn.onclick = () => this.addListSubitem(sectionName, idx, key);
+
+                                formGroup.appendChild(listEditor);
+                                formGroup.appendChild(addSubBtn);
+
+                                listEditor.querySelectorAll('.list-subitem-input').forEach(input => {
+                                    input.addEventListener('input', (e) => {
+                                        const k = e.target.dataset.key;
+                                        const i = parseInt(e.target.dataset.idx);
+                                        const s = parseInt(e.target.dataset.subidx);
+                                        sections[sectionName][i][k][s] = e.target.value;
+                                        this.updateEditor();
+                                    });
+                                });
+
+                            } else {
+                                const input = document.createElement('input');
+                                input.type = 'text';
+                                input.className = 'form-control item-field-input';
+                                input.dataset.key = key;
+                                input.dataset.idx = idx;
+                                input.value = this.escapeHtml(val || '');
+                                formGroup.appendChild(input);
+
+                                input.addEventListener('input', (e) => {
+                                    const k = e.target.dataset.key;
+                                    const i = parseInt(e.target.dataset.idx);
+                                    sections[sectionName][i][k] = e.target.value;
+                                    this.updateEditor();
+
+                                    const previewKeys = ['institution', 'company', 'name', 'title', 'label', 'bullet', 'number', 'reversed_number'];
+                                    if (previewKeys.includes(k)) {
+                                        card.querySelector('.form-card-title span').textContent = e.target.value || `Item #${i + 1}`;
+                                    }
+                                });
+                            }
+
+                            cardBody.appendChild(formGroup);
+                        });
+                    }
+
+                    itemsContainer.appendChild(card);
+                });
+            },
+
+            toggleItemExpand(key) {
+                this.expandedItems[key] = this.expandedItems[key] === false;
+                this.renderActiveSection();
+            },
+
+            renameSection(oldName, newName) {
+                if (!newName || newName.trim() === '' || oldName === newName) return;
+                const sections = this.data.cv.sections;
+                if (sections[newName]) {
+                    showToast('Section name already exists!', 'error');
+                    this.renderActiveSection();
+                    return;
+                }
+
+                // Preserve section keys order on rename
+                const newSections = {};
+                Object.keys(sections).forEach(k => {
+                    if (k === oldName) {
+                        newSections[newName] = sections[oldName];
+                    } else {
+                        newSections[k] = sections[k];
+                    }
+                });
+                this.data.cv.sections = newSections;
+
+                this.activeSection = newName;
+                this.updateEditor();
+                this.render();
+                renderPdf();
+            },
+
+            deleteSection(sectionName) {
+                if (confirm(`Are you sure you want to delete the entire "${sectionName}" section?`)) {
+                    delete this.data.cv.sections[sectionName];
+                    this.activeSection = 'basic_info';
+                    this.updateEditor();
+                    this.render();
+                    renderPdf();
+                    showToast(`Deleted section "${sectionName}"`, 'success');
+                }
+            },
+
+            toggleVisibility(secName) {
+                const isVisible = !hiddenSections.includes(secName);
+                toggleSectionVisibility(secName, !isVisible);
+            },
+
+            moveSectionUp(secName) {
+                const sections = this.data.cv.sections;
+                if (!sections) return;
+                const keys = Object.keys(sections);
+                const index = keys.indexOf(secName);
+                if (index <= 0) return; // Can't move up further
+
+                // Swap in the keys array
+                const temp = keys[index];
+                keys[index] = keys[index - 1];
+                keys[index - 1] = temp;
+
+                // Rebuild sections object
+                const newSections = {};
+                keys.forEach(k => {
+                    newSections[k] = sections[k];
+                });
+                this.data.cv.sections = newSections;
+
+                this.updateEditor();
+                this.render();
+                renderPdf();
+            },
+
+            moveSectionDown(secName) {
+                const sections = this.data.cv.sections;
+                if (!sections) return;
+                const keys = Object.keys(sections);
+                const index = keys.indexOf(secName);
+                if (index < 0 || index >= keys.length - 1) return; // Can't move down further
+
+                // Swap in the keys array
+                const temp = keys[index];
+                keys[index] = keys[index + 1];
+                keys[index + 1] = temp;
+
+                // Rebuild sections object
+                const newSections = {};
+                keys.forEach(k => {
+                    newSections[k] = sections[k];
+                });
+                this.data.cv.sections = newSections;
+
+                this.updateEditor();
+                this.render();
+                renderPdf();
+            },
+
+            addItemToSection(sectionName) {
+                const sections = this.data.cv.sections;
+                const items = sections[sectionName];
+
+                let newItem = '';
+                const lowercaseSecName = sectionName.toLowerCase();
+                let matched = false;
+
+                for (const [key, schema] of Object.entries(this.schemas)) {
+                    if (lowercaseSecName.includes(key.replace(/_/g, '')) || key.replace(/_/g, '').includes(lowercaseSecName)) {
+                        newItem = JSON.parse(JSON.stringify(schema));
+                        matched = true;
+                        break;
+                    }
+                }
+
+                if (!matched && items.length > 0) {
+                    const prototype = items[0];
+                    if (typeof prototype === 'string') {
+                        newItem = '';
+                    } else {
+                        newItem = {};
+                        Object.keys(prototype).forEach(k => {
+                            newItem[k] = Array.isArray(prototype[k]) ? [] : '';
+                        });
+                    }
+                } else if (!matched) {
+                    newItem = JSON.parse(JSON.stringify(this.schemas.experience));
+                }
+
+                items.push(newItem);
+                this.expandedItems[`${sectionName}_${items.length - 1}`] = true;
+                this.updateEditor();
+                this.renderActiveSection();
+            },
+
+            deleteItemFromSection(sectionName, idx) {
+                const items = this.data.cv.sections[sectionName];
+                items.splice(idx, 1);
+                this.updateEditor();
+                this.renderActiveSection();
+            },
+
+            addListSubitem(sectionName, idx, key) {
+                const items = this.data.cv.sections[sectionName];
+                if (!items[idx][key]) items[idx][key] = [];
+                items[idx][key].push('');
+                this.updateEditor();
+                this.renderActiveSection();
+            },
+
+            deleteListSubitem(sectionName, idx, key, subidx) {
+                const items = this.data.cv.sections[sectionName];
+                items[idx][key].splice(subidx, 1);
+                this.updateEditor();
+                this.renderActiveSection();
+            },
+
+            addNewSectionPrompt() {
+                const name = prompt("Enter a name for the new CV section:");
+                if (!name || name.trim() === '') return;
+                const sections = this.data.cv.sections;
+                if (sections[name]) {
+                    showToast('Section name already exists!', 'error');
+                    return;
+                }
+
+                const type = prompt("Choose entry type:\n1. Experience/Education/Project (Standard Card)\n2. Simple text points list\n3. Skill label-value list\n\nEnter 1, 2, or 3 (default 1):", "1");
+
+                let initialItem;
+                if (type === "2") {
+                    initialItem = ["Sample bullet point"];
+                } else if (type === "3") {
+                    initialItem = [{ label: "Programming", details: "Python, C++, Java" }];
+                } else {
+                    initialItem = [{
+                        institution: "My Organization",
+                        area: "Domain",
+                        degree: "Title / Role",
+                        location: "City, Country",
+                        start_date: "2024-01",
+                        end_date: "present",
+                        highlights: ["Key accomplishment or point"]
+                    }];
+                }
+
+                sections[name] = initialItem;
+                this.activeSection = name;
+                this.updateEditor();
+                this.render();
+                showToast(`Created new section "${name}"`, 'success');
+            },
+
+            escapeHtml(text) {
+                if (!text) return '';
+                return text
+                    .toString()
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+        };
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Toast Helper
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+
+            let iconName = 'info';
+            if (type === 'success') iconName = 'check-circle';
+            if (type === 'error') iconName = 'alert-triangle';
+
+            toast.innerHTML = `
+                <i data-lucide="${iconName}"></i>
+                <span>${message}</span>
+                <i data-lucide="x" class="toast-close"></i>
+            `;
+
+            toastContainer.appendChild(toast);
+            lucide.createIcons({ attrs: { class: 'lucide' }, nameAttr: 'data-lucide', node: toast });
+
+            toast.querySelector('.toast-close').addEventListener('click', () => {
+                toast.remove();
+            });
+
+            setTimeout(() => {
+                toast.style.animation = 'none'; // reset transition to fade out smoothly
+                toast.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-20px)';
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
+        }
+
+        // Status Management
+        function setStatus(state, text) {
+            statusDot.className = 'status-dot';
+            statusDot.classList.add(state);
+            statusText.textContent = text;
+        }
+
+        // Toggle Console
+        function toggleConsole(forceState = null) {
+            isConsoleExpanded = forceState !== null ? forceState : !isConsoleExpanded;
+            if (isConsoleExpanded) {
+                consolePanel.classList.add('expanded');
+                consoleChevron.style.transform = 'rotate(180deg)';
+            } else {
+                consolePanel.classList.remove('expanded');
+                consoleChevron.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        consoleHeader.addEventListener('click', () => toggleConsole());
+
+        // Toggle sections visibility dropdown
+        btnSections.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sectionsDropdown.classList.toggle('visible');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!sectionsDropdown.contains(e.target) && e.target !== btnSections) {
+                sectionsDropdown.classList.remove('visible');
+            }
+        });
+
+        // Configure and Load Monaco Editor
+        setStatus('ready', 'Loading editor components...');
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs' }});
+        require(['vs/editor/editor.main'], function() {
+            window.editor = monaco.editor.create(document.getElementById('editor-container'), {
+                value: '',
+                language: 'yaml',
+                theme: 'vs-dark',
+                automaticLayout: true,
+                tabSize: 2,
+                insertSpaces: true,
+                fontSize: 14,
+                fontFamily: 'JetBrains Mono, Menlo, Monaco, Courier New, monospace',
+                minimap: { enabled: false },
+                lineNumbers: 'on',
+                roundedSelection: false,
+                scrollBeyondLastLine: false,
+                readOnly: false,
+                padding: { top: 12, bottom: 12 }
+            });
+
+            monaco.editor.defineTheme('custom-dark', {
+                base: 'vs-dark',
+                inherit: true,
+                rules: [],
+                colors: {
+                    'editor.background': '#12141c',
+                }
+            });
+            monaco.editor.setTheme('custom-dark');
+
+            // Keyboard shortcut for Render (Cmd/Ctrl + Enter)
+            window.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, function() {
+                renderPdf();
+            });
+
+            // Automatically save YAML edits to localStorage
+            window.editor.onDidChangeModelContent(() => {
+                const yamlVal = window.editor.getValue();
+                localStorage.setItem('rendercv_yaml', yamlVal);
+            });
+
+            setStatus('ready', 'Editor ready');
+
+            // Initialize cvForm
+            cvForm.init();
+
+            // Check for saved state in localStorage
+            const savedYaml = localStorage.getItem('rendercv_yaml');
+            const savedTheme = localStorage.getItem('rendercv_theme');
+            const savedHidden = localStorage.getItem('rendercv_hidden_sections');
+
+            if (savedHidden) {
+                try {
+                    hiddenSections = JSON.parse(savedHidden);
+                } catch (e) {
+                    console.error("Error parsing saved hidden sections", e);
+                }
+            }
+
+            loadTemplates(savedYaml, savedTheme);
+        });
+
+        // Fetch Themes
+        async function loadTemplates(savedYaml = null, savedTheme = null) {
+            try {
+                const res = await fetch('/api/templates');
+                const templates = await res.json();
+
+                themeSelector.innerHTML = '<option value="" disabled selected>Load example theme...</option>';
+                templates.forEach(t => {
+                    const option = document.createElement('option');
+                    option.value = t;
+                    option.textContent = t.charAt(0).toUpperCase() + t.slice(1);
+                    themeSelector.appendChild(option);
+                });
+
+                themeSelector.disabled = false;
+                btnRender.disabled = false;
+
+                // If a saved YAML exists, restore it; otherwise load 'classic' by default
+                if (savedYaml) {
+                    window.editor.setValue(savedYaml);
+                    if (cvForm.activeTab === 'form') {
+                        cvForm.loadFromEditor();
+                    }
+                    if (savedTheme && templates.includes(savedTheme)) {
+                        themeSelector.value = savedTheme;
+                    }
+                    setStatus('ready', 'Restored unsaved draft');
+                    showToast('Restored your previous edits', 'info');
+                    renderPdf(); // Initial render of restored content
+                } else {
+                    if (templates.includes('classic')) {
+                        themeSelector.value = 'classic';
+                        localStorage.setItem('rendercv_theme', 'classic');
+                        loadThemeTemplate('classic');
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Failed to load templates from server', 'error');
+                setStatus('error', 'API Connection Error');
+            }
+        }
+
+        // Fetch example YAML for a theme
+        async function loadThemeTemplate(themeName) {
+            setStatus('compiling', `Loading ${themeName} example...`);
+            try {
+                const res = await fetch(`/api/templates/${themeName}`);
+                const data = await res.json();
+                if (window.editor) {
+                    // Reset hidden sections on theme template load
+                    hiddenSections = [];
+                    localStorage.removeItem('rendercv_hidden_sections');
+
+                    window.editor.setValue(data.yaml);
+                    if (cvForm.activeTab === 'form') {
+                        cvForm.loadFromEditor();
+                    }
+                    // setting the value will auto-save to localStorage via onDidChangeModelContent
+                    localStorage.setItem('rendercv_theme', themeName);
+
+                    showToast(`Loaded "${themeName}" theme template`, 'info');
+                    setStatus('ready', 'Ready');
+
+                    // Render automatically when a theme is loaded
+                    renderPdf();
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Failed to retrieve template contents', 'error');
+                setStatus('error', 'Template load failed');
+            }
+        }
+
+        themeSelector.addEventListener('change', async (e) => {
+            const theme = e.target.value;
+            const yamlContent = window.editor ? window.editor.getValue() : '';
+
+            if (yamlContent.trim()) {
+                setStatus('compiling', `Switching style to ${theme}...`);
+                try {
+                    const res = await fetch('/api/switch_theme', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ yaml: yamlContent, theme: theme })
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        // Reset hidden sections on style switch
+                        hiddenSections = [];
+                        localStorage.removeItem('rendercv_hidden_sections');
+
+                        window.editor.setValue(data.yaml);
+                        if (cvForm.activeTab === 'form') {
+                            cvForm.loadFromEditor();
+                        }
+                        localStorage.setItem('rendercv_theme', theme);
+                        showToast(`Switched style to "${theme}" while preserving your resume data!`, 'success');
+                        setStatus('ready', 'Ready');
+                        renderPdf();
+                        return;
+                    } else {
+                        const err = await res.json();
+                        showToast(err.detail || 'Could not migrate CV data. Please fix YAML syntax errors first.', 'error');
+                        // Restore dropdown selection to previous saved theme
+                        themeSelector.value = localStorage.getItem('rendercv_theme') || 'classic';
+                        setStatus('ready', 'Ready');
+                        return;
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showToast('Network error while switching styles', 'error');
+                    themeSelector.value = localStorage.getItem('rendercv_theme') || 'classic';
+                    setStatus('ready', 'Ready');
+                    return;
+                }
+            }
+
+            // Fallback if editor is empty: load clean default template
+            localStorage.setItem('rendercv_theme', theme);
+            loadThemeTemplate(theme);
+        });
+
+        // Sections UI Management
+        function updateSectionsUI(serverSections) {
+            allSections = serverSections;
+            // Clean up hiddenSections to only keep sections that actually exist in the current YAML
+            hiddenSections = hiddenSections.filter(s => allSections.includes(s));
+
+            if (allSections.length === 0) {
+                sectionsCheckboxList.innerHTML = '<div style="color: var(--text-muted); font-size: 0.8rem; padding: 0.5rem 0; text-align: center;">No sections found</div>';
+                btnSections.disabled = true;
+                return;
+            }
+
+            btnSections.disabled = false;
+            sectionsCheckboxList.innerHTML = '';
+
+            allSections.forEach(section => {
+                const isChecked = !hiddenSections.includes(section);
+                const item = document.createElement('div');
+                item.className = 'checkbox-item';
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation(); // prevent closing dropdown
+                    const checkbox = item.querySelector('input');
+                    checkbox.checked = !checkbox.checked;
+                    toggleSectionVisibility(section, checkbox.checked);
+                });
+
+                item.innerHTML = `
+                    <input type="checkbox" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleSectionVisibility('${section}', this.checked)">
+                    <span style="flex: 1;">${escapeHtml(section)}</span>
+                `;
+                sectionsCheckboxList.appendChild(item);
+            });
+        }
+
+        function toggleSectionVisibility(section, isVisible) {
+            if (isVisible) {
+                hiddenSections = hiddenSections.filter(s => s !== section);
+            } else {
+                if (!hiddenSections.includes(section)) {
+                    hiddenSections.push(section);
+                }
+            }
+            localStorage.setItem('rendercv_hidden_sections', JSON.stringify(hiddenSections));
+            renderPdf();
+            if (cvForm && typeof cvForm.renderSidebar === 'function') {
+                cvForm.renderSidebar();
+            }
+        }
+
+        // Core Render PDF Function
+        async function renderPdf() {
+            if (!window.editor) return;
+
+            const yamlContent = window.editor.getValue();
+            if (!yamlContent.trim()) {
+                showToast('Editor is empty!', 'error');
+                return;
+            }
+
+            // UI feedback
+            setStatus('compiling', 'Compiling PDF...');
+            loadingOverlay.classList.add('visible');
+            btnRender.disabled = true;
+
+            // Clear prior errors
+            clearErrors();
+
+            const startTime = performance.now();
+            try {
+                const res = await fetch('/api/render', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        yaml: yamlContent,
+                        hide_sections: hiddenSections
+                    })
+                });
+
+                const endTime = performance.now();
+                const duration = Math.round(endTime - startTime);
+
+                if (res.ok) {
+                    // Update sections checklist from Response Headers
+                    const sectionsHeader = res.headers.get('X-RenderCV-Sections');
+                    if (sectionsHeader) {
+                        try {
+                            const serverSections = JSON.parse(decodeURIComponent(sectionsHeader));
+                            updateSectionsUI(serverSections);
+                        } catch (e) {
+                            console.error("Error parsing sections header", e);
+                        }
+                    }
+
+                    // Load PDF as blob
+                    const blob = await res.blob();
+                    currentPdfBlob = blob;
+
+                    const blobUrl = URL.createObjectURL(blob);
+
+                    // Display PDF
+                    previewPlaceholder.style.display = 'none';
+                    previewIframe.src = blobUrl;
+                    previewIframe.style.display = 'block';
+
+                    btnDownload.disabled = false;
+                    setStatus('ready', `Rendered in ${duration}ms`);
+                    showToast('PDF compiled successfully!', 'success');
+                } else {
+                    const errData = await res.json();
+                    handleRenderingErrors(errData);
+                }
+            } catch (err) {
+                console.error(err);
+                setStatus('error', 'Compilation failed');
+                showToast('Network error during rendering', 'error');
+            } finally {
+                loadingOverlay.classList.remove('visible');
+                btnRender.disabled = false;
+            }
+        }
+
+        btnRender.addEventListener('click', renderPdf);
+
+        // Error Handling & Integration with Monaco
+        function handleRenderingErrors(err) {
+            setStatus('error', 'Compilation Error');
+            toggleConsole(true); // Open log panel
+
+            let html = '';
+
+            if (err.type === 'validation_error' && err.errors && err.errors.length > 0) {
+                consoleTitle.classList.add('has-error');
+                errorCountBadge.textContent = err.errors.length;
+                errorCountBadge.style.display = 'inline-block';
+
+                err.errors.forEach(e => {
+                    const lineLoc = e.line ? `Line ${e.line}, Col ${e.col}` : 'Global';
+                    const lineBadge = e.line ? `<span class="error-line-badge" onclick="event.stopPropagation(); goToLine(${e.line}, ${e.col})">Line ${e.line}</span>` : '';
+
+                    html += `
+                        <div class="error-item" onclick="goToLine(${e.line || 1}, ${e.col || 1})">
+                            <div class="error-meta">
+                                ${lineBadge}
+                                <span>${e.schema_location ? e.schema_location.join(' → ') : 'validation'}</span>
+                            </div>
+                            <div style="font-weight: 500;">${escapeHtml(e.message)}</div>
+                        </div>
+                    `;
+                });
+
+                showToast(`Validation failed with ${err.errors.length} error(s)`, 'error');
+            } else {
+                consoleTitle.classList.add('has-error');
+                errorCountBadge.style.display = 'none';
+
+                const errorDetail = err.detail || 'An unknown compilation error occurred';
+
+                html = `
+                    <div class="error-item" style="cursor: default;">
+                        <div class="error-meta">
+                            <span class="error-line-badge">System Error</span>
+                        </div>
+                        <div style="font-weight: 500; white-space: pre-wrap;">${escapeHtml(errorDetail)}</div>
+                    </div>
+                `;
+
+                if (err.traceback) {
+                    html += `
+                        <div style="margin-top: 1rem; color: var(--text-muted); font-size: 0.75rem;">
+                            <strong>Traceback:</strong>
+                            <pre style="overflow-x: auto; margin-top: 0.5rem; background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 4px;">${escapeHtml(err.traceback)}</pre>
+                        </div>
+                    `;
+                }
+
+                showToast('RenderCV compilation failed', 'error');
+            }
+
+            consoleContent.innerHTML = html;
+        }
+
+        function clearErrors() {
+            consoleTitle.classList.remove('has-error');
+            errorCountBadge.style.display = 'none';
+            consoleContent.innerHTML = '<div class="no-errors">No active validation issues</div>';
+        }
+
+        function goToLine(line, col = 1) {
+            if (!window.editor) return;
+            window.editor.focus();
+            window.editor.setPosition({ lineNumber: line, column: col });
+            window.editor.revealLineInCenter(line);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Download Action
+        btnDownload.addEventListener('click', () => {
+            if (!currentPdfBlob) return;
+
+            const theme = themeSelector.value || 'cv';
+
+            const url = URL.createObjectURL(currentPdfBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `RenderCV_Resume_${theme}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('PDF downloaded successfully!', 'success');
+        });
+    </script>
+</body>
+</html>

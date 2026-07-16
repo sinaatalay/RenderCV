@@ -11,10 +11,16 @@ _Resume builder for academics and engineers, deployed at [rendercv.com](https://
 
 </div>
 
-Write your CV or resume as YAML, then run RenderCV,
+Write your CV or resume as YAML, then run RenderCV:
 
 ```bash
 rendercv render John_Doe_CV.yaml
+```
+
+or launch the live web editor to edit and preview your resume interactively:
+
+```bash
+rendercv web
 ```
 
 and get a PDF with perfect typography.
@@ -166,5 +172,13 @@ Edit the YAML, then render:
 ```
 rendercv render "John_Doe_CV.yaml"
 ```
+
+Or start the live web-based editor:
+
+```
+rendercv web
+```
+
+This launches a local web application featuring side-by-side live PDF preview, schema validation, theme template selection, and section toggling.
 
 For more details, see the [user guide](https://docs.rendercv.com/user_guide/).
