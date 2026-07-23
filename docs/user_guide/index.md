@@ -64,6 +64,7 @@
     - `John_Doe_CV.typ`: [Typst](https://typst.app) source code of the PDF
     - `John_Doe_CV_1.png`, `..._2.png`, ...: PNG images of each page of the PDF
     - `John_Doe_CV.md`: Your CV as Markdown
+    - `John_Doe_CV.txt`: Your CV as plain text
     - `John_Doe_CV.html`: Your CV as HTML (generated from the Markdown)
 
     See the [CLI Reference](cli_reference.md#rendercv-render) for the complete list of options available for the `render` command.

@@ -35,7 +35,7 @@ fontawesome_icons = {
 
 
 def compute_connections(
-    rendercv_model: RenderCVModel, file_type: Literal["typst", "markdown"]
+    rendercv_model: RenderCVModel, file_type: Literal["typst", "markdown", "text"]
 ) -> list[str]:
     """Route to format-specific connection generator.
 
@@ -49,6 +49,7 @@ def compute_connections(
     return {
         "typst": compute_connections_for_typst,
         "markdown": compute_connections_for_markdown,
+        "text": compute_connections_for_text,
     }[file_type](rendercv_model)
 
 
@@ -221,6 +222,35 @@ def compute_connections_for_typst(rendercv_model: RenderCVModel) -> list[str]:
         )
         for connection, placeholder in zip(connections, placeholders, strict=True)
     ]
+
+
+def compute_connections_for_text(rendercv_model: RenderCVModel) -> list[str]:
+    """Format connections as plain text with URLs in parentheses.
+
+    Why:
+        Plain text output has no hyperlinks, so URLs must be spelled out. The
+        URL is omitted when the connection body already carries the same
+        information (e.g. emails, bare URLs).
+
+    Args:
+        rendercv_model: CV model with contact information.
+
+    Returns:
+        List of plain-text connection strings.
+    """
+    connections = parse_connections(rendercv_model)
+
+    formatted: list[str] = []
+    for connection in connections:
+        if connection.url is None:
+            formatted.append(connection.body)
+            continue
+        url_body = connection.url.removeprefix("mailto:").removeprefix("tel:")
+        if connection.body in {url_body, clean_url(connection.url)}:
+            formatted.append(connection.body)
+        else:
+            formatted.append(f"{connection.body} ({url_body})")
+    return formatted
 
 
 def compute_connections_for_markdown(rendercv_model: RenderCVModel) -> list[str]:

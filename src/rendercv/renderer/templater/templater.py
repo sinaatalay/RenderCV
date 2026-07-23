@@ -49,7 +49,7 @@ def get_jinja2_environment(
 
 
 def render_full_template(
-    rendercv_model: RenderCVModel, file_type: Literal["typst", "markdown"]
+    rendercv_model: RenderCVModel, file_type: Literal["typst", "markdown", "text"]
 ) -> str:
     """Render complete CV document by assembling preamble, header, and sections.
 
@@ -77,6 +77,7 @@ def render_full_template(
     extension = {
         "typst": "typ",
         "markdown": "md",
+        "text": "txt",
     }[file_type]
 
     download_photo_from_url(rendercv_model)
@@ -113,12 +114,14 @@ def render_full_template(
             entry_type=rendercv_section.entry_type,
         )
         entry_codes = []
-        for entry in rendercv_section.entries:
+        for entry_index, entry in enumerate(rendercv_section.entries):
             entry_code = render_single_template(
                 file_type,
                 f"entries/{rendercv_section.entry_type}.j2.{extension}",
                 rendercv_model,
                 entry=entry,
+                entry_index=entry_index,
+                entries_count=len(rendercv_section.entries),
             )
             entry_codes.append(entry_code)
         entries_code = "\n\n".join(entry_codes)
@@ -157,7 +160,7 @@ def render_html(rendercv_model: RenderCVModel, markdown: str) -> str:
 
 
 def render_single_template(
-    file_type: Literal["markdown", "typst", "html"],
+    file_type: Literal["markdown", "typst", "html", "text"],
     relative_template_path: str,
     rendercv_model: RenderCVModel,
     **kwargs,

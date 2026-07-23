@@ -13,7 +13,7 @@ from .connections import compute_connections
 from .date import build_date_placeholders, date_object_to_string
 from .entry_templates_from_input import render_entry_templates
 from .footer_and_top_note import render_footer_template, render_top_note_template
-from .markdown_parser import markdown_to_typst
+from .markdown_parser import markdown_to_plain_text, markdown_to_typst
 from .string_processor import (
     apply_string_processors,
     make_keywords_bold,
@@ -61,7 +61,7 @@ def download_photo_from_url(rendercv_model: RenderCVModel) -> None:
 
 
 def process_model(
-    rendercv_model: RenderCVModel, file_type: Literal["typst", "markdown"]
+    rendercv_model: RenderCVModel, file_type: Literal["typst", "markdown", "text"]
 ) -> RenderCVModel:
     """Pre-process CV model for template rendering with format-specific transformations.
 
@@ -84,6 +84,8 @@ def process_model(
     ]
     if file_type == "typst":
         string_processors.extend([markdown_to_typst])
+    elif file_type == "text":
+        string_processors.extend([markdown_to_plain_text])
 
     rendercv_model.cv._plain_name = rendercv_model.cv.name
     rendercv_model.cv.name = apply_string_processors(

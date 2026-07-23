@@ -10,6 +10,7 @@ from rendercv.exception import RenderCVUserError, RenderCVUserValidationError
 from rendercv.renderer.html import generate_html
 from rendercv.renderer.markdown import generate_markdown
 from rendercv.renderer.pdf_png import generate_pdf, generate_png
+from rendercv.renderer.text import generate_text
 from rendercv.renderer.typst import generate_typst
 from rendercv.schema.rendercv_model_builder import (
     BuildRendercvModelArguments,
@@ -179,6 +180,12 @@ def run_rendercv(
             generate_html,
             rendercv_model,
             md_path,
+        )
+        timed_step(
+            "Generated Text",
+            progress,
+            generate_text,
+            rendercv_model,
         )
         progress.finish_progress()
     except RenderCVUserError as e:

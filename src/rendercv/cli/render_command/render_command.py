@@ -98,6 +98,17 @@ def cli_command_render(
             ),
         ),
     ] = None,
+    text_path: Annotated[
+        pathlib.Path | None,
+        typer.Option(
+            "--text-path",
+            "-txt",
+            help=(
+                "Save the generated plain text file to the specified path, relative"
+                " to the input file."
+            ),
+        ),
+    ] = None,
     html_path: Annotated[
         pathlib.Path | None,
         typer.Option(
@@ -129,6 +140,14 @@ def cli_command_render(
                 "If provided, the Markdown file will not be generated. Disabling"
                 " Markdown generation implicitly disables HTML."
             ),
+        ),
+    ] = None,
+    dont_generate_text: Annotated[
+        bool | None,
+        typer.Option(
+            "--dont-generate-text",
+            "-notxt",
+            help="If provided, the plain text file will not be generated.",
         ),
     ] = None,
     dont_generate_html: Annotated[
@@ -217,11 +236,13 @@ def cli_command_render(
         "typst_path": typst_path,
         "pdf_path": pdf_path,
         "markdown_path": markdown_path,
+        "text_path": text_path,
         "html_path": html_path,
         "png_path": png_path,
         "dont_generate_typst": dont_generate_typst,
         "dont_generate_html": dont_generate_html,
         "dont_generate_markdown": dont_generate_markdown,
+        "dont_generate_text": dont_generate_text,
         "dont_generate_pdf": dont_generate_pdf,
         "dont_generate_png": dont_generate_png,
         "overrides": parse_override_arguments(extra_data_model_override_arguments),

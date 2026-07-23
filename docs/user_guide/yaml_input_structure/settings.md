@@ -11,9 +11,11 @@ settings:
     typst_path: rendercv_output/NAME_IN_SNAKE_CASE_CV.typ # (3)!
     pdf_path: rendercv_output/NAME_IN_SNAKE_CASE_CV.pdf
     markdown_path: rendercv_output/NAME_IN_SNAKE_CASE_CV.md
+    text_path: rendercv_output/NAME_IN_SNAKE_CASE_CV.txt
     html_path: rendercv_output/NAME_IN_SNAKE_CASE_CV.html
     png_path: rendercv_output/NAME_IN_SNAKE_CASE_CV.png
     dont_generate_markdown: false
+    dont_generate_text: false
     dont_generate_html: false
     dont_generate_typst: false
     dont_generate_pdf: false

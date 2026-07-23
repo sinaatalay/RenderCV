@@ -7,6 +7,7 @@ from hypothesis import strategies as st
 from rendercv.renderer.templater.markdown_parser import (
     escape_typst_characters,
     markdown_to_html,
+    markdown_to_plain_text,
     markdown_to_typst,
 )
 
@@ -310,3 +311,36 @@ def test_markdown_to_html():
     assert (
         markdown_to_html("Hello, **world**!") == "<p>Hello, <strong>world</strong>!</p>"
     )
+
+
+class TestMarkdownToPlainText:
+    @pytest.mark.parametrize(
+        ("markdown_string", "expected"),
+        [
+            ("plain text", "plain text"),
+            ("**bold**", "bold"),
+            ("*italic*", "italic"),
+            ("`code`", "code"),
+            ("Hello, **world**!", "Hello, world!"),
+            ("line one\nline two", "line one\nline two"),
+        ],
+    )
+    def test_strips_markup(self, markdown_string: str, expected: str) -> None:
+        assert markdown_to_plain_text(markdown_string) == expected
+
+    @pytest.mark.parametrize(
+        ("markdown_string", "expected"),
+        [
+            ("[label](https://example.com)", "label (https://example.com)"),
+            ("[example.com](https://example.com/)", "example.com"),
+            ("[john@doe.com](mailto:john@doe.com)", "john@doe.com"),
+            (
+                "**[bold link](https://example.com)**",
+                "bold link (https://example.com)",
+            ),
+        ],
+    )
+    def test_links_keep_informative_urls(
+        self, markdown_string: str, expected: str
+    ) -> None:
+        assert markdown_to_plain_text(markdown_string) == expected
