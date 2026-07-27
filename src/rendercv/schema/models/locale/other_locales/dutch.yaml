@@ -5,7 +5,7 @@ locale:
   month: "maand"
   months: "maanden"
   year: "jaar"
-  years: "jaren"
+  years: "jaar"
   present: "heden"
   phrases:
     degree_with_area: DEGREE in AREA
