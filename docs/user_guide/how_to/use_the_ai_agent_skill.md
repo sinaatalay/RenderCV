@@ -43,7 +43,7 @@ The skill works with any AI agent that supports the [skills standard](https://sk
 
     ```bash
     git clone https://github.com/rendercv/rendercv-skill.git
-    cp -r rendercv-skill/skills/rendercv ~/.claude/skills/
+    cp -r rendercv-skill/skills/rendercv ~/.claude/skills/rendercv/
     ```
 
 ## Auto-Generated and Evaluated
