@@ -583,8 +583,8 @@
           "type": "string"
         },
         "years": {
-          "default": "jaren",
-          "description": "Translation of \"years\" (plural). The default value is `jaren`.",
+          "default": "jaar",
+          "description": "Translation of \"years\" (plural). The default value is `jaar`.",
           "title": "Years",
           "type": "string"
         },
