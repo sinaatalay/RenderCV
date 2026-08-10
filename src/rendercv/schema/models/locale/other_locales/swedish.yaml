@@ -1,12 +1,12 @@
 # yaml-language-server: $schema=../../../../../../schema.json
 locale:
   language: swedish
-  last_updated: "Senast uppdaterad"
+  last_updated: "Senast uppdaterad i"
   month: "månad"
   months: "månader"
   year: "år"
   years: "år"
-  present: "nuvarande"
+  present: "nu"
   phrases:
     degree_with_area: DEGREE i AREA
   month_abbreviations:
