@@ -79,7 +79,7 @@ class TestProcessDate:
             time_span_template="1 year 2 months",
         )
 
-        assert result == "Jan 2020 – Feb 2021\n\n1 year 2 months"
+        assert result == ("Jan 2020 – Feb 2021", "1 year 2 months")
 
     def test_skips_time_span_when_disabled(self):
         result = process_date(
@@ -94,7 +94,7 @@ class TestProcessDate:
             time_span_template="1 year 2 months",
         )
 
-        assert result == "Jan 2020 – Feb 2021"
+        assert result == ("Jan 2020 – Feb 2021", "")
 
     def test_raises_error_when_no_dates_exist(self):
         with pytest.raises(RenderCVInternalError):
@@ -242,6 +242,59 @@ class TestRenderEntryTemplates:
         )
 
         assert entry.main_column == "Jan 2020 / Mar 2021 / / Jan 2020 – Mar 2021"  # ty: ignore[unresolved-attribute]
+
+    def test_time_span_is_available_as_its_own_placeholder(self):
+        entry = NormalEntry(
+            name="Timeline",
+            start_date="2020-01-01",
+            end_date="2021-03-01",
+        )
+
+        entry = render_entry_templates(
+            entry,
+            templates=Templates(
+                normal_entry=NormalEntryTemplate(
+                    main_column="TIME_SPAN / DATE",
+                ),
+                time_span="HOW_MANY_YEARS YEARS HOW_MANY_MONTHS MONTHS",
+            ),
+            locale=EnglishLocale(),
+            show_time_span=True,
+            current_date=Date(2024, 1, 1),
+        )
+
+        # TIME_SPAN is substituted on its own, independent of DATE, and DATE
+        # still carries its own copy for backward compatibility with themes
+        # that only ever used DATE.
+        assert entry.main_column == (  # ty: ignore[unresolved-attribute]
+            "1 year 3 months / Jan 2020 – Mar 2021\n\n1 year 3 months"
+        )
+
+    def test_time_span_placeholder_is_removed_when_not_requested(self):
+        entry = NormalEntry(
+            name="Timeline",
+            start_date="2020-01-01",
+            end_date="2021-03-01",
+        )
+
+        entry = render_entry_templates(
+            entry,
+            templates=Templates(
+                normal_entry=NormalEntryTemplate(
+                    main_column="TIME_SPAN / DATE",
+                ),
+            ),
+            locale=EnglishLocale(),
+            show_time_span=False,
+            current_date=Date(2024, 1, 1),
+        )
+
+        # No TIME_SPAN was requested, so the placeholder is dropped, but the
+        # literal " / " separator in the template is left as-is (consistent
+        # with existing placeholder-removal behavior, which only cleans up
+        # markdown-style wrapping characters like ** and (), not arbitrary
+        # template text).
+        assert entry.main_column == "/ Jan 2020 – Mar 2021"  # ty: ignore[unresolved-attribute]
 
     def test_handles_authors_doi_and_date_placeholders(self):
         entry = PublicationEntry(
@@ -706,7 +759,7 @@ class TestRenderEntryTemplatesInternalErrors:
         with (
             patch(
                 "rendercv.renderer.templater.entry_templates_from_input.process_date",
-                return_value="Jan 2020 – Jan 2021",
+                return_value=("Jan 2020 – Jan 2021", ""),
             ),
             pytest.raises(RenderCVInternalError),
         ):
