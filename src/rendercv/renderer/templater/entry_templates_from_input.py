@@ -163,7 +163,7 @@ def render_entry_templates[EntryType: Entry](
         or "START_DATE" in entry_fields
         or "END_DATE" in entry_fields
     ):
-        entry_fields["DATE"] = process_date(
+        date_string, time_span_string = process_date(
             date=getattr(entry, "date", None),
             start_date=getattr(entry, "start_date", None),
             end_date=getattr(entry, "end_date", None),
@@ -174,6 +174,11 @@ def render_entry_templates[EntryType: Entry](
             date_range_template=templates.date_range,
             time_span_template=templates.time_span,
         )
+        entry_fields["DATE"] = (
+            f"{date_string}\n\n{time_span_string}" if time_span_string else date_string
+        )
+        if time_span_string:
+            entry_fields["TIME_SPAN"] = time_span_string
 
     if "START_DATE" in entry_fields:
         start_date = getattr(entry, "start_date", None)
@@ -277,13 +282,16 @@ def process_date(
     single_date_template: str,
     date_range_template: str,
     time_span_template: str,
-) -> str:
-    """Format date field as single date or range with optional time span.
+) -> tuple[str, str]:
+    """Format date field as single date or range, with time span kept separate.
 
     Why:
         Entry date fields vary by type: publications use single dates, experience
-        uses ranges. This routes to appropriate formatter and optionally appends
-        duration calculation for employment sections.
+        uses ranges. This routes to appropriate formatter and optionally computes
+        a duration calculation for employment sections. The time span is returned
+        separately (rather than only baked into the date string) so custom entry
+        templates can place it independently via the TIME_SPAN placeholder,
+        instead of it only ever appearing appended to DATE.
 
     Example:
         ```py
@@ -299,7 +307,7 @@ def process_date(
             date_range_template="",
             time_span_template="",
         )
-        # Returns: "March 2024"
+        # Returns: ("March 2024", "")
 
         # Date range with time span for employment
         result = process_date(
@@ -313,7 +321,7 @@ def process_date(
             date_range_template="START_DATE to END_DATE",
             time_span_template="HOW_MANY_YEARS YEARS",
         )
-        # Returns: "Jun 2020 to present\n\n4 years"
+        # Returns: ("Jun 2020 to present", "4 years")
         ```
 
     Args:
@@ -322,17 +330,22 @@ def process_date(
         end_date: Range end for employment and education.
         locale: Locale for date formatting.
         current_date: Reference date for "present" calculation.
-        show_time_span: Whether to append duration to date range.
+        show_time_span: Whether to compute the duration for this entry.
         single_date_template: Template for single date formatting.
         date_range_template: Template for date range formatting.
         time_span_template: Template for duration formatting.
 
     Returns:
-        Formatted date string, optionally with time span on new lines.
+        Tuple of (formatted date string, time span string). The time span
+        string is empty when show_time_span is False or the entry has no
+        date range.
     """
     if date and not (start_date or end_date):
-        return format_single_date(
-            date, locale=locale, single_date_template=single_date_template
+        return (
+            format_single_date(
+                date, locale=locale, single_date_template=single_date_template
+            ),
+            "",
         )
     if start_date and end_date:
         date_range = format_date_range(
@@ -350,9 +363,9 @@ def process_date(
                 current_date=current_date,
                 time_span_template=time_span_template,
             )
-            return f"{date_range}\n\n{time_span}"
+            return date_range, time_span
 
-        return date_range
+        return date_range, ""
 
     raise RenderCVInternalError("Date is not provided for this entry.")
 
