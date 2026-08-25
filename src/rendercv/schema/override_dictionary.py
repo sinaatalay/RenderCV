@@ -58,7 +58,10 @@ def update_value_by_location[T: dict | list](
             )
             raise RenderCVUserError(message) from e
 
-        if first_key >= len(dict_or_list):
+        # Checks if new key is <= len(list), for users replacing an existing element 
+        # on list and one more than it to see if the user is adding a new key 
+        # at the end of list
+        if first_key >= len(dict_or_list) + 1:
             message = (
                 f"Index {first_key} is out of range for the list `{previous_key}`."
             )
@@ -71,11 +74,17 @@ def update_value_by_location[T: dict | list](
         raise RenderCVUserError(message)
 
     if len(keys) == 1:
+        if isinstance(dict_or_list, list) and first_key == len(dict_or_list):
+            dict_or_list.append(value)
+            return dict_or_list
         new_value = value
     else:
         if isinstance(dict_or_list, dict) and first_key not in dict_or_list:
             # Safe: isinstance above guarantees dict, but ty cannot narrow T:
             dict_or_list[first_key] = {}  # ty: ignore[invalid-assignment]
+        elif isinstance(dict_or_list, list) and first_key == len(dict_or_list):
+            # Empty dict lets the recursive call below populate it:
+            dict_or_list.append({})
 
         new_value = update_value_by_location(
             # Safe: first_key is validated as int for list, str for dict above:
