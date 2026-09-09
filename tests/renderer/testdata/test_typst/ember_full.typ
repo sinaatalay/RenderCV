@@ -100,7 +100,7 @@
 #connections(
   [Istanbul, Turkey],
   [#link("mailto:john_doe@example.com", icon: false, if-underline: false, if-color: false)[john\_doe\@example.com]],
-  [#link("tel:+90-541-999-99-99", icon: false, if-underline: false, if-color: false)[0541 999 99 99]],
+  [#link("tel:+90-541-999-99-99", icon: false, if-underline: false, if-color: false)[#text(dir: ltr)[0541 999 99 99]]],
   [#link("https://example.com/", icon: false, if-underline: false, if-color: false)[example.com]],
   [#link("https://linkedin.com/in/johndoe", icon: false, if-underline: false, if-color: false)[johndoe]],
   [#link("https://github.com/johndoe", icon: false, if-underline: false, if-color: false)[johndoe]],

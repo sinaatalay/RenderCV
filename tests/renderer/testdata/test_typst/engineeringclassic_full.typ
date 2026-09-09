@@ -100,7 +100,7 @@
 #connections(
   [#connection-with-icon("location-dot")[Istanbul, Turkey]],
   [#link("mailto:john_doe@example.com", icon: false, if-underline: false, if-color: false)[#connection-with-icon("envelope")[john\_doe\@example.com]]],
-  [#link("tel:+90-541-999-99-99", icon: false, if-underline: false, if-color: false)[#connection-with-icon("phone")[0541 999 99 99]]],
+  [#link("tel:+90-541-999-99-99", icon: false, if-underline: false, if-color: false)[#connection-with-icon("phone")[#text(dir: ltr)[0541 999 99 99]]]],
   [#link("https://example.com/", icon: false, if-underline: false, if-color: false)[#connection-with-icon("link")[example.com]]],
   [#link("https://linkedin.com/in/johndoe", icon: false, if-underline: false, if-color: false)[#connection-with-icon("linkedin")[johndoe]]],
   [#link("https://github.com/johndoe", icon: false, if-underline: false, if-color: false)[#connection-with-icon("github")[johndoe]]],
