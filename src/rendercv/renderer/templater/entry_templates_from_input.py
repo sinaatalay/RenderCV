@@ -152,6 +152,16 @@ def render_entry_templates[EntryType: Entry](
             raise RenderCVInternalError("HIGHLIGHTS in fields but highlights is None")
         entry_fields["HIGHLIGHTS"] = process_highlights(highlights)
 
+    if "DETAILS" in entry_fields:
+        details = getattr(entry, "details", None)
+        if details is None:
+            raise RenderCVInternalError("DETAILS in fields but details is None")
+        if isinstance(details, list):
+            if details:
+                entry_fields["DETAILS"] = "\n" + process_highlights(details)
+            else:
+                del entry_fields["DETAILS"]
+
     if "AUTHORS" in entry_fields:
         authors = getattr(entry, "authors", None)
         if authors is None:

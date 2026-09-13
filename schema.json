@@ -2810,13 +2810,26 @@
           "type": "string"
         },
         "details": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
           "examples": [
-            "English (native), Spanish (fluent)",
+            [
+              "English (native)",
+              "Spanish (fluent)"
+            ],
             "US Citizen",
             "Top Secret"
           ],
-          "title": "Details",
-          "type": "string"
+          "title": "Details"
         }
       },
       "required": [
