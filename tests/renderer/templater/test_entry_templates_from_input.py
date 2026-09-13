@@ -22,6 +22,7 @@ from rendercv.renderer.templater.entry_templates_from_input import (
 from rendercv.schema.models.cv.entries.education import EducationEntry
 from rendercv.schema.models.cv.entries.experience import ExperienceEntry
 from rendercv.schema.models.cv.entries.normal import NormalEntry
+from rendercv.schema.models.cv.entries.one_line import OneLineEntry
 from rendercv.schema.models.cv.entries.publication import PublicationEntry
 from rendercv.schema.models.design.classic_theme import (
     EducationEntryTemplate,
@@ -221,6 +222,24 @@ class TestRenderEntryTemplates:
 
         assert entry.main_column == "**Project**\n- Alpha\n- Beta"  # ty: ignore[unresolved-attribute]
         assert entry.date_and_location_column == "Remote\nMay 2023"  # ty: ignore[unresolved-attribute]
+
+    def test_one_line_entry_with_list_details_as_bullet_list(self):
+        entry = OneLineEntry(
+            label="Languages", details=["English (native)", "Spanish (fluent)"]
+        )
+
+        entry = render_entry_templates(
+            entry,
+            templates=Templates(),
+            locale=EnglishLocale(),
+            show_time_span=False,
+            current_date=Date(2024, 1, 1),
+        )
+
+        assert (
+            entry.main_column  # ty: ignore[unresolved-attribute]
+            == "**Languages:** \n- English (native)\n- Spanish (fluent)"
+        )
 
     def test_formats_start_and_end_dates_in_custom_template(self):
         entry = NormalEntry(
