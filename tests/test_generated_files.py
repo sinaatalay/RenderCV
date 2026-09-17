@@ -8,6 +8,7 @@ Why:
 """
 
 import pathlib
+import re
 import subprocess
 import sys
 
@@ -17,6 +18,15 @@ from rendercv.schema.models.design.built_in_design import available_themes
 from rendercv.schema.sample_generator import create_sample_yaml_input_file
 
 repository_root = pathlib.Path(__file__).parent.parent
+skill_path = (
+    repository_root
+    / ".claude"
+    / "skills"
+    / "rendercv-skill"
+    / "skills"
+    / "rendercv"
+    / "SKILL.md"
+)
 
 
 def run_just(recipe: str) -> None:
@@ -68,15 +78,6 @@ def test_example_yaml_is_up_to_date(theme: str) -> None:
 
 
 def test_skill_md_is_up_to_date() -> None:
-    skill_path = (
-        repository_root
-        / ".claude"
-        / "skills"
-        / "rendercv-skill"
-        / "skills"
-        / "rendercv"
-        / "SKILL.md"
-    )
     before = skill_path.read_text(encoding="utf-8")
 
     llms_txt_path = repository_root / "docs" / "llms.txt"
@@ -97,3 +98,14 @@ def test_skill_md_is_up_to_date() -> None:
     assert llms_before == llms_after, (
         "docs/llms.txt is stale. Run `just update-skill` to regenerate."
     )
+
+
+def test_skill_lists_every_available_theme() -> None:
+    """Ensure the skill advertises every theme accepted by RenderCV."""
+    skill = skill_path.read_text(encoding="utf-8")
+    available_themes_line = next(
+        line for line in skill.splitlines() if line.startswith("**Available themes:**")
+    )
+    skill_themes = re.findall(r"`([^`]+)`", available_themes_line)
+
+    assert skill_themes == available_themes
