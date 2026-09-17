@@ -285,7 +285,7 @@ This shows every available design field with its default value. All themes share
 
 ### Other Theme Overrides
 
-Other themes only override specific fields from the classic defaults above. To use a theme, set `design.theme` and optionally override any field. Each theme also customizes `design.templates` (entry layout patterns) — see the classic sample above for the full template structure. The override YAMLs below omit templates for brevity.
+Other themes only override specific fields from the classic defaults above. To use a theme, set `design.theme` and optionally override any field. Each theme also customizes `design.templates` (entry layout patterns) — see the classic sample above for the full template structure. To keep this skill compact, the selected override examples below cover a representative subset of themes and omit templates for brevity.
 
 {% for theme, yaml in theme_overrides.items() %}
 #### {{ theme }}
