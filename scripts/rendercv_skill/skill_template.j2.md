@@ -232,6 +232,7 @@ Generate a starter YAML file.
 | `--theme THEME` | | Theme to use (default: `classic`) |
 | `--locale LOCALE` | | Locale to use (default: `english`) |
 | `--create-typst-templates` | | Also create editable Typst template files for full design control |
+| `--create-markdown-templates` | | Also create editable Markdown template files |
 
 ### `rendercv render <input.yaml>`
 

@@ -281,6 +281,8 @@ def build_template_context() -> dict:
         if yaml_path.exists():
             yaml = ruamel.yaml.YAML()
             data = yaml.load(yaml_path.read_text(encoding="utf-8"))
+            # The source file's relative schema path is only valid inside the repo.
+            data.ca.comment = None
             if "design" in data and "templates" in data["design"]:
                 del data["design"]["templates"]
             stream = io.StringIO()
