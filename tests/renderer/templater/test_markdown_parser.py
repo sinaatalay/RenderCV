@@ -243,6 +243,18 @@ class TestMarkdownToTypst:
         result = markdown_to_typst("**bold**\n\n*italic*")
         assert result == "#strong[bold]\n\n#emph[italic]"
 
+    def test_nested_bullet_indentation_is_preserved(self):
+        result = markdown_to_typst(
+            "- Main bullet point\n  - Sub-bullet 1\n    - Sub-bullet 2"
+        )
+
+        assert result == ("- Main bullet point\n  - Sub-bullet 1\n    - Sub-bullet 2")
+
+    def test_plain_text_leading_whitespace_is_normalized(self):
+        result = markdown_to_typst("  Plain text")
+
+        assert result == "Plain text"
+
     @settings(deadline=None)
     @given(text=st.text(max_size=300))
     def test_never_crashes_on_arbitrary_input(self, text: str) -> None:

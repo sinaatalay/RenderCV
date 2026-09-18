@@ -187,7 +187,13 @@ def markdown_to_typst(markdown_string: str) -> str:
             result_parts.append(md.convert("\n".join(block)))
         else:
             md.reset()
-            result_parts.append(md.convert(lines[i]))
+            line = lines[i]
+            stripped_line = line.lstrip()
+            if stripped_line.startswith("- "):
+                leading_whitespace = line[: len(line) - len(stripped_line)]
+                result_parts.append(leading_whitespace + md.convert(stripped_line))
+            else:
+                result_parts.append(md.convert(line))
             i += 1
     return "\n".join(result_parts)
 
