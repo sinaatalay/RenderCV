@@ -259,6 +259,7 @@ Generate a starter YAML file.
 | `--theme THEME` | | Theme to use (default: `classic`) |
 | `--locale LOCALE` | | Locale to use (default: `english`) |
 | `--create-typst-templates` | | Also create editable Typst template files for full design control |
+| `--create-markdown-templates` | | Also create editable Markdown template files |
 
 ### `rendercv render <input.yaml>`
 
@@ -582,7 +583,6 @@ Other themes only override specific fields from the classic defaults above. To u
 #### harvard
 
 ```yaml
-# yaml-language-server: $schema=../../../../../../schema.json
 design:
   theme: harvard
   page:
@@ -629,7 +629,6 @@ design:
 #### engineeringresumes
 
 ```yaml
-# yaml-language-server: $schema=../../../../../../schema.json
 design:
   theme: engineeringresumes
   page:
@@ -685,7 +684,6 @@ design:
 #### engineeringclassic
 
 ```yaml
-# yaml-language-server: $schema=../../../../../../schema.json
 design:
   theme: engineeringclassic
   typography:
@@ -719,7 +717,6 @@ design:
 #### sb2nov
 
 ```yaml
-# yaml-language-server: $schema=../../../../../../schema.json
 design:
   theme: sb2nov
   typography:
@@ -758,7 +755,6 @@ design:
 #### moderncv
 
 ```yaml
-# yaml-language-server: $schema=../../../../../../schema.json
 design:
   theme: moderncv
   typography:

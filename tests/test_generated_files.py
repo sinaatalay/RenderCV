@@ -97,3 +97,15 @@ def test_skill_md_is_up_to_date() -> None:
     assert llms_before == llms_after, (
         "docs/llms.txt is stale. Run `just update-skill` to regenerate."
     )
+
+
+def test_skill_documents_markdown_template_option() -> None:
+    skill = (repository_root / "docs" / "llms.txt").read_text(encoding="utf-8")
+
+    assert "--create-markdown-templates" in skill
+
+
+def test_skill_omits_internal_schema_paths() -> None:
+    skill = (repository_root / "docs" / "llms.txt").read_text(encoding="utf-8")
+
+    assert "$schema=../../../../../../schema.json" not in skill
