@@ -230,8 +230,13 @@ class Cv(BaseModelWithoutExtraKeys):
 
     @pydantic.field_serializer("phone")
     def serialize_phone(
-        self, phone: pydantic_phone_numbers.PhoneNumber | None
-    ) -> str | None:
+        self,
+        phone: (
+            pydantic_phone_numbers.PhoneNumber
+            | list[pydantic_phone_numbers.PhoneNumber]
+            | None
+        ),
+    ) -> str | list[str] | None:
         """Remove tel: prefix from phone number for clean serialization.
 
         Why:
@@ -239,11 +244,14 @@ class Cv(BaseModelWithoutExtraKeys):
             Serialization strips prefix so templates render plain numbers.
 
         Args:
-            phone: Validated phone number with tel: prefix.
+            phone: Validated phone number(s) with tel: prefixes.
 
         Returns:
-            Phone string without tel: prefix, or None.
+            Phone string(s) without tel: prefixes, or None.
         """
+        if isinstance(phone, list):
+            return [number.replace("tel:", "") for number in phone]
+
         if phone is not None:
             return phone.replace("tel:", "")
 
