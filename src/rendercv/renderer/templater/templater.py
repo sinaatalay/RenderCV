@@ -152,7 +152,11 @@ def render_html(rendercv_model: RenderCVModel, markdown: str) -> str:
     """
     html_body = markdown_to_html(markdown)
     return render_single_template(
-        "html", "Full.html", rendercv_model, html_body=html_body
+        "html",
+        "Full.html",
+        rendercv_model,
+        html_body=html_body,
+        title=rendercv_model.cv.name,
     )
 
 
