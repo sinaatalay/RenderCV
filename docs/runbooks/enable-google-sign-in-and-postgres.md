@@ -426,5 +426,14 @@ Answered, and recorded here so the next reader does not re-open them:
 - The Postgres provider is Render's managed database, connected by
   `render.yaml` rather than by a pasted connection string, so its TLS and
   network policy never had to be worked out by hand.
+- **Render's free Postgres expires.** It did, about a month after
+  creation: by 2026-10-19 the dashboard showed *"Free database expired"*,
+  the database was suspended with deletion due within a day, and the web
+  service failed every start with `failed to resolve host
+  'dpg-daen9if40ujc73fumqn0-a'`. The web service's own deploy history stays
+  green throughout, so the deploy list is not where this shows -- the
+  database page and the application logs are. `plan: free` on the database
+  in `render.yaml` is only fit for a demo; anything holding real users' CVs
+  needs a paid plan or a provider without an expiry.
 - The production domain is `rendercv-web-uk68.onrender.com`, and the
   redirect URI is that host plus `/api/auth/google/callback`.

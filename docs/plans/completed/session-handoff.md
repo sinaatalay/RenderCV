@@ -1,8 +1,56 @@
 # Session Handoff — RenderCV Web Editor
 
-Last updated: 2026-08-28, after Phase 6 merged. Read this together with
-[cv-editor-web-app.md](cv-editor-web-app.md), whose Progress section
-carries the per-phase verification evidence.
+Last updated: 2026-10-19, after checking the Render dashboard. Read this
+together with [cv-editor-web-app.md](cv-editor-web-app.md), whose Progress
+section carries the per-phase verification evidence.
+
+## Status on 2026-10-19: the deployment is down
+
+`main` is at PR #54 (`9e420e1`, last code change 2026-09-10), and `develop`
+carries nothing beyond it. Every one of the 28 deploys of `rendercv-web`
+built and went live, through PR #54. Nothing has been merged since.
+
+**The service is now failing at startup, and it is not the code.** On the
+Render dashboard:
+
+| Resource | Status | Cause |
+| --- | --- | --- |
+| `rendercv-web-db` (Postgres, free) | Suspended by Render | *Free database expired.* Render deletes it and its data **within a day** unless it is upgraded to a paid plan |
+| `rendercv-web` (Docker, free) | Failed service | The startup migration cannot reach the database: `psycopg.OperationalError: failed to resolve host 'dpg-daen9if40ujc73fumqn0-a'`, then `Application startup failed. Exiting.` |
+| `p041-backend` | Failed deploy | Built from a different repository (`P041-Version-3.0`), one Blueprint deploy a month ago. Not this project |
+
+Render's free Postgres has a fixed lifetime from creation; the database was
+created about a month before this check. Redeploying the web service changes
+nothing while the database is gone. The way back is one of:
+
+1. **Upgrade `rendercv-web-db` to a paid instance** before deletion. Keeps
+   every user's CVs and needs no change here.
+2. **Let it go and recreate it.** Create a new free database (from the
+   Blueprint, or by hand) and point `RENDERCV_WEB_DATABASE_URL` at it; the
+   migrations run on startup. Every existing account and CV is lost, and the
+   new database expires the same way.
+3. **Move to a provider without an expiry** (Neon, Supabase), setting
+   `RENDERCV_WEB_DATABASE_URL` by hand and dropping `fromDatabase` from
+   `render.yaml`. Same data loss as option 2 unless the data is copied first,
+   which needs the database to be reachable -- that is, option 1 first.
+
+The choice is about money and users' data, so it is the owner's.
+
+## Work merged after the plan closed (PR #20 – #54)
+
+All of it on `main` and deployed:
+
+- Deployment proved on Render: Postgres confirmed by restart, a smoke test
+  from outside, schema.json and the core's Typst baked into the image, the
+  image slimmed by 712 MB.
+- Google sign-in published to external users; Search Console verification;
+  privacy policy; account deletion.
+- Editor: a new CV opens on the filled-in example; YAML download and
+  import; download as images (every page); form editors fixed; theme
+  switcher no longer shows a stale document.
+- Operations: database password rotation runbook, a script reporting who
+  uses the deployment, deploy checks recorded in
+  [the runbook](../../runbooks/enable-google-sign-in-and-postgres.md).
 
 ## Where things stand
 
