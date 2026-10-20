@@ -1,0 +1,50 @@
+@import 'tailwindcss';
+
+/*
+ * Tailwind v4's default `dark:` variant follows `prefers-color-scheme`
+ * (media strategy). The editor has its own light/dark toggle (see
+ * `$lib/stores/theme.ts`), so `dark:` must react to a `.dark` class on
+ * `<html>` instead -- this is the officially documented v4 way to switch
+ * strategies (see https://tailwindcss.com/docs/dark-mode).
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Native form controls (the <select> in DimensionField, the
+ * <input type="color"> swatch in ColorField, scrollbars) don't pick up
+ * Tailwind's `dark:` utilities -- they're themed by the browser itself via
+ * `color-scheme`. Without this, a native dropdown/color-picker popup stays
+ * light-on-white even though everything around it is dark.
+ */
+:root {
+	color-scheme: light;
+}
+
+:root.dark {
+	color-scheme: dark;
+
+	/*
+	 * Phase 5 wave 3 -- navy dark palette (reference: rendercv.com dark
+	 * mode, observed as a deep-navy family, not neutral gray). Semantic
+	 * tokens rather than scattering literal hex values across every
+	 * `dark:` class: `--surface` is the page/editor backdrop, `--surface-
+	 * sidebar` is a touch darker for the sidebar and the preview pane's
+	 * dark surround (the PDF paper itself always stays white -- only the
+	 * surround is dark), `--surface-card` is a step lighter for elevated
+	 * surfaces (inputs, dropdown menus, the YAML editor's own panel border
+	 * accents), and `--border-subtle` is a blue-gray hairline visible
+	 * against all three without being a hard gray seam.
+	 *
+	 * Contrast check (WCAG relative luminance, done by hand -- see the
+	 * wave-3 handoff notes): `text-neutral-400` (the muted-label color
+	 * already used throughout, unchanged) against `--surface-card`
+	 * (the lightest of the three, so the tightest case) is ~6.8:1, still
+	 * comfortably above the 4.5:1 AA text threshold the wave-2 audit
+	 * established -- swapping neutral-950 for this navy family does not
+	 * regress it.
+	 */
+	--surface: #0d1220;
+	--surface-sidebar: #0a0e1a;
+	--surface-card: #141b2e;
+	--border-subtle: #232c42;
+}
