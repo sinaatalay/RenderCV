@@ -4,14 +4,14 @@ All six looks below are produced by the same package with different parameter va
 
 <table>
 <tr>
-<td><img alt="Example CV using the Classic theme with blue accents and partial section title lines" src="https://raw.githubusercontent.com/rendercv/rendercv/9b7830a0e1b5d731461320c10df0a9c12267e5f0/docs/assets/images/examples/classic.png" width="350"></td>
-<td><img alt="Example CV using the Engineering Resumes theme with a minimal single-column layout" src="https://raw.githubusercontent.com/rendercv/rendercv/9b7830a0e1b5d731461320c10df0a9c12267e5f0/docs/assets/images/examples/engineeringresumes.png" width="350"></td>
-<td><img alt="Example CV using the Sb2nov theme with full-width section title lines" src="https://raw.githubusercontent.com/rendercv/rendercv/9b7830a0e1b5d731461320c10df0a9c12267e5f0/docs/assets/images/examples/sb2nov.png" width="350"></td>
+<td><img alt="Example CV using the Classic theme with blue accents and partial section title lines" src="https://raw.githubusercontent.com/rendercv/rendercv/dd5ac9115ac0fc1cc97e9608f08a6d075883e20b/docs/assets/images/examples/classic.png" width="350"></td>
+<td><img alt="Example CV using the Engineering Resumes theme with a minimal single-column layout" src="https://raw.githubusercontent.com/rendercv/rendercv/dd5ac9115ac0fc1cc97e9608f08a6d075883e20b/docs/assets/images/examples/engineeringresumes.png" width="350"></td>
+<td><img alt="Example CV using the Sb2nov theme with full-width section title lines" src="https://raw.githubusercontent.com/rendercv/rendercv/dd5ac9115ac0fc1cc97e9608f08a6d075883e20b/docs/assets/images/examples/sb2nov.png" width="350"></td>
 </tr>
 <tr>
-<td><img alt="Example CV using the ModernCV theme with a sidebar layout and colored name" src="https://raw.githubusercontent.com/rendercv/rendercv/9b7830a0e1b5d731461320c10df0a9c12267e5f0/docs/assets/images/examples/moderncv.png" width="350"></td>
-<td><img alt="Example CV using the Engineering Classic theme with a traditional academic style" src="https://raw.githubusercontent.com/rendercv/rendercv/9b7830a0e1b5d731461320c10df0a9c12267e5f0/docs/assets/images/examples/engineeringclassic.png" width="350"></td>
-<td><img alt="Example CV using the Harvard theme with a clean serif font and full-width lines" src="https://raw.githubusercontent.com/rendercv/rendercv/9b7830a0e1b5d731461320c10df0a9c12267e5f0/docs/assets/images/examples/harvard.png" width="350"></td>
+<td><img alt="Example CV using the ModernCV theme with a sidebar layout and colored name" src="https://raw.githubusercontent.com/rendercv/rendercv/dd5ac9115ac0fc1cc97e9608f08a6d075883e20b/docs/assets/images/examples/moderncv.png" width="350"></td>
+<td><img alt="Example CV using the Engineering Classic theme with a traditional academic style" src="https://raw.githubusercontent.com/rendercv/rendercv/dd5ac9115ac0fc1cc97e9608f08a6d075883e20b/docs/assets/images/examples/engineeringclassic.png" width="350"></td>
+<td><img alt="Example CV using the Harvard theme with a clean serif font and full-width lines" src="https://raw.githubusercontent.com/rendercv/rendercv/dd5ac9115ac0fc1cc97e9608f08a6d075883e20b/docs/assets/images/examples/harvard.png" width="350"></td>
 </tr>
 </table>
 
