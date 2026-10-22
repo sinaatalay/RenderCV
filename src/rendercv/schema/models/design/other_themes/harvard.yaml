@@ -44,6 +44,7 @@ design:
     time_span: ''
     education_entry:
       main_column: "**INSTITUTION**, DEGREE_WITH_AREA -- LOCATION\nSUMMARY\nHIGHLIGHTS"
+      degree_column: null
       date_and_location_column: DATE
     normal_entry:
       main_column: "**NAME** -- **LOCATION**\nSUMMARY\nHIGHLIGHTS"
