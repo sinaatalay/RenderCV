@@ -5090,8 +5090,8 @@
               "type": "null"
             }
           ],
-          "default": "**DEGREE**",
-          "description": "Optional degree column template. If provided, displays degree in separate column. If `null`, no degree column is shown. Available placeholders:\n- `INSTITUTION`: Institution name\n- `AREA`: Field of study/major\n- `DEGREE`: Degree type (e.g., BS, PhD)\n- `SUMMARY`: Summary text\n- `HIGHLIGHTS`: Bullet points list\n- `LOCATION`: Location text\n- `DATE`: Formatted date or date range\n\nYou can also add arbitrary keys to entries and use them as UPPERCASE placeholders.\n\nThe default value is `**DEGREE**`.",
+          "default": null,
+          "description": "Optional degree column template. If provided, displays degree in separate column. If `null`, no degree column is shown. Available placeholders:\n- `INSTITUTION`: Institution name\n- `AREA`: Field of study/major\n- `DEGREE`: Degree type (e.g., BS, PhD)\n- `SUMMARY`: Summary text\n- `HIGHLIGHTS`: Bullet points list\n- `LOCATION`: Location text\n- `DATE`: Formatted date or date range\n\nYou can also add arbitrary keys to entries and use them as UPPERCASE placeholders.\n\nThe default value is `None`.",
           "title": "Degree Column"
         },
         "date_and_location_column": {

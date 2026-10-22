@@ -1880,9 +1880,6 @@ Third text with #link("https://example.com")[link] and more content.
   ],
   [
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
   ],
 )
@@ -1893,9 +1890,6 @@ Third text with #link("https://example.com")[link] and more content.
 
   ],
   [
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
   ],
@@ -1910,9 +1904,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
   ],
 )
@@ -1925,9 +1916,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2015 – present
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
   ],
@@ -1942,9 +1930,6 @@ Third text with #link("https://example.com")[link] and more content.
     June 2020
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
   ],
 )
@@ -1956,9 +1941,6 @@ Third text with #link("https://example.com")[link] and more content.
   ],
   [
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
   ],
 )
@@ -1969,9 +1951,6 @@ Third text with #link("https://example.com")[link] and more content.
 
   ],
   [
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -1985,9 +1964,6 @@ Third text with #link("https://example.com")[link] and more content.
 
   ],
   [
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -2012,9 +1988,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
   ],
 )
@@ -2028,9 +2001,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – present
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
   ],
 )
@@ -2043,9 +2013,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     June 2020
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
   ],
@@ -2058,9 +2025,6 @@ Third text with #link("https://example.com")[link] and more content.
   ],
   [
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
   ],
 )
@@ -2071,9 +2035,6 @@ Third text with #link("https://example.com")[link] and more content.
 
   ],
   [
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -2087,9 +2048,6 @@ Third text with #link("https://example.com")[link] and more content.
 
   ],
   [
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -2114,9 +2072,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
   ],
 )
@@ -2129,9 +2084,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
   ],
@@ -2146,9 +2098,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
   ],
 )
@@ -2161,9 +2110,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -2179,9 +2125,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -2206,9 +2149,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – June 2020
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
   ],
 )
@@ -2222,9 +2162,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – present
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
   ],
 )
@@ -2237,9 +2174,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2015 – present
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -2255,9 +2189,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2015 – present
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -2282,9 +2213,6 @@ Third text with #link("https://example.com")[link] and more content.
     June 2020
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
   ],
 )
@@ -2297,9 +2225,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     June 2020
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -2315,9 +2240,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     June 2020
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -2340,9 +2262,6 @@ Third text with #link("https://example.com")[link] and more content.
   ],
   [
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -2355,9 +2274,6 @@ Third text with #link("https://example.com")[link] and more content.
 
   ],
   [
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -2379,9 +2295,6 @@ Third text with #link("https://example.com")[link] and more content.
 
   ],
   [
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -2408,9 +2321,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
   ],
 )
@@ -2423,9 +2333,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
   ],
@@ -2440,9 +2347,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
   ],
 )
@@ -2455,9 +2359,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -2473,9 +2374,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -2500,9 +2398,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – June 2020
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
   ],
 )
@@ -2516,9 +2411,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – present
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
   ],
 )
@@ -2531,9 +2423,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2015 – present
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -2549,9 +2438,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2015 – present
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -2576,9 +2462,6 @@ Third text with #link("https://example.com")[link] and more content.
     June 2020
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
   ],
 )
@@ -2591,9 +2474,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     June 2020
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -2609,9 +2489,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     June 2020
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -2634,9 +2511,6 @@ Third text with #link("https://example.com")[link] and more content.
   ],
   [
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -2649,9 +2523,6 @@ Third text with #link("https://example.com")[link] and more content.
 
   ],
   [
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -2674,9 +2545,6 @@ Third text with #link("https://example.com")[link] and more content.
   ],
   [
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -2702,9 +2570,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
   ],
 )
@@ -2718,9 +2583,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
   ],
 )
@@ -2733,9 +2595,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -2751,9 +2610,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -2778,9 +2634,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
   ],
 )
@@ -2793,9 +2646,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -2811,9 +2661,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -2838,9 +2685,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -2855,9 +2699,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -2881,9 +2722,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -2910,9 +2748,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – June 2020
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
   ],
 )
@@ -2925,9 +2760,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2015 – June 2020
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -2944,9 +2776,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – June 2020
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
 
@@ -2970,9 +2799,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – present
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -2987,9 +2813,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2015 – present
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -3014,9 +2837,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – present
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -3042,9 +2862,6 @@ Third text with #link("https://example.com")[link] and more content.
     June 2020
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -3059,9 +2876,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     June 2020
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -3085,9 +2899,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     June 2020
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -3112,9 +2923,6 @@ Third text with #link("https://example.com")[link] and more content.
   ],
   [
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -3140,9 +2948,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
   ],
 )
@@ -3156,9 +2961,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
   ],
 )
@@ -3171,9 +2973,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -3189,9 +2988,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -3216,9 +3012,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
   ],
 )
@@ -3231,9 +3024,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -3249,9 +3039,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -3276,9 +3063,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -3293,9 +3077,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -3319,9 +3100,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -3348,9 +3126,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – June 2020
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
   ],
 )
@@ -3363,9 +3138,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2015 – June 2020
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -3382,9 +3154,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – June 2020
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
 
@@ -3408,9 +3177,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – present
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -3425,9 +3191,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2015 – present
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -3452,9 +3215,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – present
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -3480,9 +3240,6 @@ Third text with #link("https://example.com")[link] and more content.
     June 2020
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -3497,9 +3254,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     June 2020
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -3523,9 +3277,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     June 2020
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -3550,9 +3301,6 @@ Third text with #link("https://example.com")[link] and more content.
   ],
   [
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -3578,9 +3326,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
   ],
 )
@@ -3593,9 +3338,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -3611,9 +3353,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -3638,9 +3377,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -3655,9 +3391,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -3682,9 +3415,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -3710,9 +3440,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -3727,9 +3454,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -3754,9 +3478,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -3781,9 +3502,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -3810,9 +3528,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – June 2020
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -3827,9 +3542,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2015 – June 2020
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -3853,9 +3565,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2015 – June 2020
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -3882,9 +3591,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – present
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -3910,9 +3616,6 @@ Third text with #link("https://example.com")[link] and more content.
     June 2020
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -3938,9 +3641,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
   ],
 )
@@ -3953,9 +3653,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -3971,9 +3668,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -3998,9 +3692,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -4015,9 +3706,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -4042,9 +3730,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -4070,9 +3755,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -4087,9 +3769,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -4114,9 +3793,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -4141,9 +3817,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -4170,9 +3843,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – June 2020
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -4187,9 +3857,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2015 – June 2020
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -4213,9 +3880,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2015 – June 2020
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -4242,9 +3906,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – present
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -4270,9 +3931,6 @@ Third text with #link("https://example.com")[link] and more content.
     June 2020
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -4298,9 +3956,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -4315,9 +3970,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -4342,9 +3994,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -4370,9 +4019,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -4397,9 +4043,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -4426,9 +4069,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – June 2020
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -4454,9 +4094,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -4471,9 +4108,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     - Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.
@@ -4498,9 +4132,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -4526,9 +4157,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -4553,9 +4181,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
@@ -4582,9 +4207,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2015 – June 2020
 
   ],
-  degree-column: [
-    #strong[BS]
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -4610,9 +4232,6 @@ Third text with #link("https://example.com")[link] and more content.
     Sept 2021
 
   ],
-  degree-column: [
-    
-  ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]
 
@@ -4637,9 +4256,6 @@ Third text with #link("https://example.com")[link] and more content.
   [
     Sept 2021
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     #summary[Did #emph[this] and this is a #strong[bold] #link("https://example.com")[link]. But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness.]

@@ -118,9 +118,6 @@ Markdown syntax is supported everywhere. This is #strong[bold], #emph[italic], a
     Sept 2018 – May 2023
 
   ],
-  degree-column: [
-    #strong[PhD]
-  ],
   main-column-second-row: [
     - Thesis: Efficient Neural Architecture Search for Resource-Constrained Deployment
 
@@ -139,9 +136,6 @@ Markdown syntax is supported everywhere. This is #strong[bold], #emph[italic], a
   [
     Sept 2014 – June 2018
 
-  ],
-  degree-column: [
-    #strong[BS]
   ],
   main-column-second-row: [
     - GPA: 3.97\/4.00, Valedictorian
