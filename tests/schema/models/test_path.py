@@ -6,254 +6,151 @@ import pytest
 from rendercv.schema.models.path import (
     ExistingPathRelativeToInput,
     PlannedPathRelativeToInput,
+    serialize_path,
 )
 from rendercv.schema.models.validation_context import ValidationContext
+
+type Context = dict[str, ValidationContext]
 
 
 class PlannedPathModel(pydantic.BaseModel):
     output: PlannedPathRelativeToInput
 
 
+existing_path_adapter = pydantic.TypeAdapter[pathlib.Path](ExistingPathRelativeToInput)
+planned_path_adapter = pydantic.TypeAdapter[pathlib.Path](PlannedPathRelativeToInput)
+both_adapters = pytest.mark.parametrize(
+    "path_adapter", [existing_path_adapter, planned_path_adapter]
+)
+
+
 @pytest.fixture
-def existing_file(tmp_path):
+def existing_file(tmp_path: pathlib.Path) -> pathlib.Path:
     existing = tmp_path / "existing.txt"
     existing.touch()
     return existing
 
 
 @pytest.fixture
-def context_with_input_file(tmp_path):
+def context(tmp_path: pathlib.Path) -> Context:
     return {"context": ValidationContext(input_file_path=tmp_path / "input.yaml")}
 
 
-existing_input_relative_path_adapter = pydantic.TypeAdapter[
-    ExistingPathRelativeToInput
-](ExistingPathRelativeToInput)
-planned_input_relative_path_adapter = pydantic.TypeAdapter[PlannedPathRelativeToInput](
-    PlannedPathRelativeToInput
-)
-
-
-class TestExistingInputRelativePath:
-    def test_absolute_path_to_existing_file(
-        self, existing_file, context_with_input_file
-    ):
-        result = existing_input_relative_path_adapter.validate_python(
-            existing_file, context=context_with_input_file
-        )
-
-        assert result == existing_file
-
-    def test_absolute_path_to_nonexistent_file_raises_error(
-        self, tmp_path, context_with_input_file
-    ):
-        nonexistent = tmp_path / "nonexistent.txt"
-
-        with pytest.raises(pydantic.ValidationError, match="does not exist"):
-            existing_input_relative_path_adapter.validate_python(
-                nonexistent, context=context_with_input_file
-            )
-
-    def test_relative_path_to_existing_file(self, tmp_path, context_with_input_file):
-        existing = tmp_path / "relative_existing.txt"
-        existing.touch()
-        relative_path = pathlib.Path("relative_existing.txt")
-
-        result = existing_input_relative_path_adapter.validate_python(
-            relative_path, context=context_with_input_file
-        )
-
-        # Should be resolved relative to input_file_path directory
-        assert result == tmp_path / "relative_existing.txt"
-        assert result.exists()
-
-    def test_relative_path_to_nonexistent_file_raises_error(
-        self, context_with_input_file
-    ):
-        relative_path = pathlib.Path("nonexistent_relative.txt")
-
-        with pytest.raises(pydantic.ValidationError, match="does not exist"):
-            existing_input_relative_path_adapter.validate_python(
-                relative_path, context=context_with_input_file
-            )
-
+class TestExistingPathRelativeToInput:
     @pytest.mark.parametrize(
         "relative_path",
-        [
-            pathlib.Path("subdir/file.txt"),
-            pathlib.Path("../sibling/file.txt"),
-            pathlib.Path("./same_dir/file.txt"),
-        ],
+        ["existing.txt", "subdir/file.txt", "../sibling/file.txt", "./same/file.txt"],
     )
-    def test_various_relative_path_formats(
-        self, tmp_path, context_with_input_file, relative_path
-    ):
+    def test_resolves_relative_paths_to_the_input_folder(
+        self, tmp_path: pathlib.Path, context: Context, relative_path: str
+    ) -> None:
         expected_path = tmp_path / relative_path
         expected_path.parent.mkdir(parents=True, exist_ok=True)
         expected_path.touch()
 
-        result = existing_input_relative_path_adapter.validate_python(
-            relative_path, context=context_with_input_file
-        )
+        result = existing_path_adapter.validate_python(relative_path, context=context)
 
         assert result == expected_path
-        assert result.exists()
 
-    def test_path_string_validation(self, existing_file, context_with_input_file):
-        result = existing_input_relative_path_adapter.validate_python(
-            str(existing_file), context=context_with_input_file
+    def test_keeps_absolute_paths(
+        self, existing_file: pathlib.Path, context: Context
+    ) -> None:
+        assert (
+            existing_path_adapter.validate_python(existing_file, context=context)
+            == existing_file
         )
 
-        assert result == existing_file
+    def test_resolves_relative_to_the_current_folder_without_an_input_file(
+        self,
+        tmp_path: pathlib.Path,
+        existing_file: pathlib.Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        monkeypatch.chdir(tmp_path)
 
-    def test_existing_path_is_not_a_file_raises_error(
-        self, tmp_path, context_with_input_file
-    ):
-        new_dir = tmp_path / "new_dir"
-        new_dir.mkdir()
-        with pytest.raises(pydantic.ValidationError, match="is not a file"):
-            existing_input_relative_path_adapter.validate_python(
-                new_dir, context=context_with_input_file
-            )
-
-
-class TestPlannedInputRelativePath:
-    def test_absolute_path_to_existing_file(
-        self, existing_file, context_with_input_file
-    ):
-        result = planned_input_relative_path_adapter.validate_python(
-            existing_file, context=context_with_input_file
-        )
-
-        assert result == existing_file
-
-    def test_absolute_path_to_nonexistent_file_is_accepted(
-        self, tmp_path, context_with_input_file
-    ):
-        nonexistent = tmp_path / "planned_file.txt"
-        result = planned_input_relative_path_adapter.validate_python(
-            nonexistent, context=context_with_input_file
-        )
-
-        assert result == nonexistent
-        assert not result.exists()
-
-    def test_relative_path_to_existing_file(self, tmp_path, context_with_input_file):
-        existing = tmp_path / "relative_existing.txt"
-        existing.touch()
-
-        relative_path = pathlib.Path("relative_existing.txt")
-
-        result = planned_input_relative_path_adapter.validate_python(
-            relative_path, context=context_with_input_file
-        )
-
-        assert result == tmp_path / "relative_existing.txt"
-        assert result.exists()
-
-    def test_relative_path_to_nonexistent_file_is_accepted(
-        self, tmp_path, context_with_input_file
-    ):
-        relative_path = pathlib.Path("planned_output.pdf")
-        result = planned_input_relative_path_adapter.validate_python(
-            relative_path, context=context_with_input_file
-        )
-
-        assert result == tmp_path / "planned_output.pdf"
-        assert not result.exists()
+        assert existing_path_adapter.validate_python("existing.txt") == existing_file
 
     @pytest.mark.parametrize(
-        "relative_path",
+        ("path", "expected_message"),
         [
-            pathlib.Path("output/result.pdf"),
-            pathlib.Path("../build/output.html"),
-            pathlib.Path("./generated/doc.md"),
+            ("missing.txt", "The file `missing.txt` does not exist."),
+            ("sub/missing.txt", "The file `sub/missing.txt` does not exist."),
+            (
+                "/nonexistent/photo.jpg",
+                "The file `/nonexistent/photo.jpg` does not exist.",
+            ),
         ],
     )
-    def test_various_relative_path_formats_for_planned_paths(
-        self, tmp_path, context_with_input_file, relative_path
-    ):
-        result = planned_input_relative_path_adapter.validate_python(
-            relative_path, context=context_with_input_file
-        )
+    def test_rejects_missing_files(
+        self, context: Context, path: str, expected_message: str
+    ) -> None:
+        with pytest.raises(pydantic.ValidationError) as exc_info:
+            existing_path_adapter.validate_python(path, context=context)
 
-        expected_path = tmp_path / relative_path
-        assert result == expected_path
+        assert exc_info.value.errors()[0]["msg"] == expected_message
 
-    def test_path_string_validation(self, tmp_path, context_with_input_file):
-        planned_path = "output/generated.pdf"
-        result = planned_input_relative_path_adapter.validate_python(
-            planned_path, context=context_with_input_file
-        )
+    def test_rejects_folders(self, tmp_path: pathlib.Path, context: Context) -> None:
+        (tmp_path / "folder").mkdir()
 
-        assert result == tmp_path / planned_path
+        with pytest.raises(pydantic.ValidationError) as exc_info:
+            existing_path_adapter.validate_python("folder", context=context)
+
+        assert exc_info.value.errors()[0]["msg"] == "The path `folder` is not a file."
 
 
-class TestPathResolutionBehavior:
+class TestPlannedPathRelativeToInput:
     @pytest.mark.parametrize(
-        "path_adapter",
-        [existing_input_relative_path_adapter, planned_input_relative_path_adapter],
+        "relative_path",
+        ["planned.pdf", "output/result.pdf", "../build/output.html"],
     )
-    def test_absolute_path_remains_unchanged(
-        self, existing_file, context_with_input_file, path_adapter
-    ):
-        result = path_adapter.validate_python(
-            existing_file, context=context_with_input_file
-        )
+    def test_accepts_files_that_do_not_exist_yet(
+        self, tmp_path: pathlib.Path, context: Context, relative_path: str
+    ) -> None:
+        result = planned_path_adapter.validate_python(relative_path, context=context)
 
+        assert result == tmp_path / relative_path
+        assert not result.exists()
+
+    @both_adapters
+    def test_results_are_absolute(
+        self,
+        existing_file: pathlib.Path,
+        context: Context,
+        path_adapter: pydantic.TypeAdapter[pathlib.Path],
+    ) -> None:
+        result = path_adapter.validate_python(existing_file.name, context=context)
+
+        assert result.is_absolute()
         assert result == existing_file
-        assert result.is_absolute()
 
-    @pytest.mark.parametrize(
-        "path_adapter",
-        [existing_input_relative_path_adapter, planned_input_relative_path_adapter],
-    )
-    def test_relative_path_gets_resolved(
-        self, tmp_path, context_with_input_file, path_adapter
-    ):
-        existing = tmp_path / "test.txt"
-        existing.touch()
-        relative_path = pathlib.Path("test.txt")
-
-        result = path_adapter.validate_python(
-            relative_path, context=context_with_input_file
-        )
-
-        assert result.is_absolute()
-        assert result == tmp_path / "test.txt"
-
-    def test_only_existing_type_validates_file_existence(
-        self, tmp_path, context_with_input_file
-    ):
-        nonexistent_path = tmp_path / "does_not_exist.txt"
-
-        with pytest.raises(pydantic.ValidationError, match="does not exist"):
-            existing_input_relative_path_adapter.validate_python(
-                nonexistent_path, context=context_with_input_file
-            )
-
-        result = planned_input_relative_path_adapter.validate_python(
-            nonexistent_path, context=context_with_input_file
-        )
-        assert result == nonexistent_path
-
-
-class TestPathSerialization:
-    def test_serializes_path_relative_to_cwd_when_possible(self):
-        input_file_path = pathlib.Path.cwd() / "input.yaml"
+    def test_serializes_relative_to_the_current_folder(self) -> None:
         model = PlannedPathModel.model_validate(
             {"output": "build/output.pdf"},
-            context={"context": ValidationContext(input_file_path=input_file_path)},
+            context={
+                "context": ValidationContext(
+                    input_file_path=pathlib.Path.cwd() / "input.yaml"
+                )
+            },
         )
 
-        assert model.model_dump()["output"] == "build/output.pdf"
+        assert model.model_dump() == {"output": "build/output.pdf"}
 
-    def test_serializes_absolute_path_outside_cwd_without_crashing(self, tmp_path):
-        input_file_path = tmp_path / "input.yaml"
-        outside_path = tmp_path / "build" / "output.pdf"
+    def test_serializes_paths_outside_the_current_folder_as_absolute(
+        self, tmp_path: pathlib.Path, context: Context
+    ) -> None:
         model = PlannedPathModel.model_validate(
-            {"output": outside_path},
-            context={"context": ValidationContext(input_file_path=input_file_path)},
+            {"output": tmp_path / "build" / "output.pdf"}, context=context
         )
 
-        assert model.model_dump()["output"] == str(outside_path)
+        assert model.model_dump() == {"output": str(tmp_path / "build" / "output.pdf")}
+
+
+@pytest.mark.parametrize(
+    ("path", "expected"),
+    [
+        (pathlib.Path.cwd() / "a" / "b.pdf", "a/b.pdf"),
+        (pathlib.Path("/elsewhere/b.pdf"), "/elsewhere/b.pdf"),
+    ],
+)
+def test_serialize_path(path: pathlib.Path, expected: str) -> None:
+    assert serialize_path(path) == expected

@@ -17,19 +17,20 @@
 # https://packaging.python.org/en/latest/glossary/#term-Source-Distribution-or-sdist
 
 # To build RenderCV, we need to specify which build package to use. There are
-# many build backends like `setuptools`, `flit`, `poetry`, `hatchling`, etc. We will use
-# `uv_build`.
-requires = ["uv_build>=0.10.3,<0.11.0"]  # Packages needed to build RenderCV
+# many build backends like `setuptools`, `flit`, `poetry`, `hatchling`, etc. We use
+# `hatchling`, because RenderCV's wheel bundles Typst packages with a build hook
+# (`hatch_build.py`). uv is still the project manager.
+requires = ["hatchling>=1.29"]  # Packages needed to build RenderCV
 # Python has a standard object format called a build-backend object. This object must
 # implement specific methods that perform defined tasks. For example, it should have a
 # method called `build_wheel` that builds a wheel file.
 # See https://peps.python.org/pep-0517/
-build-backend = "uv_build"  # Build-backend object for building RenderCV
+build-backend = "hatchling.build"  # Build-backend object for building RenderCV
 
 [project]
 # Metadata about RenderCV.
 name = "rendercv"
-version = "2.8"
+version = "3.0.0"
 description = "Resume builder for academics and engineers"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -49,19 +50,18 @@ classifiers = [
 ]  # See all classifiers at https://pypi.org/classifiers/
 # RenderCV depends on these packages. They are installed automatically when RenderCV is installed:
 dependencies = [
-  "Jinja2>=3.1.6",  # Generate Typst and Markdown files
-  "markdown>=3.10.2",  # Convert Markdown to HTML
+  "markdown-it-py>=4.2.0",  # Parse the Markdown in CV text
   "phonenumbers>=9.0.24",  # Validate phone numbers
   "pydantic-extra-types>=2.11.0",  # Validate extra types
   "pydantic[email]>=2.12.5",  # Validate and parse input files
   "ruamel.yaml>=0.19.1",  # Parse YAML files
+  "typst>=0.15.0",  # Read entry types from Typst and compile CVs
 ]
 
 [project.optional-dependencies]
 full = [
   "typer>=0.24.1",  # Command-line interface
   "watchdog>=6.0.0",  # Monitor files for updates
-  "typst>=0.14.8",  # Render PDF from Typst source files
   "rendercv-fonts>=0.5.1",  # Font files for RenderCV
   "packaging>=26.0",  # For version checking
 ]
@@ -88,12 +88,13 @@ rendercv = "rendercv.cli.entry_point:entry_point"
 dev = [
   "black>=26.3.1",  # Format the code
   "hypothesis>=6.151.9",  # Property-based testing
+  "jsonschema>=4.25",  # Check schema.json against sample CVs
   "prek>=0.3.6",  # Run checks before committing (pre-commit alternative)
   "pytest>=9.0.2",  # Run tests
   "pytest-cov>=7.0.0",  # Coverage plugin for pytest with xdist support
   "pytest-xdist>=3.8.0",  # Run tests in parallel
   "ruff>=0.15.7",  # Lint and format the code
-  "ty>=0.0.24",  # Type checking
+  "ty>=0.0.83",  # Type checking
 ]
 create-executable = [
   "pyinstaller>=6.17.0",  # Build executables
@@ -107,11 +108,6 @@ docs = [
   "griffe>=1.0,<3",  # Pin to v1 (v2 broke mkdocstrings-python compatibility)
   "mkdocstrings[python]>=1.0.3",  # Build reference docs from docstrings
 ]
-update-entry-figures = [
-  "PyMuPDF==1.26.5",  # Convert PDF files to images
-  "pdfCropMargins==2.2.1",  # Generate entry figures for documentation
-  "pillow==10.4.0",  # Lock dependency of pdfCropMargins
-]
 
 # Tools Settings:
 
@@ -121,23 +117,16 @@ update-entry-figures = [
 [tool.uv]
 default-groups = ["dev", "docs"]
 
-[tool.uv.build-backend]
-# The rendercv-typst Typst package lives in src/rendercv/renderer/rendercv_typst/.
-# Only lib.typ and typst.toml are needed at runtime; exclude everything else from the wheel.
-wheel-exclude = [
-    "renderer/rendercv_typst/examples/**",
-    "renderer/rendercv_typst/template/**",
-    "renderer/rendercv_typst/README.md",
-    "renderer/rendercv_typst/CHANGELOG.md",
-    "renderer/rendercv_typst/LICENSE",
-    "renderer/rendercv_typst/thumbnail.png",
-    "renderer/typst_fontawesome/example.typ",
-    "renderer/typst_fontawesome/gallery.typ",
-    "renderer/typst_fontawesome/helper.py",
-    "renderer/typst_fontawesome/README.md",
-    "renderer/typst_fontawesome/LICENSE",
-    "renderer/typst_fontawesome/.gitignore",
-]
+[tool.hatch.build.targets.wheel]
+packages = ["src/rendercv"]
+
+[tool.hatch.build.targets.sdist]
+# The source distribution holds source code and the build definition only:
+only-include = ["src", "typst", "hatch_build.py"]
+
+[tool.hatch.build.hooks.custom]
+# Bundles the RenderCV Typst package and its Typst dependencies into the wheel.
+path = "hatch_build.py"
 
 [tool.uv.workspace]
 members = [
@@ -146,7 +135,8 @@ members = [
 
 [tool.ruff]
 line-length = 88
-extend-exclude = ["src/rendercv/renderer/typst_fontawesome"]
+# Only `src/` holds first-party Python (`typst/` is the Typst package):
+src = ["src"]
 
 [tool.ruff.format]
 docstring-code-format = true
@@ -192,10 +182,6 @@ preview = true  # Enable preview features
 enable-unstable-feature = [
   "string_processing",
 ]  # Break strings into multiple lines
-extend-exclude = "src/rendercv/renderer/typst_fontawesome"
-
-[tool.ty.src]
-exclude = ["src/rendercv/renderer/typst_fontawesome"]
 
 [tool.ty.rules]
 unused-ignore-comment = "error"
@@ -205,10 +191,6 @@ source = ["src/rendercv"]  # Measure coverage in this source
 concurrency = ["multiprocessing"]  # For watcher tests
 # Use relative paths for cross-platform coverage merging:
 relative_files = true
-
-[tool.coverage.report]
-# Exclude templates from coverage reports:
-omit = ["*.j2.*"]
 
 # tombi: lint.rules.deprecated.disabled = true
 # tombi: lint.rules.one-of-multiple-match.disabled = true
@@ -221,8 +203,11 @@ addopts = [
   "--strict-markers",  # Disallow unknown markers
   "--strict-config",  # Fail on unknown config options
   "--numprocesses=auto",  # Number of processes in parallel
+  "--import-mode=importlib",  # Allow test files with the same name in different folders
 ]
 testpaths = ["tests"]
 
 [tool.codespell]
 skip = "*.md"
+# Misspelled on purpose, to test "did you mean" suggestions:
+ignore-words-list = "positon,detial,lanugage,linkdin,nmae,sise,strng,lable,numbr"

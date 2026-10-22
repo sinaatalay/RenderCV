@@ -1,0 +1,8 @@
+# Reddit.
+name: 'Reddit'
+icon: reddit
+url: 'https://reddit.com/user/{username}'
+username:
+  pattern: '[a-zA-Z0-9_-]{3,23}'
+  hint: 'Use 3 to 23 letters, numbers, underscores, or hyphens.'
+example: 'johndoe'

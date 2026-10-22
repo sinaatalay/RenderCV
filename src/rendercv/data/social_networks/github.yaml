@@ -1,0 +1,5 @@
+# GitHub.
+name: 'GitHub'
+icon: github
+url: 'https://github.com/{username}'
+example: 'johndoe'

@@ -1,0 +1,5 @@
+# X.
+name: 'X'
+icon: x-twitter
+url: 'https://x.com/{username}'
+example: 'johndoe'

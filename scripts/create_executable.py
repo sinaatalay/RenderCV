@@ -1,6 +1,6 @@
+import os
 import pathlib
 import platform
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -24,14 +24,23 @@ machine_names = {
 with tempfile.TemporaryDirectory() as temp_dir:
     temp_path = pathlib.Path(temp_dir)
 
-    # Copy rendercv to temp directory
-    shutil.copytree(root_path / "src" / "rendercv", temp_path / "rendercv")
+    # Build the wheel and unpack it, so the executable gets the Typst packages
+    # the build hook bundles:
+    subprocess.run(
+        ["uv", "build", "--wheel", "--out-dir", str(temp_path / "dist")],
+        cwd=root_path,
+        check=True,
+    )
+    wheel = next((temp_path / "dist").glob("rendercv-*.whl"))
+    with zipfile.ZipFile(wheel) as wheel_zip:
+        wheel_zip.extractall(temp_path)
 
     # Create entry point script
     rendercv_file = temp_path / "rendercv.py"
     rendercv_file.write_text("import rendercv.cli.app as app; app.app()")
 
-    # Run PyInstaller
+    # Run PyInstaller. `PYTHONPATH` makes it bundle RenderCV from the unpacked
+    # wheel instead of the (editable) RenderCV of this environment:
     subprocess.run(
         [
             sys.executable,
@@ -43,11 +52,15 @@ with tempfile.TemporaryDirectory() as temp_dir:
             "rendercv",
             "--collect-all",
             "rendercv_fonts",
+            # Rich imports its Unicode tables by name, which PyInstaller can't see:
+            "--collect-submodules",
+            "rich._unicode_data",
             "--distpath",
             "bin",
             str(rendercv_file),
         ],
         check=True,
+        env={**os.environ, "PYTHONPATH": str(temp_path)},
     )
 
     # Determine executable name based on platform

@@ -1,6 +1,6 @@
 # Custom Fonts
 
-RenderCV automatically discovers custom fonts placed in a `fonts` directory next to your YAML input file.
+RenderCV comes with these fonts: << available_font_families >>. Fonts installed on your computer work too. For any other font, put its files in a `fonts` folder next to your YAML input file.
 
 ## How to Use Custom Fonts
 
@@ -8,19 +8,38 @@ RenderCV automatically discovers custom fonts placed in a `fonts` directory next
 
     ```
     Your_Name_CV.yaml
+    design.typ
     fonts/
       CustomFont-Regular.ttf
       CustomFont-Bold.ttf
       AnotherFont.otf
     ```
 
-2. In your YAML file, specify the font family name in the design section:
+2. In your `design.typ`, set the font family:
 
-    ```yaml
-    design:
-      typography:
-        font_family: CustomFont
+    ```typst title="design.typ"
+    #import "@preview/rendercv:3.0.0": designs
+
+    #let design = designs.classic(
+      typography: (font_family: "CustomFont"),
+    )
     ```
+
+    To use different fonts for different parts, give a dictionary instead:
+
+    ```typst
+    typography: (
+      font_family: (
+        body: "CustomFont",
+        name: "AnotherFont",
+        headline: "CustomFont",
+        connections: "CustomFont",
+        section_titles: "AnotherFont",
+      ),
+    ),
+    ```
+
+See [Design](../design.md) for all options.
 
 ## Supported Font Formats
 

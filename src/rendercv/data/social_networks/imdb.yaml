@@ -1,0 +1,8 @@
+# IMDB.
+name: 'IMDB'
+icon: imdb
+url: 'https://imdb.com/name/{username}'
+username:
+  pattern: 'nm\d{7}'
+  hint: 'Use your IMDB name ID, like nm0000001.'
+example: 'nm0000001'

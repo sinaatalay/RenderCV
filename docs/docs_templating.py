@@ -1,149 +1,167 @@
-"""This script generates the example entry figures and creates an environment for
-documentation templates using `mkdocs-macros-plugin`. For example, the content of the
-example entries found in
-"[Structure of the YAML Input File](https://docs.rendercv.com/user_guide/structure_of_the_yaml_input_file/)"
-are coming from this script.
+"""Variables for the documentation pages, read from RenderCV's own code.
+
+`mkdocs-macros-plugin` runs `define_env` before building the docs. Pages use the
+variables with `<< variable >>` and `{$ for ... $}` blocks, so lists of designs,
+locales, social networks, entry types, and design options always match the code.
 """
 
 import io
 import pathlib
-from typing import get_args
+import re
+import textwrap
+from typing import Any
 
-import pydantic
+import rendercv_fonts
 import ruamel.yaml
 
-from rendercv.schema.models.cv.section import (
-    BulletEntry,
-    EducationEntry,
-    ExperienceEntry,
-    NormalEntry,
-    NumberedEntry,
-    OneLineEntry,
-    PublicationEntry,
-    ReversedNumberedEntry,
+from rendercv.schema.json_schema_generator import read_standard_entry_types
+from rendercv.schema.models.cv.entry_types import (
+    FieldDeclaration,
+    build_entry_type_models,
+    validate_entry,
 )
-from rendercv.schema.models.cv.social_network import available_social_networks
-from rendercv.schema.models.design.built_in_design import available_themes
-from rendercv.schema.models.design.classic_theme import (
-    Alignment,
-    BodyAlignment,
-    Bullet,
-    PageSize,
-    PhoneNumberFormatType,
-    SectionTitleType,
-)
-from rendercv.schema.models.design.font_family import available_font_families
+from rendercv.schema.models.cv.social_network import get_available_social_networks
 from rendercv.schema.models.locale.locale import available_locales
+from rendercv.schema.sample_generator import (
+    create_sample_design_file,
+    create_sample_entries_file,
+    get_built_in_design_names,
+)
 from rendercv.schema.yaml_reader import read_yaml
 
 repository_root = pathlib.Path(__file__).parent.parent
-rendercv_path = repository_root / "src" / "rendercv"
-image_assets_directory = pathlib.Path(__file__).parent / "assets" / "images"
+designs_directory = repository_root / "typst" / "designs"
+sample_entries_path = repository_root / "docs" / "user_guide" / "sample_entries.yaml"
+
+# The entry figures in `docs/assets/images/<design>/` are named after RenderCV 2's
+# entry types:
+figure_names: dict[str, str] = {
+    "education": "education_entry",
+    "experience": "experience_entry",
+    "normal": "normal_entry",
+    "publication": "publication_entry",
+    "one_line": "one_line_entry",
+    "bullet": "bullet_entry",
+    "numbered": "numbered_entry",
+    "reversed_numbered": "reversed_numbered_entry",
+    "paragraph": "text_entry",
+}
 
 
-class SampleEntries(pydantic.BaseModel):
-    education_entry: EducationEntry
-    experience_entry: ExperienceEntry
-    normal_entry: NormalEntry
-    publication_entry: PublicationEntry
-    one_line_entry: OneLineEntry
-    bullet_entry: BulletEntry
-    numbered_entry: NumberedEntry
-    reversed_numbered_entry: ReversedNumberedEntry
-    text_entry: str
+def to_yaml(value: Any) -> str:
+    """Write a value as YAML, the way the docs show it."""
+    yaml = ruamel.yaml.YAML()
+    yaml.width = 70
+    yaml.indent(mapping=2, sequence=4, offset=2)
+    with io.StringIO() as stream:
+        yaml.dump(value, stream)
+        text = textwrap.dedent(stream.getvalue())
+    return "\n".join(line.rstrip() for line in text.splitlines()).rstrip() + "\n"
 
 
-def dictionary_to_yaml(dictionary: dict):
-    """Converts a dictionary to a YAML string.
+def describe_kind(field: FieldDeclaration) -> str:
+    """Describe a field's kind for the entry type tables, like "list of markdown"."""
+    if field.kind == "list":
+        return f"list of {field.of or 'markdown'}"
+    if field.kind == "choice":
+        return "one of " + ", ".join(f"`{choice}`" for choice in field.choices or ())
+    if field.kind == "date" and field.allow_text:
+        return "date or text"
+    return field.kind
+
+
+def read_typst_dictionary(path: pathlib.Path, name: str) -> str:
+    """Read a top-level `#let name = (...)` dictionary's source from a Typst file.
 
     Args:
-        dictionary: The dictionary to be converted to YAML.
+        path: The Typst file.
+        name: The name of the dictionary.
+
     Returns:
-        The YAML string.
+        The source, from `#let` to the closing parenthesis.
     """
-    yaml_object = ruamel.yaml.YAML()
-    yaml_object.width = 60
-    yaml_object.indent(mapping=2, sequence=4, offset=2)
-    with io.StringIO() as string_stream:
-        yaml_object.dump(dictionary, string_stream)
-        return string_stream.getvalue()
+    source = path.read_text(encoding="utf-8")
+    match = re.search(rf"^#let {re.escape(name)} = \(\n.*?^\)$", source, re.S | re.M)
+    if match is None:
+        message = f"`#let {name} = (...)` is not in {path}."
+        raise ValueError(message)
+    return match.group(0)
 
 
-def define_env(env):
-    # See https://mkdocs-macros-plugin.readthedocs.io/en/latest/macros/
-    sample_entries = read_yaml(
-        repository_root / "docs" / "user_guide" / "sample_entries.yaml"
+def define_env(env: Any) -> None:
+    """Define the variables the documentation pages use.
+
+    Args:
+        env: The `mkdocs-macros-plugin` environment.
+    """
+    designs = get_built_in_design_names()
+    env.variables["design_names"] = list(designs)
+    env.variables["design_count"] = len(designs)
+    env.variables["available_designs"] = ", ".join(
+        f"`{design}`" if design != "classic" else "`classic` (default)"
+        for design in designs
     )
-    # validate the parsed dictionary by creating an instance of SampleEntries:
-    sample_entries = SampleEntries(**sample_entries).model_dump()
-
-    entries_showcase = {}
-    for entry_name, entry in sample_entries.items():
-        proper_entry_name = entry_name.replace("_", " ").title().replace(" ", "")
-        entries_showcase[proper_entry_name] = {
-            "yaml": dictionary_to_yaml(entry),
-            "figures": [
-                {
-                    "path": f"../../assets/images/{theme}/{entry_name}.png",
-                    "alt_text": f"{proper_entry_name} in {theme}",
-                    "theme": theme,
-                }
-                for theme in available_themes
-            ],
-        }
-
-    env.variables["sample_entries"] = entries_showcase
-    env.variables["entry_count"] = len(sample_entries)
-    env.variables["entry_names"] = [
-        f"[{entry_name}](#{entry_name.lower()})" for entry_name in entries_showcase
-    ]
-
-    # Available themes strings (put available themes between ``)
-    themes = [
-        f"`{theme}`" if theme != "classic" else "`classic` (default)"
-        for theme in available_themes
-    ]
-    env.variables["available_themes"] = ", ".join(themes)
-    env.variables["theme_count"] = len(available_themes)
-
-    # Available locales string
-    locales = [
+    env.variables["available_locales"] = ", ".join(
         f"`{locale}`" if locale != "english" else "`english` (default)"
         for locale in available_locales
-    ]
-    env.variables["available_locales"] = ", ".join(locales)
-
-    # Available social networks strings (put available social networks between ``)
-    social_networks = [
-        f"`{social_network}`" for social_network in available_social_networks
-    ]
-    env.variables["available_social_networks"] = ", ".join(social_networks)
-
-    # Others:
-    env.variables["available_page_sizes"] = ", ".join(
-        [f"`{page_size}`" for page_size in get_args(PageSize.__value__)]
+    )
+    env.variables["locale_count"] = len(available_locales)
+    env.variables["available_social_networks"] = ", ".join(
+        f"`{network}`" for network in get_available_social_networks()
     )
     env.variables["available_font_families"] = ", ".join(
-        [f"`{font_family}`" for font_family in available_font_families]
+        f"`{font}`"
+        for font in sorted(rendercv_fonts.available_font_families)
+        if not font.startswith("Font Awesome")
     )
-    env.variables["available_body_alignments"] = ", ".join(
-        [f"`{text_alignment}`" for text_alignment in get_args(BodyAlignment.__value__)]
+
+    # The standard entry types, with a validated sample of each:
+    entry_types = read_standard_entry_types()
+    models = build_entry_type_models(entry_types)
+    samples = read_yaml(sample_entries_path)
+    showcase: dict[str, dict[str, Any]] = {}
+    for name, entry_type in entry_types.items():
+        sample = samples[name]
+        entry, errors = validate_entry(sample, entry_types, models)
+        if entry is None or entry.type_name != name:
+            message = f"The sample `{name}` entry is invalid: {errors}"
+            raise ValueError(message)
+        showcase[name] = {
+            "doc": entry_type.doc,
+            "fields_table": "\n".join(
+                [
+                    "| Field | Kind | Required | Description |",
+                    "| ----- | ---- | -------- | ----------- |",
+                    *(
+                        f"| `{field_name}` | {describe_kind(field)} |"
+                        f" {'No' if field.optional else 'Yes'} |"
+                        f" {(field.doc or '').replace('|', '\\|')} |"
+                        for field_name, field in entry_type.fields.items()
+                    ),
+                ]
+            ),
+            "yaml": to_yaml([sample]),
+            "figures": [
+                {
+                    "design": design,
+                    "path": f"../assets/images/{design}/{figure_names[name]}.png",
+                }
+                for design in designs
+            ],
+        }
+    env.variables["entry_types"] = showcase
+    env.variables["entry_type_count"] = len(showcase)
+
+    # Design options, straight from the Typst sources:
+    env.variables["engine_defaults"] = read_typst_dictionary(
+        designs_directory / "engine.typ", "defaults"
     )
-    env.variables["available_phone_number_formats"] = ", ".join(
-        [
-            f"`{phone_number_format}`"
-            for phone_number_format in get_args(PhoneNumberFormatType.__value__)
-        ]
-    )
-    env.variables["available_alignments"] = ", ".join(
-        [f"`{alignment}`" for alignment in get_args(Alignment.__value__)]
-    )
-    env.variables["available_section_title_types"] = ", ".join(
-        [
-            f"`{section_title_type}`"
-            for section_title_type in get_args(SectionTitleType.__value__)
-        ]
-    )
-    env.variables["available_bullets"] = ", ".join(
-        [f"`{bullet}`" for bullet in get_args(Bullet.__value__)]
-    )
+    env.variables["design_defaults"] = {
+        design: read_typst_dictionary(
+            designs_directory / f"{design}.typ", f"{design}-defaults"
+        )
+        for design in designs
+        if design != "classic"
+    }
+    env.variables["sample_design_file"] = create_sample_design_file("classic")
+    env.variables["sample_entries_file"] = create_sample_entries_file()

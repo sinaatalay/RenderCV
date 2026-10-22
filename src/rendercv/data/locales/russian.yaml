@@ -1,0 +1,38 @@
+# Russian locale.
+language: russian
+iso_code: ru
+direction: ltr
+last_updated: "Последнее обновление"
+present: "настоящее время"
+month: "месяц"
+months: "месяцы"
+year: "год"
+years: "лет"
+phrases:
+  degree_with_area: "#degree в #area"
+month_abbreviations:
+  - "Янв"
+  - "Фев"
+  - "Мар"
+  - "Апр"
+  - "Май"
+  - "Июн"
+  - "Июл"
+  - "Авг"
+  - "Сен"
+  - "Окт"
+  - "Ноя"
+  - "Дек"
+month_names:
+  - "Январь"
+  - "Февраль"
+  - "Март"
+  - "Апрель"
+  - "Май"
+  - "Июнь"
+  - "Июль"
+  - "Август"
+  - "Сентябрь"
+  - "Октябрь"
+  - "Ноябрь"
+  - "Декабрь"

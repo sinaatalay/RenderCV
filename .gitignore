@@ -176,8 +176,9 @@ rendercv_output/
 !/tests/testdata/**/*.yaml
 
 # Include example files
-!/examples/*.pdf
-!/examples/*.yaml
+!/examples/**/*.pdf
+!/examples/**/*.yaml
+!/examples/**/*.typ
 
 # Mac:
 .DS_Store

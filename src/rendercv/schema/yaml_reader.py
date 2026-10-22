@@ -7,6 +7,20 @@ from ruamel.yaml.scanner import RoundTripScanner
 from rendercv.exception import RenderCVInternalError, RenderCVUserError
 
 
+class TypstString(str):
+    """Text the user tagged `!typst` in the YAML, to be used as Typst markup.
+
+    Why:
+        Text in a CV is Markdown, and RenderCV turns it into Typst as data, so
+        characters like `$`, `#`, or `@` always show up literally. When users
+        want Typst itself (math, a Typst function), they tag the value with
+        `!typst`. Keeping the tag as a type lets validation and rendering tell
+        the two apart without guessing from the text.
+    """
+
+    __slots__ = ()
+
+
 def read_yaml(file_path_or_contents: pathlib.Path | str) -> CommentedMap:
     """Parse YAML/JSON content from file path or string.
 
@@ -55,13 +69,24 @@ def read_yaml(file_path_or_contents: pathlib.Path | str) -> CommentedMap:
         message = "The input file is empty!"
         raise RenderCVUserError(message)
 
-    if isinstance(yaml_as_dictionary, str):
+    if (
+        isinstance(yaml_as_dictionary, str)
+        and isinstance(file_path_or_contents, str)
+        and file_path_or_contents.strip().endswith((".yaml", ".yml", ".json", ".json5"))
+    ):
         message = (
             "You probably meant to pass a path to the YAML file, but you passed as a"
             " string and RenderCV interpreted it as the contents of the YAML file."
             f" Pass the path using `pathlib.Path({file_path_or_contents})`."
         )
         raise RenderCVInternalError(message)
+
+    if not isinstance(yaml_as_dictionary, dict):
+        message = (
+            "The YAML file should be a mapping of fields, starting with a line like"
+            " `cv:`."
+        )
+        raise RenderCVUserError(message)
 
     return yaml_as_dictionary
 
@@ -82,6 +107,11 @@ class ScannerNoAlias(RoundTripScanner):
 
 yaml = ruamel.yaml.YAML()
 yaml.Scanner = ScannerNoAlias
+
+# Values tagged `!typst` are Typst markup instead of Markdown:
+yaml.constructor.add_constructor(
+    "!typst", lambda loader, node: TypstString(loader.construct_scalar(node))
+)
 
 # Disable ISO date parsing, keep it as a string:
 yaml.constructor.yaml_constructors["tag:yaml.org,2002:timestamp"] = (

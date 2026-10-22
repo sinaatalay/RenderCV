@@ -1,0 +1,8 @@
+# Mastodon.
+name: 'Mastodon'
+icon: mastodon
+url: 'https://{domain}/@{user}'
+username:
+  pattern: '@(?P<user>[^@]+)@(?P<domain>[^@]+)'
+  hint: 'Use the format "@username@domain".'
+example: '@johndoe@mastodon.social'

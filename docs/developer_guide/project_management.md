@@ -10,15 +10,20 @@ When you look at RenderCV's repository, you see:
 
 ```
 .
-├── src/                     ← The actual RenderCV code
+├── src/                     ← The actual RenderCV code (Python)
+├── typst/                   ← RenderCV's Typst package (entry types, designs, renderer)
+├── tests/                   ← Tests
+├── docs/                    ← Documentation
+├── examples/                ← Example CVs, one folder per built-in design
 ├── pyproject.toml           ← Project configuration
+├── hatch_build.py           ← Build step that bundles the Typst packages
 ├── justfile                 ← Command shortcuts
 ├── scripts/                 ← Supplementary Python scripts
 ├── .pre-commit-config.yaml  ← Pre-commit configuration
 └── uv.lock                  ← Dependency lock file
 ```
 
-**Project management is everything except `src/`.** It's all the infrastructure that lets us:
+**Project management is everything except the code in `src/` and `typst/`.** It's all the infrastructure that lets us:
 
 - Share RenderCV with users (`pip install rendercv`)
 - Manage dependencies consistently
@@ -85,6 +90,12 @@ This file defines:
 
 Open the file to see the full configuration with detailed comments.
 
+### [`hatch_build.py`](https://github.com/rendercv/rendercv/blob/main/hatch_build.py)
+
+RenderCV is built with [`hatchling`](https://hatch.pypa.io/latest/). `hatch_build.py` is a build hook: when the Python package is built, it copies RenderCV's Typst package from `typst/` into it, and downloads the Typst packages it imports (like `@preview/fontawesome`) from Typst Universe, checking each against a pinned SHA-256. Installed RenderCV therefore needs no internet connection and no git submodules.
+
+To build without internet access, set `RENDERCV_TYPST_PACKAGES_CACHE` to a folder holding the package archives.
+
 ### [`justfile`](https://github.com/rendercv/rendercv/blob/main/justfile)
 
 [just](https://github.com/casey/just) is a command runner, a tool that lets you define terminal commands in a file and run them easily.
@@ -109,8 +120,9 @@ Python scripts that automate some repetitive tasks that are not part of RenderCV
 
 **Why do we need it?** Some tasks need to be done repeatedly but are too complex for simple shell commands:
 
-- `update_schema.py`: Generate `schema.json` (see [JSON Schema](json_schema.md) for more details) from pydantic models
-- `update_examples.py`: Regenerate all example YAML files and PDFs in [`examples/`](https://github.com/rendercv/rendercv/tree/main/examples) folder
+- `update_schema.py`: Generate `schema.json` (see [JSON Schema](json_schema.md) for more details) from pydantic models and the standard entry types
+- `update_examples.py`: Regenerate the example CVs in the [`examples/`](https://github.com/rendercv/rendercv/tree/main/examples) folder (a YAML file, a `design.typ`, and a PDF per built-in design) and the design images in the docs
+- `rendercv_skill/generate.py`: Generate the [AI agent skill](../user_guide/how_to/use_the_ai_agent_skill.md) and `docs/llms.txt`
 - `create_executable.py`: Build standalone executable of RenderCV
 
 These scripts are called by `just` commands (`just update-schema`, `just update-examples`, etc.).

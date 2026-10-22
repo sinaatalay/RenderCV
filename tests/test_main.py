@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 
 
-def test_main_module_runs():
+def test_main_module_runs() -> None:
     """Test that running the module as __main__ executes the CLI app."""
     # Mock sys.argv to pass --help to avoid actually running the full CLI
     with patch.object(sys, "argv", ["rendercv", "--help"]):

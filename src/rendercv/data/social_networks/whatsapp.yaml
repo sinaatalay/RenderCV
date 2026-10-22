@@ -1,0 +1,8 @@
+# WhatsApp.
+name: 'WhatsApp'
+icon: whatsapp
+url: 'https://wa.me/{digits}'
+username:
+  kind: phone
+  hint: 'Use your phone number with the country code, like +1 415 555 0100.'
+example: '+14155550100'

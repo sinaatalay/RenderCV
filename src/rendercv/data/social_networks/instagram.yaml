@@ -1,0 +1,5 @@
+# Instagram.
+name: 'Instagram'
+icon: instagram
+url: 'https://instagram.com/{username}'
+example: 'johndoe'

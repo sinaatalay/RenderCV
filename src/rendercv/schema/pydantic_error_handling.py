@@ -1,15 +1,17 @@
 import pathlib
+import re
 from typing import Any, cast
 
 import pydantic
 import pydantic_core
-from ruamel.yaml.comments import CommentedMap
+from ruamel.yaml.comments import CommentedMap, CommentedSeq
 
 from rendercv.exception import (
     OVERLAY_SOURCE_TO_YAML_SOURCE,
     OverlaySourceKey,
     RenderCVInternalError,
     RenderCVValidationError,
+    YamlLocation,
     YamlSource,
 )
 
@@ -21,15 +23,59 @@ error_dictionary = cast(
     read_yaml(pathlib.Path(__file__).parent / "error_dictionary.yaml"),
 )
 unwanted_texts = ("value is not a valid email address: ", "Value error, ")
-unwanted_locations = (
-    "tagged-union",
-    "list",
-    "literal",
-    "int",
-    "str",
-    "constrained-str",
-    "function-",
+# Names pydantic adds to error locations for union branches and validators,
+# like `str`, `list[str]`, or `function-after[...]`:
+pydantic_location_artifact_pattern = re.compile(
+    r"^(str|int|float|bool|none|url|email|date|datetime|model|"
+    r"[\w-]+\[.*\]|constrained-[\w-]+|function-[\w-]+|tagged-union|literal)$"
 )
+
+
+def resolve_error_location(
+    location: tuple[str | int, ...],
+    input_dictionary: CommentedMap | dict[str, Any],
+    *,
+    is_missing: bool,
+) -> tuple[str, ...]:
+    """Remove pydantic's union-branch names from an error location.
+
+    Why:
+        Pydantic adds names like `str` or `list[str]` to locations of values
+        that match one of several types. A location part that exists in the
+        YAML is always kept, so user keys that happen to look like those names
+        (a section called `list`, or `interests`) are never dropped.
+
+    Args:
+        location: The location pydantic reports.
+        input_dictionary: The YAML the location points into.
+        is_missing: Whether the error is about a missing field, whose name is
+            not in the YAML.
+
+    Returns:
+        The location with only real keys and indices.
+    """
+    resolved: list[str] = []
+    current: Any = input_dictionary
+    for index, part in enumerate(location):
+        is_last = index == len(location) - 1
+        # Keys are compared as text, so a section titled `2024` (an int key) is found:
+        keys = {str(key): key for key in current} if isinstance(current, dict) else {}
+        if isinstance(current, dict) and str(part) in keys:
+            resolved.append(str(part))
+            current = current[keys[str(part)]]
+        elif (
+            isinstance(current, list) and isinstance(part, int) and part < len(current)
+        ):
+            resolved.append(str(part))
+            current = current[part]
+        elif pydantic_location_artifact_pattern.fullmatch(str(part)) and not (
+            is_last and is_missing
+        ):
+            continue
+        else:
+            resolved.append(str(part))
+            current = None
+    return tuple(resolved)
 
 
 def parse_plain_pydantic_error(
@@ -50,10 +96,6 @@ def parse_plain_pydantic_error(
     for unwanted_text in unwanted_texts:
         plain_error["msg"] = plain_error["msg"].replace(unwanted_text, "")
 
-    if plain_error["loc"][0] in ["design", "locale"]:
-        # Skip the second key because it's the discriminator value.
-        plain_error["loc"] = plain_error["loc"][:1] + plain_error["loc"][2:]
-
     if "ctx" in plain_error:
         if "input" in plain_error["ctx"]:
             plain_error["input"] = plain_error["ctx"]["input"]
@@ -61,25 +103,12 @@ def parse_plain_pydantic_error(
         if "loc" in plain_error["ctx"]:
             plain_error["loc"] = plain_error["ctx"]["loc"]
 
-    location = tuple(
-        str(location_element)
-        for location_element in plain_error["loc"]
-        if not any(item in str(location_element) for item in unwanted_locations)
+    location = resolve_error_location(
+        plain_error["loc"],
+        input_dictionary,
+        is_missing=plain_error["type"] == "missing",
     )
-    # Special case for end_date because Pydantic returns multiple end_date errors
-    # since it has multiple valid formats:
-    if location and "end_date" in location[-1]:
-        plain_error["msg"] = (
-            "This is not a valid `end_date`! Please use either YYYY-MM-DD, YYYY-MM,"
-            ' or YYYY format or "present"!'
-        )
 
-    # Special case for current_date: the field is typed as datetime.date |
-    # Literal["today"]. Pydantic appends "date" to the loc for the datetime.date
-    # union branch (e.g. ("settings", "current_date", "date")). Strip that suffix
-    # first so the field name lands at location[-1], matching the end_date pattern.
-    if len(location) >= 2 and location[-1] == "date" and location[-2] == "current_date":
-        location = location[:-1]
     if location and "current_date" in location[-1]:
         plain_error["msg"] = (
             "This is not a valid `current_date`! Please use YYYY-MM-DD format or"
@@ -91,7 +120,7 @@ def parse_plain_pydantic_error(
             plain_error["msg"] = new_error_message
             break
 
-    if not plain_error["msg"].endswith("."):
+    if not plain_error["msg"].endswith((".", "?")):
         plain_error["msg"] += "."
 
     # Determine which YAML source this error came from and use the correct
@@ -146,23 +175,28 @@ def parse_validation_errors(
     all_final_errors: list[RenderCVValidationError] = []
 
     for plain_error in all_plain_errors:
-        all_final_errors.append(
-            parse_plain_pydantic_error(plain_error, input_dictionary, overlay_sources)
-        )
+        if plain_error["type"] != CustomPydanticErrorTypes.entry_validation.value:
+            all_final_errors.append(
+                parse_plain_pydantic_error(
+                    plain_error, input_dictionary, overlay_sources
+                )
+            )
+            continue
 
-        if plain_error["type"] == CustomPydanticErrorTypes.entry_validation.value:
-            if "ctx" not in plain_error or "caused_by" not in plain_error["ctx"]:
-                raise RenderCVInternalError(
-                    "entry_validation error missing ctx or caused_by"
+        # Problems inside entries are reported one by one, each at its own place:
+        if "ctx" not in plain_error or "caused_by" not in plain_error["ctx"]:
+            raise RenderCVInternalError(
+                "entry_validation error missing ctx or caused_by"
+            )
+        for plain_cause_error in plain_error["ctx"]["caused_by"]:
+            plain_cause_error["loc"] = plain_error["loc"] + tuple(
+                plain_cause_error["loc"]
+            )
+            all_final_errors.append(
+                parse_plain_pydantic_error(
+                    plain_cause_error, input_dictionary, overlay_sources
                 )
-            for plain_cause_error in plain_error["ctx"]["caused_by"]:
-                loc = plain_cause_error["loc"][1:]  # Omit `entries` location
-                plain_cause_error["loc"] = plain_error["loc"] + loc
-                all_final_errors.append(
-                    parse_plain_pydantic_error(
-                        plain_cause_error, input_dictionary, overlay_sources
-                    )
-                )
+            )
 
     # Remove duplicates from all_final_errors:
     error_locations = set()
@@ -173,13 +207,27 @@ def parse_validation_errors(
             error_locations.add(schema_location)
             errors_without_duplicates.append(error)
 
-    return errors_without_duplicates
+    # A value that fits none of a union's types gets an error from each type.
+    # When one type's errors point inside the value (`cv.email.1` for a list),
+    # another type's error about the whole value (`cv.email`: "should be a
+    # string") only confuses:
+    return [
+        error
+        for error in errors_without_duplicates
+        if not error.schema_location
+        or not any(
+            location[: len(error.schema_location)] == error.schema_location
+            and len(location) > len(error.schema_location)
+            for location in error_locations
+            if location is not None
+        )
+    ]
 
 
 def get_inner_yaml_object_from_its_key(
-    yaml_object: CommentedMap,
+    yaml_object: Any,
     location_key: str,
-) -> tuple[CommentedMap, tuple[tuple[int, int], tuple[int, int]]]:
+) -> tuple[Any, YamlLocation] | None:
     """Navigate one level into YAML structure and extract coordinates.
 
     Why:
@@ -192,42 +240,41 @@ def get_inner_yaml_object_from_its_key(
         location_key: Single key or list index as string.
 
     Returns:
-        Tuple of nested object and ((start_line, start_col), (end_line, end_col)).
+        Tuple of nested object and ((start_line, start_col), (end_line, end_col)),
+        or None if the YAML file doesn't have this key (for example, because a
+        CLI override added it).
     """
-    # If the part is numeric, interpret it as a list index:
-    try:
+    if isinstance(yaml_object, CommentedSeq):
+        if not location_key.isdigit() or int(location_key) >= len(yaml_object):
+            return None
         index = int(location_key)
-        try:
-            inner_yaml_object = yaml_object[index]
-            # Get the coordinates from the list's lc.data (which is a list of tuples).
-            start_line, start_col = yaml_object.lc.data[index]
-            end_line, end_col = start_line, start_col
-            coordinates = ((start_line + 1, start_col - 1), (end_line + 1, end_col))
-        except IndexError as e:
-            message = f"Index {index} is out of range in the YAML file."
-            raise RenderCVInternalError(message) from e
-    except ValueError as e:
-        # Otherwise, the part is a key in a mapping.
-        if location_key not in yaml_object:
-            message = f"Key '{location_key}' not found in the YAML file."
-            raise RenderCVInternalError(message) from e
-
-        inner_yaml_object = yaml_object[location_key]
-        start_line, start_col, end_line, end_col = yaml_object.lc.data[location_key]
-        coordinates = ((start_line + 1, start_col + 1), (end_line + 1, end_col))
-
-    return inner_yaml_object, coordinates
+        start_line, start_col = yaml_object.lc.data[index]
+        return yaml_object[index], (
+            (start_line + 1, start_col - 1),
+            (start_line + 1, start_col),
+        )
+    if not isinstance(yaml_object, CommentedMap):
+        return None
+    # Keys are compared as text, so a section titled `2024` (an int key) is found:
+    keys = {str(key): key for key in yaml_object}
+    if location_key not in keys or keys[location_key] not in yaml_object.lc.data:
+        return None
+    key = keys[location_key]
+    start_line, start_col, end_line, end_col = yaml_object.lc.data[key]
+    return yaml_object[key], ((start_line + 1, start_col + 1), (end_line + 1, end_col))
 
 
 def get_coordinates_of_a_key_in_a_yaml_object(
     yaml_object: CommentedMap, location: tuple[str, ...]
-) -> tuple[tuple[int, int], tuple[int, int]]:
+) -> YamlLocation | None:
     """Resolve dotted location path to exact YAML source coordinates.
 
     Why:
         Error tables must show users exactly which line/column contains
         the invalid value. Recursive traversal through CommentedMap's
-        lc.data preserves coordinates at every nesting level.
+        lc.data preserves coordinates at every nesting level. Parts of a
+        location that aren't written in the YAML file (added by CLI overrides,
+        or a missing field's name) point at their closest written parent.
 
     Example:
         ```py
@@ -243,15 +290,15 @@ def get_coordinates_of_a_key_in_a_yaml_object(
         location: Path segments from root to target key.
 
     Returns:
-        ((start_line, start_col), (end_line, end_col)) in 1-indexed coordinates.
+        ((start_line, start_col), (end_line, end_col)) in 1-indexed coordinates,
+        or None if not even the first part of the location is in the YAML file.
     """
-
-    current_yaml_object = yaml_object
-    coordinates = ((0, 0), (0, 0))
-    # start from the first key and move forward:
+    current_yaml_object: Any = yaml_object
+    coordinates: YamlLocation | None = None
     for location_key in location:
-        current_yaml_object, coordinates = get_inner_yaml_object_from_its_key(
-            current_yaml_object, location_key
-        )
+        inner = get_inner_yaml_object_from_its_key(current_yaml_object, location_key)
+        if inner is None:
+            break
+        current_yaml_object, coordinates = inner
 
     return coordinates

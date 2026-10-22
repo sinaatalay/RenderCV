@@ -50,6 +50,9 @@ Install them by following their official installation guides:
 
 That's it! You're now ready to start developing RenderCV.
 
+!!! note
+    In a source checkout, RenderCV serves its Typst package straight from the `typst/` folder, so edits to it take effect on the next render. The Typst packages it depends on (like `@preview/fontawesome`) are downloaded by Typst the first time you render, so you need an internet connection once. Installed RenderCV bundles them (see [Project Management](project_management.md#hatch_buildpy)).
+
 ## Available Commands
 
 ### Development
@@ -74,7 +77,8 @@ That's it! You're now ready to start developing RenderCV.
 
 - `just update-schema`: Update JSON schema
 - `just update-entry-figures`: Update entry figures for documentation
-- `just update-examples`: Update example files
+- `just update-examples`: Update the `examples/` folder and the design images in the docs
+- `just update-skill`: Update the AI agent skill and `docs/llms.txt`
 - `just create-executable`: Create standalone executable
 
 ### Utilities

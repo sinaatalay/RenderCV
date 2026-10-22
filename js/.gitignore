@@ -1,0 +1,6 @@
+node_modules/
+dist/
+# RenderCV's wheel and its dependencies, from `bun run build`:
+wheels/
+# RenderCV's fonts, downloaded once in Node.js and Bun:
+.cache/

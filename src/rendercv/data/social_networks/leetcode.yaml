@@ -1,0 +1,5 @@
+# Leetcode.
+name: 'Leetcode'
+icon: code
+url: 'https://leetcode.com/u/{username}'
+example: 'johndoe'

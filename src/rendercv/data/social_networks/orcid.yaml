@@ -1,0 +1,8 @@
+# ORCID.
+name: 'ORCID'
+icon: orcid
+url: 'https://orcid.org/{username}'
+username:
+  pattern: '\d{4}-\d{4}-\d{4}-\d{3}[\dX]'
+  hint: 'Use your ORCID iD, like 0000-0002-1825-0097.'
+example: '0000-0002-1825-0097'

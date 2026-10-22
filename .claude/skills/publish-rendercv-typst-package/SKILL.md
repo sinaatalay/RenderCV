@@ -1,18 +1,18 @@
 ---
 name: publish-rendercv-typst-package
-description: Create a PR to publish a new version of the rendercv-typst package to the Typst Universe (typst/packages repository). Validates package integrity, forks/clones the repo, copies files, and opens a PR.
+description: Create a PR to publish a new version of RenderCV's Typst package (typst/, @preview/rendercv) to the Typst Universe (typst/packages repository). Validates package integrity, forks/clones the repo, copies files, and opens a PR.
 disable-model-invocation: true
 ---
 
-# Publish rendercv-typst to Typst Universe
+# Publish RenderCV's Typst package to Typst Universe
 
-Create a pull request to `typst/packages` to publish the current version of `src/rendercv/renderer/rendercv_typst/`.
+Create a pull request to `typst/packages` to publish the current version of RenderCV's Typst package, which lives in `typst/` at the repository root (`@preview/rendercv`).
 
 The clone location for the typst/packages fork is `$HOME/.cache/rendercv/typst-packages`.
 
 ## Step 1: Read package metadata
 
-Read `src/rendercv/renderer/rendercv_typst/typst.toml` to get the version and all metadata fields.
+Read `typst/typst.toml` to get the version and all metadata fields.
 
 ## Step 2: Validate package integrity
 
@@ -20,48 +20,52 @@ Run ALL checks below. Collect ALL failures and report them together. Do NOT proc
 
 ### 2a: Required files
 
-Verify these exist in `src/rendercv/renderer/rendercv_typst/`:
-- `lib.typ`
+Verify these exist in `typst/`:
+- `lib.typ` (the entrypoint)
 - `typst.toml`
-- `README.md`
+- `README.md` (Typst Universe requires it; it documents the package for standalone Typst users)
 - `LICENSE`
-- `thumbnail.png`
-- `template/main.typ`
+- `src/`, `entries/`, and `designs/` (imported by `lib.typ`)
+
+If `typst.toml` has a `[template]` section, also verify its `path` folder, its `entrypoint` file, and its `thumbnail` exist.
 
 ### 2b: Manifest completeness
 
 Parse `typst.toml` and verify it has:
 - Required: `name`, `version`, `entrypoint`, `authors`, `license`, `description`
-- Template section: `[template]` with `path`, `entrypoint`, `thumbnail`
+- `compiler`: the minimum Typst version, matching the `typst` Python dependency's version in `pyproject.toml`
+- `exclude`: excludes PDFs and anything not needed at runtime
 
 ### 2c: Version consistency
 
-Check that the version string in `typst.toml` appears correctly in:
-- `README.md` import statements (`@preview/rendercv:X.Y.Z`)
-- `template/main.typ` import statement (`@preview/rendercv:X.Y.Z`)
-- All example files in `src/rendercv/renderer/rendercv_typst/examples/*.typ` (if they have import statements)
+Check that the version string in `typst/typst.toml` matches `version` in `pyproject.toml` (RenderCV and its Typst package share a version), and appears correctly in:
+- `typst/README.md` import statements (`@preview/rendercv:X.Y.Z`)
+- The template's entrypoint, if there is a template
+- Any example files in `typst/examples/*.typ` (if they have import statements)
 
-If ANY file references an old version, stop and report which files need updating.
+If ANY file references an old version, stop and report which files need updating. (The docs in `docs/` also show `@preview/rendercv:X.Y.Z` imports; report stale ones as warnings.)
 
-### 2d: CHANGELOG entry
+### 2d: Changelog entry
 
-Read `src/rendercv/renderer/rendercv_typst/CHANGELOG.md` and verify there is an entry for the version being published.
+Read `docs/changelog.md` and verify there is an entry for the version being published.
 
-### 2e: All themes have example files
+### 2e: The package compiles on its own
 
-This is critical. Extract all theme names shown in the README by finding image references that match the pattern `examples/<theme-name>.png` in the image URLs. Then verify that EVERY theme has a corresponding `<theme-name>.typ` file in `src/rendercv/renderer/rendercv_typst/examples/`.
+The package must not import anything outside `typst/` with relative paths (`../`), and every `@preview/...` package it imports must exist on Typst Universe. Check with:
 
-For example, if the README shows images for classic, engineeringresumes, sb2nov, moderncv, engineeringclassic, and harvard, then ALL of these must exist as `.typ` files in `src/rendercv/renderer/rendercv_typst/examples/`.
+```bash
+grep -rn '#import' typst/lib.typ typst/src typst/entries typst/designs
+```
 
-If any example file is missing, STOP and tell the user exactly which files are missing.
+Relative imports may only point inside `typst/`. External imports (like `@preview/fontawesome:X.Y.Z`) must match the versions pinned in `hatch_build.py`'s `external_typst_packages`.
 
 ### 2f: No stale or broken links
 
-Check that the `README.md` does not reference nonexistent files within the package (e.g., broken relative links).
+Check that `typst/README.md` does not reference nonexistent files within the package (e.g., broken relative links).
 
-### 2g: Import style in template
+### 2g: Import style in the template
 
-Verify `template/main.typ` uses the absolute package import (`@preview/rendercv:{version}`) and NOT a relative import like `../lib.typ`. The Typst packages repository requires absolute imports.
+If there is a template, verify its entrypoint uses the absolute package import (`@preview/rendercv:{version}`) and NOT a relative import like `../lib.typ`. The Typst packages repository requires absolute imports.
 
 ## Step 3: Handle previous work
 
@@ -106,24 +110,24 @@ git reset --hard upstream/main
 
 ## Step 5: Create the package version directory
 
-1. Read the version from `typst.toml` (e.g., `0.3.0`).
+1. Read the version from `typst/typst.toml` (e.g., `3.0.0`).
 2. Create a new branch: `git checkout -b rendercv-{version}`
 3. Create the target directory: `packages/preview/rendercv/{version}/`
-4. Copy files from the rendercv-typst source directory into the target:
+4. Copy files from `typst/` into the target:
 
 **Files to copy:**
 - `lib.typ`
 - `typst.toml`
 - `README.md`
 - `LICENSE`
-- `thumbnail.png`
-- `template/` (entire directory)
-- `examples/` (entire directory, but exclude any `.pdf` files)
+- `src/`, `entries/`, and `designs/` (entire directories)
+- The template folder and thumbnail, if `typst.toml` has a `[template]` section
+- `examples/` (if it has any files, but exclude any `.pdf` files)
 
 **Do NOT copy:**
-- `CHANGELOG.md`
 - `.git/` or `.gitignore`
 - Any `.pdf` files
+- Anything matched by `exclude` in `typst.toml`
 
 5. Verify no PDF files ended up in the target directory.
 
@@ -133,7 +137,7 @@ Look at existing directories in `packages/preview/rendercv/` to find the most re
 
 ## Step 7: Build PR description
 
-Read `src/rendercv/renderer/rendercv_typst/CHANGELOG.md` and extract the changes for the current version.
+Read `docs/changelog.md` and extract the changes for the current version that concern the Typst package (entry types, designs, the renderer, and the Typst API).
 
 **PR title:** `rendercv:{version}`
 
@@ -147,7 +151,7 @@ Description: {Brief description of the package}. {Summary of what changed in thi
 
 ### Changes from {previous_version}
 
-{Bullet list of changes extracted from CHANGELOG.md}
+{Bullet list of changes extracted from docs/changelog.md}
 ```
 
 **PR body for new packages** (if no previous version exists, include the full checklist):

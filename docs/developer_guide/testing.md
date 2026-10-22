@@ -36,12 +36,21 @@ Whenever you make changes to RenderCV's source code, run the tests to ensure eve
 just test
 ```
 
+## How the Tests Are Organized
+
+Tests mirror the code they test:
+
+- Python: `src/rendercv/schema/models/cv/section.py` is tested in `tests/schema/models/cv/test_section.py`.
+- Typst: RenderCV's Typst package in `typst/` is tested in `tests/typst/`, which mirrors `typst/` the same way.
+
+[`tests/test_tests.py`](https://github.com/rendercv/rendercv/blob/main/tests/test_tests.py) checks that every test file has a matching source file, so tests don't drift away from the code.
+
 ## Reference File Comparison
 
-Some tests in [`tests/renderer/`](https://github.com/rendercv/rendercv/tree/main/tests/renderer) (specifically [`test_pdf_png.py`](https://github.com/rendercv/rendercv/blob/main/tests/renderer/test_pdf_png.py), [`test_typst.py`](https://github.com/rendercv/rendercv/blob/main/tests/renderer/test_typst.py), [`test_markdown.py`](https://github.com/rendercv/rendercv/blob/main/tests/renderer/test_markdown.py), and [`test_html.py`](https://github.com/rendercv/rendercv/blob/main/tests/renderer/test_html.py)) use reference file comparison:
+Some tests check RenderCV's output (PDFs, PNGs, Typst, Markdown, HTML) by comparing it against reference files:
 
 1. Tests generate output files by running RenderCV
-2. Generated files are compared against reference files in `tests/renderer/testdata/`
+2. Generated files are compared against reference files in the `testdata/` folder next to the test
 3. If they match exactly, the test passes. Any difference fails the test.
 
 ### Updating Reference Files

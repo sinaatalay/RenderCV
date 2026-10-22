@@ -1,0 +1,8 @@
+# YouTube.
+name: 'YouTube'
+icon: youtube
+url: 'https://youtube.com/@{username}'
+username:
+  pattern: '[^@].*'
+  hint: 'Leave out the "@" at the start.'
+example: 'johndoe'

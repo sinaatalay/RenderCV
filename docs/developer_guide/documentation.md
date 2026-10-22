@@ -43,13 +43,22 @@ Generates the API reference from Python docstrings. The entire [API Reference](.
 
 ### [`mkdocs-macros-plugin`](https://mkdocs-macros-plugin.readthedocs.io/): Dynamic Content
 
-Lets you inject code-generated values into Markdown. [`docs/docs_templating.py`](https://github.com/rendercv/rendercv/blob/main/docs/docs_templating.py) runs during the build. It imports values directly from RenderCV's code and exposes them as variables. It's heavily used in [YAML Input Structure: `cv` Field](../user_guide/yaml_input_structure/cv.md) page.
+Lets you inject code-generated values into Markdown. [`docs/docs_templating.py`](https://github.com/rendercv/rendercv/blob/main/docs/docs_templating.py) runs during the build. It reads values directly from RenderCV's code and Typst package and exposes them as variables (written `{$ raw $}<< variable >>{$ endraw $}` in the pages), so the docs can't drift from the code:
+
+- The lists of designs, locales, social networks, and fonts.
+- The standard entry types and their fields, read from Typst exactly like `rendercv render` reads them. The [Entry Types](../user_guide/entry_types.md) page is built from them.
+- The design options and each design's defaults, copied from the Typst sources in `typst/designs/` into the [Design](../user_guide/design.md) page.
+- The sample `design.typ` and `entries.typ` that `rendercv new` creates.
 
 ## Entry Type Figures
 
-The [YAML Input Structure: `cv` Field](../user_guide/yaml_input_structure/cv.md) page shows example images of each entry type rendered in each theme.
+The [Entry Types](../user_guide/entry_types.md) page shows example images of each standard entry type rendered in each design.
 
-These are auto-generated PNG images. Run `just update-entry-figures` to regenerate them from [`docs/user_guide/sample_entries.yaml`](https://github.com/rendercv/rendercv/blob/main/docs/user_guide/sample_entries.yaml).
+These are auto-generated PNG images in `docs/assets/images/<design>/`. Run `just update-entry-figures` to regenerate them from [`docs/user_guide/sample_entries.yaml`](https://github.com/rendercv/rendercv/blob/main/docs/user_guide/sample_entries.yaml), which holds one sample entry per entry type. The docs build validates these samples against the standard entry types, so a sample that no longer fits its type fails the build.
+
+## Design Images
+
+The design gallery in the README, on the home page, and on the [Design](../user_guide/design.md) page shows the first page of each example CV. `just update-examples` regenerates them in `docs/assets/images/examples/` together with the [`examples/`](https://github.com/rendercv/rendercv/tree/main/examples) folder.
 
 ## Local Preview
 

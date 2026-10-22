@@ -1,4 +1,6 @@
-education_entry:
+# One sample entry of each standard entry type. The docs show them, and the entry
+# figures in docs/assets/images/<design>/ are rendered from them.
+education:
   institution: Boğaziçi University
   area: Mechanical Engineering
   degree: BS
@@ -9,18 +11,18 @@ education_entry:
     - "GPA: 3.24/4.00 ([Transcript](https://example.com))"
     - "Awards: Dean's Honor List, Sportsperson of the Year"
 
-experience_entry:
+experience:
   company: Some Company
   position: Software Engineer
   location: TX, USA
   start_date: 2020-07
   end_date: "2021-08-12"
   highlights:
-    - Developed an [IOS application](https://example.com) that has
+    - Developed an [iOS application](https://example.com) that has
       received more than **100,000 downloads**.
     - Managed a team of **5** engineers.
 
-normal_entry:
+normal:
   name: Some Project
   date: 2021-09
   summary: This is a summary of the project.
@@ -28,7 +30,7 @@ normal_entry:
     - Developed a web application with **React** and **Django**.
     - Implemented a **RESTful API**
 
-publication_entry:
+publication:
   title: Magneto-Thermal Thin Shell Approximation for 3D Finite
     Element Analysis of No-Insulation Coils
   authors:
@@ -40,19 +42,19 @@ publication_entry:
   journal: IEEE Transactions on Applied Superconductivity
   doi: 10.1109/TASC.2023.3340648
 
-one_line_entry:
+one_line:
   label: Programming
   details: Python, C++, JavaScript, MATLAB
 
-bullet_entry:
+bullet:
   bullet: This is a bullet entry.
 
-numbered_entry:
+numbered:
   number: This is a numbered entry.
 
-reversed_numbered_entry:
+reversed_numbered:
   reversed_number: This is a reversed numbered entry.
 
-text_entry: This is a *TextEntry*. It is only a text and can be useful for
-  sections like **Summary**. To showcase the TextEntry completely,
+paragraph: This is a paragraph entry. It is only text and can be useful for
+  sections like **Summary**. To showcase the paragraph entry completely,
   this sentence is added, but it doesn't contain any information.

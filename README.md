@@ -46,11 +46,9 @@ cv:
       - institution: Princeton University
         area: Computer Science
         degree: PhD
-        date:
         start_date: 2018-09
         end_date: 2023-05
         location: Princeton, NJ
-        summary:
         highlights:
           - "Thesis: Efficient Neural Architecture Search for Resource-Constrained Deployment"
           - "Advisor: Prof. Sanjeev Arora"
@@ -60,11 +58,51 @@ cv:
 
 becomes one of these PDFs. Click on the images to preview.
 
-| [![Classic Theme Example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/classic.png)](https://github.com/rendercv/rendercv/blob/main/examples/John_Doe_ClassicTheme_CV.pdf) | [![Engineeringresumes Theme Example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/engineeringresumes.png)](https://github.com/rendercv/rendercv/blob/main/examples/John_Doe_EngineeringresumesTheme_CV.pdf) | [![Sb2nov Theme Example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/sb2nov.png)](https://github.com/rendercv/rendercv/blob/main/examples/John_Doe_Sb2novTheme_CV.pdf) |
+| [![Classic design example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/classic.png)](https://github.com/rendercv/rendercv/blob/main/examples/classic/John_Doe_CV.pdf) | [![Engineeringresumes design example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/engineeringresumes.png)](https://github.com/rendercv/rendercv/blob/main/examples/engineeringresumes/John_Doe_CV.pdf) | [![Sb2nov design example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/sb2nov.png)](https://github.com/rendercv/rendercv/blob/main/examples/sb2nov/John_Doe_CV.pdf) |
 | --- | --- | --- |
-| [![Moderncv Theme Example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/moderncv.png)](https://github.com/rendercv/rendercv/blob/main/examples/John_Doe_ModerncvTheme_CV.pdf) | [![Engineeringclassic Theme Example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/engineeringclassic.png)](https://github.com/rendercv/rendercv/blob/main/examples/John_Doe_EngineeringclassicTheme_CV.pdf) | [![Harvard Theme Example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/harvard.png)](https://github.com/rendercv/rendercv/blob/main/examples/John_Doe_HarvardTheme_CV.pdf) |
-| [![Ink Theme Example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/ink.png)](https://github.com/rendercv/rendercv/blob/main/examples/John_Doe_InkTheme_CV.pdf) | [![Opal Theme Example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/opal.png)](https://github.com/rendercv/rendercv/blob/main/examples/John_Doe_OpalTheme_CV.pdf) | [![Ember Theme Example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/ember.png)](https://github.com/rendercv/rendercv/blob/main/examples/John_Doe_EmberTheme_CV.pdf) |
+| [![Moderncv design example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/moderncv.png)](https://github.com/rendercv/rendercv/blob/main/examples/moderncv/John_Doe_CV.pdf) | [![Engineeringclassic design example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/engineeringclassic.png)](https://github.com/rendercv/rendercv/blob/main/examples/engineeringclassic/John_Doe_CV.pdf) | [![Harvard design example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/harvard.png)](https://github.com/rendercv/rendercv/blob/main/examples/harvard/John_Doe_CV.pdf) |
+| [![Ink design example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/ink.png)](https://github.com/rendercv/rendercv/blob/main/examples/ink/John_Doe_CV.pdf) | [![Opal design example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/opal.png)](https://github.com/rendercv/rendercv/blob/main/examples/opal/John_Doe_CV.pdf) | [![Ember design example of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/examples/ember.png)](https://github.com/rendercv/rendercv/blob/main/examples/ember/John_Doe_CV.pdf) |
 
+## Designs in Typst
+
+A YAML file is a complete CV. To change how it looks, put a `design.typ` next to it. Pick one of the built-in designs and change any of its options:
+
+```typst
+#import "@preview/rendercv:3.0.0": designs
+
+#let design = designs.classic(
+  page: (size: "a4", show_top_note: false),
+  colors: (name: rgb("#8b0000"), section_titles: rgb("#8b0000")),
+  typography: (font_family: "New Computer Modern"),
+  section_titles: (type: "with_full_line"),
+)
+```
+
+Switching designs is changing one word. And since it's [Typst](https://typst.app), you can go further and restyle any entry type, or write a design from scratch.
+
+> [!TIP]
+> Want a live preview while you edit? See [how to set up VS Code for RenderCV](https://docs.rendercv.com/user_guide/how_to/set_up_vs_code_for_rendercv).
+
+## Your Own Entry Types
+
+Education, experience, publications, skills, and more come built in. Need something else? Declare it in an `entries.typ` next to your YAML:
+
+```typst
+#import "@preview/rendercv:3.0.0": *
+
+#let talk = entry-type(
+  doc: "A talk at a conference or event.",
+  fields: (
+    title: field("markdown"),
+    event: field("markdown"),
+    date: field("date"),
+  ),
+  // Drawn as a normal entry, so every design styles it:
+  look: (it, ctx) => as-entry("normal", name: [#it.title -- #emph(it.event)], date: it.date),
+)
+```
+
+Now any entry with `title`, `event`, and `date` is a talk, validated like the built-in ones.
 
 ## JSON Schema
 
@@ -72,64 +110,28 @@ RenderCV's JSON Schema lets you fill out the YAML interactively, with autocomple
 
 ![JSON Schema of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/json_schema.gif)
 
-
-## Extensive Design Options
-
-You have full control over every detail.
-
-```yaml
-design:
-  theme: classic
-  page:
-    size: us-letter
-    top_margin: 0.7in
-    bottom_margin: 0.7in
-    left_margin: 0.7in
-    right_margin: 0.7in
-    show_footer: true
-    show_top_note: true
-  colors:
-    body: rgb(0, 0, 0)
-    name: rgb(0, 79, 144)
-    headline: rgb(0, 79, 144)
-    connections: rgb(0, 79, 144)
-    section_titles: rgb(0, 79, 144)
-    links: rgb(0, 79, 144)
-    footer: rgb(128, 128, 128)
-    top_note: rgb(128, 128, 128)
-  typography:
-    line_spacing: 0.6em
-    alignment: justified
-    date_and_location_column_alignment: right
-    font_family: Source Sans 3
-  # ...and much more
-```
-
-![Design Options of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/design_options.gif)
-
-> [!TIP]
-> Want to set up a live preview environment like the one shown above? See [how to set up VS Code for RenderCV](https://docs.rendercv.com/user_guide/how_to/set_up_vs_code_for_rendercv).
-
 ## Strict Validation
 
-No surprises. If something's wrong, you'll know exactly what and where. If it's valid, you get a perfect PDF.
+No surprises. If something's wrong, you'll know exactly what and where, with a suggestion when it looks like a typo. If it's valid, you get a perfect PDF.
 
 ![Strict Validation Feature of RenderCV](https://raw.githubusercontent.com/rendercv/rendercv/main/docs/assets/images/validation.gif)
 
-
 ## Any Language
 
-Fill out the locale field for your language.
+Pick one of the built-in languages, or fill out the locale field for your own.
 
 ```yaml
 locale:
   language: english
+  iso_code: en
   last_updated: Last updated in
+  present: present
   month: month
   months: months
   year: year
   years: years
-  present: present
+  phrases:
+    degree_with_area: "#degree in #area"
   month_abbreviations:
     - Jan
     - Feb
@@ -145,7 +147,20 @@ Let AI coding agents create and edit your CV. Install the RenderCV skill:
 npx skills add rendercv/rendercv-skill
 ```
 
-Works with any AI agent that supports the [skills standard](https://skills.sh). The skill is [auto-generated](https://github.com/rendercv/rendercv/blob/main/scripts/rendercv_skill/generate.py) from RenderCV's source code and [evaluated](https://github.com/rendercv/rendercv/tree/main/scripts/rendercv_skill/evals) with promptfoo against RenderCV's own Pydantic validation pipeline. See the [documentation](https://docs.rendercv.com/user_guide/how_to/use_the_ai_agent_skill) for details.
+Works with any AI agent that supports the [skills standard](https://skills.sh). The skill is [auto-generated](https://github.com/rendercv/rendercv/blob/main/scripts/rendercv_skill/generate.py) from RenderCV's source code and [evaluated](https://github.com/rendercv/rendercv/tree/main/scripts/rendercv_skill/evals) with promptfoo against RenderCV's own validation pipeline. See the [documentation](https://docs.rendercv.com/user_guide/how_to/use_the_ai_agent_skill) for details.
+
+## JavaScript
+
+RenderCV also runs in JavaScript, in Node.js, Bun, and browsers, with the official npm package:
+
+```js
+import { loadRenderCV } from "rendercv";
+
+const rendercv = await loadRenderCV();
+const { pdf } = await rendercv.render({ yaml });
+```
+
+See [JavaScript and Python](https://docs.rendercv.com/user_guide/javascript_and_python/) for details.
 
 ## Get Started
 
@@ -155,7 +170,7 @@ Install RenderCV (Requires Python 3.12+):
 pip install "rendercv[full]"
 ```
 
-Create a new CV yaml file:
+Create a new CV yaml file (add `--design moderncv` to also get a `design.typ` to edit):
 
 ```
 rendercv new "John Doe"
@@ -166,5 +181,7 @@ Edit the YAML, then render:
 ```
 rendercv render "John_Doe_CV.yaml"
 ```
+
+Coming from RenderCV 2? Run `rendercv migrate John_Doe_CV.yaml` to move your `design` field into a `design.typ`. See [migrating from RenderCV 2](https://docs.rendercv.com/user_guide/migrating_from_v2/).
 
 For more details, see the [user guide](https://docs.rendercv.com/user_guide/).

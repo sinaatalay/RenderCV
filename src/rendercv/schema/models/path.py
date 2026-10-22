@@ -41,17 +41,23 @@ def resolve_relative_path(
             path = relative_to / path
 
         if must_exist:
+            # Paths outside the YAML file's folder are shown as they are:
+            shown_path = (
+                path.relative_to(relative_to)
+                if path.is_relative_to(relative_to)
+                else path
+            )
             if not path.exists():
                 raise pydantic_core.PydanticCustomError(
                     CustomPydanticErrorTypes.other.value,
                     "The file `{file_path}` does not exist.",
-                    {"file_path": path.relative_to(relative_to)},
+                    {"file_path": shown_path},
                 )
             if not path.is_file():
                 raise pydantic_core.PydanticCustomError(
                     CustomPydanticErrorTypes.other.value,
                     "The path `{path}` is not a file.",
-                    {"path": path.relative_to(relative_to)},
+                    {"path": shown_path},
                 )
 
     return path

@@ -30,6 +30,19 @@ jobs:
       - name: Create executable
         run: just create-executable
 
+      - name: Test the executable
+        shell: bash
+        env:
+          # Rich prints characters like ✓ that Windows' default encoding lacks:
+          PYTHONIOENCODING: utf-8
+        run: |
+          executable="$(ls "$PWD"/bin/rendercv-* | grep -v '\.zip$')"
+          mkdir executable-test
+          cd executable-test
+          "$executable" new "John Doe" --design moderncv --entries
+          "$executable" render John_Doe_CV.yaml
+          test -s rendercv_output/John_Doe_CV.pdf
+
       - name: Upload executable as an artifact
         uses: actions/upload-artifact@v7
         with:

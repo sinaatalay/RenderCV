@@ -1,0 +1,38 @@
+# Dutch locale.
+language: dutch
+iso_code: nl
+direction: ltr
+last_updated: "Laatst bijgewerkt"
+present: "heden"
+month: "maand"
+months: "maanden"
+year: "jaar"
+years: "jaren"
+phrases:
+  degree_with_area: "#degree in #area"
+month_abbreviations:
+  - "Jan"
+  - "Feb"
+  - "Mrt"
+  - "Apr"
+  - "Mei"
+  - "Jun"
+  - "Jul"
+  - "Aug"
+  - "Sep"
+  - "Okt"
+  - "Nov"
+  - "Dec"
+month_names:
+  - "Januari"
+  - "Februari"
+  - "Maart"
+  - "April"
+  - "Mei"
+  - "Juni"
+  - "Juli"
+  - "Augustus"
+  - "September"
+  - "Oktober"
+  - "November"
+  - "December"

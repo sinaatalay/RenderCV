@@ -1,0 +1,5 @@
+# GitLab.
+name: 'GitLab'
+icon: gitlab
+url: 'https://gitlab.com/{username}'
+example: 'johndoe'

@@ -30,7 +30,7 @@ def cli_command_no_args(
     version_requested: Annotated[
         bool | None, typer.Option("--version", "-v", help="Show the version")
     ] = None,
-):
+) -> None:
     """RenderCV is a command-line tool for rendering CVs from YAML input files. For more
     information, see https://docs.rendercv.com.
     """

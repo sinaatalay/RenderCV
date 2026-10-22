@@ -3,80 +3,68 @@ name: rendercv
 description: >-
   Create professional CVs and resumes with perfect typography using RenderCV
   (v{{ version }}). Users write content in YAML, and RenderCV produces
-  publication-quality PDFs via Typst typesetting. Full control over every visual
-  detail: colors, fonts, margins, spacing, section title styles, entry layouts,
-  and more. {{ available_themes | length }} built-in themes with unlimited
-  customization. Any language supported ({{ available_locales | length }} built-in, or define your own). Outputs
-  PDF, PNG, HTML, and Markdown. Use when the user wants to create, edit,
-  customize, or render a CV or resume.
+  publication-quality PDFs via Typst typesetting. {{ available_designs | length }}
+  built-in designs, customized in a small Typst file (`design.typ`): colors,
+  fonts, margins, spacing, section title styles, entry layouts, and more. Custom
+  entry types in `entries.typ`. Any language supported ({{ available_locales | length }}
+  built-in, or define your own). Outputs PDF, PNG, HTML, and Markdown. Use when
+  the user wants to create, edit, customize, or render a CV or resume.
 ---
 
 ## Quick Start
 
-**Available themes:** `{{ available_themes | join("`, `") }}`
-**Available locales:** `{{ available_locales | join("`, `") }}`
-
-These are starting points — every aspect of the design and locale can be fully customized in the YAML file.
+**Built-in designs:** `{{ available_designs | join("`, `") }}`
+**Built-in locales:** `{{ available_locales | join("`, `") }}`
 
 ```bash
 # Install RenderCV
 uv tool install "rendercv[full]"
 
-# Create a starter YAML file (you can specify theme and locale)
+# Create a starter YAML file (optionally with a design.typ and an entries.typ)
 rendercv new "John Doe"
-rendercv new "John Doe" --theme moderncv --locale german
+rendercv new "John Doe" --design moderncv --locale german --entries
 
 # Render to PDF (also generates Typst, Markdown, HTML, PNG by default)
 rendercv render John_Doe_CV.yaml
 
-# Watch mode: auto-re-render whenever the YAML file changes
+# Watch mode: auto-re-render whenever the YAML file, design.typ, or entries.typ changes
 rendercv render John_Doe_CV.yaml --watch
 
 # Render only PNG (useful for previewing or checking page count)
 rendercv render John_Doe_CV.yaml --dont-generate-pdf --dont-generate-html --dont-generate-markdown
 
 # Override fields from the CLI without editing the YAML
-rendercv render cv.yaml --cv.name "Jane Doe" --design.theme "moderncv"
+rendercv render John_Doe_CV.yaml --cv.name "Jane Doe" --locale.language "german"
+
+# Upgrade a RenderCV 2 file (moves its `design:` field into design.typ)
+rendercv migrate John_Doe_CV.yaml
 ```
+
+## A CV Is Up to Three Files
+
+```
+John_Doe_CV.yaml   # Content (cv), language (locale), settings. Any file name.
+design.typ         # Optional: how it looks. Default: the classic design.
+entries.typ        # Optional: which entry types exist. Default: the standard ones.
+```
+
+`design.typ` and `entries.typ` next to the YAML file are used automatically. Other files can be chosen with `rendercv render --design FILE.typ --entries FILE.typ` or with `settings.render_command.design` / `settings.render_command.entries` in the YAML.
+
+**IMPORTANT: RenderCV 3 has no `design:` field in the YAML.** A YAML file with a `design:` key is an error. All visual customization goes into `design.typ`. Never write `design: theme: ...`.
 
 ## YAML Structure
 
-A RenderCV input has four sections. Only `cv` is required — the others have sensible defaults.
-
 ```yaml
 cv:         # Your content: name, contact info, and all sections
-design:     # Visual styling: theme, colors, fonts, margins, spacing, layouts
-locale:     # Language: month names, phrases, translations
-settings:   # Behavior: output paths, bold keywords, current date
+locale:     # Language: month names, "present", phrases, direction
+settings:   # Behavior: output paths, bold keywords, current date, design/entries files
 ```
 
-**Single file vs. separate files:** All four sections can live in one YAML file, or each can be a separate file. Separate files are useful for reusing the same design/locale across multiple CVs:
-
-```bash
-# Single self-contained file (all sections in one file)
-rendercv render John_Doe_CV.yaml
-
-# Separate files: CV content + design + locale loaded independently
-rendercv render cv.yaml --design design.yaml --locale-catalog locale.yaml --settings settings.yaml
-```
-
-When using separate files, each file contains only its section (e.g., `design.yaml` has `design:` as the top-level key). CLI-loaded files override values in the main YAML file.
-
-The YAML maps directly to Pydantic models. The complete type-safe schema is provided below so you can understand every field, its type, and its default value.
-
-## Pydantic Schema
-
-The YAML input is validated against these Pydantic models.
-
-### Top-Level Model
+Only `cv` is required. The YAML maps to these Pydantic models (validators omitted):
 
 ```python
 {{ model_sources.rendercv_model }}
 ```
-
-### CV Content (`cv`)
-
-The `cv.sections` field is a dictionary where keys are section titles (any string you want) and values are lists of entries. Each section contains entries of the same type.
 
 ```python
 {{ model_sources.cv }}
@@ -86,182 +74,202 @@ The `cv.sections` field is a dictionary where keys are section titles (any strin
 {{ model_sources.social_network }}
 ```
 
+Available social networks: `{{ available_social_networks | join("`, `") }}`. For anything else, use `custom_connections`:
+
 ```python
 {{ model_sources.custom_connection }}
 ```
 
-### Entry Types
+```python
+{{ model_sources.locale }}
+```
 
-`cv.sections` is a dictionary: keys are section titles (any string), values are lists of entries. Each section must use a **single** entry type — you cannot mix different entry types within the same section. The entry type is auto-detected from the fields present in each entry.
+```python
+{{ model_sources.settings }}
+{{ model_sources.render_command }}
+```
 
-**Shared fields** — these are available on entry types that support dates and complex fields (ExperienceEntry, EducationEntry, NormalEntry, PublicationEntry):
+## Sections and Entry Types
 
-| Field | Type | Default | Notes |
+`cv.sections` maps section titles (any text; `snake_case` keys become Title Case) to lists of entries. A section can also be a mapping of subsection titles to lists of entries.
+
+The entry type of each entry is detected from its fields: an entry fits a type if it has all the type's required fields and no fields the type doesn't have. An entry that is plain text is a `paragraph`. If several types fit, add `type: <name>` to the entry. **Unknown fields are errors**, so never invent fields; to add a field, declare an entry type in `entries.typ` (see below).
+
+**Standard entry types:**
+
+| Entry type | Required fields | Optional fields | Use |
 |---|---|---|---|
-| `date` | `str \| int \| null` | `null` | Free-form: `"2020-09"`, `"Fall 2023"`, etc. Mutually exclusive with `start_date`/`end_date`. |
-| `start_date` | `str \| int \| null` | `null` | Strict format: YYYY-MM-DD, YYYY-MM, or YYYY. |
-| `end_date` | `str \| int \| "present" \| null` | `null` | Same formats as `start_date`, or `"present"`. Omitting defaults to `"present"` when `start_date` is set. |
-| `location` | `str \| null` | `null` | |
-| `summary` | `str \| null` | `null` | |
-| `highlights` | `list[str] \| null` | `null` | Bullet points. |
+{% for entry_type in entry_types %}
+| `{{ entry_type.name }}` | {{ entry_type.required }} | {{ entry_type.optional }} | {{ entry_type.doc }} |
+{% endfor %}
 
-**9 entry types:**
-
-| Entry Type | Required Fields | Optional Fields | Typical Use |
-|---|---|---|---|
-| **ExperienceEntry** | `company`, `position` | all shared fields | Jobs, positions |
-| **EducationEntry** | `institution`, `area` | `degree` + all shared fields | Degrees, schools |
-| **PublicationEntry** | `title`, `authors` | `doi`, `url`, `journal`, `summary`, `date` | Papers, articles |
-| **NormalEntry** | `name` | all shared fields | Projects, awards |
-| **OneLineEntry** | `label`, `details` | — | Skills, languages |
-| **BulletEntry** | `bullet` | — | Simple bullet points |
-| **NumberedEntry** | `number` | — | Numbered list items |
-| **ReversedNumberedEntry** | `reversed_number` | — | Reverse-numbered items (5, 4, 3...) |
-| **TextEntry** | *(plain string)* | — | Free-form paragraphs |
-
-Example:
+Dates: `start_date`/`end_date` take `YYYY-MM-DD`, `YYYY-MM`, or `YYYY`; `end_date` can be `present` (omitting it also means ongoing). A single `date` also accepts free text like `"Fall 2023"`. Use either `date` or `start_date`/`end_date`.
 
 ```yaml
 cv:
   sections:
-    experience:          # list of ExperienceEntry (detected by company + position)
+    experience:              # experience (company + position)
       - company: Google
         position: Engineer
         start_date: 2020-01
         highlights:
           - Did something impactful
-    skills:              # list of OneLineEntry (detected by label + details)
+    skills:                  # one_line (label + details)
       - label: Languages
         details: Python, C++
-    about_me:            # list of TextEntry (plain strings)
+    about_me:                # paragraph (plain text)
       - This is a free-form paragraph about me.
+    projects:
+      Open source:           # subsection
+        - name: FlashInfer   # normal (name)
+          date: 2023
 ```
 
-Entries also accept arbitrary extra keys (silently ignored during rendering). A typo in a field name will NOT cause an error.
+## Text
 
-### Design (`design`)
+- All text fields support inline Markdown: `**bold**`, `*italic*`, `[link text](url)`, `` `code` ``, and `$$math$$` (Typst math syntax). Block-level Markdown (headings, lists) is not supported.
+- Everything else is printed literally: `$`, `#`, `@`, `<` need no escaping.
+- Raw Typst markup: tag the value with `!typst`, e.g. `- !typst "Showed that $f(x) = x^2$ is a #emph[parabola]."`
+- Nested bullets in `highlights`: put ` - ` inside a bullet, or indent the sub-bullets on the next lines (YAML joins them):
 
-All built-in themes share the same structure — they only differ in default values. See the sample designs below for every available field and its default. Set `design.theme` to pick a theme, then override any field.
+    ```yaml
+    highlights:
+      - Main bullet point
+        - Sub-bullet 1
+        - Sub-bullet 2
+    ```
 
-### Locale (`locale`)
-
-Built-in locales: `{{ available_locales | join("`, `") }}`
-
-Set `locale.language` to a built-in locale name to use it. Override any field to customize translations. Set `language` to any string and provide all translations for a fully custom locale.
-
-### Settings (`settings`)
-
-Key fields: `bold_keywords` (list of strings to auto-bold), `current_date` (override today's date), `render_command.*` (output paths, generation flags).
-
-## Important Patterns
+- Publication `authors`: wrap the CV owner's name in `**double asterisks**` to bold it.
 
 ### YAML quoting
 
-**ALWAYS quote string values that contain a colon (`:`).** This is the most common cause of invalid YAML. Highlights, titles, summaries, and any free-form text often contain colons:
+**ALWAYS quote string values that contain a colon followed by a space (`: `) or ` #`.** This is the most common cause of invalid YAML:
 
 ```yaml
-# WRONG — colon breaks YAML parsing:
+# WRONG — colon breaks YAML parsing, and " #1" becomes a comment:
 - title: Catalytic Mechanisms: A New Approach
   highlights:
-    - Relevant coursework: Distributed Systems, ML
+    - Closed issue #1 in the tracker
 
 # RIGHT — wrap in double quotes:
 - title: "Catalytic Mechanisms: A New Approach"
   highlights:
-    - "Relevant coursework: Distributed Systems, ML"
+    - "Closed issue #1 in the tracker"
 ```
-
-Rule: if a string value contains `:`, it MUST be quoted. When in doubt, quote it.
-
-### Bullet characters
-
-The `design.highlights.bullet` field only accepts these exact characters: `●`, `•`, `◦`, `-`, `◆`, `★`, `■`, `—`, `○`. Do not use en-dash (`–`), `>`, `*`, or any other character. When in doubt, omit `bullet` to use the theme default.
 
 ### Phone numbers
 
-Phone numbers MUST be in international format with country code (E.164). Never invent a phone number — only include one if the user provides it.
+Phone numbers MUST include the country code (`"+15551234567"`). Never invent a phone number — only include one if the user provides it. If the user provides a local number without country code, ask which country, or omit the phone field.
 
-```yaml
-# WRONG:
-phone: "(555) 123-4567"
-phone: "555-123-4567"
+## Design (`design.typ`)
 
-# RIGHT:
-phone: "+15551234567"
+`design.typ` must define `design`. The simplest one picks a built-in design and changes options:
+
+```typst
+{{ sample_design }}
 ```
 
-If the user provides a local number without country code, ask which country, or omit the phone field.
+All built-in designs share the options below and differ only in their defaults. Options are nested Typst dictionaries that merge key by key, so only changed options are needed. Values are Typst values: lengths `0.7in`/`10pt`/`1.2em`, colors `rgb("#004f90")`/`rgb(0, 79, 144)`, alignments `left`/`center`/`right` (no quotes), text `"a4"` (quoted). A one-element array needs a trailing comma: `("experience",)`. Unknown options and wrong types are errors.
 
-### Text formatting
+These are all options with the classic design's defaults:
 
-All text fields support inline Markdown: `**bold**`, `*italic*`, `[link text](url)`. Block-level Markdown (headers, lists, blockquotes, code blocks) is not supported. Raw Typst commands and math (`$$f(x)$$`) also pass through.
-
-### Date handling
-
-- `date` and `start_date`/`end_date` are mutually exclusive. If `date` is provided, `start_date` and `end_date` are ignored.
-- If only `start_date` is given, `end_date` defaults to `"present"`.
-- `start_date`/`end_date` require strict formats: YYYY-MM-DD, YYYY-MM, or YYYY.
-- `date` is flexible: accepts any string ("Fall 2023") in addition to date formats.
-
-### Section titles
-
-- `snake_case` keys auto-capitalize: `work_experience` → "Work Experience"
-- Keys with spaces or uppercase are used as-is.
-
-### Publication authors
-
-Use `*Name*` (single asterisks, italic) to highlight the CV owner in author lists.
-
-### Nested highlights (sub-bullets)
-
-```yaml
-highlights:
-  - Main bullet point
-    - Sub-bullet 1
-    - Sub-bullet 2
+```typst
+{{ engine_defaults }}
 ```
+
+Choices: `page.size` any Typst paper (`"us-letter"`, `"a4"`, ...); `typography.alignment` `"justified"`/`"left"`/`"justified-with-no-hyphenation"`; `typography.font_family` one font name or a dictionary per part; `header.photo_position` `"left"`/`"right"`; `header.connections.phone_number_format` `"national"`/`"international"`/`"e164"`; `section_titles.type` `"with_partial_line"`/`"with_full_line"`/`"without_line"`/`"moderncv"`/`"centered_without_line"`/`"centered_with_partial_line"`/`"centered_with_centered_partial_line"`/`"centered_with_full_line"`; `sections.show_time_spans_in` section keys (lowercase title with underscores).
+
+Example: dark red, A4, 1-inch margins, New Computer Modern:
+
+```typst
+#import "@preview/rendercv:{{ version }}": designs
+
+#let design = designs.classic(
+  page: (size: "a4", top_margin: 1in, bottom_margin: 1in, left_margin: 1in, right_margin: 1in),
+  colors: (name: rgb("#8b0000"), section_titles: rgb("#8b0000")),
+  typography: (font_family: "New Computer Modern"),
+)
+```
+
+To change how one entry type looks, replace its look in the design's `entries` (a design is a Typst dictionary):
+
+```typst
+#import "@preview/rendercv:{{ version }}": designs
+
+#let base = designs.sb2nov()
+#let design = base + (
+  entries: base.entries + (
+    one_line: (it, ctx) => block(below: 0.8em)[#smallcaps(it.label) · #it.details],
+  ),
+)
+```
+
+## Custom Entry Types (`entries.typ`)
+
+`entries.typ` is a Typst module; every entry type it defines or imports is allowed in the YAML. `rendercv new "John Doe" --entries` creates this one:
+
+```typst
+{{ sample_entries }}
+```
+
+Field kinds: `markdown`, `text` (optional `pattern:`), `date` (`allow-text: true` for free text), `url`, `email`, `phone`, `number`, `bool`, `choice` (`choices: (...)`), `list` (`of: "markdown"`), `bullets`, `entries`. `field(kind, optional: true, doc: "...")`. A look `(it, ctx) => ...` returns content or hands over to another type with `as-entry("normal", ...)`, so every design draws it.
+
+To add a field to a standard type, make a new type with the standard fields plus a **required** new field, handing over to the standard type:
+
+```typst
+#import "@preview/rendercv:{{ version }}": *
+
+#let job = entry-type(
+  fields: experience.fields + (tech_stack: field("markdown")),
+  look: (it, ctx) => as-entry(
+    "experience",
+    company: it.company,
+    position: it.position,
+    date: it.date,
+    start_date: it.start_date,
+    end_date: it.end_date,
+    location: it.location,
+    summary: [_Tech stack:_ #it.tech_stack],
+    highlights: it.highlights,
+  ),
+)
+```
+
+## Locale
+
+Set `locale.language` to a built-in locale and override any field. For another language, give it any name and provide every field (`iso_code`, `last_updated`, `present`, `month`, `months`, `year`, `years`, `phrases.degree_with_area`, `month_abbreviations`, `month_names`; `direction` defaults to `ltr`). `phrases.degree_with_area` is Typst markup: `"#degree in #area"`.
 
 ## CLI Reference
 
 ### `rendercv new "Full Name"`
 
-Generate a starter YAML file.
-
-| Option | Short | What it does |
-|---|---|---|
-| `--theme THEME` | | Theme to use (default: `classic`) |
-| `--locale LOCALE` | | Locale to use (default: `english`) |
-| `--create-typst-templates` | | Also create editable Typst template files for full design control |
+| Option | What it does |
+|---|---|
+| `--design NAME` | Also create a `design.typ` using this built-in design |
+| `--locale LOCALE` | Locale to use (default: `english`) |
+| `--entries` | Also create an `entries.typ` with an example custom entry type |
 
 ### `rendercv render <input.yaml>`
 
-Generate PDF, Typst, Markdown, HTML, and PNG from a YAML file.
-
 | Option | Short | What it does |
 |---|---|---|
-| `--watch` | `-w` | Re-render automatically when the YAML file changes |
+| `--watch` | `-w` | Re-render automatically when an input file changes |
 | `--quiet` | `-q` | Suppress all output messages |
-| `--design FILE` | `-d` | Load design section from a separate YAML file |
-| `--locale-catalog FILE` | `-lc` | Load locale section from a separate YAML file |
-| `--settings FILE` | `-s` | Load settings section from a separate YAML file |
+| `--design FILE.typ` | `-d` | Use this design file instead of `design.typ` |
+| `--entries FILE.typ` | `-e` | Use this entry types file instead of `entries.typ` |
+| `--locale-catalog FILE` | `-lc` | Load the `locale` field from a separate YAML file |
+| `--settings FILE` | `-s` | Load the `settings` field from a separate YAML file |
 | `--output-folder DIR` | `-o` | Custom output directory |
 
-Per-format controls: `--{format}-path PATH` sets custom output path, `--dont-generate-{format}` skips generation. Formats: `pdf`, `typst`, `markdown`, `html`, `png`.
+Per-format controls: `--{format}-path PATH` sets a custom output path, `--dont-generate-{format}` skips generation. Formats: `pdf`, `typst`, `markdown`, `html`, `png`. Any YAML field can be overridden with dot notation: `--cv.sections.education.0.institution "MIT"`.
 
-**Override any YAML field from the CLI** using dot notation (overrides without editing the file):
+### `rendercv migrate <input.yaml>`
 
-```bash
-rendercv render CV.yaml --cv.name "Jane Doe" --design.theme "moderncv"
-rendercv render CV.yaml --cv.sections.education.0.institution "MIT"
-```
-
-### `rendercv create-theme "theme-name"`
-
-Scaffold a custom theme directory with editable Typst templates for complete design control.
+Converts a RenderCV 2 file: moves its `design:` field into `design.typ` and keeps the original as `*.v2.yaml`.
 
 ## JSON Schema
 
-For YAML editor autocompletion and validation:
+For YAML editor autocompletion and validation (standard entry types only):
 
 ```yaml
 # yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v{{ version }}/schema.json
@@ -269,29 +277,6 @@ For YAML editor autocompletion and validation:
 
 ## Complete Example
 
-### Sample CV
-
 ```yaml
 {{ sample_cv }}
 ```
-
-### Sample Design (classic — complete reference)
-
-This shows every available design field with its default value. All themes share the same structure.
-
-```yaml
-{{ sample_classic_design }}
-```
-
-### Other Theme Overrides
-
-Other themes only override specific fields from the classic defaults above. To use a theme, set `design.theme` and optionally override any field. Each theme also customizes `design.templates` (entry layout patterns) — see the classic sample above for the full template structure. The override YAMLs below omit templates for brevity.
-
-{% for theme, yaml in theme_overrides.items() %}
-#### {{ theme }}
-
-```yaml
-{{ yaml }}
-```
-
-{% endfor %}

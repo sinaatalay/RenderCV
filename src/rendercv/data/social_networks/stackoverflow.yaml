@@ -1,0 +1,8 @@
+# StackOverflow.
+name: 'StackOverflow'
+icon: stack-overflow
+url: 'https://stackoverflow.com/users/{username}'
+username:
+  pattern: '\d+/[^/]+'
+  hint: 'Use the format "user_id/username", like 12345/johndoe.'
+example: '12345/johndoe'

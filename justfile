@@ -30,6 +30,13 @@ update-testdata:
 test-coverage:
   uv run --frozen --all-extras pytest --cov=src/rendercv --cov-report=term --cov-report=html --cov-report=markdown
 
+# npm package (js/):
+build-js:
+  cd js && bun install --frozen-lockfile && bun run build
+
+test-js: build-js
+  cd js && bun run typecheck && bun test
+
 # Docs:
 build-docs:
   uv run --frozen --all-extras mkdocs build --clean --strict
@@ -48,7 +55,7 @@ update-skill:
   uv run --frozen --all-extras scripts/rendercv_skill/generate.py
 
 update-entry-figures:
-  uv run --frozen --all-extras --group update-entry-figures scripts/update_entry_figures.py
+  uv run --frozen --all-extras scripts/update_entry_figures.py
 
 create-executable:
   uv run --frozen --all-extras --no-default-groups --group create-executable scripts/create_executable.py

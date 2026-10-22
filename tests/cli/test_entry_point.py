@@ -11,13 +11,15 @@ from rendercv.cli.entry_point import entry_point
 class TestEntryPoint:
     """Test the CLI entry point that handles incorrect installation."""
 
-    def test_entry_point_runs_when_installed_correctly(self):
+    def test_entry_point_runs_when_installed_correctly(self) -> None:
         # Mock the CLI app to avoid actually running it
         with patch("rendercv.cli.app.app") as mock_cli_app:
             entry_point()
             mock_cli_app.assert_called_once()
 
-    def test_entry_point_shows_error_when_import_fails(self, capsys):
+    def test_entry_point_shows_error_when_import_fails(
+        self, capsys: pytest.CaptureFixture[str]
+    ) -> None:
         # Save the original module if it exists
         app_module = sys.modules.get("rendercv.cli.app")
 

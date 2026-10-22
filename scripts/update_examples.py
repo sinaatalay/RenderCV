@@ -1,59 +1,54 @@
+"""Regenerate `examples/`: one folder per built-in design, as `rendercv new` makes.
+
+Each folder holds the sample YAML, a `design.typ` choosing the design, and the
+rendered PDF. The first page of each is also saved as the design's image in the
+docs.
+"""
+
 import pathlib
 import shutil
 import tempfile
 
-from rendercv.cli.render_command.progress_panel import ProgressPanel
-from rendercv.cli.render_command.run_rendercv import run_rendercv
-from rendercv.schema.models.design.built_in_design import available_themes
-from rendercv.schema.sample_generator import create_sample_yaml_input_file
-
-repository_root = pathlib.Path(__file__).parent.parent
-rendercv_path = repository_root / "rendercv"
-image_assets_directory = repository_root / "docs" / "assets" / "images" / "examples"
-rendercv_typst_examples_directory = (
-    repository_root / "src" / "rendercv" / "renderer" / "rendercv_typst" / "examples"
+from rendercv.renderer.outputs import generate_pdf, generate_png
+from rendercv.renderer.project import default_design_file_name, load_project
+from rendercv.schema.sample_generator import (
+    create_sample_design_file,
+    create_sample_yaml_input_file,
+    get_built_in_design_names,
 )
 
-examples_directory_path = pathlib.Path(__file__).parent.parent / "examples"
+repository_root = pathlib.Path(__file__).parent.parent
+examples_directory = repository_root / "examples"
+image_assets_directory = repository_root / "docs" / "assets" / "images" / "examples"
+yaml_file_name = "John_Doe_CV.yaml"
 
-# Check if examples directory exists. If not, create it
-if not examples_directory_path.exists():
-    examples_directory_path.mkdir()
+shutil.rmtree(examples_directory, ignore_errors=True)
+image_assets_directory.mkdir(parents=True, exist_ok=True)
 
-for theme in available_themes:
-    yaml_file_path = (
-        examples_directory_path / f"John_Doe_{theme.capitalize()}Theme_CV.yaml"
+for design in get_built_in_design_names():
+    design_directory = examples_directory / design
+    design_directory.mkdir(parents=True)
+    yaml_file_path = design_directory / yaml_file_name
+    yaml_file_path.write_text(
+        create_sample_yaml_input_file(name="John Doe", locale="english"),
+        encoding="utf-8",
     )
-    create_sample_yaml_input_file(
-        file_path=yaml_file_path,
-        name="John Doe",
-        theme=theme,
-        locale="english",
+    (design_directory / default_design_file_name).write_text(
+        create_sample_design_file(design), encoding="utf-8"
     )
 
-    with tempfile.TemporaryDirectory() as temp_directory:
-        temp_directory_path = pathlib.Path(temp_directory)
-        run_rendercv(
+    with tempfile.TemporaryDirectory() as temporary_directory:
+        temporary_path = pathlib.Path(temporary_directory)
+        project = load_project(
             yaml_file_path,
-            progress=ProgressPanel(),
-            typst_path=temp_directory_path / f"{yaml_file_path.stem}.typ",
-            pdf_path=examples_directory_path / f"{yaml_file_path.stem}.pdf",
-            png_path=temp_directory_path / f"{yaml_file_path.stem}.png",
-            dont_generate_html=True,
+            pdf_path=design_directory / f"{yaml_file_path.stem}.pdf",
+            png_path=temporary_path / f"{yaml_file_path.stem}.png",
+            dont_generate_typst=True,
             dont_generate_markdown=True,
+            dont_generate_html=True,
         )
-
-        image_assets_directory.mkdir(parents=True, exist_ok=True)
-        shutil.copy(
-            temp_directory_path / f"{yaml_file_path.stem}_1.png",
-            image_assets_directory / f"{theme}.png",
-        )
-
-        rendercv_typst_examples_directory.mkdir(parents=True, exist_ok=True)
-        shutil.copy(
-            temp_directory_path / f"{yaml_file_path.stem}.typ",
-            rendercv_typst_examples_directory / f"{theme}.typ",
-        )
-
+        generate_pdf(project)
+        first_page, *_ = generate_png(project) or []
+        shutil.copy(first_page, image_assets_directory / f"{design}.png")
 
 print("Examples generated successfully.")  # NOQA: T201

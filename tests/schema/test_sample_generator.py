@@ -1,194 +1,222 @@
-import pytest
-import ruamel.yaml
+import pathlib
+from collections.abc import Callable, Mapping
 
-from rendercv.exception import RenderCVUserError
-from rendercv.schema.models.design.built_in_design import available_themes
+import pytest
+
+from rendercv import __version__
+from rendercv.exception import RenderCVUserError, RenderCVUserValidationError
+from rendercv.renderer.project import Project
+from rendercv.renderer.typst_packages import get_rendercv_typst_version
+from rendercv.schema.models.cv.entry_types import DateValue, EntryTypeDeclaration
 from rendercv.schema.models.locale.locale import available_locales
-from rendercv.schema.models.rendercv_model import RenderCVModel
+from rendercv.schema.rendercv_model_builder import build_rendercv_dictionary_and_model
 from rendercv.schema.sample_generator import (
-    create_sample_cv_file,
     create_sample_design_file,
-    create_sample_locale_file,
-    create_sample_rendercv_pydantic_model,
-    create_sample_settings_file,
-    create_sample_yaml_file,
+    create_sample_entries_file,
     create_sample_yaml_input_file,
-    dictionary_to_yaml,
+    get_built_in_design_names,
+    sample_content_path,
+)
+from rendercv.schema.yaml_reader import read_yaml
+
+type RenderPdf = Callable[[pathlib.Path], tuple[Project, pathlib.Path]]
+type EntryTypes = Mapping[str, EntryTypeDeclaration]
+
+built_in_design_names = (
+    "classic",
+    "ember",
+    "engineeringclassic",
+    "engineeringresumes",
+    "harvard",
+    "ink",
+    "moderncv",
+    "opal",
+    "sb2nov",
 )
 
 
-class TestCreateSampleRendercvPydanticModel:
-    @pytest.mark.parametrize(
-        "theme",
-        available_themes,
-    )
-    @pytest.mark.parametrize(
-        "locale",
-        available_locales,
-    )
-    def test_creates_valid_model_for_all_themes_and_locales(self, theme, locale):
-        data_model = create_sample_rendercv_pydantic_model(
-            name="John Doe", theme=theme, locale=locale
-        )
-        assert isinstance(data_model, RenderCVModel)
+def write_project(
+    folder: pathlib.Path, yaml: str, *, design: str = "", entries: str = ""
+) -> pathlib.Path:
+    yaml_file = folder / "cv.yaml"
+    yaml_file.write_text(yaml, encoding="utf-8")
+    if design:
+        (folder / "design.typ").write_text(design, encoding="utf-8")
+    if entries:
+        (folder / "entries.typ").write_text(entries, encoding="utf-8")
+    return yaml_file
 
-    def test_rejects_invalid_theme_or_locale(self):
-        with pytest.raises(ValueError):  # NOQA: PT011
-            create_sample_rendercv_pydantic_model(
-                name="John Doe", theme="invalid", locale="english"
-            )
-        with pytest.raises(ValueError):  # NOQA: PT011
-            create_sample_rendercv_pydantic_model(
-                name="John Doe", theme="classic", locale="invalid"
-            )
 
-    def test_creates_model_with_unicode_name(self):
-        name = "Matías"
-        data_model = create_sample_rendercv_pydantic_model(name=name)
-        assert data_model.cv.name == name
+def test_get_built_in_design_names() -> None:
+    assert sorted(get_built_in_design_names()) == sorted(built_in_design_names)
 
 
 class TestCreateSampleYamlInputFile:
-    @pytest.mark.parametrize(
-        "theme",
-        available_themes,
-    )
-    @pytest.mark.parametrize(
-        "locale",
-        available_locales,
-    )
-    def test_creates_valid_yaml_file_for_all_themes_and_locales(
-        self, tmp_path, theme, locale
-    ):
-        dummy_file_path = tmp_path / "dummy.yaml"
-        yaml_contents = create_sample_yaml_input_file(
-            file_path=dummy_file_path, theme=theme, locale=locale
+    def test_starts_with_the_schema_of_this_version(self) -> None:
+        first_line = create_sample_yaml_input_file().splitlines()[0]
+
+        assert first_line == (
+            "# yaml-language-server:"
+            " $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/"
+            f"v{__version__}/schema.json"
         )
 
-        assert dummy_file_path.exists()
-        assert yaml_contents == dummy_file_path.read_text(encoding="utf-8")
+    def test_uses_the_sample_content(self) -> None:
+        sample = read_yaml(create_sample_yaml_input_file())
+
+        assert sample["cv"] == read_yaml(sample_content_path)["cv"]
+        assert "design" not in sample
 
     @pytest.mark.parametrize(
-        "key",
-        ["theme", "locale"],
+        "name", ["John Doe", "Matías Ñandú", 'Jane "JJ" Doe', "Doe: John", "李小龍"]
     )
-    def test_rejects_invalid_theme_or_locale(self, key):
-        with pytest.raises(RenderCVUserError):
-            create_sample_yaml_input_file(file_path=None, **{key: "invalid"})
+    def test_writes_the_name(self, name: str) -> None:
+        sample = read_yaml(create_sample_yaml_input_file(name=name))
 
+        assert sample["cv"]["name"] == name
 
-class TestCreateSampleYamlFile:
-    def test_writes_file_and_returns_matching_content(self, tmp_path):
-        dictionary = {"key": "value", "list": [1, 2, 3]}
-        file_path = tmp_path / "test.yaml"
-        result = create_sample_yaml_file(dictionary=dictionary, file_path=file_path)
+    @pytest.mark.parametrize("locale", available_locales)
+    def test_is_valid_for_every_locale(
+        self, standard_entry_types: EntryTypes, locale: str
+    ) -> None:
+        _, model = build_rendercv_dictionary_and_model(
+            create_sample_yaml_input_file(locale=locale),
+            entry_types=standard_entry_types,
+        )
 
-        assert file_path.exists()
-        assert result == file_path.read_text(encoding="utf-8")
+        assert model.locale.language == locale
+        assert model.cv.name == "John Doe"
 
-    def test_returns_string_without_file(self):
-        dictionary = {"key": "value"}
-        result = create_sample_yaml_file(dictionary=dictionary, file_path=None)
+    def test_shows_every_standard_entry_type(
+        self, standard_entry_types: EntryTypes
+    ) -> None:
+        _, model = build_rendercv_dictionary_and_model(
+            create_sample_yaml_input_file(), entry_types=standard_entry_types
+        )
 
-        yaml_object = ruamel.yaml.YAML()
-        assert yaml_object.load(result) == dictionary
+        assert model.cv.sections is not None
+        used_types = {
+            entry.type_name
+            for section in model.cv.sections
+            for entry in section.entries
+        }
+        assert used_types == set(standard_entry_types)
 
+    def test_rejects_unknown_locales(self) -> None:
+        with pytest.raises(RenderCVUserError, match="`klingon` is not built in"):
+            create_sample_yaml_input_file(locale="klingon")
 
-class TestCreateSampleCvFile:
-    def test_creates_valid_yaml_with_only_cv_key(self, tmp_path):
-        file_path = tmp_path / "cv.yaml"
-        result = create_sample_cv_file(file_path=file_path, name="Jane Smith")
+    @pytest.mark.parametrize("locale", ["english", "arabic", "japanese"])
+    def test_renders(
+        self, tmp_path: pathlib.Path, render_pdf: RenderPdf, locale: str
+    ) -> None:
+        yaml_file = write_project(
+            tmp_path, create_sample_yaml_input_file(locale=locale)
+        )
 
-        assert file_path.exists()
-        assert result == file_path.read_text(encoding="utf-8")
+        project, pdf = render_pdf(yaml_file)
 
-        yaml_object = ruamel.yaml.YAML()
-        data = yaml_object.load(result)
-        assert list(data.keys()) == ["cv"]
-        assert data["cv"]["name"] == "Jane Smith"
+        assert project.model.locale.language == locale
+        assert pdf.parent == tmp_path / "rendercv_output"
 
 
 class TestCreateSampleDesignFile:
-    @pytest.mark.parametrize(
-        "theme",
-        available_themes,
-    )
-    def test_creates_valid_yaml_for_all_themes(self, tmp_path, theme):
-        file_path = tmp_path / "design.yaml"
-        result = create_sample_design_file(file_path=file_path, theme=theme)
+    @pytest.mark.parametrize("design", built_in_design_names)
+    def test_imports_the_design(self, design: str) -> None:
+        source = create_sample_design_file(design)
 
-        assert file_path.exists()
-        assert result == file_path.read_text(encoding="utf-8")
+        assert (
+            f'#import "@preview/rendercv:{get_rendercv_typst_version()}": designs'
+            in source
+        )
+        assert f"#let design = designs.{design}(" in source
 
-        yaml_object = ruamel.yaml.YAML()
-        data = yaml_object.load(result)
-        assert list(data.keys()) == ["design"]
-        assert data["design"]["theme"] == theme
-
-    def test_rejects_invalid_theme(self):
-        with pytest.raises(RenderCVUserError):
-            create_sample_design_file(file_path=None, theme="invalid")
-
-
-class TestCreateSampleLocaleFile:
-    @pytest.mark.parametrize(
-        "locale",
-        available_locales,
-    )
-    def test_creates_valid_yaml_for_all_locales(self, tmp_path, locale):
-        file_path = tmp_path / "locale.yaml"
-        result = create_sample_locale_file(file_path=file_path, locale=locale)
-
-        assert file_path.exists()
-        assert result == file_path.read_text(encoding="utf-8")
-
-        yaml_object = ruamel.yaml.YAML()
-        data = yaml_object.load(result)
-        assert list(data.keys()) == ["locale"]
-        assert data["locale"]["language"] == locale
-
-    def test_rejects_invalid_locale(self):
-        with pytest.raises(RenderCVUserError):
-            create_sample_locale_file(file_path=None, locale="invalid")
-
-
-class TestCreateSampleSettingsFile:
-    def test_creates_valid_yaml_with_only_settings_key(self, tmp_path):
-        file_path = tmp_path / "settings.yaml"
-        result = create_sample_settings_file(file_path=file_path)
-
-        assert file_path.exists()
-        assert result == file_path.read_text(encoding="utf-8")
-
-        yaml_object = ruamel.yaml.YAML()
-        data = yaml_object.load(result)
-        assert list(data.keys()) == ["settings"]
-
-    def test_omits_specified_fields(self):
-        result = create_sample_settings_file(
-            file_path=None, omitted_fields=["render_command"]
+    @pytest.mark.parametrize("design", built_in_design_names)
+    def test_renders_with_every_design(
+        self, tmp_path: pathlib.Path, render_pdf: RenderPdf, design: str
+    ) -> None:
+        yaml_file = write_project(
+            tmp_path,
+            create_sample_yaml_input_file(),
+            design=create_sample_design_file(design),
         )
 
-        yaml_object = ruamel.yaml.YAML()
-        data = yaml_object.load(result)
-        assert "render_command" not in data["settings"]
+        project, _ = render_pdf(yaml_file)
+
+        assert project.typst_project.design_file_path == tmp_path / "design.typ"
+
+    def test_rejects_unknown_designs(self) -> None:
+        with pytest.raises(RenderCVUserError) as exc_info:
+            create_sample_design_file("fancy")
+
+        assert exc_info.value.message == (
+            "There is no built-in design `fancy`. Built-in designs:"
+            f" {', '.join(get_built_in_design_names())}."
+        )
 
 
-def test_dictionary_to_yaml():
-    input_dictionary = {
-        "test_list": [
-            "a",
-            "b",
-            "c",
-        ],
-        "test_dict": {
-            "a": 1,
-            "b": 2,
-        },
-    }
-    yaml_string = dictionary_to_yaml(input_dictionary)
+class TestCreateSampleEntriesFile:
+    def test_imports_the_standard_entry_types(self) -> None:
+        source = create_sample_entries_file()
 
-    yaml_object = ruamel.yaml.YAML()
-    output_dictionary = yaml_object.load(yaml_string)
+        assert (
+            f'#import "@preview/rendercv:{get_rendercv_typst_version()}": *' in source
+        )
+        assert "#let talk = entry-type(" in source
 
-    assert input_dictionary == output_dictionary
+    def test_defines_a_talk_entry_type_that_renders(
+        self, tmp_path: pathlib.Path, render_pdf: RenderPdf
+    ) -> None:
+        yaml_file = write_project(
+            tmp_path,
+            "cv:\n"
+            "  name: John Doe\n"
+            "  sections:\n"
+            "    talks:\n"
+            "      - title: Typst for CVs\n"
+            "        event: TypstConf\n"
+            "        date: 2024-05\n"
+            "        slides: https://example.com/slides\n"
+            "      - title: Without slides\n"
+            "        event: Meetup\n"
+            "        date: 2023\n"
+            "    experience:\n"
+            "      - company: ACME\n"
+            "        position: Engineer\n",
+            entries=create_sample_entries_file(),
+        )
+
+        project, _ = render_pdf(yaml_file)
+
+        assert "talk" in project.entry_types
+        # The standard types are still there:
+        assert set(project.entry_types) >= {"normal", "experience", "paragraph"}
+        assert project.model.cv.sections is not None
+        talks, experience = project.model.cv.sections
+        assert [entry.type_name for entry in talks.entries] == ["talk", "talk"]
+        assert talks.entries[0].values["date"] == DateValue(year=2024, month=5)
+        assert talks.entries[1].values["slides"] is None
+        assert experience.entries[0].type_name == "experience"
+
+    def test_validates_talks_against_their_fields(
+        self, tmp_path: pathlib.Path, render_pdf: RenderPdf
+    ) -> None:
+        yaml_file = write_project(
+            tmp_path,
+            "cv:\n"
+            "  sections:\n"
+            "    talks:\n"
+            "      - title: Typst for CVs\n"
+            "        event: TypstConf\n"
+            "        date: 2024-05\n"
+            "        slids: https://example.com/slides\n",
+            entries=create_sample_entries_file(),
+        )
+
+        with pytest.raises(RenderCVUserValidationError) as exc_info:
+            render_pdf(yaml_file)
+
+        (error,) = exc_info.value.validation_errors
+        assert error.message == (
+            "The entry type `talk` has no field `slids`. Did you mean `slides`?"
+        )

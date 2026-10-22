@@ -1,0 +1,38 @@
+# Hungarian locale.
+language: hungarian
+iso_code: hu
+direction: ltr
+last_updated: "Utoljára frissítve"
+present: "jelenleg"
+month: "hónap"
+months: "hónap"
+year: "év"
+years: "év"
+phrases:
+  degree_with_area: "#degree #area szakon"
+month_abbreviations:
+  - "Jan"
+  - "Febr"
+  - "Márc"
+  - "Ápr"
+  - "Máj"
+  - "Jún"
+  - "Júl"
+  - "Aug"
+  - "Szept"
+  - "Okt"
+  - "Nov"
+  - "Dec"
+month_names:
+  - "Január"
+  - "Február"
+  - "Március"
+  - "Április"
+  - "Május"
+  - "Június"
+  - "Július"
+  - "Augusztus"
+  - "Szeptember"
+  - "Október"
+  - "November"
+  - "December"

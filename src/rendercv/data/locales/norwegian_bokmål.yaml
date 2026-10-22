@@ -1,0 +1,38 @@
+# Norwegian Bokmål locale.
+language: norwegian_bokmål
+iso_code: nb
+direction: ltr
+last_updated: "Sist oppdatert"
+present: "nåværende"
+month: "måned"
+months: "måneder"
+year: "år"
+years: "år"
+phrases:
+  degree_with_area: "#degree i #area"
+month_abbreviations:
+  - "Jan"
+  - "Feb"
+  - "Mar"
+  - "Apr"
+  - "Mai"
+  - "Jun"
+  - "Jul"
+  - "Aug"
+  - "Sep"
+  - "Okt"
+  - "Nov"
+  - "Des"
+month_names:
+  - "Januar"
+  - "Februar"
+  - "Mars"
+  - "April"
+  - "Mai"
+  - "Juni"
+  - "Juli"
+  - "August"
+  - "September"
+  - "Oktober"
+  - "November"
+  - "Desember"

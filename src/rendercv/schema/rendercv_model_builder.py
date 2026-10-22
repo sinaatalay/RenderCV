@@ -1,4 +1,5 @@
 import pathlib
+from collections.abc import Mapping
 from typing import Any, TypedDict, Unpack
 
 import pydantic
@@ -8,12 +9,14 @@ from ruamel.yaml.comments import CommentedMap
 from rendercv.exception import (
     OVERLAY_SOURCE_TO_YAML_SOURCE,
     OverlaySourceKey,
+    RenderCVUserError,
     RenderCVUserValidationError,
     RenderCVValidationError,
     YamlLocation,
     YamlSource,
 )
 
+from .models.cv.entry_types import EntryTypeDeclaration, build_entry_type_models
 from .models.rendercv_model import RenderCVModel
 from .models.validation_context import ValidationContext
 from .override_dictionary import apply_overrides_to_dictionary
@@ -22,7 +25,6 @@ from .yaml_reader import read_yaml
 
 
 class BuildRendercvModelArguments(TypedDict, total=False):
-    design_yaml_file: str | None
     locale_yaml_file: str | None
     settings_yaml_file: str | None
     output_folder: pathlib.Path | str | None
@@ -79,10 +81,24 @@ def read_yaml_with_validation_errors(
         Parsed YAML map preserving source coordinates.
 
     Raises:
-        RenderCVUserValidationError: If YAML cannot be parsed.
+        RenderCVUserValidationError: If the YAML can't be parsed, is empty, or
+            isn't a mapping.
     """
     try:
         return read_yaml(yaml_content)
+    except RenderCVUserError as e:
+        # The file is empty or not a mapping:
+        raise RenderCVUserValidationError(
+            validation_errors=[
+                RenderCVValidationError(
+                    schema_location=None,
+                    yaml_location=None,
+                    yaml_source=yaml_source,
+                    message=str(e),
+                    input="...",
+                )
+            ]
+        ) from e
     except ruamel.yaml.YAMLError as e:
         parser_message = str(e).splitlines()[0].strip()
         if not parser_message.endswith("."):
@@ -115,11 +131,9 @@ def build_rendercv_dictionary(
         Tuple of merged dictionary and overlay source CommentedMaps (for error reporting).
     """
     input_dict = read_yaml_with_validation_errors(main_yaml_file, "main_yaml_file")
-    input_dict.setdefault("settings", {}).setdefault("render_command", {})
 
     yaml_overlays: dict[OverlaySourceKey, str | None] = {
         "settings": kwargs.get("settings_yaml_file"),
-        "design": kwargs.get("design_yaml_file"),
         "locale": kwargs.get("locale_yaml_file"),
     }
 
@@ -129,8 +143,28 @@ def build_rendercv_dictionary(
             overlay_cm = read_yaml_with_validation_errors(
                 yaml_content, OVERLAY_SOURCE_TO_YAML_SOURCE[key]
             )
+            if not isinstance(overlay_cm, dict) or key not in overlay_cm:
+                raise RenderCVUserValidationError(
+                    validation_errors=[
+                        RenderCVValidationError(
+                            schema_location=None,
+                            yaml_location=None,
+                            yaml_source=OVERLAY_SOURCE_TO_YAML_SOURCE[key],
+                            message=(
+                                f"This file should have a top-level `{key}` field,"
+                                f" like `{key}:` on its first line."
+                            ),
+                            input="...",
+                        )
+                    ]
+                )
             input_dict[key] = overlay_cm[key]
             overlay_sources[key] = overlay_cm
+
+    if input_dict.get("settings") is None:
+        input_dict["settings"] = {}
+    if input_dict["settings"].get("render_command") is None:
+        input_dict["settings"]["render_command"] = {}
 
     render_overrides: dict[str, pathlib.Path | str | bool | None] = {
         "output_folder": kwargs.get("output_folder"),
@@ -161,6 +195,7 @@ def build_rendercv_model_from_commented_map(
     commented_map: CommentedMap | dict[str, Any],
     input_file_path: pathlib.Path | None = None,
     overlay_sources: dict[str, CommentedMap] | None = None,
+    entry_types: Mapping[str, EntryTypeDeclaration] | None = None,
 ) -> RenderCVModel:
     """Validate merged dictionary and build Pydantic model with error mapping.
 
@@ -168,17 +203,22 @@ def build_rendercv_model_from_commented_map(
         commented_map: Merged dictionary with line/column metadata.
         input_file_path: Source file path for context and photo resolution.
         overlay_sources: Per-section CommentedMaps from overlays (for correct error coordinates).
+        entry_types: The entry types the sections are validated against, as
+            declared in Typst.
 
     Returns:
         Validated RenderCVModel instance.
     """
+    entry_types = entry_types or {}
     try:
         validation_context = {
             "context": ValidationContext(
                 input_file_path=input_file_path,
-                current_date=commented_map.get("settings", {}).get(
+                current_date=(commented_map.get("settings") or {}).get(
                     "current_date", "today"
                 ),
+                entry_types=entry_types,
+                entry_type_models=build_entry_type_models(entry_types),
             )
         }
         model = RenderCVModel.model_validate(commented_map, context=validation_context)
@@ -193,6 +233,7 @@ def build_rendercv_dictionary_and_model(
     main_yaml_file: str,
     *,
     input_file_path: pathlib.Path | None = None,
+    entry_types: Mapping[str, EntryTypeDeclaration] | None = None,
     **kwargs: Unpack[BuildRendercvModelArguments],
 ) -> tuple[CommentedMap, RenderCVModel]:
     """Complete pipeline from raw YAML string to validated model.
@@ -200,11 +241,14 @@ def build_rendercv_dictionary_and_model(
     Args:
         main_yaml_file: Primary CV YAML content string.
         input_file_path: Source file path for validation context (path resolution).
+        entry_types: The entry types the sections are validated against.
         kwargs: Optional YAML overlay strings, output paths, generation flags, and CLI overrides.
 
     Returns:
         Tuple of merged dictionary and validated model.
     """
     d, overlay_sources = build_rendercv_dictionary(main_yaml_file, **kwargs)
-    m = build_rendercv_model_from_commented_map(d, input_file_path, overlay_sources)
+    m = build_rendercv_model_from_commented_map(
+        d, input_file_path, overlay_sources, entry_types
+    )
     return d, m

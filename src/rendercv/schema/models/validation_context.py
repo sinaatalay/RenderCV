@@ -1,15 +1,45 @@
 import pathlib
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, field
 from datetime import date as Date
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import pydantic
+
+if TYPE_CHECKING:
+    from .cv.entry_types import EntryTypeDeclaration
 
 
 @dataclass
 class ValidationContext:
+    """What validators need to know beyond the YAML itself.
+
+    Why:
+        Some checks depend on things outside the YAML: where the file is (for
+        relative paths), what "today" is, and which entry types exist (they
+        are declared in Typst and read before validation).
+    """
+
     input_file_path: pathlib.Path | None = None
     current_date: Any = None
+    entry_types: Mapping[str, "EntryTypeDeclaration"] = field(default_factory=dict)
+    entry_type_models: Mapping[str, type[pydantic.BaseModel]] = field(
+        default_factory=dict
+    )
+
+
+def get_validation_context(info: pydantic.ValidationInfo) -> ValidationContext:
+    """Extract the validation context, or an empty one if there is none.
+
+    Args:
+        info: Pydantic validation info.
+
+    Returns:
+        The validation context.
+    """
+    if isinstance(info.context, dict) and "context" in info.context:
+        return cast(ValidationContext, info.context["context"])
+    return ValidationContext()
 
 
 def get_input_file_path(info: pydantic.ValidationInfo) -> pathlib.Path | None:

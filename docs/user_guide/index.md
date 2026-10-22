@@ -40,17 +40,18 @@
     rendercv new "Your Name"
     ```
 
-    This creates a YAML input file called `Your_Name_CV.yaml`. This file contains the content, design options, translations and settings for RenderCV. See [YAML Input Structure](yaml_input_structure/index.md) for the full reference.
+    This creates a YAML input file called `Your_Name_CV.yaml` with a sample CV. It holds your content (`cv`), the language of the CV (`locale`), and RenderCV's settings (`settings`). See [YAML Input Structure](yaml_input_structure/index.md) for the full reference.
 
     See the [CLI Reference](cli_reference.md#rendercv-new) for the complete list of options available for the `new` command.
 
     !!! tip
-        To get started with another language or theme, you can use the `--locale` and `--theme` options:
+        To start with another language or design, use the `--locale` and `--design` options:
 
         ```bash
-        rendercv new "Your Name" --locale "turkish" --theme "engineeringresumes"
+        rendercv new "Your Name" --locale turkish --design engineeringresumes
         ```
 
+        `--design` also creates a `design.typ` next to the YAML file, where you can change the design's options. See [Design](design.md).
 
 2. Render the YAML input file with
 
@@ -60,11 +61,11 @@
 
     This generates a `rendercv_output/` directory containing:
 
-    - `John_Doe_CV.pdf`: Your CV as PDF
-    - `John_Doe_CV.typ`: [Typst](https://typst.app) source code of the PDF
-    - `John_Doe_CV_1.png`, `..._2.png`, ...: PNG images of each page of the PDF
-    - `John_Doe_CV.md`: Your CV as Markdown
-    - `John_Doe_CV.html`: Your CV as HTML (generated from the Markdown)
+    - `Your_Name_CV.pdf`: Your CV as PDF
+    - `Your_Name_CV.typ`: [Typst](https://typst.app) source code of the PDF
+    - `Your_Name_CV_1.png`, `..._2.png`, ...: PNG images of each page of the PDF
+    - `Your_Name_CV.md`: Your CV as Markdown
+    - `Your_Name_CV.html`: Your CV as HTML
 
     See the [CLI Reference](cli_reference.md#rendercv-render) for the complete list of options available for the `render` command.
 
@@ -74,3 +75,21 @@
         ```bash
         rendercv render --watch "Your_Name_CV.yaml"
         ```
+
+## A CV Is Up to Three Files
+
+The YAML file alone is a complete CV. Two optional [Typst](https://typst.app) files next to it change what it can hold and how it looks:
+
+```
+Your_Name_CV.yaml   # What your CV says: cv, locale, settings
+design.typ          # Optional: how it looks
+entries.typ         # Optional: which entry types exist
+```
+
+- [`design.typ`](design.md) picks one of the << design_count >> built-in designs and changes any of its options, or restyles any part of the CV.
+- [`entries.typ`](entry_types.md) adds your own entry types, like a talk or a grant, next to the standard ones.
+
+RenderCV uses them automatically when they are next to the YAML file. Delete them to go back to the built-in ones.
+
+!!! note "Coming from RenderCV 2?"
+    Run `rendercv migrate Your_Name_CV.yaml`. It moves your `design` field into a `design.typ`. See [Migrating from RenderCV 2](migrating_from_v2.md).

@@ -21,7 +21,9 @@ class TestUpdateValueByLocation:
             ({}, "new_key", "new_value", {"new_key": "new_value"}),
         ],
     )
-    def test_simple_dictionary_updates(self, initial_dict, key, value, expected):
+    def test_simple_dictionary_updates(
+        self, initial_dict: dict[str, Any], key: str, value: str, expected: Any
+    ) -> None:
         result = update_value_by_location(initial_dict, key, value, key)
         assert result == expected
 
@@ -48,7 +50,9 @@ class TestUpdateValueByLocation:
             ),
         ],
     )
-    def test_nested_dictionary_updates(self, initial_dict, key, value, expected):
+    def test_nested_dictionary_updates(
+        self, initial_dict: dict[str, Any], key: str, value: str, expected: Any
+    ) -> None:
         result = update_value_by_location(initial_dict, key, value, key)
         assert result == expected
 
@@ -57,15 +61,15 @@ class TestUpdateValueByLocation:
         [
             (
                 {},
-                "design.theme",
-                "moderncv",
-                {"design": {"theme": "moderncv"}},
+                "locale.language",
+                "turkish",
+                {"locale": {"language": "turkish"}},
             ),
             (
                 {"cv": {"name": "John"}},
-                "design.theme",
-                "classic",
-                {"cv": {"name": "John"}, "design": {"theme": "classic"}},
+                "locale.language",
+                "german",
+                {"cv": {"name": "John"}, "locale": {"language": "german"}},
             ),
             (
                 {"cv": {}},
@@ -76,8 +80,8 @@ class TestUpdateValueByLocation:
         ],
     )
     def test_missing_intermediate_keys_are_created(
-        self, initial_dict, key, value, expected
-    ):
+        self, initial_dict: dict[str, Any], key: str, value: str, expected: Any
+    ) -> None:
         result = update_value_by_location(initial_dict, key, value, key)
         assert result == expected
 
@@ -89,7 +93,9 @@ class TestUpdateValueByLocation:
             (["a", "b", "c"], "2", "z", ["a", "b", "z"]),
         ],
     )
-    def test_list_updates(self, initial_list, key, value, expected):
+    def test_list_updates(
+        self, initial_list: list[str], key: str, value: str, expected: Any
+    ) -> None:
         result = update_value_by_location(initial_list, key, value, f"list.{key}")
         assert result == expected
 
@@ -122,7 +128,9 @@ class TestUpdateValueByLocation:
             ),
         ],
     )
-    def test_mixed_dict_list_traversal(self, initial_dict, key, value, expected):
+    def test_mixed_dict_list_traversal(
+        self, initial_dict: dict[str, Any], key: str, value: str, expected: Any
+    ) -> None:
         result = update_value_by_location(initial_dict, key, value, key)
         assert result == expected
 
@@ -133,7 +141,9 @@ class TestUpdateValueByLocation:
             ({"data": [1, 2, 3]}, "data.foo", "data.foo"),
         ],
     )
-    def test_non_integer_index_for_list_raises_error(self, initial_dict, key, full_key):
+    def test_non_integer_index_for_list_raises_error(
+        self, initial_dict: dict[str, Any], key: str, full_key: str
+    ) -> None:
         with pytest.raises(
             RenderCVUserError, match=r"corresponds to a list, but .* is not an integer"
         ):
@@ -146,7 +156,9 @@ class TestUpdateValueByLocation:
             ({"data": [1]}, "data.10", "data.10"),
         ],
     )
-    def test_index_out_of_range_raises_error(self, initial_dict, key, full_key):
+    def test_index_out_of_range_raises_error(
+        self, initial_dict: dict[str, Any], key: str, full_key: str
+    ) -> None:
         with pytest.raises(RenderCVUserError, match=r"Index .* is out of range"):
             update_value_by_location(initial_dict, key, "value", full_key)
 
@@ -157,19 +169,21 @@ class TestUpdateValueByLocation:
             ({"age": 30}, "age.value", "age.value"),
         ],
     )
-    def test_invalid_structure_raises_error(self, initial_dict, key, full_key):
+    def test_invalid_structure_raises_error(
+        self, initial_dict: dict[str, Any], key: str, full_key: str
+    ) -> None:
         with pytest.raises(
             RenderCVUserError, match="It seems like there's something wrong"
         ):
             update_value_by_location(initial_dict, key, "value", full_key)
 
-    def test_mutates_original_structure(self):
+    def test_mutates_original_structure(self) -> None:
         original = {"name": "John"}
         result = update_value_by_location(original, "name", "Jane", "name")
         assert result is original
         assert original == {"name": "Jane"}
 
-    def test_deeply_nested_structure(self):
+    def test_deeply_nested_structure(self) -> None:
         initial: dict[str, Any] = {
             "cv": {
                 "sections": {
@@ -228,7 +242,9 @@ class TestApplyOverridesToDictionary:
             ),
         ],
     )
-    def test_single_override(self, initial_dict, overrides, expected):
+    def test_single_override(
+        self, initial_dict: dict[str, Any], overrides: dict[str, str], expected: Any
+    ) -> None:
         result = apply_overrides_to_dictionary(initial_dict, overrides)
         assert result == expected
 
@@ -252,11 +268,13 @@ class TestApplyOverridesToDictionary:
             ),
         ],
     )
-    def test_multiple_overrides(self, initial_dict, overrides, expected):
+    def test_multiple_overrides(
+        self, initial_dict: dict[str, Any], overrides: dict[str, str], expected: Any
+    ) -> None:
         result = apply_overrides_to_dictionary(initial_dict, overrides)
         assert result == expected
 
-    def test_does_not_mutate_original(self):
+    def test_does_not_mutate_original(self) -> None:
         original = {"name": "John", "age": "30"}
         original_copy = {"name": "John", "age": "30"}
         overrides = {"name": "Jane"}
@@ -267,7 +285,7 @@ class TestApplyOverridesToDictionary:
         assert result == {"name": "Jane", "age": "30"}  # Result has override
         assert result is not original  # Different objects
 
-    def test_deep_copy_behavior(self):
+    def test_deep_copy_behavior(self) -> None:
         original = {"cv": {"sections": {"education": ["MIT"]}}}
         overrides = {"cv.sections.education.0": "Harvard"}
 
@@ -276,13 +294,13 @@ class TestApplyOverridesToDictionary:
         assert original["cv"]["sections"]["education"][0] == "MIT"
         assert result["cv"]["sections"]["education"][0] == "Harvard"
 
-    def test_empty_overrides(self):
+    def test_empty_overrides(self) -> None:
         original = {"name": "John", "age": "30"}
         result = apply_overrides_to_dictionary(original, {})
         assert result == original
         assert result is not original
 
-    def test_complex_cv_scenario(self):
+    def test_complex_cv_scenario(self) -> None:
         initial: dict[str, Any] = {
             "cv": {
                 "name": "John Doe",

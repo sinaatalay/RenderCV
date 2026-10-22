@@ -35,6 +35,12 @@ jobs:
       - name: Build
         run: uv build
 
+      # RenderCV works offline only if the wheel bundles the Typst packages:
+      - name: Check that the wheel bundles the Typst packages
+        run: |
+          unzip -l dist/rendercv-*.whl | grep "rendercv/typst_packages/preview/rendercv/.*/lib.typ"
+          unzip -l dist/rendercv-*.whl | grep "rendercv/typst_packages/preview/fontawesome/.*/typst.toml"
+
       - name: Upload the wheel and source distribution as artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -95,6 +101,35 @@ jobs:
 
       - name: Upload package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish_to_npm:
+    name: Publish to npm
+    needs:
+      - publish_to_pypi
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install just
+        uses: taiki-e/install-action@just
+
+      # Builds the wheel the npm package bundles, and sets its version from
+      # pyproject.toml:
+      - name: Build the npm package
+        run: just build-js
+
+      - name: Publish the npm package
+        working-directory: js
+        run: bun publish --access public
+        env:
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish_docker_to_ghcr:
     name: Push Docker image to GitHub Container Registry

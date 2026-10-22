@@ -8,7 +8,7 @@ hide:
 
 All notable changes to this project will be documented in this file.
 
-[Click here to see the unreleased changes.](https://github.com/rendercv/rendercv/compare/v2.8...HEAD)
+[Click here to see the unreleased changes.](https://github.com/rendercv/rendercv/compare/v3.0.0...HEAD)
 
 <!--
 ### Added
@@ -16,6 +16,64 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 ### Removed
 -->
+
+## [3.0.0] - Unreleased
+
+> **Full Changelog**: [v2.8...v3.0.0]
+
+RenderCV is now built around Typst. The YAML file holds the content, the locale, and the settings. Entry types and designs are Typst: an optional `entries.typ` says which entry types exist and how they look, and an optional `design.typ` says how the whole CV looks. A single YAML file is still a complete CV.
+
+This is a breaking release. Run `rendercv migrate Your_CV.yaml` to convert a RenderCV 2 file, and see [Migrating from RenderCV 2](user_guide/migrating_from_v2.md).
+
+### Added
+
+- Entry types are defined in Typst. An `entries.typ` next to the YAML file can add your own entry types with `entry-type(...)` and `field(...)`, or restrict, extend, or rename the standard ones. Custom entry types are validated like the standard ones, and every design draws them.
+- Designs are defined in Typst. A `design.typ` next to the YAML file picks a built-in design and changes its options, like `#let design = designs.classic(page: (size: "a4"))`. Unknown options and values of the wrong type are errors. A design can restyle any entry type, including custom ones, or be written from scratch.
+- A new Typst package, `@preview/rendercv:3.0.0`, holds the standard entry types, the built-in designs, and the renderer. It lives in the repository's `typst/` folder and is bundled in the Python package.
+- `rendercv migrate` converts a RenderCV 2 YAML file: it moves the `design` field into a `design.typ` and keeps the original as `*.v2.yaml`.
+- `--design FILE.typ` (`-d`) and `--entries FILE.typ` (`-e`) options have been added to `rendercv render`, and `settings.render_command.design` and `settings.render_command.entries` fields to the YAML, to use other Typst files than `design.typ` and `entries.typ`.
+- `--design NAME` and `--entries` options have been added to `rendercv new` to also create a `design.typ` for a built-in design and an `entries.typ` with an example entry type.
+- The `!typst` YAML tag marks a value as Typst markup, for math or Typst functions: `!typst "Showed that $f(x) = x^2$"`.
+- Nested bullets: a bullet in `highlights` with ` - ` in it starts nested bullets ([#712](https://github.com/rendercv/rendercv/issues/712)).
+- A section can be split into subsections by writing it as a mapping of subsection titles to lists of entries.
+- An entry can choose its entry type with a `type` key when its fields fit several entry types.
+- `locale.iso_code` and `locale.direction` fields have been added, so any language, including right-to-left ones, can be defined in the YAML.
+- An official npm package, `rendercv`, runs RenderCV in Pyodide in Node.js, Bun, and browsers. It renders CVs to PDF, PNG, SVG, HTML, Markdown, and Typst from strings, and returns problems with their lines and columns. See [JavaScript and Python](user_guide/javascript_and_python.md).
+- `rendercv.api` renders and validates CVs from Python code and returns the outputs.
+- SVG output.
+- Validation errors suggest the closest name for misspelled fields, entry types, and social networks ("Did you mean `position`?"), and all problems in all entries are reported at once, each with its line in the YAML file.
+
+### Changed
+
+- The CV's content reaches Typst as JSON data, never as generated Typst code. Text is printed as written: `$`, `#`, `@`, `<`, and `"` need no escaping and can't break the document.
+- Markdown is parsed with `markdown-it-py`. Text supports `**bold**`, `*italic*`, `[links](https://example.com)`, `` `code` ``, and `$$math$$`. Typst commands in plain text are printed as written; tag the value with `!typst` to use Typst.
+- The Markdown and HTML outputs are generated from the same Typst document as the PDF (HTML with Typst's HTML export), drawn by the entry types' own looks, so custom entry types appear in them too.
+- Locale phrases are Typst markup: `degree_with_area: "#degree in #area"`, so a language can reorder words. The RenderCV 2 form (`DEGREE in AREA`) is still accepted.
+- The sb2nov design writes degrees with the locale's `degree_with_area` phrase instead of a hard-coded English "in" ([#755](https://github.com/rendercv/rendercv/issues/755)).
+- Entry types are named after their Typst definitions: `normal`, `experience`, `education`, `publication`, `one_line`, `bullet`, `numbered`, `reversed_numbered`, and `paragraph` (formerly `TextEntry`).
+- An unknown field in an entry is an error now. To add fields, declare an entry type in `entries.typ`.
+- The design's `templates` are Typst functions: `footer`, `top_note`, `single_date`, `date_range`, and `time_span`.
+- The design option `entries.highlights.bullet` accepts any text.
+- Social networks and locales are YAML files in `rendercv/data/social_networks/` and `rendercv/data/locales/`. Adding one is a one-file change.
+- The generated `.typ` file imports `@preview/rendercv` and embeds the CV's data, so it compiles with the Typst CLI.
+- Font Awesome is bundled into the Python package at build time, pinned by version and checksum, instead of a git submodule.
+- The build backend is now `hatchling`.
+- RenderCV now requires `typst` 0.15.
+
+### Fixed
+
+- RenderCV's exceptions now have their message in `str(exception)` and `exception.args` ([#757](https://github.com/rendercv/rendercv/issues/757)).
+- Validation errors in sections named like `interests` no longer crash the error report ([#758](https://github.com/rendercv/rendercv/issues/758)).
+
+### Removed
+
+- The `design` field of the YAML file. The design is `design.typ` now; `rendercv migrate` converts it.
+- Placeholder templates for entries in `design.templates` (like `main_column: "**COMPANY**, POSITION"`). Restyle entry types in `design.typ` instead.
+- Custom themes as folders of Jinja2 templates, the `rendercv create-theme` command, and the `--create-typst-templates` and `--create-markdown-templates` options of `rendercv new`.
+- The `--theme` option of `rendercv new`. Use `--design`.
+- Arbitrary keys in entries. Declare an entry type with the fields you need instead.
+- Typst commands in plain text. Tag the value with `!typst` instead.
+- The `jinja2` and `markdown` dependencies.
 
 ## [2.8] - March 21, 2026
 
@@ -668,6 +726,7 @@ RenderCV has transitioned from using $\LaTeX$ to Typst. RenderCV is now much fas
 
 The first release of RenderCV.
 
+[v2.8...v3.0.0]: https://github.com/rendercv/rendercv/compare/v2.8...v3.0.0
 [v2.7...v2.8]: https://github.com/rendercv/rendercv/compare/v2.7...v2.8
 [v2.6...v2.7]: https://github.com/rendercv/rendercv/compare/v2.6...v2.7
 [v2.5...v2.6]: https://github.com/rendercv/rendercv/compare/v2.5...v2.6
@@ -704,6 +763,7 @@ The first release of RenderCV.
 [v0.3...v0.4]: https://github.com/rendercv/rendercv/compare/v0.3...v0.4
 [v0.2...v0.3]: https://github.com/rendercv/rendercv/compare/v0.2...v0.3
 [v0.1...v0.2]: https://github.com/rendercv/rendercv/compare/v0.1...v0.2
+[3.0.0]: https://github.com/rendercv/rendercv/releases/tag/v3.0.0
 [2.8]: https://github.com/rendercv/rendercv/releases/tag/v2.8
 [2.7]: https://github.com/rendercv/rendercv/releases/tag/v2.7
 [2.6]: https://github.com/rendercv/rendercv/releases/tag/v2.6

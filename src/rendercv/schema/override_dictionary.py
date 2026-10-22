@@ -74,8 +74,7 @@ def update_value_by_location[T: dict | list](
         new_value = value
     else:
         if isinstance(dict_or_list, dict) and first_key not in dict_or_list:
-            # Safe: isinstance above guarantees dict, but ty cannot narrow T:
-            dict_or_list[first_key] = {}  # ty: ignore[invalid-assignment]
+            dict_or_list[first_key] = {}
 
         new_value = update_value_by_location(
             # Safe: first_key is validated as int for list, str for dict above:

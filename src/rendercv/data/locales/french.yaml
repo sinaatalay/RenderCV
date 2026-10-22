@@ -1,0 +1,38 @@
+# French locale.
+language: french
+iso_code: fr
+direction: ltr
+last_updated: "Dernière mise à jour"
+present: "présent"
+month: "mois"
+months: "mois"
+year: "an"
+years: "ans"
+phrases:
+  degree_with_area: "#degree en #area"
+month_abbreviations:
+  - "Jan"
+  - "Fév"
+  - "Mar"
+  - "Avr"
+  - "Mai"
+  - "Juin"
+  - "Juil"
+  - "Aoû"
+  - "Sep"
+  - "Oct"
+  - "Nov"
+  - "Déc"
+month_names:
+  - "Janvier"
+  - "Février"
+  - "Mars"
+  - "Avril"
+  - "Mai"
+  - "Juin"
+  - "Juillet"
+  - "Août"
+  - "Septembre"
+  - "Octobre"
+  - "Novembre"
+  - "Décembre"

@@ -1,0 +1,38 @@
+# Hebrew locale.
+language: hebrew
+iso_code: he
+direction: rtl
+last_updated: "עודכן לאחרונה ב"
+present: "הווה"
+month: "חודש"
+months: "חודשים"
+year: "שנה"
+years: "שנים"
+phrases:
+  degree_with_area: "#degree ב#area"
+month_abbreviations:
+  - "ינו'"
+  - "פבר'"
+  - "מרץ"
+  - "אפר'"
+  - "מאי"
+  - "יוני"
+  - "יולי"
+  - "אוג'"
+  - "ספט'"
+  - "אוק'"
+  - "נוב'"
+  - "דצמ'"
+month_names:
+  - "ינואר"
+  - "פברואר"
+  - "מרץ"
+  - "אפריל"
+  - "מאי"
+  - "יוני"
+  - "יולי"
+  - "אוגוסט"
+  - "ספטמבר"
+  - "אוקטובר"
+  - "נובמבר"
+  - "דצמבר"

@@ -1,0 +1,38 @@
+# Spanish locale.
+language: spanish
+iso_code: es
+direction: ltr
+last_updated: "Última actualización"
+present: "presente"
+month: "mes"
+months: "meses"
+year: "año"
+years: "años"
+phrases:
+  degree_with_area: "#degree en #area"
+month_abbreviations:
+  - "Ene"
+  - "Feb"
+  - "Mar"
+  - "Abr"
+  - "May"
+  - "Jun"
+  - "Jul"
+  - "Ago"
+  - "Sep"
+  - "Oct"
+  - "Nov"
+  - "Dic"
+month_names:
+  - "Enero"
+  - "Febrero"
+  - "Marzo"
+  - "Abril"
+  - "Mayo"
+  - "Junio"
+  - "Julio"
+  - "Agosto"
+  - "Septiembre"
+  - "Octubre"
+  - "Noviembre"
+  - "Diciembre"

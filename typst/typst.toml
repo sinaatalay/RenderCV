@@ -1,0 +1,12 @@
+[package]
+name = "rendercv"
+version = "3.0.0"
+entrypoint = "lib.typ"
+authors = ["Sina Atalay <dev@atalay.biz>"]
+license = "MIT"
+description = "A framework for CVs and resumes: entry types, designs, and the renderer behind RenderCV."
+repository = "https://github.com/rendercv/rendercv"
+homepage = "https://rendercv.com"
+keywords = ["rendercv", "cv", "resume", "curriculum-vitae"]
+categories = ["cv"]
+compiler = "0.15.0"

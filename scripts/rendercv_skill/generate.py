@@ -2,10 +2,10 @@
 """Generate the distributable AI agent skill SKILL.md from a Jinja2 template.
 
 Why:
-    The SKILL.md file contains dynamic data (themes, locales, Pydantic model
-    source code, etc.) that must stay in sync with the rendercv package. This
-    script extracts that data and renders the Jinja2 template to produce an
-    always-current skill file.
+    The SKILL.md file contains dynamic data (designs, locales, entry types, the
+    YAML schema, sample files, design options) that must stay in sync with the
+    rendercv package. This script extracts that data and renders the Jinja2
+    template to produce an always-current skill file.
 """
 
 import ast
@@ -18,21 +18,16 @@ import jinja2
 import ruamel.yaml
 
 from rendercv import __version__
+from rendercv.schema.json_schema_generator import read_standard_entry_types
+from rendercv.schema.models.cv.entry_types import FieldDeclaration
+from rendercv.schema.models.cv.social_network import get_available_social_networks
 from rendercv.schema.models.locale.locale import available_locales
 from rendercv.schema.sample_generator import (
-    create_sample_cv_file,
     create_sample_design_file,
+    create_sample_entries_file,
+    create_sample_yaml_input_file,
+    get_built_in_design_names,
 )
-
-# Only include a subset of themes in the skill to keep context size manageable.
-SKILL_THEMES: list[str] = [
-    "classic",
-    "harvard",
-    "engineeringresumes",
-    "engineeringclassic",
-    "sb2nov",
-    "moderncv",
-]
 
 repository_root = pathlib.Path(__file__).parent.parent.parent
 script_directory = pathlib.Path(__file__).parent
@@ -48,81 +43,81 @@ output_path = (
 )
 llms_txt_path = repository_root / "docs" / "llms.txt"
 skill_zip_path = repository_root / "docs" / "assets" / "rendercv_skill.zip"
+engine_path = repository_root / "typst" / "designs" / "engine.typ"
 
 # Paths to key model source files for dynamic inclusion.
 models_dir = repository_root / "src" / "rendercv" / "schema" / "models"
 
 # These source files are included in the skill so agents can see the
-# type-safe Pydantic schema for core models.
+# type-safe Pydantic schema of the YAML file's fixed parts. Entries are
+# described by the entry type table instead, because their types are Typst.
 MODEL_SOURCE_FILES: dict[str, pathlib.Path] = {
     "rendercv_model": models_dir / "rendercv_model.py",
     "cv": models_dir / "cv" / "cv.py",
     "social_network": models_dir / "cv" / "social_network.py",
     "custom_connection": models_dir / "cv" / "custom_connection.py",
+    "locale": models_dir / "locale" / "locale.py",
+    "settings": models_dir / "settings" / "settings.py",
+    "render_command": models_dir / "settings" / "render_command.py",
 }
 
 
-def is_type_adapter_assignment(node: ast.Assign) -> bool:
-    """Check if an assignment creates a pydantic.TypeAdapter instance.
+def is_pydantic_model(class_node: ast.ClassDef) -> bool:
+    """Check if a class is a Pydantic model, judging by its base classes.
 
     Why:
-        Type adapter instances (e.g., `email_validator = pydantic.TypeAdapter[...]`)
-        are internal validation plumbing, not part of the user-facing schema.
+        Model files also define dataclasses and helpers (like a social
+        network's definition read from its YAML file) that are not part of the
+        YAML schema.
 
     Args:
-        node: An AST Assign node.
+        class_node: An AST ClassDef node.
 
     Returns:
-        True if the assignment is a TypeAdapter instantiation.
+        True if a base class name ends with "Model" or "ModelWithoutExtraKeys".
     """
-    source = ast.unparse(node)
-    return "TypeAdapter" in source
+    return any(
+        ast.unparse(base).endswith(("BaseModel", "ModelWithoutExtraKeys"))
+        for base in class_node.bases
+    )
 
 
-def is_private_attr(node: ast.AnnAssign) -> bool:
-    """Check if an annotated assignment is a private attribute.
+# `pydantic.Field` arguments that only matter for the JSON Schema or the docs:
+dropped_field_arguments = {"title", "json_schema_extra", "union_mode"}
+# Longer descriptions are left out; the template's prose covers them:
+maximum_description_length = 60
+
+
+def strip_field_arguments(node: ast.AnnAssign) -> ast.AnnAssign:
+    """Drop `pydantic.Field` arguments agents don't need from a field.
 
     Why:
-        Private attributes (e.g., `_key_order: list[str] = pydantic.PrivateAttr()`)
-        are internal state, not user-facing YAML fields.
+        Titles, JSON Schema extras, and long descriptions (often built from
+        f-strings) triple the size of a field without telling an agent anything
+        the template doesn't already say.
 
     Args:
-        node: An AST AnnAssign node.
+        node: An annotated assignment in a model class.
 
     Returns:
-        True if the field name starts with underscore.
+        The assignment with only the useful `pydantic.Field` arguments.
     """
-    target = ast.unparse(node.target)
-    return target.startswith("_")
+    call = node.value
+    if not isinstance(call, ast.Call) or not ast.unparse(call.func).endswith("Field"):
+        return node
 
+    def keep(keyword: ast.keyword) -> bool:
+        if keyword.arg in dropped_field_arguments:
+            return False
+        if keyword.arg == "description":
+            return (
+                isinstance(keyword.value, ast.Constant)
+                and len(str(keyword.value.value)) <= maximum_description_length
+            )
+        return True
 
-def is_model_config(node: ast.Assign) -> bool:
-    """Check if an assignment is a model_config declaration.
-
-    Args:
-        node: An AST Assign node.
-
-    Returns:
-        True if assigning to model_config.
-    """
-    return any(ast.unparse(t) == "model_config" for t in node.targets)
-
-
-def is_url_dictionary(node: ast.AnnAssign) -> bool:
-    """Check if an annotated assignment is the social network URL dictionary.
-
-    Why:
-        The url_dictionary mapping (network name → URL prefix) is internal
-        plumbing. Agents only need the SocialNetworkName type alias to know
-        which networks are supported.
-
-    Args:
-        node: An AST AnnAssign node.
-
-    Returns:
-        True if the target is url_dictionary.
-    """
-    return ast.unparse(node.target) == "url_dictionary"
+    call.keywords = [keyword for keyword in call.keywords if keep(keyword)]
+    return node
 
 
 def strip_class_body(class_node: ast.ClassDef) -> ast.ClassDef:
@@ -139,12 +134,12 @@ def strip_class_body(class_node: ast.ClassDef) -> ast.ClassDef:
     Returns:
         A new ClassDef with only field annotations (no methods).
     """
-    new_body: list[ast.stmt] = []
-    for child in class_node.body:
-        if (isinstance(child, ast.AnnAssign) and not is_private_attr(child)) or (
-            isinstance(child, ast.Assign) and not is_model_config(child)
-        ):
-            new_body.append(child)
+    new_body: list[ast.stmt] = [
+        strip_field_arguments(child)
+        for child in class_node.body
+        if isinstance(child, ast.AnnAssign)
+        and not ast.unparse(child.target).startswith("_")
+    ]
 
     # If the body would be empty, add a `pass` statement
     if not new_body:
@@ -164,65 +159,27 @@ def strip_to_schema(source: str) -> str:
     """Strip a Python source file to only schema-relevant declarations.
 
     Why:
-        Full Pydantic model source files contain imports, validators,
-        serializers, helper functions, type adapters, and private
-        attributes that are implementation internals. Agents only need
-        type aliases, constants, and class field definitions to understand
-        the YAML schema. AST-based stripping removes ~40% of tokens.
+        Full Pydantic model source files contain imports, validators, helper
+        functions, file paths, and regular expressions that are implementation
+        internals. Agents only need type aliases and model fields to understand
+        the YAML schema.
 
     Args:
         source: Complete Python source code.
 
     Returns:
-        Stripped source containing only schema-relevant code.
+        Stripped source containing only type aliases and Pydantic models.
     """
     tree = ast.parse(source)
     kept_nodes: list[ast.stmt] = []
 
     for node in ast.iter_child_nodes(tree):
-        # Keep type aliases, module-level annotated assignments, and plain
-        # assignments that are not TypeAdapter instances. Skip url_dictionary
-        # (agents only need the SocialNetworkName type alias).
-        if (
-            isinstance(node, ast.TypeAlias)
-            or (isinstance(node, ast.AnnAssign) and not is_url_dictionary(node))
-            or (isinstance(node, ast.Assign) and not is_type_adapter_assignment(node))
-        ):
+        if isinstance(node, ast.TypeAlias):
             kept_nodes.append(node)
-
-        # Keep class definitions (stripped to fields only)
-        elif isinstance(node, ast.ClassDef):
+        elif isinstance(node, ast.ClassDef) and is_pydantic_model(node):
             kept_nodes.append(strip_class_body(node))
 
-        # Skip everything else: imports, functions, expressions
-
-    # Reconstruct source from kept nodes
-    lines: list[str] = []
-    for node in kept_nodes:
-        unparsed = ast.unparse(node)
-        lines.append(unparsed)
-        lines.append("")  # blank line between declarations
-
-    result = "\n".join(lines)
-
-    # Strip redundant "The default value is `X`." from descriptions
-    result = re.sub(
-        r"\s*The default value is `[^`]*`\.?",
-        "",
-        result,
-    )
-
-    # Clean up leftover empty string concatenations (e.g., `+ ''` or `+ ""`)
-    result = re.sub(r"\s*\+\s*['\"]'?['\"]", "", result)
-
-    # Strip verbose description= strings (info is covered in Important Patterns)
-    result = re.sub(r", description='[^']{40,}'", "", result)
-    result = re.sub(r', description="[^"]{40,}"', "", result)
-
-    # Clean up multiple blank lines
-    result = re.sub(r"\n{3,}", "\n\n", result)
-
-    return result.strip() + "\n"
+    return "\n\n".join(ast.unparse(node) for node in kept_nodes).strip() + "\n"
 
 
 def trim_sample_cv_sections(cv_yaml: str, max_entries: int = 2) -> str:
@@ -242,6 +199,8 @@ def trim_sample_cv_sections(cv_yaml: str, max_entries: int = 2) -> str:
     """
     yaml = ruamel.yaml.YAML()
     yaml.preserve_quotes = True
+    yaml.width = 4096
+    yaml.indent(mapping=2, sequence=4, offset=2)
     data = yaml.load(cv_yaml)
 
     sections = data.get("cv", {}).get("sections")
@@ -256,51 +215,91 @@ def trim_sample_cv_sections(cv_yaml: str, max_entries: int = 2) -> str:
     return stream.getvalue()
 
 
+def describe_field(name: str, field: FieldDeclaration) -> str:
+    """Describe an entry type's field for the skill's entry type table.
+
+    Example:
+        ```py
+        describe_field("authors", FieldDeclaration(kind="list", of="markdown"))
+        # "`authors` (list of markdown)"
+        ```
+
+    Args:
+        name: The field's name.
+        field: The field's declaration.
+
+    Returns:
+        The field's name and kind.
+    """
+    kind: str = field.kind
+    if field.kind == "list":
+        kind = f"list of {field.of or 'markdown'}"
+    elif field.kind == "date" and field.allow_text:
+        kind = "date or text"
+    elif field.kind == "choice":
+        kind = "one of " + "/".join(field.choices or ())
+    return f"`{name}` ({kind})"
+
+
+def read_engine_defaults() -> str:
+    """Read the design options and their defaults from the classic engine.
+
+    Returns:
+        The Typst source of the engine's `defaults` dictionary.
+    """
+    source = engine_path.read_text(encoding="utf-8")
+    match = re.search(r"^#let defaults = \(\n.*?^\)$", source, re.S | re.M)
+    if match is None:
+        message = f"`#let defaults = (...)` is not in {engine_path}."
+        raise ValueError(message)
+    return match.group(0)
+
+
 def build_template_context() -> dict:
     """Assemble all dynamic data for the Jinja2 template.
 
     Returns:
         Template context dictionary.
     """
-    # Generate sample CV
-    sample_cv = create_sample_cv_file(file_path=None)
-    sample_cv = trim_sample_cv_sections(sample_cv)
+    sample_cv = trim_sample_cv_sections(
+        create_sample_yaml_input_file(name="John Doe", locale="english")
+    )
 
-    # Generate full classic sample design
-    sample_classic_design = create_sample_design_file(file_path=None, theme="classic")
+    entry_types = [
+        {
+            "name": name,
+            "doc": entry_type.doc,
+            "required": ", ".join(
+                describe_field(field_name, field)
+                for field_name, field in entry_type.fields.items()
+                if not field.optional
+            ),
+            "optional": ", ".join(
+                describe_field(field_name, field)
+                for field_name, field in entry_type.fields.items()
+                if field.optional
+            )
+            or "—",
+        }
+        for name, entry_type in read_standard_entry_types().items()
+    ]
 
-    # Read other theme override YAMLs (only the fields that differ from classic)
-    # Strip the templates: section since it's mostly the same across themes
-    # (noted once in the skill template instead).
-    other_themes_dir = models_dir / "design" / "other_themes"
-    theme_overrides: dict[str, str] = {}
-    for theme in SKILL_THEMES:
-        if theme == "classic":
-            continue
-        yaml_path = other_themes_dir / f"{theme}.yaml"
-        if yaml_path.exists():
-            yaml = ruamel.yaml.YAML()
-            data = yaml.load(yaml_path.read_text(encoding="utf-8"))
-            if "design" in data and "templates" in data["design"]:
-                del data["design"]["templates"]
-            stream = io.StringIO()
-            yaml.dump(data, stream)
-            theme_overrides[theme] = stream.getvalue().strip()
-
-    # Read and strip core model source files
-    model_sources: dict[str, str] = {}
-    for name, path in MODEL_SOURCE_FILES.items():
-        raw_source = path.read_text(encoding="utf-8")
-        model_sources[name] = strip_to_schema(raw_source)
+    model_sources: dict[str, str] = {
+        name: strip_to_schema(path.read_text(encoding="utf-8"))
+        for name, path in MODEL_SOURCE_FILES.items()
+    }
 
     return {
         "version": __version__,
-        "available_themes": SKILL_THEMES,
+        "available_designs": get_built_in_design_names(),
         "available_locales": available_locales,
+        "available_social_networks": get_available_social_networks(),
+        "entry_types": entry_types,
         "model_sources": model_sources,
         "sample_cv": sample_cv,
-        "sample_classic_design": sample_classic_design,
-        "theme_overrides": theme_overrides,
+        "sample_design": create_sample_design_file("classic"),
+        "sample_entries": create_sample_entries_file(),
+        "engine_defaults": read_engine_defaults(),
     }
 
 

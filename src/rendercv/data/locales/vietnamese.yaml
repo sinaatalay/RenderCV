@@ -1,0 +1,38 @@
+# Vietnamese locale.
+language: vietnamese
+iso_code: vi
+direction: ltr
+last_updated: "Cập nhật lần cuối vào"
+present: "hiện tại"
+month: "tháng"
+months: "tháng"
+year: "năm"
+years: "năm"
+phrases:
+  degree_with_area: "#degree ngành #area"
+month_abbreviations:
+  - "Th01"
+  - "Th02"
+  - "Th03"
+  - "Th04"
+  - "Th05"
+  - "Th06"
+  - "Th07"
+  - "Th08"
+  - "Th09"
+  - "Th10"
+  - "Th11"
+  - "Th12"
+month_names:
+  - "Tháng Một"
+  - "Tháng Hai"
+  - "Tháng Ba"
+  - "Tháng Tư"
+  - "Tháng Năm"
+  - "Tháng Sáu"
+  - "Tháng Bảy"
+  - "Tháng Tám"
+  - "Tháng Chín"
+  - "Tháng Mười"
+  - "Tháng Mười Một"
+  - "Tháng Mười Hai"

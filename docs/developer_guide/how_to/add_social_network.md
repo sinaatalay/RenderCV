@@ -1,114 +1,47 @@
 # Add a New Social Network
 
-1. Add network name to `SocialNetworkName` type
+A social network is one YAML file in [`src/rendercv/data/social_networks/`](https://github.com/rendercv/rendercv/tree/main/src/rendercv/data/social_networks). No code changes are needed.
 
-    Edit `src/rendercv/schema/models/cv/social_network.py`:
+1. Create `src/rendercv/data/social_networks/mynetwork.yaml`:
 
-    ```python
-    type SocialNetworkName = Literal[
-        "LinkedIn",
-        "GitHub",
-        # ... existing networks
-        "MyNetwork",  # Add your network here
-    ]
+    ```yaml title="src/rendercv/data/social_networks/mynetwork.yaml"
+    # MyNetwork.
+    name: 'MyNetwork' # (1)!
+    icon: my-icon # (2)!
+    url: 'https://mynetwork.com/profile/{username}' # (3)!
+    username: # (4)!
+      pattern: '[a-z0-9_]+'
+      hint: 'Use your username without "@", like johndoe.'
+    example: 'johndoe' # (5)!
     ```
 
-2. Add URL pattern to `url_dictionary`
+    1. What users write in `network:`.
+    2. The [Font Awesome](https://fontawesome.com/search) icon shown in the header, by its name.
+    3. The profile URL. `{username}` is the username. With a `username.pattern`, its named groups are available too: Mastodon's pattern `@(?P<user>[^@]+)@(?P<domain>[^@]+)` makes its URL `https://{domain}/@{user}`.
+    4. Optional. Leave it out to accept any username. With `pattern`, a username must match the regular expression, and `hint` explains the format when it doesn't. Instead of `pattern`, `kind: phone` accepts a phone number and provides `{digits}` for the URL, like WhatsApp's `https://wa.me/{digits}`.
+    5. A valid username. The tests check that it passes the username rules and builds a valid URL.
 
-    Edit `src/rendercv/schema/models/cv/social_network.py`:
+    Add `display: 'MyNetwork'` to show that text in the header instead of the username, like Google Scholar does with its opaque user IDs.
 
-    ```python
-    url_dictionary: dict[SocialNetworkName, str] = {
-        "LinkedIn": "https://linkedin.com/in/",
-        # ... existing networks
-        "MyNetwork": "https://mynetwork.com/profile/",  # Add URL base here
-    }
-    ```
-
-3. (Optional) Add username validation
-
-    If your network has special username format requirements, edit `src/rendercv/schema/models/cv/social_network.py`:
-
-    ```python
-    match network:
-        case "Mastodon":
-            # ... existing validations
-        case "MyNetwork":
-            # ... your custom validation logic
-    ```
-
-4. (Optional) Add custom URL generation
-
-    If URL generation requires special logic (not just base + username), edit `src/rendercv/schema/models/cv/social_network.py`:
-
-    ```python
-    @functools.cached_property
-    def url(self) -> str:
-        if self.network == "Mastodon":
-            # ... existing custom logic
-        elif self.network == "MyNetwork":
-            # ... your custom URL generation logic
-        else:
-            url = url_dictionary[self.network] + self.username
-        return url
-    ```
-
-5. Add Font Awesome icon
-
-    Edit `src/rendercv/renderer/templater/connections.py`:
-
-    ```python
-    typst_fa_icons = {
-        "LinkedIn": "linkedin",
-        # ... existing icons
-        "MyNetwork": "my-icon-name",  # Add your icon name here
-    }
-    ```
-
-    See available icons at: [fontawesome.com/search](https://fontawesome.com/search)
-
-6. Add test for URL generation
-
-    Edit `tests/schema/models/cv/test_social_network.py`:
-
-    ```python
-    @pytest.mark.parametrize(
-        ("network", "username", "expected_url"),
-        [
-            # ... existing tests
-            (
-                "MyNetwork",
-                "myusername",
-                "https://mynetwork.com/profile/myusername",
-            ),
-        ],
-    )
-    def test_url(self, network, username, expected_url):
-        # test implementation
-    ```
-
-7. Add network to test fixtures
-
-    Edit `tests/renderer/conftest.py`, add your network to the `social_networks` list:
-
-    ```python
-    social_networks=[
-        SocialNetwork(network="LinkedIn", username="johndoe"),
-        # ... existing networks
-        SocialNetwork(network="MyNetwork", username="johndoe"),
-    ]
-    ```
-
-8. Update test data and verify visual output
+2. Update the JSON Schema, which lists the networks:
 
     ```bash
-    just update-testdata
+    just update-schema
     ```
 
-    Check the generated PDFs in `tests/renderer/testdata/test_pdf_png/` to ensure your network appears correctly with the icon.
+3. Try it: add the network to a CV and render it to see the icon and the link.
 
-9. Run tests to verify everything passes
+    ```yaml
+    cv:
+      name: John Doe
+      social_networks:
+        - network: MyNetwork
+          username: johndoe
+    ```
+
+4. Run the tests and update the AI agent skill:
 
     ```bash
     just test
+    just update-skill
     ```

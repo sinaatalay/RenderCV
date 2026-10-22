@@ -1,185 +1,192 @@
+import dataclasses
+import difflib
 import functools
+import pathlib
 import re
-from typing import Literal, get_args
+from typing import Any, Self
 
 import pydantic
 import pydantic_core
-import pydantic_extra_types.phone_numbers as pydantic_phone_numbers
 
-from ...pydantic_error_handling import CustomPydanticErrorTypes
+from ...yaml_reader import read_yaml
 from ..base import BaseModelWithoutExtraKeys
+from ..custom_error_types import CustomPydanticErrorTypes
+from .entry_types import validate_phone
 
-url_validator = pydantic.TypeAdapter[pydantic.HttpUrl](pydantic.HttpUrl)
+social_networks_directory = (
+    pathlib.Path(__file__).parent.parent.parent.parent / "data" / "social_networks"
+)
+url_placeholder_pattern = re.compile(r"\{(\w+)\}")
 
 
-type SocialNetworkName = Literal[
-    "LinkedIn",
-    "GitHub",
-    "GitLab",
-    "IMDB",
-    "Instagram",
-    "ORCID",
-    "Mastodon",
-    "StackOverflow",
-    "ResearchGate",
-    "YouTube",
-    "Google Scholar",
-    "Telegram",
-    "WhatsApp",
-    "Leetcode",
-    "X",
-    "Bluesky",
-    "Reddit",
-]
-available_social_networks = get_args(SocialNetworkName.__value__)
-url_dictionary: dict[SocialNetworkName, str] = {
-    "LinkedIn": "https://linkedin.com/in/",
-    "GitHub": "https://github.com/",
-    "GitLab": "https://gitlab.com/",
-    "IMDB": "https://imdb.com/name/",
-    "Instagram": "https://instagram.com/",
-    "ORCID": "https://orcid.org/",
-    "StackOverflow": "https://stackoverflow.com/users/",
-    "ResearchGate": "https://researchgate.net/profile/",
-    "YouTube": "https://youtube.com/@",
-    "Google Scholar": "https://scholar.google.com/citations?user=",
-    "Telegram": "https://t.me/",
-    "WhatsApp": "https://wa.me/",
-    "Leetcode": "https://leetcode.com/u/",
-    "X": "https://x.com/",
-    "Bluesky": "https://bsky.app/profile/",
-    "Reddit": "https://reddit.com/user/",
-}
+@dataclasses.dataclass(frozen=True, kw_only=True)
+class SocialNetworkDefinition:
+    """A social network RenderCV knows, read from its YAML file.
+
+    Why:
+        Each network is pure data (its URL, icon, and username rules), so each
+        is one YAML file in `rendercv/data/social_networks/`. Adding a network
+        is adding a file, with no code changes.
+    """
+
+    name: str
+    icon: str
+    url: str
+    example: str
+    username_kind: str | None = None
+    username_pattern: str | None = None
+    username_hint: str | None = None
+    display: str | None = None
+
+    def build_url(self, username: str) -> str:
+        """Build a profile URL from a username.
+
+        Why:
+            URLs are URI templates: `{username}` is the username, and named
+            groups of the username pattern are available too, like `{domain}`
+            for Mastodon. Phone-number usernames provide `{digits}`.
+
+        Args:
+            username: A validated username.
+
+        Returns:
+            The profile URL.
+        """
+        values: dict[str, str] = {"username": username}
+        if self.username_pattern:
+            match = re.fullmatch(self.username_pattern, username)
+            if match:
+                values |= {
+                    key: value
+                    for key, value in match.groupdict().items()
+                    if value is not None
+                }
+        if self.username_kind == "phone":
+            values["digits"] = validate_phone(username).e164.removeprefix("+")
+        return url_placeholder_pattern.sub(lambda m: values[m.group(1)], self.url)
+
+
+@functools.cache
+def get_social_network_definitions() -> dict[str, SocialNetworkDefinition]:
+    """Read every social network's YAML file.
+
+    Returns:
+        Network names mapped to their definitions, sorted by name.
+    """
+    definitions: dict[str, SocialNetworkDefinition] = {}
+    for file in sorted(social_networks_directory.glob("*.yaml")):
+        data = read_yaml(file)
+        username = data.get("username") or {}
+        definition = SocialNetworkDefinition(
+            name=str(data["name"]),
+            icon=str(data["icon"]),
+            url=str(data["url"]),
+            example=str(data["example"]),
+            username_kind=username.get("kind"),
+            username_pattern=username.get("pattern"),
+            username_hint=username.get("hint"),
+            display=data.get("display"),
+        )
+        definitions[definition.name] = definition
+    return dict(sorted(definitions.items(), key=lambda item: item[0].lower()))
+
+
+def get_available_social_networks() -> tuple[str, ...]:
+    """Return the names of the social networks RenderCV knows, sorted by name."""
+    return tuple(get_social_network_definitions())
+
+
+def add_social_network_names(schema: dict[str, Any]) -> None:
+    """List the social networks in the JSON Schema of `network`.
+
+    Why:
+        The networks are read from their YAML files only when needed, so the
+        list is added when the JSON Schema is made, not when RenderCV is
+        imported.
+
+    Args:
+        schema: The JSON Schema of the `network` field.
+    """
+    schema["enum"] = list(get_available_social_networks())
 
 
 class SocialNetwork(BaseModelWithoutExtraKeys):
-    network: SocialNetworkName = pydantic.Field()
+    """A profile on a social network, shown in the CV's header."""
+
+    network: str = pydantic.Field(
+        json_schema_extra=add_social_network_names,
+        description="The social network.",
+    )
     username: str = pydantic.Field(
-        examples=["john_doe", "@johndoe@mastodon.social", "12345/john-doe"],
+        description="Your username on the network.",
+        examples=["johndoe", "@johndoe@mastodon.social", "12345/johndoe"],
     )
 
-    @pydantic.field_validator("username")
+    @pydantic.field_validator("network")
     @classmethod
-    def check_username(cls, username: str, info: pydantic.ValidationInfo) -> str:
-        """Validate username format per network's requirements.
-
-        Why:
-            Different platforms have specific username formats (e.g., Mastodon needs
-            @user@domain, StackOverflow needs id/name). Early validation prevents
-            broken URL generation.
+    def check_network(cls, network: str) -> str:
+        """Check that RenderCV knows the network.
 
         Args:
-            username: Username to validate.
-            info: Validation context containing network field.
+            network: The network's name.
 
         Returns:
-            Validated username.
+            The network's name.
         """
-        if "network" not in info.data:
-            # the network is either not provided or not one of the available social
-            # networks. In this case, don't check the username, since Pydantic will
-            # raise an error for the network.
-            return username
-
-        network = info.data["network"]
-
-        match network:
-            case "Mastodon":
-                mastodon_username_pattern = r"@[^@]+@[^@]+"
-                if not re.fullmatch(mastodon_username_pattern, username):
-                    raise pydantic_core.PydanticCustomError(
-                        CustomPydanticErrorTypes.other.value,
-                        'Mastodon username should be in the format "@username@domain".',
-                    )
-            case "StackOverflow":
-                stackoverflow_username_pattern = r"\d+\/[^\/]+"
-                if not re.fullmatch(stackoverflow_username_pattern, username):
-                    raise pydantic_core.PydanticCustomError(
-                        CustomPydanticErrorTypes.other.value,
-                        "StackOverflow username should be in the format"
-                        ' "user_id/username".',
-                    )
-            case "YouTube":
-                if username.startswith("@"):
-                    raise pydantic_core.PydanticCustomError(
-                        CustomPydanticErrorTypes.other.value,
-                        'YouTube username should not start with "@". Remove "@" from'
-                        ' the beginning of the username."',
-                    )
-            case "ORCID":
-                orcid_username_pattern = r"\d{4}-\d{4}-\d{4}-\d{3}[\dX]"
-                if not re.fullmatch(orcid_username_pattern, username):
-                    raise pydantic_core.PydanticCustomError(
-                        CustomPydanticErrorTypes.other.value,
-                        "ORCID username should be in the format 'XXXX-XXXX-XXXX-XXX'.",
-                    )
-            case "IMDB":
-                imdb_username_pattern = r"nm\d{7}"
-                if not re.fullmatch(imdb_username_pattern, username):
-                    raise pydantic_core.PydanticCustomError(
-                        CustomPydanticErrorTypes.other.value,
-                        "IMDB name should be in the format 'nmXXXXXXX'.",
-                    )
-            case "Bluesky":
-                bluesky_username_pattern = r"^([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$"
-                if not re.fullmatch(bluesky_username_pattern, username):
-                    raise pydantic_core.PydanticCustomError(
-                        CustomPydanticErrorTypes.other.value,
-                        "Bluesky username should be a valid handle with no '@' (e.g.,"
-                        " 'username.bsky.social' or 'domain.com').",
-                    )
-            case "WhatsApp":
-                try:
-                    pydantic.TypeAdapter[pydantic_phone_numbers.PhoneNumber](
-                        pydantic_phone_numbers.PhoneNumber
-                    ).validate_python(username)
-                except pydantic.ValidationError as e:
-                    raise pydantic_core.PydanticCustomError(
-                        CustomPydanticErrorTypes.other.value,
-                        "WhatsApp username should be your phone number with country"
-                        " code in international format (e.g., +1 for USA, +44 for UK).",
-                    ) from e
-            case "Reddit":
-                reddit_username_pattern = r"^[a-zA-Z0-9_-]{3,23}$"
-                if not re.fullmatch(reddit_username_pattern, username):
-                    raise pydantic_core.PydanticCustomError(
-                        CustomPydanticErrorTypes.other.value,
-                        "Reddit username should be made up of uppercase/lowercase"
-                        " letters, numbers, underscores, and hyphens between 3 and 23"
-                        " characters.",
-                    )
-
-        return username
+        if network not in get_social_network_definitions():
+            suggestion = difflib.get_close_matches(
+                network, list(get_available_social_networks()), n=1
+            )
+            hint = f" Did you mean `{suggestion[0]}`?" if suggestion else ""
+            raise pydantic_core.PydanticCustomError(
+                CustomPydanticErrorTypes.other.value,
+                "RenderCV doesn't know the social network `{network}`.{hint} For"
+                " other links, use `custom_connections`.",
+                {"network": network, "hint": hint},
+            )
+        return network
 
     @pydantic.model_validator(mode="after")
-    def validate_generated_url(self) -> "SocialNetwork":
-        """Validate generated URL is well-formed.
-
-        Why:
-            URL generation from username might produce invalid URLs if username
-            format is wrong. Post-validation check catches edge cases.
+    def check_username(self) -> Self:
+        """Check the username against the network's rules.
 
         Returns:
-            Validated social network instance.
+            The social network.
         """
-        url_validator.validate_strings(self.url)
+        definition = self.definition
+        valid = True
+        if definition.username_kind == "phone":
+            try:
+                validate_phone(self.username)
+            except (pydantic.ValidationError, ValueError):
+                valid = False
+        elif definition.username_pattern:
+            valid = re.fullmatch(definition.username_pattern, self.username) is not None
+        if valid:
+            # The username becomes part of the URL, which must stay valid:
+            try:
+                pydantic.TypeAdapter(pydantic.HttpUrl).validate_strings(self.url)
+            except pydantic.ValidationError:
+                valid = False
+        if not valid:
+            raise pydantic_core.PydanticCustomError(
+                CustomPydanticErrorTypes.other.value,
+                "This is not a valid {network} username. {hint}",
+                {"network": definition.name, "hint": definition.username_hint or ""},
+            )
         return self
 
     @functools.cached_property
+    def definition(self) -> SocialNetworkDefinition:
+        """The network's definition."""
+        return get_social_network_definitions()[self.network]
+
+    @functools.cached_property
     def url(self) -> str:
-        """Generate profile URL from network and username.
+        """The profile URL."""
+        return self.definition.build_url(self.username)
 
-        Why:
-            Users provide network+username for brevity. Property generates full
-            URLs with platform-specific logic (e.g., Mastodon domain extraction).
-
-        Returns:
-            Complete profile URL.
-        """
-        if self.network == "Mastodon":
-            _, username, domain = self.username.split("@")
-            url = f"https://{domain}/@{username}"
-        else:
-            url = url_dictionary[self.network] + self.username
-
-        return url
+    @functools.cached_property
+    def display_text(self) -> str:
+        """What the header shows for this profile: the username, or a label."""
+        return self.definition.display or self.username

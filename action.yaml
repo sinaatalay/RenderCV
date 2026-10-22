@@ -1,0 +1,55 @@
+# A GitHub Action that renders a CV with RenderCV. Example:
+#
+#   - uses: actions/checkout@v6
+#   - uses: rendercv/rendercv@v3
+#     with:
+#       file: John_Doe_CV.yaml
+#   - uses: actions/upload-artifact@v7
+#     with:
+#       name: cv
+#       path: rendercv_output
+name: RenderCV
+description: Render a CV or resume from a YAML file with RenderCV.
+author: Sina Atalay
+branding:
+  icon: file-text
+  color: blue
+
+inputs:
+  file:
+    description: The YAML input file, relative to the repository's root.
+    required: true
+  version:
+    description: The RenderCV version, like `3.0.0`. The default is the latest version.
+    required: false
+    default: latest
+  args:
+    description: >-
+      More arguments for `rendercv render`, separated by spaces, like
+      `--dont-generate-png --output-folder cv`.
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+
+    - name: Render the CV
+      shell: bash
+      # Inputs are passed as environment variables, never pasted into the script:
+      env:
+        RENDERCV_FILE: ${{ inputs.file }}
+        RENDERCV_VERSION: ${{ inputs.version }}
+        RENDERCV_ARGS: ${{ inputs.args }}
+      run: |
+        if [ "$RENDERCV_VERSION" = "latest" ]; then
+          package="rendercv[full]"
+        else
+          package="rendercv[full]==$RENDERCV_VERSION"
+        fi
+        # Split the arguments at spaces, without expanding wildcards:
+        set -f
+        # shellcheck disable=SC2086
+        uvx --from "$package" rendercv render "$RENDERCV_FILE" $RENDERCV_ARGS

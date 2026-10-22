@@ -6,11 +6,15 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from rendercv.renderer.path_resolver import (
+    build_date_placeholders,
     build_name_variants,
     resolve_output_folder_placeholder,
     resolve_rendercv_file_path,
+    substitute_date_and_name_placeholders,
+    substitute_placeholders,
 )
 from rendercv.schema.models.cv.cv import Cv
+from rendercv.schema.models.locale.locale import Locale
 from rendercv.schema.models.rendercv_model import RenderCVModel
 from rendercv.schema.models.settings.render_command import RenderCommand
 from rendercv.schema.models.settings.settings import Settings
@@ -93,7 +97,7 @@ class TestResolveRendercvFilePath:
         cv_name: str,
         current_date: datetime.date | None,
         expected_filename: str,
-    ):
+    ) -> None:
         if current_date is not None:
             model = RenderCVModel(
                 cv=Cv(name=cv_name), settings=Settings(current_date=current_date)
@@ -107,7 +111,7 @@ class TestResolveRendercvFilePath:
         assert result.name == expected_filename
         assert result.parent == tmp_path
 
-    def test_creates_parent_directories(self, tmp_path: pathlib.Path):
+    def test_creates_parent_directories(self, tmp_path: pathlib.Path) -> None:
         model = RenderCVModel(cv=Cv(name="John Doe"))
         nested_dir = tmp_path / "output" / "cv" / "final"
         file_path = nested_dir / "NAME_IN_SNAKE_CASE_CV.pdf"
@@ -117,7 +121,7 @@ class TestResolveRendercvFilePath:
         assert result.parent.exists()
         assert result == nested_dir / "John_Doe_CV.pdf"
 
-    def test_output_folder_placeholder_resolved(self, tmp_path: pathlib.Path):
+    def test_output_folder_placeholder_resolved(self, tmp_path: pathlib.Path) -> None:
         output_folder = tmp_path / "rendercv_output"
         model = RenderCVModel(
             cv=Cv(name="John Doe"),
@@ -132,7 +136,7 @@ class TestResolveRendercvFilePath:
         assert result == output_folder / "John_Doe_CV.pdf"
         assert result.parent.exists()
 
-    def test_custom_output_folder(self, tmp_path: pathlib.Path):
+    def test_custom_output_folder(self, tmp_path: pathlib.Path) -> None:
         output_folder = tmp_path / "build" / "en"
         model = RenderCVModel(
             cv=Cv(name="John Doe"),
@@ -146,7 +150,7 @@ class TestResolveRendercvFilePath:
 
         assert result == output_folder / "John_Doe_CV.pdf"
 
-    def test_no_output_folder_placeholder_in_path(self, tmp_path: pathlib.Path):
+    def test_no_output_folder_placeholder_in_path(self, tmp_path: pathlib.Path) -> None:
         output_folder = tmp_path / "build"
         model = RenderCVModel(
             cv=Cv(name="John Doe"),
@@ -160,7 +164,9 @@ class TestResolveRendercvFilePath:
 
         assert result == tmp_path / "custom_dir" / "John_Doe_CV.pdf"
 
-    def test_output_folder_with_subdirectory_in_path(self, tmp_path: pathlib.Path):
+    def test_output_folder_with_subdirectory_in_path(
+        self, tmp_path: pathlib.Path
+    ) -> None:
         output_folder = tmp_path / "build"
         model = RenderCVModel(
             cv=Cv(name="John Doe"),
@@ -176,7 +182,7 @@ class TestResolveRendercvFilePath:
 
 
 class TestResolveOutputFolderPlaceholder:
-    def test_replaces_output_folder_component(self, tmp_path: pathlib.Path):
+    def test_replaces_output_folder_component(self, tmp_path: pathlib.Path) -> None:
         output_folder = tmp_path / "my_output"
         file_path = tmp_path / "OUTPUT_FOLDER" / "file.pdf"
 
@@ -184,7 +190,7 @@ class TestResolveOutputFolderPlaceholder:
 
         assert result == output_folder / "file.pdf"
 
-    def test_no_placeholder_returns_unchanged(self, tmp_path: pathlib.Path):
+    def test_no_placeholder_returns_unchanged(self, tmp_path: pathlib.Path) -> None:
         output_folder = tmp_path / "my_output"
         file_path = tmp_path / "some_dir" / "file.pdf"
 
@@ -192,7 +198,7 @@ class TestResolveOutputFolderPlaceholder:
 
         assert result == file_path
 
-    def test_nested_output_folder(self, tmp_path: pathlib.Path):
+    def test_nested_output_folder(self, tmp_path: pathlib.Path) -> None:
         output_folder = tmp_path / "build" / "en"
         file_path = tmp_path / "OUTPUT_FOLDER" / "sub" / "file.pdf"
 
@@ -200,7 +206,7 @@ class TestResolveOutputFolderPlaceholder:
 
         assert result == output_folder / "sub" / "file.pdf"
 
-    def test_output_folder_only(self, tmp_path: pathlib.Path):
+    def test_output_folder_only(self, tmp_path: pathlib.Path) -> None:
         output_folder = tmp_path / "build"
         file_path = tmp_path / "OUTPUT_FOLDER"
 
@@ -293,3 +299,97 @@ class TestBuildNameVariants:
     def test_original_name_preserved(self, name: str) -> None:
         result = build_name_variants(name)
         assert result["NAME"] == name
+
+
+class TestBuildDatePlaceholders:
+    def test_builds_every_placeholder(self) -> None:
+        placeholders = build_date_placeholders(
+            datetime.date(2024, 3, 5), locale=Locale.model_validate({})
+        )
+
+        assert placeholders == {
+            "MONTH_NAME": "March",
+            "MONTH_ABBREVIATION": "Mar",
+            "MONTH": "3",
+            "MONTH_IN_TWO_DIGITS": "03",
+            "DAY": "5",
+            "DAY_IN_TWO_DIGITS": "05",
+            "YEAR": "2024",
+            "YEAR_IN_TWO_DIGITS": "24",
+        }
+
+    def test_uses_the_locale(self) -> None:
+        placeholders = build_date_placeholders(
+            datetime.date(2024, 3, 5),
+            locale=Locale.model_validate({"language": "german"}),
+        )
+
+        assert placeholders["MONTH_NAME"] == "März"
+        assert placeholders["MONTH_ABBREVIATION"] == "Mär"
+
+
+class TestSubstitutePlaceholders:
+    @pytest.mark.parametrize(
+        ("text", "expected"),
+        [
+            ("NAME_CV", "Jane Doe_CV"),
+            ("NAME_IN_SNAKE_CASE_CV", "Jane_Doe_CV"),
+            ("MONTH-MONTH_NAME", "3-March"),
+            ("no placeholders", "no placeholders"),
+            ("", ""),
+        ],
+    )
+    def test_replaces_longest_names_first(self, text: str, expected: str) -> None:
+        placeholders = {
+            "NAME": "Jane Doe",
+            "NAME_IN_SNAKE_CASE": "Jane_Doe",
+            "MONTH": "3",
+            "MONTH_NAME": "March",
+        }
+
+        assert substitute_placeholders(text, placeholders) == expected
+
+    def test_does_not_substitute_inside_substituted_values(self) -> None:
+        assert substitute_placeholders("NAME", {"NAME": "YEAR", "YEAR": "2024"}) == (
+            "YEAR"
+        )
+
+    def test_returns_the_text_without_placeholders(self) -> None:
+        assert substitute_placeholders("NAME", {}) == "NAME"
+
+
+class TestSubstituteDateAndNamePlaceholders:
+    @pytest.mark.parametrize(
+        ("text", "expected"),
+        [
+            ("NAME - CV", "Jane Doe - CV"),
+            ("NAME_IN_LOWER_KEBAB_CASE", "jane-doe"),
+            ("CURRENT_DATE", "Mar 2024"),
+            ("NAME, MONTH_NAME YEAR", "Jane Doe, March 2024"),
+            ("DAY_IN_TWO_DIGITS.MONTH_IN_TWO_DIGITS.YEAR_IN_TWO_DIGITS", "05.03.24"),
+        ],
+    )
+    def test_replaces_name_and_date(self, text: str, expected: str) -> None:
+        model = RenderCVModel(
+            cv=Cv(name="Jane Doe"),
+            settings=Settings(current_date=datetime.date(2024, 3, 5)),
+        )
+
+        assert substitute_date_and_name_placeholders(text, model) == expected
+
+    def test_uses_the_name_without_formatting(self) -> None:
+        model = RenderCVModel(
+            cv=Cv(name="Jane **Doe**"),
+            settings=Settings(current_date=datetime.date(2024, 3, 5)),
+        )
+
+        assert substitute_date_and_name_placeholders(
+            "NAME_IN_SNAKE_CASE_CV", model
+        ) == ("Jane_Doe_CV")
+
+    def test_leaves_name_placeholders_without_a_name(self) -> None:
+        model = RenderCVModel(settings=Settings(current_date=datetime.date(2024, 3, 5)))
+
+        assert substitute_date_and_name_placeholders("NAME YEAR", model) == (
+            "NAME 2024"
+        )

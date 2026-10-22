@@ -1,17 +1,11 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Literal
 
-type YamlSource = Literal[
-    "main_yaml_file",
-    "design_yaml_file",
-    "locale_yaml_file",
-    "settings_yaml_file",
-]
-type OverlaySourceKey = Literal["design", "locale", "settings"]
+type YamlSource = Literal["main_yaml_file", "locale_yaml_file", "settings_yaml_file"]
+type OverlaySourceKey = Literal["locale", "settings"]
 type YamlLocation = tuple[tuple[int, int], tuple[int, int]]
 
 OVERLAY_SOURCE_TO_YAML_SOURCE: dict[OverlaySourceKey, YamlSource] = {
-    "design": "design_yaml_file",
     "locale": "locale_yaml_file",
     "settings": "settings_yaml_file",
 }
@@ -34,7 +28,6 @@ class RenderCVValidationError:
     input: str
 
 
-@dataclass
 class RenderCVUserError(ValueError):
     """User-facing error for recoverable problems like invalid input or missing files.
 
@@ -44,10 +37,11 @@ class RenderCVUserError(ValueError):
         actionable messages reach end users.
     """
 
-    message: str | None = field(default=None)
+    def __init__(self, message: str | None = None) -> None:
+        super().__init__(message)
+        self.message = message
 
 
-@dataclass
 class RenderCVUserValidationError(ValueError):
     """User-facing error carrying multiple structured validation errors.
 
@@ -57,10 +51,16 @@ class RenderCVUserValidationError(ValueError):
         one pass rather than stopping at the first.
     """
 
-    validation_errors: list[RenderCVValidationError]
+    def __init__(self, validation_errors: list[RenderCVValidationError]) -> None:
+        super().__init__(
+            "\n".join(
+                f"{'.'.join(error.schema_location or ())}: {error.message}"
+                for error in validation_errors
+            )
+        )
+        self.validation_errors = validation_errors
 
 
-@dataclass
 class RenderCVInternalError(RuntimeError):
     """Internal error indicating a bug in RenderCV logic.
 
@@ -70,4 +70,6 @@ class RenderCVInternalError(RuntimeError):
         in normal operation and indicate code that needs fixing.
     """
 
-    message: str
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+        self.message = message

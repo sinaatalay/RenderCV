@@ -1,0 +1,38 @@
+# Arabic locale.
+language: arabic
+iso_code: ar
+direction: rtl
+last_updated: "آخر تحديث في"
+present: "الحاضر"
+month: "شهر"
+months: "أشهر"
+year: "سنة"
+years: "سنوات"
+phrases:
+  degree_with_area: "#degree في #area"
+month_abbreviations:
+  - "ينا"
+  - "فبر"
+  - "مار"
+  - "أبر"
+  - "ماي"
+  - "يون"
+  - "يول"
+  - "أغس"
+  - "سبت"
+  - "أكت"
+  - "نوف"
+  - "ديس"
+month_names:
+  - "يناير"
+  - "فبراير"
+  - "مارس"
+  - "أبريل"
+  - "مايو"
+  - "يونيو"
+  - "يوليو"
+  - "أغسطس"
+  - "سبتمبر"
+  - "أكتوبر"
+  - "نوفمبر"
+  - "ديسمبر"

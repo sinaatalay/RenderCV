@@ -1,0 +1,38 @@
+# German locale.
+language: german
+iso_code: de
+direction: ltr
+last_updated: "Zuletzt aktualisiert"
+present: "gegenwärtig"
+month: "Monat"
+months: "Monate"
+year: "Jahr"
+years: "Jahre"
+phrases:
+  degree_with_area: "#degree in #area"
+month_abbreviations:
+  - "Jan"
+  - "Feb"
+  - "Mär"
+  - "Apr"
+  - "Mai"
+  - "Jun"
+  - "Jul"
+  - "Aug"
+  - "Sep"
+  - "Okt"
+  - "Nov"
+  - "Dez"
+month_names:
+  - "Januar"
+  - "Februar"
+  - "März"
+  - "April"
+  - "Mai"
+  - "Juni"
+  - "Juli"
+  - "August"
+  - "September"
+  - "Oktober"
+  - "November"
+  - "Dezember"

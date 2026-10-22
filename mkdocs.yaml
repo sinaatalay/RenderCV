@@ -58,15 +58,18 @@ nav:
       - YAML Input Structure:
           - Overview: user_guide/yaml_input_structure/index.md
           - cv Field: user_guide/yaml_input_structure/cv.md
-          - design Field: user_guide/yaml_input_structure/design.md
           - locale Field: user_guide/yaml_input_structure/locale.md
           - settings Field: user_guide/yaml_input_structure/settings.md
+      - Entry Types (entries.typ): user_guide/entry_types.md
+      - Design (design.typ): user_guide/design.md
       - How-To Guides:
           - Set Up VS Code for RenderCV: user_guide/how_to/set_up_vs_code_for_rendercv.md
-          - Arbitrary Keys in Entries: user_guide/how_to/arbitrary_keys_in_entries.md
+          - Add Fields to Entries: user_guide/how_to/add_fields_to_entries.md
+          - Change How an Entry Type Looks: user_guide/how_to/change_how_an_entry_type_looks.md
           - Custom Fonts: user_guide/how_to/custom_fonts.md
-          - Override Default Templates: user_guide/how_to/override_default_templates.md
           - Use the AI Agent Skill: user_guide/how_to/use_the_ai_agent_skill.md
+      - JavaScript and Python: user_guide/javascript_and_python.md
+      - Migrating from RenderCV 2: user_guide/migrating_from_v2.md
   - Developer Guide:
       - Setup: developer_guide/index.md
       - Project Management: developer_guide/project_management.md
@@ -77,7 +80,7 @@ nav:
       - GitHub Workflows: developer_guide/github_workflows.md
       - Dockerfile: developer_guide/dockerfile.md
       - How-To Guides:
-          - Add Theme: developer_guide/how_to/add_theme.md
+          - Add Design: developer_guide/how_to/add_design.md
           - Add Locale: developer_guide/how_to/add_locale.md
           - Add Social Network: developer_guide/how_to/add_social_network.md
   - API Reference: api_reference/

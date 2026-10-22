@@ -73,6 +73,24 @@ jobs:
           name: coverage-${{ matrix.python-version }}-${{ matrix.os }}
           path: .coverage.${{ matrix.python-version }}.${{ matrix.os }}
 
+  test-js:
+    name: Test the npm package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install just
+        uses: taiki-e/install-action@just
+
+      - name: Build and test the npm package
+        run: just test-js
+
   report-coverage:
     name: Generate the coverage report
     needs: [test]

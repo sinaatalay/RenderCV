@@ -1,48 +1,36 @@
-import pathlib
+from typing import Any
 
 import pydantic
+import pydantic_core
 
 from .base import BaseModelWithoutExtraKeys
+from .custom_error_types import CustomPydanticErrorTypes
 from .cv.cv import Cv
-from .design.classic_theme import ClassicTheme
-from .design.design import Design
-from .locale.locale import EnglishLocale, Locale
+from .locale.locale import Locale, default_locale
 from .settings.settings import Settings
-from .validation_context import get_input_file_path
 
 
 class RenderCVModel(BaseModelWithoutExtraKeys):
-    """Top-level model representing a complete RenderCV configuration.
+    """Everything in a CV's YAML file: content, language, and settings.
 
     Why:
-        This is the root of the entire data model, combining CV content,
-        design theme, locale translations, and rendering settings into a
-        single validated structure. All rendering pipeline stages operate
-        on this unified model.
+        The YAML file is the control board of a CV: what it says (`cv`), in
+        which language (`locale`), and how RenderCV runs (`settings`). How it
+        looks is not here; that's the design, a Typst file.
     """
 
     # Technically, `cv` is a required field, but we don't pass it to the JSON Schema
-    # so that the same schema can be used for standalone design, locale, and settings
-    # files.
+    # so that the same schema can be used for standalone locale and settings files.
     model_config = pydantic.ConfigDict(json_schema_extra={"required": []})
     cv: Cv = pydantic.Field(
         default_factory=Cv,
         title="CV",
         description="The content of the CV.",
     )
-    design: Design = pydantic.Field(
-        default_factory=ClassicTheme,
-        title="Design",
-        description=(
-            "The design information of the CV. The default is the `classic` theme."
-        ),
-    )
     locale: Locale = pydantic.Field(
-        default_factory=EnglishLocale,
-        title="Locale Catalog",
-        description=(
-            "The locale catalog of the CV to allow the support of multiple languages."
-        ),
+        default_factory=default_locale,
+        title="Locale",
+        description="The language of the CV: its words and date formats.",
     )
     settings: Settings = pydantic.Field(
         default_factory=Settings,
@@ -50,22 +38,27 @@ class RenderCVModel(BaseModelWithoutExtraKeys):
         description="The settings of the RenderCV.",
     )
 
-    _input_file_path: pathlib.Path | None = pydantic.PrivateAttr(default=None)
-
-    @pydantic.model_validator(mode="after")
-    def set_input_file_path(self, info: pydantic.ValidationInfo) -> "RenderCVModel":
-        """Store input file path in private attribute for path resolution.
+    @pydantic.model_validator(mode="before")
+    @classmethod
+    def explain_design_field(cls, data: Any) -> Any:
+        """Explain where the design went if the YAML still has a `design` field.
 
         Why:
-            Photo paths and other relative references need input file location
-            for resolution. Private attribute stores this after validation for
-            downstream processing.
+            RenderCV 2 set the design in the YAML. Designs are Typst files now,
+            so an old `design` field deserves directions, not "unknown field".
 
         Args:
-            info: Validation context containing input file path.
+            data: The YAML's top-level mapping.
 
         Returns:
-            Model instance with _input_file_path set.
+            The mapping, unchanged.
         """
-        self._input_file_path = get_input_file_path(info)
-        return self
+        if isinstance(data, dict) and "design" in data:
+            raise pydantic_core.PydanticCustomError(
+                CustomPydanticErrorTypes.other.value,
+                "The design is not set in the YAML anymore. It's a Typst file,"
+                " `design.typ`, next to your YAML file. Run `rendercv migrate` to"
+                " create it from this `design` field.",
+                {"loc": ("design",), "input": "..."},
+            )
+        return data

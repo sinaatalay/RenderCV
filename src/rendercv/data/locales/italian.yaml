@@ -1,0 +1,38 @@
+# Italian locale.
+language: italian
+iso_code: it
+direction: ltr
+last_updated: "Ultimo aggiornamento"
+present: "presente"
+month: "mese"
+months: "mesi"
+year: "anno"
+years: "anni"
+phrases:
+  degree_with_area: "#degree in #area"
+month_abbreviations:
+  - "Gen"
+  - "Feb"
+  - "Mar"
+  - "Apr"
+  - "Mag"
+  - "Giu"
+  - "Lug"
+  - "Ago"
+  - "Set"
+  - "Ott"
+  - "Nov"
+  - "Dic"
+month_names:
+  - "Gennaio"
+  - "Febbraio"
+  - "Marzo"
+  - "Aprile"
+  - "Maggio"
+  - "Giugno"
+  - "Luglio"
+  - "Agosto"
+  - "Settembre"
+  - "Ottobre"
+  - "Novembre"
+  - "Dicembre"

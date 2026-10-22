@@ -1,9 +1,39 @@
 import pathlib
+from typing import Annotated
 
 import pydantic
+import pydantic_core
 
 from ..base import BaseModelWithoutExtraKeys
 from ..path import ExistingPathRelativeToInput, PlannedPathRelativeToInput
+
+
+def check_typst_file(path: pathlib.Path) -> pathlib.Path:
+    """Check that a design or entries file is a Typst file.
+
+    Why:
+        In RenderCV 2, `settings.render_command.design` pointed to a YAML file.
+        Designs are Typst files now, so a YAML file here is a leftover that
+        deserves a clear message instead of a Typst syntax error.
+
+    Args:
+        path: The resolved path.
+
+    Returns:
+        The path.
+    """
+    if path.suffix != ".typ":
+        raise pydantic_core.PydanticCustomError(
+            "rendercv_typst_file",
+            "This should be a Typst file (`.typ`), like `design.typ`. Designs"
+            " and entry types are written in Typst since RenderCV 3.",
+        )
+    return path
+
+
+type TypstFilePath = Annotated[
+    ExistingPathRelativeToInput, pydantic.AfterValidator(check_typst_file)
+]
 
 file_path_placeholders_description = """The following placeholders can be used:
 
@@ -35,9 +65,21 @@ class RenderCommand(BaseModelWithoutExtraKeys):
             " defaults.\n\n"
         ),
     )
-    design: ExistingPathRelativeToInput | None = pydantic.Field(
+    design: TypstFilePath | None = pydantic.Field(
         default=None,
-        description="Path to a YAML file containing the `design` field.",
+        description=(
+            "Path to the Typst file that defines the design, relative to the input"
+            " YAML file. The default is `design.typ` next to the YAML file if it"
+            " exists, otherwise the classic design."
+        ),
+    )
+    entries: TypstFilePath | None = pydantic.Field(
+        default=None,
+        description=(
+            "Path to the Typst file that defines the entry types, relative to the"
+            " input YAML file. The default is `entries.typ` next to the YAML file if"
+            " it exists, otherwise the standard entry types."
+        ),
     )
     locale: ExistingPathRelativeToInput | None = pydantic.Field(
         default=None,
@@ -87,10 +129,7 @@ class RenderCommand(BaseModelWithoutExtraKeys):
     dont_generate_markdown: bool = pydantic.Field(
         default=False,
         title="Don't Generate Markdown",
-        description=(
-            "Skip Markdown generation. This also disables HTML generation. The default"
-            " value is `false`."
-        ),
+        description=("Skip Markdown generation. The default value is `false`."),
     )
     dont_generate_html: bool = pydantic.Field(
         default=False,
@@ -101,8 +140,8 @@ class RenderCommand(BaseModelWithoutExtraKeys):
         default=False,
         title="Don't Generate Typst",
         description=(
-            "Skip Typst generation. This also disables PDF and PNG generation. The"
-            " default value is `false`."
+            "Skip writing the Typst source file. PDF and PNG files are still"
+            " generated. The default value is `false`."
         ),
     )
     dont_generate_pdf: bool = pydantic.Field(

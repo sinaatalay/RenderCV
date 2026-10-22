@@ -1,0 +1,38 @@
+# Indonesian locale.
+language: indonesian
+iso_code: id
+direction: ltr
+last_updated: "Terakhir diperbarui"
+present: "sekarang"
+month: "bulan"
+months: "bulan"
+year: "tahun"
+years: "tahun"
+phrases:
+  degree_with_area: "#degree di #area"
+month_abbreviations:
+  - "Jan"
+  - "Feb"
+  - "Mar"
+  - "Apr"
+  - "Mei"
+  - "Jun"
+  - "Jul"
+  - "Agu"
+  - "Sep"
+  - "Okt"
+  - "Nov"
+  - "Des"
+month_names:
+  - "Januari"
+  - "Februari"
+  - "Maret"
+  - "April"
+  - "Mei"
+  - "Juni"
+  - "Juli"
+  - "Agustus"
+  - "September"
+  - "Oktober"
+  - "November"
+  - "Desember"

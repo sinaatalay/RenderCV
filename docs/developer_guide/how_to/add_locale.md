@@ -1,83 +1,74 @@
 # Add a New Locale
 
-1. Create a YAML file in `src/rendercv/schema/models/locale/other_locales/`
+A built-in locale is one YAML file in [`src/rendercv/data/locales/`](https://github.com/rendercv/rendercv/tree/main/src/rendercv/data/locales). The file name is the name users write in `locale.language`.
 
-    ```bash
-    touch src/rendercv/schema/models/locale/other_locales/mylanguage.yaml
+1. Create `src/rendercv/data/locales/mylanguage.yaml`, starting from [`english.yaml`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/data/locales/english.yaml):
+
+    ```yaml title="src/rendercv/data/locales/mylanguage.yaml"
+    # Mylanguage locale.
+    language: mylanguage
+    iso_code: xx # (1)!
+    direction: ltr # (2)!
+    last_updated: "Your translation of 'Last updated in'"
+    present: "Your translation of 'present'"
+    month: "Your translation of 'month'"
+    months: "Your translation of 'months'"
+    year: "Your translation of 'year'"
+    years: "Your translation of 'years'"
+    phrases:
+      degree_with_area: "#degree in #area" # (3)!
+    month_abbreviations:
+      - "Jan"
+      - "Feb"
+      - "Mar"
+      - "Apr"
+      - "May"
+      - "June"
+      - "July"
+      - "Aug"
+      - "Sept"
+      - "Oct"
+      - "Nov"
+      - "Dec"
+    month_names:
+      - "January"
+      - "February"
+      - "March"
+      - "April"
+      - "May"
+      - "June"
+      - "July"
+      - "August"
+      - "September"
+      - "October"
+      - "November"
+      - "December"
     ```
 
-2. Add the schema reference and provide translations
+    1. The language's two-letter [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes) code. Typst uses it for hyphenation.
+    2. `ltr` (left to right) or `rtl` (right to left).
+    3. Typst markup where `#degree` and `#area` are an education entry's fields. Reorder them as your language needs, like `"#area (#degree)"`.
 
-    ```yaml
-    # yaml-language-server: $schema=../../../../../../schema.json
-    locale:
-      language: mylanguage
-      last_updated: "Your translation"
-      month: "Your translation"
-      months: "Your translation"
-      year: "Your translation"
-      years: "Your translation"
-      present: "Your translation"
-      month_abbreviations:
-        - Jan
-        - Feb
-        - Mar
-        - Apr
-        - May
-        - Jun
-        - Jul
-        - Aug
-        - Sep
-        - Oct
-        - Nov
-        - Dec
-      month_names:
-        - January
-        - February
-        - March
-        - April
-        - May
-        - June
-        - July
-        - August
-        - September
-        - October
-        - November
-        - December
-    ```
+    Every field is required, so a built-in locale never falls back to English.
 
-3. Add ISO 639-1 language code and flag emoji to `english_locale.py`
-
-    Edit `src/rendercv/schema/models/locale/english_locale.py` and add your language to both mappings:
-
-    In `language_iso_639_1`:
-    ```python
-    return {
-        "english": "en",
-        # ... existing languages
-        "mylanguage": "xx",  # Add your two-letter ISO 639-1 code
-    }[self.language]
-    ```
-
-    In `flag_emoji`:
-    ```python
-    country = {
-        "english": "GB",
-        # ... existing languages
-        "mylanguage": "XX",  # Add your two-letter ISO 3166-1 country code
-    }[self.language]
-    ```
-
-4. Update the JSON Schema
+2. Update the JSON Schema, which lists the built-in locales:
 
     ```bash
     just update-schema
     ```
 
-    This regenerates `schema.json` so that editors can provide autocomplete and validation for the new locale. See [JSON Schema](../json_schema.md) for details.
+    See [JSON Schema](../json_schema.md) for details.
 
-5. Done. Use it:
+3. Try it:
 
     ```bash
     rendercv new "John Doe" --locale mylanguage
+    rendercv render John_Doe_CV.yaml
+    ```
+
+4. Run the tests and update the AI agent skill, which lists the locales:
+
+    ```bash
+    just test
+    just update-skill
     ```

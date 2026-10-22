@@ -3,6 +3,7 @@ from typing import Annotated
 
 import typer
 
+from rendercv.exception import RenderCVUserError
 from rendercv.schema.rendercv_model_builder import (
     BuildRendercvModelArguments,
 )
@@ -46,7 +47,21 @@ def cli_command_render(
         typer.Option(
             "--design",
             "-d",
-            help='The "design" field\'s YAML input file.',
+            help=(
+                "The Typst file that defines the design. The default is"
+                " `design.typ` next to the YAML file, if it exists."
+            ),
+        ),
+    ] = None,
+    entries: Annotated[
+        pathlib.Path | None,
+        typer.Option(
+            "--entries",
+            "-e",
+            help=(
+                "The Typst file that defines the entry types. The default is"
+                " `entries.typ` next to the YAML file, if it exists."
+            ),
         ),
     ] = None,
     locale: Annotated[
@@ -125,10 +140,7 @@ def cli_command_render(
         typer.Option(
             "--dont-generate-markdown",
             "-nomd",
-            help=(
-                "If provided, the Markdown file will not be generated. Disabling"
-                " Markdown generation implicitly disables HTML."
-            ),
+            help=("If provided, the Markdown file will not be generated."),
         ),
     ] = None,
     dont_generate_html: Annotated[
@@ -145,8 +157,8 @@ def cli_command_render(
             "--dont-generate-typst",
             "-notyp",
             help=(
-                "If provided, the Typst file will not be generated. Disabling Typst"
-                " generation implicitly disables PDF and PNG."
+                "If provided, the Typst source file will not be written. PDF and PNG"
+                " files are still generated."
             ),
         ),
     ] = None,
@@ -197,22 +209,20 @@ def cli_command_render(
     extra_data_model_override_arguments: typer.Context = None,  # ty: ignore[invalid-parameter-default]
 ) -> None:
     input_file_path = pathlib.Path(input_file_name).absolute()
-
-    # Resolve design/locale overlay files from YAML settings when not
-    # provided via CLI flags. collect_input_file_paths already handles
-    # parsing the YAML and resolving paths relative to the input file.
-    resolved_files = collect_input_file_paths(input_file_path, design, locale, settings)
-    if design is None and "design" in resolved_files:
-        design = resolved_files["design"]
-    if locale is None and "locale" in resolved_files:
-        locale = resolved_files["locale"]
+    if not input_file_path.is_file():
+        message = f"The input file `{input_file_name}` doesn't exist."
+        raise RenderCVUserError(message)
+    for option, path in (("--design", design), ("--entries", entries)):
+        if path is not None and path.suffix != ".typ":
+            message = (
+                f"`{option} {path}`: this should be a Typst file (`.typ`). Designs"
+                " and entry types are written in Typst since RenderCV 3. To convert"
+                " a RenderCV 2 design, run `rendercv migrate` on the YAML file that"
+                " has it."
+            )
+            raise RenderCVUserError(message)
 
     arguments: BuildRendercvModelArguments = {
-        "design_yaml_file": design.read_text(encoding="utf-8") if design else None,
-        "locale_yaml_file": locale.read_text(encoding="utf-8") if locale else None,
-        "settings_yaml_file": (
-            settings.read_text(encoding="utf-8") if settings else None
-        ),
         "output_folder": output_folder,
         "typst_path": typst_path,
         "pdf_path": pdf_path,
@@ -226,12 +236,31 @@ def cli_command_render(
         "dont_generate_png": dont_generate_png,
         "overrides": parse_override_arguments(extra_data_model_override_arguments),
     }
-
     with ProgressPanel(quiet=quiet) as progress_panel:
+
+        def render() -> None:
+            run_rendercv(
+                input_file_path,
+                progress_panel,
+                design=design,
+                entries=entries,
+                locale=locale,
+                settings=settings,
+                **arguments,
+            )
+
         if watch:
             run_function_if_files_change(
-                list(resolved_files.values()),
-                lambda: run_rendercv(input_file_path, progress_panel, **arguments),
+                lambda: list(
+                    collect_input_file_paths(
+                        input_file_path,
+                        design=design,
+                        entries=entries,
+                        locale=locale,
+                        settings=settings,
+                    ).values()
+                ),
+                render,
             )
         else:
-            run_rendercv(input_file_path, progress_panel, **arguments)
+            render()

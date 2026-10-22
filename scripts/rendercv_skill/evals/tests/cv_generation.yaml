@@ -30,7 +30,7 @@
 
 - description: "Fresh graduate CV"
   vars:
-    query: "Create a RenderCV YAML file for James Park, a fresh CS graduate from UC Berkeley (2020-2024, GPA 3.8). He has no work experience but has 3 class projects and relevant coursework. His skills are Python, Java, SQL, and machine learning. Use the engineeringresumes theme."
+    query: "Create a RenderCV YAML file for James Park, a fresh CS graduate from UC Berkeley (2020-2024, GPA 3.8). He has no work experience but has 3 class projects and relevant coursework. His skills are Python, Java, SQL, and machine learning. Use the engineeringresumes design."
   assert:
     - type: python
       value: file://graders/rendercv_validation.py
@@ -39,7 +39,7 @@
     - type: llm-rubric
       value: |
         The output:
-        - Uses engineeringresumes theme
+        - Uses the engineeringresumes design in a `design.typ` (`designs.engineeringresumes(...)`), not a `design:` field in the YAML
         - Has education at UC Berkeley
         - Has a projects section with 3 projects
         - Has a skills section
@@ -47,7 +47,7 @@
 
 - description: "Non-English CV with French locale"
   vars:
-    query: "Create a RenderCV YAML file for Pierre Dupont, an engineer in Paris. He works at Airbus as a mechanical engineer (2019-present). He studied at Ecole Polytechnique (2014-2019). Use the French locale and the classic theme."
+    query: "Create a RenderCV YAML file for Pierre Dupont, an engineer in Paris. He works at Airbus as a mechanical engineer (2019-present). He studied at Ecole Polytechnique (2014-2019). Use the French locale and the classic design."
   assert:
     - type: python
       value: file://graders/rendercv_validation.py

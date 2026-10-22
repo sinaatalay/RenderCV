@@ -4,58 +4,62 @@ cv:
   website: not_a_valid_url
   phone: not_a_valid_phone_number
   email:
+    - john@example.com
     - not_a_valid_email
-    - not_a_valid_email_2
   photo: photo_doesnt_exist.jpg
   social_networks:
     - network: LinkedIn
-      username: not a valid %%^&*()
+      username: johndoe
     - network: ORCID
       username: not_a_valid_orcid_id
-    - network: IMDB
-      username: not_a_valid_imdb_id
+    - network: Linkdin
+      username: johndoe
+  custom_connections:
+    - placeholder: Book a call
   sections:
-    welcome_to_rendercv_tests:
+    no_such_entry_type:
       - does_this_entry_exist: no
-    welcome_to_rendercv_tests_2:
+    typo_in_a_field:
       - institution: Boğaziçi University
-        area: Computer Engineering
-      - company: Can you use two different entry types in the same section?
-        position: No.
-    welcome_to_rendercv_tests_3:
+        aera: Computer Engineering
+    missing_field:
       - company: Company C
         location: Can there be an experience entry without a position?
-        date: No.
-    welcome_to_rendercv_tests_4:
-      - title: Can you provide an invalid date in ISO format?
-        authors:
-          - I don't think so.
-        date: 2025-13-01
-    welcome_to_rendercv_tests_5:
+    free_text_date:
       - title: Can you provide any string as a date?
         authors:
           - Sure.
         date: "Fall 2025"
-    welcome_to_rendercv_tests_6:
-      - name: Is this a valid ISO date?
-        date: 2025-01-50
-        summary: It doesn't look like it.
-    welcome_to_rendercv_tests_7:
+    free_text_start_date:
+      - name: Free text isn't allowed in start dates.
+        start_date: Fall 2025
+    not_a_string:
       - name:
           date: Is this even a string?
-    welcome_to_rendercv_tests_8:
+    end_before_start:
       - company: Apple
         position: CEO
         start_date: 2025-01-01
         end_date: 2020-01-01
-        highlights:
-          - The end date is before the start date.
-          - Are you sure you are the CEO of Apple?
-    welcome_to_rendercv_tests_9:
-      - title: Can you provide a date in YYYY-MM format?
-        authors: I'm the author! But should this be a list?
-design:
-  theme: not_a_valid_theme
-  extra_field_in_design: I don't think this is allowed.
+    authors_not_a_list:
+      - title: Should authors be a list?
+        authors: I'm the author!
+    unknown_type:
+      - type: experiense
+        company: Company D
+        position: Engineer
+    subsections:
+      first:
+        - bullet: This one is fine.
+      second: Not a list.
+    invalid_doi:
+      - title: A paper
+        authors: [A]
+        doi: not-a-doi
+locale:
+  language: english
+  month_names: [January]
 settings:
   current_date: todady
+  render_command:
+    design: design.yaml

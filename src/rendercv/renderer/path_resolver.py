@@ -1,9 +1,77 @@
+import datetime
 import pathlib
+import re
 
+from rendercv.schema.models.locale.locale import Locale
 from rendercv.schema.models.rendercv_model import RenderCVModel
 
-from .templater.date import build_date_placeholders
-from .templater.string_processor import substitute_placeholders
+from .rich_text import markdown_to_rich_text, rich_text_to_plain_text
+
+
+def build_date_placeholders(date: datetime.date, *, locale: Locale) -> dict[str, str]:
+    """Build the date placeholders file names and the PDF title can use.
+
+    Args:
+        date: The date.
+        locale: The locale, for month names.
+
+    Returns:
+        Placeholder names mapped to their values.
+    """
+    return {
+        "MONTH_NAME": locale.month_names[date.month - 1],
+        "MONTH_ABBREVIATION": locale.month_abbreviations[date.month - 1],
+        "MONTH": str(date.month),
+        "MONTH_IN_TWO_DIGITS": f"{date.month:02d}",
+        "DAY": str(date.day),
+        "DAY_IN_TWO_DIGITS": f"{date.day:02d}",
+        "YEAR": str(date.year),
+        "YEAR_IN_TWO_DIGITS": f"{date.year % 100:02d}",
+    }
+
+
+def substitute_placeholders(text: str, placeholders: dict[str, str]) -> str:
+    """Replace placeholders in text, longest names first.
+
+    Args:
+        text: Text with placeholders like `NAME_IN_SNAKE_CASE`.
+        placeholders: Placeholder names mapped to their values.
+
+    Returns:
+        The text with the placeholders replaced.
+    """
+    if not placeholders:
+        return text
+    names = sorted(placeholders, key=lambda name: -len(name))
+    # No word boundaries: placeholders sit inside names like `NAME_IN_SNAKE_CASE_CV`.
+    pattern = re.compile("|".join(re.escape(name) for name in names))
+    return pattern.sub(lambda match: placeholders[match.group(0)], text)
+
+
+def substitute_date_and_name_placeholders(text: str, model: RenderCVModel) -> str:
+    """Replace name and date placeholders, as in file names and the PDF title.
+
+    Args:
+        text: Text with placeholders.
+        model: The CV, for its name, date, and locale.
+
+    Returns:
+        The text with the placeholders replaced.
+    """
+    current_date = model.settings.resolved_current_date
+    placeholders = {
+        **build_date_placeholders(current_date, locale=model.locale),
+        **build_name_variants(
+            rich_text_to_plain_text(markdown_to_rich_text(model.cv.name))
+            if model.cv.name
+            else None
+        ),
+        "CURRENT_DATE": (
+            f"{model.locale.month_abbreviations[current_date.month - 1]}"
+            f" {current_date.year}"
+        ),
+    }
+    return substitute_placeholders(text, placeholders)
 
 
 def build_name_variants(name: str | None) -> dict[str, str]:
@@ -96,13 +164,7 @@ def resolve_rendercv_file_path(
     """
     output_folder = rendercv_model.settings.render_command.output_folder
     file_path = resolve_output_folder_placeholder(file_path, output_folder)
-
-    current_date = rendercv_model.settings._resolved_current_date
-    file_path_placeholders: dict[str, str] = {
-        **build_date_placeholders(current_date, locale=rendercv_model.locale),
-        **build_name_variants(rendercv_model.cv.name),
-    }
-    file_name = substitute_placeholders(file_path.name, file_path_placeholders)
+    file_name = substitute_date_and_name_placeholders(file_path.name, rendercv_model)
     resolved_file_path = file_path.parent / file_name
     resolved_file_path.parent.mkdir(parents=True, exist_ok=True)
     return resolved_file_path

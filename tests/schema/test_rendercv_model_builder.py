@@ -1,765 +1,506 @@
-import io
 import pathlib
+from collections.abc import Mapping
 from datetime import date as Date
+from typing import Any, cast
 
 import pytest
 import ruamel.yaml
+from ruamel.yaml.comments import CommentedMap
 
-from rendercv.exception import RenderCVUserError, RenderCVUserValidationError
-from rendercv.schema.models.rendercv_model import RenderCVModel
+from rendercv.exception import (
+    RenderCVUserError,
+    RenderCVUserValidationError,
+    RenderCVValidationError,
+)
+from rendercv.schema.models.cv.entry_types import Entry, EntryTypeDeclaration
 from rendercv.schema.rendercv_model_builder import (
+    BuildRendercvModelArguments,
     build_rendercv_dictionary,
     build_rendercv_dictionary_and_model,
     build_rendercv_model_from_commented_map,
     get_yaml_error_location,
+    read_yaml_with_validation_errors,
 )
-from rendercv.schema.sample_generator import dictionary_to_yaml
+
+type EntryTypes = Mapping[str, EntryTypeDeclaration]
+
+main_yaml = """cv:
+  name: John Doe
+  sections:
+    experience:
+      - company: ACME
+        position: Engineer
+locale:
+  language: english
+settings:
+  current_date: 2024-06-15
+  render_command:
+    pdf_path: original.pdf
+"""
 
 
-@pytest.fixture
-def minimal_input_dict():
-    return {
-        "cv": {"name": "John Doe"},
-        "design": {"theme": "classic"},
-    }
+def overlay_arguments(keyword: str, value: Any) -> BuildRendercvModelArguments:
+    return cast(BuildRendercvModelArguments, {keyword: value})
+
+
+def validation_errors_of(
+    yaml: str,
+    entry_types: EntryTypes | None = None,
+    **kwargs: Any,
+) -> list[RenderCVValidationError]:
+    with pytest.raises(RenderCVUserValidationError) as exc_info:
+        build_rendercv_dictionary_and_model(yaml, entry_types=entry_types, **kwargs)
+    return exc_info.value.validation_errors
+
+
+class TestGetYamlErrorLocation:
+    def test_returns_none_without_marks(self) -> None:
+        assert get_yaml_error_location(ruamel.yaml.YAMLError()) is None
+
+    def test_returns_one_indexed_coordinates(self) -> None:
+        with pytest.raises(ruamel.yaml.YAMLError) as exc_info:
+            ruamel.yaml.YAML().load("cv:\n  name: John\n   phone: 123\n")
+
+        assert get_yaml_error_location(exc_info.value) == ((3, 9), (3, 9))
+
+
+class TestReadYamlWithValidationErrors:
+    def test_reads_valid_yaml(self) -> None:
+        result = read_yaml_with_validation_errors("cv:\n  name: A\n", "main_yaml_file")
+
+        assert isinstance(result, CommentedMap)
+
+    @pytest.mark.parametrize(
+        "yaml_source", ["main_yaml_file", "locale_yaml_file", "settings_yaml_file"]
+    )
+    def test_reports_syntax_errors_as_validation_errors(self, yaml_source: Any) -> None:
+        with pytest.raises(RenderCVUserValidationError) as exc_info:
+            read_yaml_with_validation_errors(
+                "cv:\n  name: John\n   phone: 123\n", yaml_source
+            )
+
+        (error,) = exc_info.value.validation_errors
+        assert error.schema_location is None
+        assert error.yaml_source == yaml_source
+        assert error.yaml_location == ((3, 9), (3, 9))
+        assert error.message.startswith("This is not a valid YAML file. ")
+        assert error.message.endswith(".")
+        assert error.input == "..."
 
 
 class TestBuildRendercvDictionary:
-    def test_basic_input(self, minimal_input_dict):
-        yaml_input = dictionary_to_yaml(minimal_input_dict)
+    def test_reads_the_yaml(self) -> None:
+        dictionary, overlay_sources = build_rendercv_dictionary(main_yaml)
 
-        result, _ = build_rendercv_dictionary(yaml_input)
-
-        assert result["cv"]["name"] == "John Doe"
-        assert result["design"]["theme"] == "classic"
-
-    def test_ensures_settings_and_render_command_exist(self, minimal_input_dict):
-        yaml_input = dictionary_to_yaml(minimal_input_dict)
-
-        result, _ = build_rendercv_dictionary(yaml_input)
-
-        assert "settings" in result
-        assert "render_command" in result["settings"]
+        assert dictionary["cv"]["name"] == "John Doe"
+        assert overlay_sources == {}
 
     @pytest.mark.parametrize(
-        ("overlay_key", "overlay_content"),
+        "yaml",
         [
-            ("design", {"design": {"theme": "engineeringresumes"}}),
-            ("locale", {"locale": {"language": "turkish"}}),
+            "cv:\n  name: A\n",
+            "cv:\n  name: A\nsettings:\n",
+            "settings:\n  pdf_title: T\n",
+        ],
+    )
+    def test_always_has_settings_and_render_command(self, yaml: str) -> None:
+        dictionary, _ = build_rendercv_dictionary(yaml)
+
+        assert dictionary["settings"]["render_command"] == {}
+
+    @pytest.mark.parametrize(
+        ("keyword", "overlay", "key"),
+        [
+            ("locale_yaml_file", "locale:\n  language: turkish\n", "locale"),
             (
+                "settings_yaml_file",
+                "settings:\n  render_command:\n    pdf_path: overlay.pdf\n",
                 "settings",
-                {"settings": {"render_command": {"pdf_path": "custom.pdf"}}},
             ),
         ],
     )
-    def test_single_overlay(self, minimal_input_dict, overlay_key, overlay_content):
-        main_input = {
-            **minimal_input_dict,
-            "locale": {"language": "english"},
-            "settings": {"original_setting": "original"},
-        }
-        main_yaml = dictionary_to_yaml(main_input)
-        overlay_yaml = dictionary_to_yaml(overlay_content)
-
-        kwargs = {f"{overlay_key}_yaml_file": overlay_yaml}
-        result, _ = build_rendercv_dictionary(main_yaml, **kwargs)  # pyright: ignore[reportArgumentType]
-
-        assert result[overlay_key] == overlay_content[overlay_key]
-        assert result["cv"]["name"] == "John Doe"
-
-    def test_design_overlay_replaces_original(self, minimal_input_dict):
-        main_yaml = dictionary_to_yaml(minimal_input_dict)
-        design_yaml = dictionary_to_yaml({"design": {"theme": "sb2nov"}})
-
-        result, _ = build_rendercv_dictionary(main_yaml, design_yaml_file=design_yaml)
-
-        assert result["design"]["theme"] == "sb2nov"
-
-    def test_locale_overlay_replaces_original(self, minimal_input_dict):
-        main_input = {**minimal_input_dict, "locale": {"language": "english"}}
-        main_yaml = dictionary_to_yaml(main_input)
-        locale_yaml = dictionary_to_yaml({"locale": {"language": "turkish"}})
-
-        result, _ = build_rendercv_dictionary(main_yaml, locale_yaml_file=locale_yaml)
-
-        assert result["locale"]["language"] == "turkish"
-
-    def test_all_overlays_simultaneously(self, minimal_input_dict):
-        main_input = {
-            **minimal_input_dict,
-            "locale": {"language": "english"},
-            "settings": {"render_command": {"pdf_path": "original.pdf"}},
-        }
-        design_overlay = {"design": {"theme": "sb2nov"}}
-        locale_overlay = {"locale": {"language": "turkish"}}
-
-        main_yaml = dictionary_to_yaml(main_input)
-        design_yaml = dictionary_to_yaml(design_overlay)
-        locale_yaml = dictionary_to_yaml(locale_overlay)
-
-        result, _ = build_rendercv_dictionary(
-            main_yaml,
-            design_yaml_file=design_yaml,
-            locale_yaml_file=locale_yaml,
+    def test_overlays_replace_the_main_section(
+        self, keyword: str, overlay: str, key: str
+    ) -> None:
+        dictionary, overlay_sources = build_rendercv_dictionary(
+            main_yaml, **overlay_arguments(keyword, overlay)
         )
 
-        assert result["cv"]["name"] == "John Doe"
-        assert result["design"]["theme"] == "sb2nov"
-        assert result["locale"]["language"] == "turkish"
+        assert dictionary[key] == ruamel.yaml.YAML().load(overlay)[key]
+        assert dictionary["cv"]["name"] == "John Doe"
+        assert list(overlay_sources) == [key]
+        # Replaced, not merged:
+        if key == "settings":
+            assert "current_date" not in dictionary["settings"]
 
-    def test_settings_overlay_with_design_overlay(self, minimal_input_dict):
-        main_yaml = dictionary_to_yaml(minimal_input_dict)
-        settings_yaml = dictionary_to_yaml({"settings": {"current_date": "2024-01-01"}})
-        design_yaml = dictionary_to_yaml({"design": {"theme": "sb2nov"}})
-
-        result, _ = build_rendercv_dictionary(
-            main_yaml,
-            settings_yaml_file=settings_yaml,
-            design_yaml_file=design_yaml,
+    @pytest.mark.parametrize("keyword", ["locale_yaml_file", "settings_yaml_file"])
+    def test_empty_overlays_are_ignored(self, keyword: str) -> None:
+        dictionary, overlay_sources = build_rendercv_dictionary(
+            main_yaml, **overlay_arguments(keyword, None)
         )
 
-        assert result["settings"]["current_date"] == "2024-01-01"
-        assert result["design"]["theme"] == "sb2nov"
-
-    def test_none_overlays_are_ignored(self, minimal_input_dict):
-        yaml_input = dictionary_to_yaml(minimal_input_dict)
-
-        result, _ = build_rendercv_dictionary(
-            yaml_input,
-            design_yaml_file=None,
-            locale_yaml_file=None,
-            settings_yaml_file=None,
-        )
-
-        assert result["cv"]["name"] == "John Doe"
-        assert result["design"]["theme"] == "classic"
-
-    def test_invalid_main_yaml_raises_validation_error(self):
-        invalid_main_yaml = "cv:\n  name: John Doe\n   phone: 123"
-
-        with pytest.raises(RenderCVUserValidationError) as exc_info:
-            build_rendercv_dictionary(invalid_main_yaml)
-
-        assert len(exc_info.value.validation_errors) == 1
-        error = exc_info.value.validation_errors[0]
-        assert error.schema_location is None
-        assert error.yaml_source == "main_yaml_file"
-        assert error.yaml_location is not None
-
-    def test_invalid_overlay_yaml_raises_validation_error(self, minimal_input_dict):
-        main_yaml = dictionary_to_yaml(minimal_input_dict)
-        invalid_design_yaml = "design:\n  theme: classic\n   show_timespan_in: bad"
-
-        with pytest.raises(RenderCVUserValidationError) as exc_info:
-            build_rendercv_dictionary(main_yaml, design_yaml_file=invalid_design_yaml)
-
-        assert len(exc_info.value.validation_errors) == 1
-        error = exc_info.value.validation_errors[0]
-        assert error.schema_location is None
-        assert error.yaml_source == "design_yaml_file"
-        assert error.yaml_location is not None
+        assert dictionary["locale"]["language"] == "english"
+        assert overlay_sources == {}
 
     @pytest.mark.parametrize(
-        ("override_key", "override_value"),
+        ("keyword", "overlay", "expected_source"),
         [
+            ("locale_yaml_file", "language: turkish\n", "locale_yaml_file"),
+            ("settings_yaml_file", "- a\n- b\n", "settings_yaml_file"),
+            (
+                "locale_yaml_file",
+                "locale:\n  language: x\n   present: y\n",
+                "locale_yaml_file",
+            ),
+        ],
+    )
+    def test_reports_broken_overlay_files(
+        self, keyword: str, overlay: str, expected_source: str
+    ) -> None:
+        with pytest.raises(RenderCVUserValidationError) as exc_info:
+            build_rendercv_dictionary(main_yaml, **overlay_arguments(keyword, overlay))
+
+        (error,) = exc_info.value.validation_errors
+        assert error.yaml_source == expected_source
+
+    def test_overlay_without_its_key_says_so(self) -> None:
+        with pytest.raises(RenderCVUserValidationError) as exc_info:
+            build_rendercv_dictionary(main_yaml, locale_yaml_file="language: x\n")
+
+        assert exc_info.value.validation_errors[0].message == (
+            "This file should have a top-level `locale` field, like `locale:` on its"
+            " first line."
+        )
+
+    @pytest.mark.parametrize(
+        ("keyword", "value"),
+        [
+            ("output_folder", "out"),
             ("typst_path", "custom.typ"),
             ("pdf_path", "output.pdf"),
             ("markdown_path", "output.md"),
             ("html_path", "output.html"),
             ("png_path", "output.png"),
+            ("dont_generate_typst", True),
             ("dont_generate_html", True),
             ("dont_generate_markdown", True),
             ("dont_generate_pdf", True),
             ("dont_generate_png", True),
         ],
     )
-    def test_render_command_single_override(
-        self, minimal_input_dict, override_key, override_value
-    ):
-        yaml_input = dictionary_to_yaml(minimal_input_dict)
-
-        kwargs = {override_key: override_value}
-        result, _ = build_rendercv_dictionary(yaml_input, **kwargs)
-
-        assert result["settings"]["render_command"][override_key] == override_value
-
-    def test_render_command_multiple_overrides(self, minimal_input_dict):
-        yaml_input = dictionary_to_yaml(minimal_input_dict)
-
-        result, _ = build_rendercv_dictionary(
-            yaml_input,
-            pdf_path="output.pdf",
-            typst_path="output.typ",
-            dont_generate_html=True,
-            dont_generate_markdown=True,
+    def test_render_options_go_into_render_command(
+        self, keyword: str, value: Any
+    ) -> None:
+        dictionary, _ = build_rendercv_dictionary(
+            main_yaml, **overlay_arguments(keyword, value)
         )
 
-        render_cmd = result["settings"]["render_command"]
-        assert render_cmd["pdf_path"] == "output.pdf"
-        assert render_cmd["typst_path"] == "output.typ"
-        assert render_cmd["dont_generate_html"] is True
-        assert render_cmd["dont_generate_markdown"] is True
+        assert dictionary["settings"]["render_command"][keyword] == value
 
-    def test_render_command_preserves_existing_settings(self):
-        input_dict = {
-            "cv": {"name": "John Doe"},
-            "design": {"theme": "classic"},
-            "settings": {
-                "render_command": {"pdf_path": "existing.pdf"},
-                "other_setting": "preserved",
-            },
-        }
-        yaml_input = dictionary_to_yaml(input_dict)
+    @pytest.mark.parametrize("value", [None, False, ""])
+    def test_unset_render_options_keep_the_yaml_values(self, value: Any) -> None:
+        dictionary, _ = build_rendercv_dictionary(
+            main_yaml, pdf_path=value, dont_generate_pdf=value
+        )
 
-        result, _ = build_rendercv_dictionary(yaml_input, typst_path="new.typ")
+        assert dictionary["settings"]["render_command"] == {"pdf_path": "original.pdf"}
 
-        assert result["settings"]["render_command"]["typst_path"] == "new.typ"
-        assert result["settings"]["other_setting"] == "preserved"
-
-    def test_combined_overlays_and_render_overrides(self, minimal_input_dict):
-        main_yaml = dictionary_to_yaml(minimal_input_dict)
-        locale_yaml = dictionary_to_yaml({"locale": {"language": "turkish"}})
-
-        result, _ = build_rendercv_dictionary(
+    def test_applies_overrides_last(self) -> None:
+        dictionary, _ = build_rendercv_dictionary(
             main_yaml,
-            locale_yaml_file=locale_yaml,
-            pdf_path="custom.pdf",
-            dont_generate_png=True,
-        )
-
-        assert result["locale"]["language"] == "turkish"
-        assert result["settings"]["render_command"]["pdf_path"] == "custom.pdf"
-        assert result["settings"]["render_command"]["dont_generate_png"] is True
-
-    @pytest.mark.parametrize(
-        ("overrides", "expected_checks"),
-        [
-            (
-                {"cv.name": "Jane Doe"},
-                [("cv", "name", "Jane Doe")],
-            ),
-            (
-                {"design.theme": "sb2nov"},
-                [("design", "theme", "sb2nov")],
-            ),
-            (
-                {"cv.name": "Jane Doe", "design.theme": "engineeringresumes"},
-                [("cv", "name", "Jane Doe"), ("design", "theme", "engineeringresumes")],
-            ),
-        ],
-    )
-    def test_overrides_parameter(self, minimal_input_dict, overrides, expected_checks):
-        yaml_input = dictionary_to_yaml(minimal_input_dict)
-
-        result, _ = build_rendercv_dictionary(yaml_input, overrides=overrides)
-
-        for path_and_value in expected_checks:
-            value = result
-            for key in path_and_value[:-1]:
-                value = value[key]
-            assert value == path_and_value[-1]
-
-    def test_design_override_with_separate_design_file(self):
-        """Test that design overrides work when design is in a separate file (#595)."""
-        main_yaml = dictionary_to_yaml({"cv": {"name": "John Doe"}})
-        design_yaml = dictionary_to_yaml({"design": {"theme": "classic"}})
-
-        result, _ = build_rendercv_dictionary(
-            main_yaml,
-            design_yaml_file=design_yaml,
-            overrides={"design.theme": "moderncv"},
-        )
-
-        assert result["design"]["theme"] == "moderncv"
-
-    def test_design_override_without_design_in_main_yaml(self):
-        """Test that design overrides create the design key if missing (#595)."""
-        main_yaml = dictionary_to_yaml(
-            {"cv": {"name": "John Doe"}, "design": {"theme": "classic"}}
-        )
-
-        result, _ = build_rendercv_dictionary(
-            main_yaml,
-            overrides={"design.theme": "moderncv"},
-        )
-
-        assert result["design"]["theme"] == "moderncv"
-
-    def test_locale_override_with_separate_locale_file(self):
-        """Test that locale overrides work when locale is in a separate file (#595)."""
-        main_yaml = dictionary_to_yaml(
-            {"cv": {"name": "John Doe"}, "design": {"theme": "classic"}}
-        )
-        locale_yaml = dictionary_to_yaml({"locale": {"language": "english"}})
-
-        result, _ = build_rendercv_dictionary(
-            main_yaml,
-            locale_yaml_file=locale_yaml,
-            overrides={"locale.language": "turkish"},
-        )
-
-        assert result["locale"]["language"] == "turkish"
-
-    def test_overrides_with_nested_paths(self, minimal_input_dict):
-        input_dict = {
-            **minimal_input_dict,
-            "cv": {
-                "name": "John Doe",
-                "sections": {"education": [{"institution": "MIT", "degree": "PhD"}]},
-            },
-        }
-        yaml_input = dictionary_to_yaml(input_dict)
-
-        result, _ = build_rendercv_dictionary(
-            yaml_input,
+            locale_yaml_file="locale:\n  language: english\n",
+            pdf_path="cli.pdf",
             overrides={
-                "cv.sections.education.0.institution": "Harvard",
-                "cv.sections.education.0.degree": "MS",
+                "cv.name": "Jane Doe",
+                "cv.sections.experience.0.company": "Initech",
+                "locale.language": "turkish",
+                "settings.render_command.pdf_path": "override.pdf",
             },
         )
 
-        assert result["cv"]["sections"]["education"][0]["institution"] == "Harvard"
-        assert result["cv"]["sections"]["education"][0]["degree"] == "MS"
-        assert result["cv"]["name"] == "John Doe"
+        assert dictionary["cv"]["name"] == "Jane Doe"
+        assert dictionary["cv"]["sections"]["experience"][0]["company"] == "Initech"
+        assert dictionary["locale"]["language"] == "turkish"
+        assert dictionary["settings"]["render_command"]["pdf_path"] == "override.pdf"
 
-    @pytest.mark.parametrize(
-        ("overlay_key", "main_value", "overlay_value"),
-        [
-            (
-                "design",
-                {"design": {"theme": "classic"}},
-                {"design": {"theme": "sb2nov"}},
-            ),
-            (
-                "locale",
-                {"locale": {"language": "english"}},
-                {"locale": {"language": "turkish"}},
-            ),
-            (
-                "settings",
-                {"settings": {"render_command": {"pdf_path": "original.pdf"}}},
-                {"settings": {"render_command": {"pdf_path": "overlay.pdf"}}},
-            ),
-        ],
-    )
-    def test_overlay_fully_replaces_main_section(
-        self, minimal_input_dict, overlay_key, main_value, overlay_value
-    ):
-        main_input = {**minimal_input_dict, **main_value}
-        main_yaml = dictionary_to_yaml(main_input)
-        overlay_yaml = dictionary_to_yaml(overlay_value)
-
-        kwargs = {f"{overlay_key}_yaml_file": overlay_yaml}
-        result, _ = build_rendercv_dictionary(main_yaml, **kwargs)  # pyright: ignore[reportArgumentType]
-
-        assert result[overlay_key] == overlay_value[overlay_key]
-
-    def test_overlay_replaces_not_merges(self, minimal_input_dict):
-        main_input = {
-            **minimal_input_dict,
-            "design": {"theme": "classic", "font_size": "12pt"},
-        }
-        main_yaml = dictionary_to_yaml(main_input)
-        design_yaml = dictionary_to_yaml({"design": {"theme": "sb2nov"}})
-
-        result, _ = build_rendercv_dictionary(main_yaml, design_yaml_file=design_yaml)
-
-        assert result["design"] == {"theme": "sb2nov"}
-        assert "font_size" not in result["design"]
+    def test_reports_invalid_override_paths(self) -> None:
+        with pytest.raises(RenderCVUserError, match="is not an integer"):
+            build_rendercv_dictionary(
+                main_yaml, overrides={"cv.sections.experience.first": "x"}
+            )
 
 
-class TestBuildRendercvModelFromDictionary:
-    def test_basic_model_creation_without_optionals(self, minimal_input_dict):
-        model = build_rendercv_model_from_commented_map(minimal_input_dict)
-
-        assert isinstance(model, RenderCVModel)
-        assert model.cv.name == "John Doe"
-        assert model._input_file_path is None
-
-    def test_with_input_file_path(self, minimal_input_dict, tmp_path):
-        input_file_path = tmp_path / "test.yaml"
+class TestBuildRendercvModelFromCommentedMap:
+    def test_builds_the_model(self, standard_entry_types: EntryTypes) -> None:
+        dictionary, _ = build_rendercv_dictionary(main_yaml)
 
         model = build_rendercv_model_from_commented_map(
-            minimal_input_dict, input_file_path
+            dictionary, entry_types=standard_entry_types
         )
 
-        assert isinstance(model, RenderCVModel)
-        assert model._input_file_path == input_file_path
-
-    def test_without_input_file_path(self, minimal_input_dict):
-        model = build_rendercv_model_from_commented_map(minimal_input_dict)
-
-        assert model._input_file_path is None
-
-    @pytest.mark.parametrize(
-        "settings",
-        [
-            {"current_date": Date(2023, 6, 15)},
-            None,
-            {},
-        ],
-    )
-    def test_validation_context_current_date(self, minimal_input_dict, settings):
-        input_dict = minimal_input_dict.copy()
-
-        if settings is not None:
-            input_dict["settings"] = settings
-
-        model = build_rendercv_model_from_commented_map(input_dict)
-
-        assert isinstance(model, RenderCVModel)
-
-    def test_validation_context_with_input_file_path(
-        self, minimal_input_dict, tmp_path
-    ):
-        input_file_path = tmp_path / "test.yaml"
-        custom_date = Date(2024, 3, 10)
-
-        input_dict = {
-            **minimal_input_dict,
-            "settings": {"current_date": custom_date},
-        }
-
-        model = build_rendercv_model_from_commented_map(input_dict, input_file_path)  # pyright: ignore[reportArgumentType]
-
-        assert isinstance(model, RenderCVModel)
-        assert model._input_file_path == input_file_path
-
-    def test_invalid_input_raises_validation_error(self):
-        invalid_dict = {"cv": {"name": 123}, "design": {"theme": "nonexistent_theme"}}
-
-        with pytest.raises(RenderCVUserValidationError):
-            build_rendercv_model_from_commented_map(invalid_dict)
-
-    @pytest.mark.parametrize(
-        "invalid_date",
-        ["todady", "not-a-date", "2024-13-01", "yesterday"],
-    )
-    def test_invalid_current_date_raises_user_validation_error(
-        self, minimal_input_dict, invalid_date
-    ):
-        # current_date uses datetime.date | Literal["today"]. Pydantic emits one
-        # error per union branch, including a "date" suffix that has no counterpart
-        # in the YAML. parse_plain_pydantic_error must truncate the location to
-        # ("settings", "current_date") or the coordinate lookup raises an error.
-        yaml_input = dictionary_to_yaml(
-            {**minimal_input_dict, "settings": {"current_date": invalid_date}}
+        assert model.cv.name == "John Doe"
+        assert model.settings.current_date == Date(2024, 6, 15)
+        assert model.cv.sections is not None
+        assert model.cv.sections[0].entries == (
+            Entry(
+                type_name="experience",
+                values={
+                    "company": "ACME",
+                    "position": "Engineer",
+                    **dict.fromkeys(
+                        [
+                            "date",
+                            "start_date",
+                            "end_date",
+                            "location",
+                            "summary",
+                            "highlights",
+                        ]
+                    ),
+                },
+            ),
         )
+
+    def test_accepts_plain_dictionaries(self) -> None:
+        model = build_rendercv_model_from_commented_map({"cv": {"name": "John"}})
+
+        assert model.cv.name == "John"
+
+    def test_resolves_paths_relative_to_the_input_file(
+        self, tmp_path: pathlib.Path
+    ) -> None:
+        (tmp_path / "photo.jpg").touch()
+
+        model = build_rendercv_model_from_commented_map(
+            {"cv": {"photo": "photo.jpg"}}, input_file_path=tmp_path / "cv.yaml"
+        )
+
+        assert model.cv.photo == tmp_path / "photo.jpg"
+
+    def test_entries_need_entry_types(self) -> None:
+        dictionary, _ = build_rendercv_dictionary(main_yaml)
 
         with pytest.raises(RenderCVUserValidationError) as exc_info:
-            build_rendercv_dictionary_and_model(yaml_input)
+            build_rendercv_model_from_commented_map(dictionary)
 
-        errors = exc_info.value.validation_errors
-        assert len(errors) >= 1
-        assert any(
-            error.schema_location is not None
-            and "settings" in error.schema_location
-            and "current_date" in error.schema_location
-            for error in errors
+        (error,) = exc_info.value.validation_errors
+        assert error.schema_location == ("cv", "sections", "experience", "0")
+        assert "There are no entry types" in error.message
+
+    def test_reports_errors_with_yaml_locations(self) -> None:
+        dictionary, _ = build_rendercv_dictionary("cv:\n  name: A\n  emal: a@b.co\n")
+
+        with pytest.raises(RenderCVUserValidationError) as exc_info:
+            build_rendercv_model_from_commented_map(dictionary)
+
+        (error,) = exc_info.value.validation_errors
+        assert error.schema_location == ("cv", "emal")
+        assert error.yaml_location == ((3, 3), (3, 8))
+        assert (
+            error.message == "This field is unknown for this object. Please remove it."
         )
 
-    def test_valid_current_date_string_works(self, minimal_input_dict):
-        yaml_input = dictionary_to_yaml(
-            {**minimal_input_dict, "settings": {"current_date": "2024-06-15"}}
+    def test_error_message_lists_every_problem(self) -> None:
+        with pytest.raises(RenderCVUserValidationError) as exc_info:
+            build_rendercv_model_from_commented_map(
+                {"cv": {"emal": "x", "website": "y"}}
+            )
+
+        assert str(exc_info.value) == (
+            "cv.website: This is not a valid URL.\n"
+            "cv.emal: This field is unknown for this object. Please remove it."
         )
 
-        _, model = build_rendercv_dictionary_and_model(yaml_input)
 
-        assert model.settings.current_date == Date(2024, 6, 15)
-
-    def test_today_keyword_in_current_date_works(self, minimal_input_dict):
-        yaml_input = dictionary_to_yaml(
-            {**minimal_input_dict, "settings": {"current_date": "today"}}
+class TestBuildRendercvDictionaryAndModel:
+    def test_builds_the_dictionary_and_the_model(
+        self, standard_entry_types: EntryTypes
+    ) -> None:
+        dictionary, model = build_rendercv_dictionary_and_model(
+            main_yaml,
+            entry_types=standard_entry_types,
+            locale_yaml_file="locale:\n  language: turkish\n",
+            pdf_path="custom.pdf",
+            overrides={"cv.name": "Jane Doe"},
         )
 
-        _, model = build_rendercv_dictionary_and_model(yaml_input)
+        assert dictionary["cv"]["name"] == "Jane Doe"
+        assert model.cv.name == "Jane Doe"
+        assert model.locale.language == "turkish"
+        assert model.settings.render_command.pdf_path.name == "custom.pdf"
+
+    def test_input_file_path_resolves_output_paths(
+        self, input_file_path: pathlib.Path, standard_entry_types: EntryTypes
+    ) -> None:
+        _, model = build_rendercv_dictionary_and_model(
+            input_file_path.read_text(encoding="utf-8"),
+            input_file_path=input_file_path,
+            entry_types=standard_entry_types,
+            output_folder="out",
+        )
+
+        assert model.settings.render_command.output_folder == (
+            input_file_path.parent / "out"
+        )
+
+    @pytest.mark.parametrize(
+        ("yaml", "message"),
+        [
+            ("", "The input file is empty!"),
+            ("- a\n- b\n", "should be a mapping"),
+            ("just text\n", "should be a mapping"),
+        ],
+    )
+    def test_rejects_yaml_that_is_not_a_mapping(self, yaml: str, message: str) -> None:
+        with pytest.raises(RenderCVUserValidationError) as exc_info:
+            build_rendercv_dictionary_and_model(yaml)
+
+        (error,) = exc_info.value.validation_errors
+        assert message in error.message
+        assert error.yaml_source == "main_yaml_file"
+
+    def test_rendercv_2_design_field_asks_for_migration(self) -> None:
+        (error,) = validation_errors_of(
+            "cv:\n  name: John\ndesign:\n  theme: classic\n"
+        )
+
+        assert error.schema_location == ("design",)
+        assert error.yaml_location == ((3, 1), (4, 2))
+        assert "Run `rendercv migrate`" in error.message
+
+    @pytest.mark.parametrize(
+        "invalid_date", ["todady", "not-a-date", "2024-13-01", "yesterday"]
+    )
+    def test_invalid_current_date_is_explained(self, invalid_date: str) -> None:
+        (error,) = validation_errors_of(
+            f"cv:\n  name: John\nsettings:\n  current_date: {invalid_date}\n"
+        )
+
+        assert error.schema_location == ("settings", "current_date")
+        assert error.yaml_location == ((4, 3), (4, 16))
+        assert "YYYY-MM-DD" in error.message
+
+    def test_today_is_a_valid_current_date(self) -> None:
+        _, model = build_rendercv_dictionary_and_model(
+            "settings:\n  current_date: today\n"
+        )
 
         assert model.settings.current_date == "today"
 
-
-class TestBuildRendercvModel:
-    def test_basic_model_creation(self, minimal_input_dict):
-        yaml_input = dictionary_to_yaml(minimal_input_dict)
-
-        _, model = build_rendercv_dictionary_and_model(yaml_input)
-
-        assert isinstance(model, RenderCVModel)
-        assert model.cv.name == "John Doe"
-        assert model._input_file_path is None
-
-    def test_basic_model_creation_with_input_file_path(
-        self, minimal_input_dict, tmp_path
-    ):
-        yaml_input = dictionary_to_yaml(minimal_input_dict)
-        file_path = tmp_path / "input.yaml"
-
-        _, model = build_rendercv_dictionary_and_model(
-            yaml_input, input_file_path=file_path
+    def test_entry_errors_point_to_their_lines(
+        self, standard_entry_types: EntryTypes
+    ) -> None:
+        errors = validation_errors_of(
+            "cv:\n"
+            "  sections:\n"
+            "    experience:\n"
+            "      - company: ACME\n"
+            "        positon: Engineer\n"
+            "    education:\n"
+            "      - institution: MIT\n"
+            "        area: CS\n"
+            "        start_date: 2020-13\n",
+            standard_entry_types,
         )
 
-        assert isinstance(model, RenderCVModel)
-        assert model._input_file_path == file_path
+        assert [(error.schema_location, error.yaml_location) for error in errors] == [
+            (("cv", "sections", "experience", "0", "positon"), ((5, 9), (5, 17))),
+            (("cv", "sections", "education", "0", "start_date"), ((9, 9), (9, 20))),
+        ]
 
-    @pytest.mark.parametrize(
-        "overlay_key",
-        ["design", "locale", "settings"],
-    )
-    def test_with_single_overlay(self, minimal_input_dict, overlay_key):
-        overlay_content = {
-            "design": {"design": {"theme": "sb2nov"}},
-            "locale": {"locale": {"language": "turkish"}},
-            "settings": {"settings": {"render_command": {"pdf_path": "custom.pdf"}}},
-        }[overlay_key]
-
-        main_yaml = dictionary_to_yaml(minimal_input_dict)
-        overlay_yaml = dictionary_to_yaml(overlay_content)
-
-        kwargs = {f"{overlay_key}_yaml_file": overlay_yaml}
-        _, model = build_rendercv_dictionary_and_model(main_yaml, **kwargs)  # ty: ignore[invalid-argument-type]
-
-        assert isinstance(model, RenderCVModel)
-
-    def test_with_all_overlays(self):
-        main_input = {
-            "cv": {"name": "John Doe"},
-            "design": {"theme": "classic"},
-            "locale": {"language": "english"},
-        }
-        main_yaml = dictionary_to_yaml(main_input)
-        design_yaml = dictionary_to_yaml({"design": {"theme": "sb2nov"}})
-        locale_yaml = dictionary_to_yaml({"locale": {"language": "turkish"}})
-
-        _, model = build_rendercv_dictionary_and_model(
+    def test_overlay_errors_point_into_the_overlay_file(
+        self, standard_entry_types: EntryTypes
+    ) -> None:
+        (error,) = validation_errors_of(
             main_yaml,
-            design_yaml_file=design_yaml,
-            locale_yaml_file=locale_yaml,
+            standard_entry_types,
+            locale_yaml_file="# The locale.\nlocale:\n  language: english\n  present: [1]\n",
         )
 
-        assert isinstance(model, RenderCVModel)
-        assert model.cv.name == "John Doe"
-        assert model.design.theme == "sb2nov"
+        assert error.yaml_source == "locale_yaml_file"
+        assert error.schema_location == ("locale", "present")
+        assert error.yaml_location == ((4, 3), (4, 11))
 
     @pytest.mark.parametrize(
-        "overrides",
+        ("overrides", "expected_location", "expected_yaml_location"),
         [
-            {"pdf_path": "custom.pdf"},
-            {"typst_path": "custom.typ", "markdown_path": "custom.md"},
-            {"dont_generate_html": True, "dont_generate_pdf": True},
-            {
-                "pdf_path": "all.pdf",
-                "typst_path": "all.typ",
-                "dont_generate_png": True,
-            },
-        ],
-    )
-    def test_with_render_command_overrides(self, minimal_input_dict, overrides):
-        main_yaml = dictionary_to_yaml(minimal_input_dict)
-
-        _, model = build_rendercv_dictionary_and_model(main_yaml, **overrides)
-
-        assert isinstance(model, RenderCVModel)
-        for key, value in overrides.items():
-            model_value = getattr(model.settings.render_command, key)
-            if isinstance(value, str) and key.endswith("_path"):
-                assert model_value == pathlib.Path(value).resolve()
-            else:
-                assert model_value == value
-
-    def test_combined_overlays_and_overrides(self, minimal_input_dict):
-        main_yaml = dictionary_to_yaml(minimal_input_dict)
-        locale_yaml = dictionary_to_yaml({"locale": {"language": "turkish"}})
-
-        _, model = build_rendercv_dictionary_and_model(
-            main_yaml,
-            locale_yaml_file=locale_yaml,
-            pdf_path="output.pdf",
-            dont_generate_html=True,
-        )
-
-        assert isinstance(model, RenderCVModel)
-        assert model.settings.render_command.pdf_path.name == "output.pdf"
-        assert model.settings.render_command.dont_generate_html is True
-
-    @pytest.mark.parametrize(
-        ("overrides", "expected_name"),
-        [
-            ({"cv.name": "Jane Doe"}, "Jane Doe"),
-            ({"cv.name": "Bob Smith"}, "Bob Smith"),
-        ],
-    )
-    def test_with_overrides_parameter(
-        self, minimal_input_dict, overrides, expected_name
-    ):
-        yaml_input = dictionary_to_yaml(minimal_input_dict)
-
-        _, model = build_rendercv_dictionary_and_model(yaml_input, overrides=overrides)
-
-        assert isinstance(model, RenderCVModel)
-        assert model.cv.name == expected_name
-
-    def test_with_fixture_input_file(self, input_file_path):
-        yaml_content = input_file_path.read_text(encoding="utf-8")
-        _, model = build_rendercv_dictionary_and_model(
-            yaml_content, input_file_path=input_file_path
-        )
-        assert isinstance(model, RenderCVModel)
-        assert model._input_file_path == input_file_path
-
-    def test_with_yaml_string_using_ruamel(self):
-        input_dictionary = {
-            "cv": {"name": "John Doe"},
-            "design": {"theme": "classic"},
-        }
-
-        yaml_object = ruamel.yaml.YAML()
-        yaml_object.width = 60
-        yaml_object.indent(mapping=2, sequence=4, offset=2)
-        with io.StringIO() as string_stream:
-            yaml_object.dump(input_dictionary, string_stream)
-            yaml_string = string_stream.getvalue()
-
-        _, model = build_rendercv_dictionary_and_model(yaml_string)
-        assert isinstance(model, RenderCVModel)
-
-    def test_empty_yaml_raises_error(self):
-        with pytest.raises(RenderCVUserError):
-            build_rendercv_dictionary_and_model("")
-
-    def test_invalid_yaml_raises_error(self):
-        with pytest.raises(RenderCVUserValidationError):
-            build_rendercv_dictionary_and_model("cv:\n  name: 123\n")
-
-    def test_design_overlay_merges_into_dictionary_and_model(self, minimal_input_dict):
-        main_yaml = dictionary_to_yaml(minimal_input_dict)
-        design_yaml = dictionary_to_yaml({"design": {"theme": "sb2nov"}})
-
-        dictionary, model = build_rendercv_dictionary_and_model(
-            main_yaml,
-            design_yaml_file=design_yaml,
-        )
-
-        # Overlay content should be merged directly into dictionary
-        assert dictionary["design"]["theme"] == "sb2nov"
-        # No file path should be stored in settings.render_command
-        assert "design" not in dictionary["settings"]["render_command"]
-        # Model should reflect the overlay
-        assert model.design.theme == "sb2nov"
-
-    def test_design_overlay_with_settings_overlay(self, minimal_input_dict):
-        main_yaml = dictionary_to_yaml(minimal_input_dict)
-        settings_yaml = dictionary_to_yaml(
-            {
-                "settings": {
-                    "render_command": {
-                        "typst_path": "rendercv_output/NAME_IN_SNAKE_CASE_CV.typ",
-                        "pdf_path": "rendercv_output/NAME_IN_SNAKE_CASE_CV.pdf",
-                        "markdown_path": "rendercv_output/NAME_IN_SNAKE_CASE_CV.md",
-                        "html_path": "rendercv_output/NAME_IN_SNAKE_CASE_CV.html",
-                        "png_path": "rendercv_output/NAME_IN_SNAKE_CASE_CV.png",
-                        "dont_generate_markdown": False,
-                        "dont_generate_html": False,
-                        "dont_generate_typst": False,
-                        "dont_generate_pdf": False,
-                        "dont_generate_png": False,
-                    }
-                }
-            }
-        )
-        design_yaml = dictionary_to_yaml({"design": {"theme": "sb2nov"}})
-
-        _, model = build_rendercv_dictionary_and_model(
-            main_yaml,
-            settings_yaml_file=settings_yaml,
-            design_yaml_file=design_yaml,
-        )
-
-        assert model.design.theme == "sb2nov"
-
-    def test_locale_overlay_merges_into_dictionary_and_model(self, minimal_input_dict):
-        main_input = {**minimal_input_dict, "locale": {"language": "english"}}
-        main_yaml = dictionary_to_yaml(main_input)
-        locale_yaml = dictionary_to_yaml({"locale": {"language": "turkish"}})
-
-        dictionary, model = build_rendercv_dictionary_and_model(
-            main_yaml,
-            locale_yaml_file=locale_yaml,
-        )
-
-        # Overlay content should be merged directly into dictionary
-        assert dictionary["locale"]["language"] == "turkish"
-        # No file path should be stored in settings.render_command
-        assert "locale" not in dictionary["settings"]["render_command"]
-        # Model should reflect the overlay
-        assert model.locale.language == "turkish"
-
-    def test_both_design_and_locale_overlays(self, minimal_input_dict):
-        main_input = {**minimal_input_dict, "locale": {"language": "english"}}
-        main_yaml = dictionary_to_yaml(main_input)
-        design_yaml = dictionary_to_yaml({"design": {"theme": "engineeringresumes"}})
-        locale_yaml = dictionary_to_yaml({"locale": {"language": "turkish"}})
-
-        dictionary, model = build_rendercv_dictionary_and_model(
-            main_yaml,
-            design_yaml_file=design_yaml,
-            locale_yaml_file=locale_yaml,
-        )
-
-        assert dictionary["design"]["theme"] == "engineeringresumes"
-        assert dictionary["locale"]["language"] == "turkish"
-        assert model.design.theme == "engineeringresumes"
-        assert model.locale.language == "turkish"
-
-    def test_design_overlay_independent_of_locale_overlay(self, minimal_input_dict):
-        """Design and locale overlays should merge independently."""
-        main_input = {**minimal_input_dict, "locale": {"language": "english"}}
-        main_yaml = dictionary_to_yaml(main_input)
-        design_yaml = dictionary_to_yaml({"design": {"theme": "sb2nov"}})
-
-        dictionary, model = build_rendercv_dictionary_and_model(
-            main_yaml,
-            design_yaml_file=design_yaml,
-        )
-
-        # Design should be overridden
-        assert dictionary["design"]["theme"] == "sb2nov"
-        assert model.design.theme == "sb2nov"
-        # Locale should remain original
-        assert dictionary["locale"]["language"] == "english"
-
-    @pytest.mark.parametrize(
-        ("overlay_key", "main_section", "overlay_section", "check"),
-        [
+            # The override replaced a value written in the YAML:
             (
-                "design",
-                {"theme": "classic"},
-                {"theme": "sb2nov"},
-                lambda m: m.design.theme == "sb2nov",
+                {"cv.name": "[1]", "cv.website": "bad"},
+                ("cv", "website"),
+                ((1, 1), (2, 2)),
+            ),
+            # The override added keys the YAML doesn't have:
+            (
+                {"cv.phone": "not a phone"},
+                ("cv", "phone"),
+                ((1, 1), (2, 2)),
             ),
             (
-                "locale",
-                {"language": "english"},
-                {"language": "turkish"},
-                lambda m: m.locale.language == "turkish",
+                {"cv.sections.new.0": "x"},
+                ("cv", "sections", "new", "0"),
+                ((3, 3), (4, 4)),
             ),
+            (
+                {"settings.render_command.unknown": "x"},
+                ("settings", "render_command", "unknown"),
+                ((11, 3), (12, 4)),
+            ),
+            ({"design.theme": "classic"}, ("design",), None),
         ],
     )
-    def test_overlay_overrides_main_in_model(
-        self, minimal_input_dict, overlay_key, main_section, overlay_section, check
-    ):
-        main_input = {**minimal_input_dict, overlay_key: main_section}
-        main_yaml = dictionary_to_yaml(main_input)
-        overlay_yaml = dictionary_to_yaml({overlay_key: overlay_section})
+    def test_errors_in_overridden_values_point_to_the_closest_yaml_line(
+        self,
+        standard_entry_types: EntryTypes,
+        overrides: dict[str, str],
+        expected_location: tuple[str, ...],
+        expected_yaml_location: Any,
+    ) -> None:
+        # Such locations used to crash the error table (#758):
+        (error,) = validation_errors_of(
+            main_yaml, standard_entry_types, overrides=overrides
+        )
 
-        kwargs = {f"{overlay_key}_yaml_file": overlay_yaml}
-        _, model = build_rendercv_dictionary_and_model(main_yaml, **kwargs)  # ty: ignore[invalid-argument-type]
+        assert error.schema_location == expected_location
+        assert error.yaml_location == expected_yaml_location
 
-        assert check(model)
+    def test_numeric_section_titles_point_to_their_lines(
+        self, standard_entry_types: EntryTypes
+    ) -> None:
+        (error,) = validation_errors_of(
+            "cv:\n"
+            "  sections:\n"
+            "    publications:\n"
+            "      2024:\n"
+            "        - title: Paper\n"
+            "          authors: Not a list\n",
+            standard_entry_types,
+        )
 
+        assert error.schema_location == (
+            "cv",
+            "sections",
+            "publications",
+            "2024",
+            "0",
+            "authors",
+        )
+        assert error.yaml_location == ((6, 11), (6, 19))
 
-class TestGetYamlErrorLocation:
-    def test_returns_none_when_no_marks(self):
-        error = ruamel.yaml.YAMLError()
+    @pytest.mark.parametrize("section_title", ["interests", "list", "str", "int"])
+    def test_section_titles_like_type_names_are_kept(
+        self, standard_entry_types: EntryTypes, section_title: str
+    ) -> None:
+        (error,) = validation_errors_of(
+            f"cv:\n  sections:\n    {section_title}:\n      - label: A\n        detial: B\n",
+            standard_entry_types,
+        )
 
-        result = get_yaml_error_location(error)
-
-        assert result is None
+        assert error.schema_location == (
+            "cv",
+            "sections",
+            section_title,
+            "0",
+            "detial",
+        )
+        assert error.message.endswith("Did you mean `details`?")

@@ -1,0 +1,5 @@
+# Telegram.
+name: 'Telegram'
+icon: telegram
+url: 'https://t.me/{username}'
+example: 'johndoe'

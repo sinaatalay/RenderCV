@@ -1,0 +1,5 @@
+# LinkedIn.
+name: 'LinkedIn'
+icon: linkedin
+url: 'https://linkedin.com/in/{username}'
+example: 'johndoe'

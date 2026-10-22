@@ -1,0 +1,50 @@
+{
+  "name": "rendercv",
+  "version": "3.0.0",
+  "description": "Resume builder for academics and engineers: RenderCV for JavaScript, running in Pyodide",
+  "keywords": [
+    "rendercv",
+    "cv",
+    "resume",
+    "typst",
+    "pdf",
+    "pyodide"
+  ],
+  "homepage": "https://rendercv.com",
+  "bugs": "https://github.com/rendercv/rendercv/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rendercv/rendercv.git",
+    "directory": "js"
+  },
+  "license": "MIT",
+  "author": "Sina Atalay",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "wheels"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "bun scripts/build.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "pyodide": "^314.0.7"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.2",
+    "@types/node": "^26.6.3",
+    "typescript": "^7.0.2"
+  }
+}

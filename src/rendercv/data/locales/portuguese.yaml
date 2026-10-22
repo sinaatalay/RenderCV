@@ -1,0 +1,38 @@
+# Portuguese locale.
+language: portuguese
+iso_code: pt
+direction: ltr
+last_updated: "Última atualização"
+present: "presente"
+month: "mês"
+months: "meses"
+year: "ano"
+years: "anos"
+phrases:
+  degree_with_area: "#degree em #area"
+month_abbreviations:
+  - "Jan"
+  - "Fev"
+  - "Mar"
+  - "Abr"
+  - "Mai"
+  - "Jun"
+  - "Jul"
+  - "Ago"
+  - "Set"
+  - "Out"
+  - "Nov"
+  - "Dez"
+month_names:
+  - "Janeiro"
+  - "Fevereiro"
+  - "Março"
+  - "Abril"
+  - "Maio"
+  - "Junho"
+  - "Julho"
+  - "Agosto"
+  - "Setembro"
+  - "Outubro"
+  - "Novembro"
+  - "Dezembro"

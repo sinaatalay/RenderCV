@@ -1,4 +1,5 @@
 import datetime
+import functools
 from typing import Literal
 
 import pydantic
@@ -36,8 +37,7 @@ class Settings(BaseModelWithoutExtraKeys):
             "Title metadata for the PDF document. This appears in browser tabs and"
             " PDF readers. Available placeholders:\n"
             "- `NAME`: The CV owner's name from `cv.name`\n"
-            "- `CURRENT_DATE`: Formatted date based on"
-            " `design.templates.single_date`\n"
+            "- `CURRENT_DATE`: The month abbreviation and year (e.g., Jan 2025)\n"
             "- `MONTH_NAME`: Full month name (e.g., January)\n"
             "- `MONTH_ABBREVIATION`: Abbreviated month name (e.g., Jan)\n"
             "- `MONTH`: Month number (e.g., 1)\n"
@@ -49,7 +49,6 @@ class Settings(BaseModelWithoutExtraKeys):
             "The default value is `NAME - CV`."
         ),
     )
-    _resolved_current_date: datetime.date = pydantic.PrivateAttr()
 
     @pydantic.field_validator("bold_keywords")
     @classmethod
@@ -68,9 +67,9 @@ class Settings(BaseModelWithoutExtraKeys):
         """
         return list(dict.fromkeys(value))
 
-    @pydantic.model_validator(mode="after")
-    def resolve_current_date(self) -> "Settings":
-        self._resolved_current_date = (
+    @functools.cached_property
+    def resolved_current_date(self) -> datetime.date:
+        """The date "today" stands for: the actual current date, or the set one."""
+        return (
             datetime.date.today() if self.current_date == "today" else self.current_date
         )
-        return self

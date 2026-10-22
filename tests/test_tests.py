@@ -1,93 +1,113 @@
-"""Tests to validate the test directory structure matches the source directory structure."""
+"""Tests that the test folders mirror the folders they test.
+
+Why:
+    `tests/` mirrors `src/rendercv/` (`a/b.py` is tested in `tests/a/test_b.py`),
+    and `tests/typst/` mirrors the Typst package in `typst/` (`src/entry-type.typ`
+    is tested in `tests/typst/src/test_entry_type.py`). Keeping them in sync makes
+    the tests of any file easy to find.
+"""
 
 import pathlib
 
-src_root = pathlib.Path(__file__).parent.parent.parent / "src" / "rendercv"
-tests_root = pathlib.Path(__file__).parent.parent
+import pytest
+
+repository_root = pathlib.Path(__file__).parent.parent
+tests_root = repository_root / "tests"
+excluded_folders = {"__pycache__", "testdata"}
+excluded_files = {"conftest.py", "__init__.py"}
 
 
-def get_immediate_subdirectories(directory: pathlib.Path) -> set[str]:
-    """Get immediate subdirectory names, excluding __pycache__ and testdata."""
-    excluded = {"__pycache__", "testdata"}
+def get_subfolders(folder: pathlib.Path) -> set[str]:
+    """Get the names of a folder's subfolders, except caches and test data."""
     return {
-        d.name for d in directory.iterdir() if d.is_dir() and d.name not in excluded
+        path.name
+        for path in folder.iterdir()
+        if path.is_dir() and path.name not in excluded_folders
     }
 
 
-def get_python_files(directory: pathlib.Path) -> set[str]:
-    """Get all .py files in a directory, excluding conftest.py and __init__.py."""
-    excluded_files = {"conftest.py", "__init__.py"}
+def get_test_file_names(folder: pathlib.Path) -> set[str]:
+    """Get the names of a folder's Python files, except `conftest.py`."""
     return {
-        f.name
-        for f in directory.iterdir()
-        if f.is_file() and f.suffix == ".py" and f.name not in excluded_files
+        path.name
+        for path in folder.iterdir()
+        if path.is_file() and path.suffix == ".py" and path.name not in excluded_files
     }
 
 
-def get_all_source_subdirs(root: pathlib.Path) -> set[pathlib.Path]:
-    """Recursively get all subdirectories under root, excluding __pycache__."""
-    subdirs = set()
-    for path in root.rglob("*"):
-        if path.is_dir() and "__pycache__" not in path.parts:
-            subdirs.add(path.relative_to(root))
-    return subdirs
+def find_mirroring_problems(
+    source_root: pathlib.Path,
+    test_root: pathlib.Path,
+    source_suffix: str,
+    *,
+    check_root: bool,
+) -> list[str]:
+    """Find test folders and files that don't mirror a source folder or file.
 
+    Args:
+        source_root: The folder that is tested.
+        test_root: The folder that mirrors it.
+        source_suffix: The suffix of the tested files, like ".py".
+        check_root: Whether `test_root` itself may only hold mirrored folders
+            and files (`tests/` also holds tests of the whole repository).
 
-def test_test_folders_match_source_structure():
-    """Verify test folders that mirror source folders have no extra subfolders."""
-    source_subdirs = get_all_source_subdirs(src_root)
-    invalid_folders = []
+    Returns:
+        The problems, one per test folder or file.
+    """
+    source_folders = [
+        path.relative_to(source_root)
+        for path in source_root.rglob("*")
+        if path.is_dir() and not excluded_folders & set(path.parts)
+    ]
+    if check_root:
+        source_folders.append(pathlib.Path())
 
-    for subdir in source_subdirs:
-        test_dir = tests_root / subdir
-        source_dir = src_root / subdir
-
-        if not test_dir.exists():
+    problems: list[str] = []
+    for folder in source_folders:
+        test_folder = test_root / folder
+        if not test_folder.is_dir():
             continue
+        source_folder = source_root / folder
+        display_folder = test_folder.relative_to(repository_root).as_posix()
 
-        test_subfolders = get_immediate_subdirectories(test_dir)
-        source_subfolders = get_immediate_subdirectories(source_dir)
+        for extra_folder in get_subfolders(test_folder) - get_subfolders(source_folder):
+            problems.append(f"{display_folder}/{extra_folder}: no such source folder")
 
-        extra_folders = test_subfolders - source_subfolders
-        for folder in extra_folders:
-            invalid_folders.append(f"tests/{subdir}/{folder}")
+        source_names = {
+            path.stem.replace("-", "_")
+            for path in source_folder.iterdir()
+            if path.is_file() and path.suffix == source_suffix
+        }
+        for test_file in get_test_file_names(test_folder):
+            name = test_file.removeprefix("test_").removesuffix(".py")
+            if not test_file.startswith("test_") or name not in source_names:
+                problems.append(
+                    f"{display_folder}/{test_file}: should be `test_<name>.py` for a"
+                    f" `<name>{source_suffix}` in"
+                    f" {source_folder.relative_to(repository_root).as_posix()}"
+                )
+    return problems
 
-    assert not invalid_folders, (
-        "The following test folders do not have corresponding source folders:\n"
-        + "\n".join(f"  - {f}" for f in sorted(invalid_folders))
+
+@pytest.mark.parametrize(
+    ("source_root", "test_root", "source_suffix", "check_root"),
+    [
+        (repository_root / "src" / "rendercv", tests_root, ".py", False),
+        (repository_root / "typst", tests_root / "typst", ".typ", True),
+    ],
+)
+def test_tests_mirror_source(
+    source_root: pathlib.Path,
+    test_root: pathlib.Path,
+    source_suffix: str,
+    check_root: bool,
+) -> None:
+    assert source_root.is_dir()
+
+    problems = find_mirroring_problems(
+        source_root, test_root, source_suffix, check_root=check_root
     )
 
-
-def test_all_test_files_follow_naming_pattern():
-    """Verify all test files follow the pattern test_<source_filename>.py."""
-    source_subdirs = get_all_source_subdirs(src_root)
-    invalid_test_files = []
-
-    for subdir in source_subdirs:
-        test_dir = tests_root / subdir
-        source_dir = src_root / subdir
-
-        if not test_dir.exists():
-            continue
-
-        test_files = get_python_files(test_dir)
-        source_files = get_python_files(source_dir)
-
-        for test_file in test_files:
-            if not test_file.startswith("test_"):
-                invalid_test_files.append(
-                    f"tests/{subdir}/{test_file} - does not start with 'test_'"
-                )
-                continue
-
-            expected_source_file = test_file[5:]  # Remove "test_" prefix
-            if expected_source_file not in source_files:
-                invalid_test_files.append(
-                    f"tests/{subdir}/{test_file} - no corresponding source file "
-                    f"src/rendercv/{subdir}/{expected_source_file}"
-                )
-
-    assert not invalid_test_files, (
-        "The following test files violate the naming pattern:\n"
-        + "\n".join(f"  - {f}" for f in sorted(invalid_test_files))
+    assert not problems, "Tests don't mirror the source:\n" + "\n".join(
+        f"  - {problem}" for problem in sorted(problems)
     )

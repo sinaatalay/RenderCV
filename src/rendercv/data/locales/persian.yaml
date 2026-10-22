@@ -1,0 +1,38 @@
+# Persian locale.
+language: persian
+iso_code: fa
+direction: rtl
+last_updated: "آخرین به‌روزرسانی در"
+present: "حال"
+month: "ماه"
+months: "ماه"
+year: "سال"
+years: "سال"
+phrases:
+  degree_with_area: "#degree در #area"
+month_abbreviations:
+  - "ژان"
+  - "فور"
+  - "مار"
+  - "آور"
+  - "مه"
+  - "ژون"
+  - "ژول"
+  - "اوت"
+  - "سپت"
+  - "اکت"
+  - "نوا"
+  - "دسا"
+month_names:
+  - "ژانویه"
+  - "فوریه"
+  - "مارس"
+  - "آوریل"
+  - "مه"
+  - "ژوئن"
+  - "ژوئیه"
+  - "اوت"
+  - "سپتامبر"
+  - "اکتبر"
+  - "نوامبر"
+  - "دسامبر"

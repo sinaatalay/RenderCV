@@ -1,0 +1,38 @@
+# English locale.
+language: english
+iso_code: en
+direction: ltr
+last_updated: "Last updated in"
+present: "present"
+month: "month"
+months: "months"
+year: "year"
+years: "years"
+phrases:
+  degree_with_area: "#degree in #area"
+month_abbreviations:
+  - "Jan"
+  - "Feb"
+  - "Mar"
+  - "Apr"
+  - "May"
+  - "June"
+  - "July"
+  - "Aug"
+  - "Sept"
+  - "Oct"
+  - "Nov"
+  - "Dec"
+month_names:
+  - "January"
+  - "February"
+  - "March"
+  - "April"
+  - "May"
+  - "June"
+  - "July"
+  - "August"
+  - "September"
+  - "October"
+  - "November"
+  - "December"

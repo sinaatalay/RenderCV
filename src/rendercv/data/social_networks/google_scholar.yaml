@@ -1,0 +1,6 @@
+# Google Scholar.
+name: 'Google Scholar'
+icon: graduation-cap
+url: 'https://scholar.google.com/citations?user={username}'
+display: 'Google Scholar'
+example: 'AbCdEfGhIjK'

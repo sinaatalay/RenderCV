@@ -1,0 +1,8 @@
+# The image is built from the source code; keep local environments and outputs out:
+.git
+.venv
+**/__pycache__
+**/rendercv_output
+bin
+dist
+site

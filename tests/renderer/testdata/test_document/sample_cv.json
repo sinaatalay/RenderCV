@@ -1,0 +1,872 @@
+{
+  "version": 1,
+  "settings": {
+    "current_date": {
+      "year": 2025,
+      "month": 6,
+      "day": 1
+    },
+    "bold_keywords": [],
+    "pdf_title": "John Doe - CV"
+  },
+  "locale": {
+    "language": "english",
+    "iso_code": "en",
+    "direction": "ltr",
+    "last_updated": "Last updated in",
+    "present": "present",
+    "month": "month",
+    "months": "months",
+    "year": "year",
+    "years": "years",
+    "phrases": {
+      "degree_with_area": "#degree in #area"
+    },
+    "month_abbreviations": [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "June",
+      "July",
+      "Aug",
+      "Sept",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
+    "month_names": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ]
+  },
+  "header": {
+    "name": [
+      "John Doe"
+    ],
+    "plain_name": "John Doe",
+    "headline": null,
+    "photo": null,
+    "connections": [
+      {
+        "kind": "location",
+        "icon": "location-dot",
+        "url": null,
+        "text": [
+          "San Francisco, CA"
+        ]
+      },
+      {
+        "kind": "email",
+        "icon": "envelope",
+        "url": "mailto:john.doe@email.com",
+        "text": [
+          "john.doe@email.com"
+        ],
+        "url_text": "john.doe@email.com"
+      },
+      {
+        "kind": "website",
+        "icon": "link",
+        "url": "https://rendercv.com/",
+        "text": [
+          "rendercv.com"
+        ],
+        "url_text": "rendercv.com"
+      },
+      {
+        "kind": "social",
+        "network": "LinkedIn",
+        "icon": "linkedin",
+        "url": "https://linkedin.com/in/rendercv",
+        "text": [
+          "rendercv"
+        ],
+        "url_text": "linkedin.com/in/rendercv"
+      },
+      {
+        "kind": "social",
+        "network": "GitHub",
+        "icon": "github",
+        "url": "https://github.com/rendercv",
+        "text": [
+          "rendercv"
+        ],
+        "url_text": "github.com/rendercv"
+      }
+    ]
+  },
+  "sections": [
+    {
+      "key": "welcome_to_rendercv",
+      "title": [
+        "Welcome to RenderCV"
+      ],
+      "entries": [
+        {
+          "type": "paragraph",
+          "fields": {
+            "text": [
+              "RenderCV reads a CV written in a YAML file, and generates a PDF with professional typography."
+            ]
+          }
+        },
+        {
+          "type": "paragraph",
+          "fields": {
+            "text": [
+              "Each section title is arbitrary."
+            ]
+          }
+        },
+        {
+          "type": "paragraph",
+          "fields": {
+            "text": [
+              "You can choose any of the 9 entry types for each section."
+            ]
+          }
+        },
+        {
+          "type": "paragraph",
+          "fields": {
+            "text": [
+              "Markdown syntax is supported everywhere. This is ",
+              {
+                "strong": [
+                  "bold"
+                ]
+              },
+              ", ",
+              {
+                "emph": [
+                  "italic"
+                ]
+              },
+              ", and ",
+              {
+                "link": {
+                  "url": "https://example.com",
+                  "body": [
+                    "link"
+                  ]
+                }
+              },
+              "."
+            ]
+          }
+        }
+      ],
+      "subsections": []
+    },
+    {
+      "key": "education",
+      "title": [
+        "Education"
+      ],
+      "entries": [
+        {
+          "type": "education",
+          "fields": {
+            "institution": [
+              "Princeton University"
+            ],
+            "area": [
+              "Computer Science"
+            ],
+            "degree": [
+              "PhD"
+            ],
+            "start_date": {
+              "year": 2018,
+              "month": 9
+            },
+            "end_date": {
+              "year": 2023,
+              "month": 5
+            },
+            "location": [
+              "Princeton, NJ"
+            ],
+            "highlights": [
+              {
+                "body": [
+                  "Thesis: Efficient Neural Architecture Search for Resource-Constrained Deployment"
+                ],
+                "children": []
+              },
+              {
+                "body": [
+                  "Advisor: Prof. Sanjeev Arora"
+                ],
+                "children": []
+              },
+              {
+                "body": [
+                  "NSF Graduate Research Fellowship, Siebel Scholar (Class of 2022)"
+                ],
+                "children": []
+              }
+            ]
+          }
+        },
+        {
+          "type": "education",
+          "fields": {
+            "institution": [
+              "Boğaziçi University"
+            ],
+            "area": [
+              "Computer Engineering"
+            ],
+            "degree": [
+              "BS"
+            ],
+            "start_date": {
+              "year": 2014,
+              "month": 9
+            },
+            "end_date": {
+              "year": 2018,
+              "month": 6
+            },
+            "location": [
+              "Istanbul, Türkiye"
+            ],
+            "highlights": [
+              {
+                "body": [
+                  "GPA: 3.97/4.00, Valedictorian"
+                ],
+                "children": []
+              },
+              {
+                "body": [
+                  "Fulbright Scholarship recipient for Graduate Studies"
+                ],
+                "children": []
+              }
+            ]
+          }
+        }
+      ],
+      "subsections": []
+    },
+    {
+      "key": "experience",
+      "title": [
+        "Experience"
+      ],
+      "entries": [
+        {
+          "type": "experience",
+          "fields": {
+            "company": [
+              "Nexus AI"
+            ],
+            "position": [
+              "Co-Founder & CTO"
+            ],
+            "start_date": {
+              "year": 2023,
+              "month": 6
+            },
+            "end_date": {
+              "present": true
+            },
+            "location": [
+              "San Francisco, CA"
+            ],
+            "highlights": [
+              {
+                "body": [
+                  "Built foundation model infrastructure serving 2M+ monthly API requests with 99.97% uptime"
+                ],
+                "children": []
+              },
+              {
+                "body": [
+                  "Raised $18M Series A led by Sequoia Capital, with participation from a16z and Founders Fund"
+                ],
+                "children": []
+              },
+              {
+                "body": [
+                  "Scaled engineering team from 3 to 28 across ML research, platform, and applied AI divisions"
+                ],
+                "children": []
+              },
+              {
+                "body": [
+                  "Developed proprietary inference optimization reducing latency by 73% compared to baseline"
+                ],
+                "children": []
+              }
+            ]
+          }
+        },
+        {
+          "type": "experience",
+          "fields": {
+            "company": [
+              "NVIDIA Research"
+            ],
+            "position": [
+              "Research Intern"
+            ],
+            "start_date": {
+              "year": 2022,
+              "month": 5
+            },
+            "end_date": {
+              "year": 2022,
+              "month": 8
+            },
+            "location": [
+              "Santa Clara, CA"
+            ],
+            "highlights": [
+              {
+                "body": [
+                  "Designed sparse attention mechanism reducing transformer memory footprint by 4.2x"
+                ],
+                "children": []
+              },
+              {
+                "body": [
+                  "Co-authored paper accepted at NeurIPS 2022 (spotlight presentation, top 5% of submissions)"
+                ],
+                "children": []
+              }
+            ]
+          }
+        },
+        {
+          "type": "experience",
+          "fields": {
+            "company": [
+              "Google DeepMind"
+            ],
+            "position": [
+              "Research Intern"
+            ],
+            "start_date": {
+              "year": 2021,
+              "month": 5
+            },
+            "end_date": {
+              "year": 2021,
+              "month": 8
+            },
+            "location": [
+              "London, UK"
+            ],
+            "highlights": [
+              {
+                "body": [
+                  "Developed reinforcement learning algorithms for multi-agent coordination"
+                ],
+                "children": []
+              },
+              {
+                "body": [
+                  "Published research at top-tier venues with significant academic impact"
+                ],
+                "children": [
+                  {
+                    "body": [
+                      "ICML 2022 main conference paper, cited 340+ times within two years"
+                    ],
+                    "children": []
+                  },
+                  {
+                    "body": [
+                      "NeurIPS 2022 workshop paper on emergent communication protocols"
+                    ],
+                    "children": []
+                  },
+                  {
+                    "body": [
+                      "Invited journal extension in JMLR (2023)"
+                    ],
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "experience",
+          "fields": {
+            "company": [
+              "Apple ML Research"
+            ],
+            "position": [
+              "Research Intern"
+            ],
+            "start_date": {
+              "year": 2020,
+              "month": 5
+            },
+            "end_date": {
+              "year": 2020,
+              "month": 8
+            },
+            "location": [
+              "Cupertino, CA"
+            ],
+            "highlights": [
+              {
+                "body": [
+                  "Created on-device neural network compression pipeline deployed across 50M+ devices"
+                ],
+                "children": []
+              },
+              {
+                "body": [
+                  "Filed 2 patents on efficient model quantization techniques for edge inference"
+                ],
+                "children": []
+              }
+            ]
+          }
+        },
+        {
+          "type": "experience",
+          "fields": {
+            "company": [
+              "Microsoft Research"
+            ],
+            "position": [
+              "Research Intern"
+            ],
+            "start_date": {
+              "year": 2019,
+              "month": 5
+            },
+            "end_date": {
+              "year": 2019,
+              "month": 8
+            },
+            "location": [
+              "Redmond, WA"
+            ],
+            "highlights": [
+              {
+                "body": [
+                  "Implemented novel self-supervised learning framework for low-resource language modeling"
+                ],
+                "children": []
+              },
+              {
+                "body": [
+                  "Research integrated into Azure Cognitive Services, reducing training data requirements by 60%"
+                ],
+                "children": []
+              }
+            ]
+          }
+        }
+      ],
+      "subsections": []
+    },
+    {
+      "key": "projects",
+      "title": [
+        "Projects"
+      ],
+      "entries": [
+        {
+          "type": "normal",
+          "fields": {
+            "name": [
+              {
+                "link": {
+                  "url": "https://github.com/",
+                  "body": [
+                    "FlashInfer"
+                  ]
+                }
+              }
+            ],
+            "start_date": {
+              "year": 2023,
+              "month": 1
+            },
+            "end_date": {
+              "present": true
+            },
+            "summary": [
+              "Open-source library for high-performance LLM inference kernels"
+            ],
+            "highlights": [
+              {
+                "body": [
+                  "Achieved 2.8x speedup over baseline attention implementations on A100 GPUs"
+                ],
+                "children": []
+              },
+              {
+                "body": [
+                  "Adopted by 3 major AI labs, 8,500+ GitHub stars, 200+ contributors"
+                ],
+                "children": []
+              }
+            ]
+          }
+        },
+        {
+          "type": "normal",
+          "fields": {
+            "name": [
+              {
+                "link": {
+                  "url": "https://github.com/",
+                  "body": [
+                    "NeuralPrune"
+                  ]
+                }
+              }
+            ],
+            "date": {
+              "year": 2021
+            },
+            "summary": [
+              "Automated neural network pruning toolkit with differentiable masks"
+            ],
+            "highlights": [
+              {
+                "body": [
+                  "Reduced model size by 90% with less than 1% accuracy degradation on ImageNet"
+                ],
+                "children": []
+              },
+              {
+                "body": [
+                  "Featured in PyTorch ecosystem tools, 4,200+ GitHub stars"
+                ],
+                "children": []
+              }
+            ]
+          }
+        }
+      ],
+      "subsections": []
+    },
+    {
+      "key": "publications",
+      "title": [
+        "Publications"
+      ],
+      "entries": [
+        {
+          "type": "publication",
+          "fields": {
+            "title": [
+              "Sparse Mixture-of-Experts at Scale: Efficient Routing for Trillion-Parameter Models"
+            ],
+            "authors": [
+              [
+                {
+                  "emph": [
+                    "John Doe"
+                  ]
+                }
+              ],
+              [
+                "Sarah Williams"
+              ],
+              [
+                "David Park"
+              ]
+            ],
+            "doi": "10.1234/neurips.2023.1234",
+            "journal": [
+              "NeurIPS 2023"
+            ],
+            "date": {
+              "year": 2023,
+              "month": 7
+            }
+          }
+        },
+        {
+          "type": "publication",
+          "fields": {
+            "title": [
+              "Neural Architecture Search via Differentiable Pruning"
+            ],
+            "authors": [
+              [
+                "James Liu"
+              ],
+              [
+                {
+                  "emph": [
+                    "John Doe"
+                  ]
+                }
+              ]
+            ],
+            "doi": "10.1234/neurips.2022.5678",
+            "journal": [
+              "NeurIPS 2022, Spotlight"
+            ],
+            "date": {
+              "year": 2022,
+              "month": 12
+            }
+          }
+        },
+        {
+          "type": "publication",
+          "fields": {
+            "title": [
+              "Multi-Agent Reinforcement Learning with Emergent Communication"
+            ],
+            "authors": [
+              [
+                "Maria Garcia"
+              ],
+              [
+                {
+                  "emph": [
+                    "John Doe"
+                  ]
+                }
+              ],
+              [
+                "Tom Anderson"
+              ]
+            ],
+            "doi": "10.1234/icml.2022.9012",
+            "journal": [
+              "ICML 2022"
+            ],
+            "date": {
+              "year": 2022,
+              "month": 7
+            }
+          }
+        },
+        {
+          "type": "publication",
+          "fields": {
+            "title": [
+              "On-Device Model Compression via Learned Quantization"
+            ],
+            "authors": [
+              [
+                {
+                  "emph": [
+                    "John Doe"
+                  ]
+                }
+              ],
+              [
+                "Kevin Wu"
+              ]
+            ],
+            "doi": "10.1234/iclr.2021.3456",
+            "journal": [
+              "ICLR 2021, Best Paper Award"
+            ],
+            "date": {
+              "year": 2021,
+              "month": 5
+            }
+          }
+        }
+      ],
+      "subsections": []
+    },
+    {
+      "key": "selected_honors",
+      "title": [
+        "Selected Honors"
+      ],
+      "entries": [
+        {
+          "type": "bullet",
+          "fields": {
+            "bullet": [
+              "MIT Technology Review 35 Under 35 Innovators (2024)"
+            ]
+          }
+        },
+        {
+          "type": "bullet",
+          "fields": {
+            "bullet": [
+              "Forbes 30 Under 30 in Enterprise Technology (2024)"
+            ]
+          }
+        },
+        {
+          "type": "bullet",
+          "fields": {
+            "bullet": [
+              "ACM Doctoral Dissertation Award Honorable Mention (2023)"
+            ]
+          }
+        },
+        {
+          "type": "bullet",
+          "fields": {
+            "bullet": [
+              "Google PhD Fellowship in Machine Learning (2020 – 2023)"
+            ]
+          }
+        },
+        {
+          "type": "bullet",
+          "fields": {
+            "bullet": [
+              "Fulbright Scholarship for Graduate Studies (2018)"
+            ]
+          }
+        }
+      ],
+      "subsections": []
+    },
+    {
+      "key": "skills",
+      "title": [
+        "Skills"
+      ],
+      "entries": [
+        {
+          "type": "one_line",
+          "fields": {
+            "label": [
+              "Languages"
+            ],
+            "details": [
+              "Python, C++, CUDA, Rust, Julia"
+            ]
+          }
+        },
+        {
+          "type": "one_line",
+          "fields": {
+            "label": [
+              "ML Frameworks"
+            ],
+            "details": [
+              "PyTorch, JAX, TensorFlow, Triton, ONNX"
+            ]
+          }
+        },
+        {
+          "type": "one_line",
+          "fields": {
+            "label": [
+              "Infrastructure"
+            ],
+            "details": [
+              "Kubernetes, Ray, distributed training, AWS, GCP"
+            ]
+          }
+        },
+        {
+          "type": "one_line",
+          "fields": {
+            "label": [
+              "Research Areas"
+            ],
+            "details": [
+              "Neural architecture search, model compression, efficient inference, multi-agent RL"
+            ]
+          }
+        }
+      ],
+      "subsections": []
+    },
+    {
+      "key": "patents",
+      "title": [
+        "Patents"
+      ],
+      "entries": [
+        {
+          "type": "numbered",
+          "fields": {
+            "number": [
+              "Adaptive Quantization for Neural Network Inference on Edge Devices (US Patent 11,234,567)"
+            ]
+          }
+        },
+        {
+          "type": "numbered",
+          "fields": {
+            "number": [
+              "Dynamic Sparsity Patterns for Efficient Transformer Attention (US Patent 11,345,678)"
+            ]
+          }
+        },
+        {
+          "type": "numbered",
+          "fields": {
+            "number": [
+              "Hardware-Aware Neural Architecture Search Method (US Patent 11,456,789)"
+            ]
+          }
+        }
+      ],
+      "subsections": []
+    },
+    {
+      "key": "invited_talks",
+      "title": [
+        "Invited Talks"
+      ],
+      "entries": [
+        {
+          "type": "reversed_numbered",
+          "fields": {
+            "reversed_number": [
+              "Scaling Laws for Efficient Inference — Stanford HAI Symposium (2024)"
+            ]
+          }
+        },
+        {
+          "type": "reversed_numbered",
+          "fields": {
+            "reversed_number": [
+              "Building AI Infrastructure for the Next Decade — TechCrunch Disrupt (2024)"
+            ]
+          }
+        },
+        {
+          "type": "reversed_numbered",
+          "fields": {
+            "reversed_number": [
+              "From Research to Production: Lessons in ML Systems — NeurIPS Workshop (2023)"
+            ]
+          }
+        },
+        {
+          "type": "reversed_numbered",
+          "fields": {
+            "reversed_number": [
+              "Efficient Deep Learning: A Practitioner's Perspective — Google Tech Talk (2022)"
+            ]
+          }
+        }
+      ],
+      "subsections": []
+    }
+  ]
+}

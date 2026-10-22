@@ -1,0 +1,5 @@
+# ResearchGate.
+name: 'ResearchGate'
+icon: researchgate
+url: 'https://researchgate.net/profile/{username}'
+example: 'John-Doe'

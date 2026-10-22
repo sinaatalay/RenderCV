@@ -24,16 +24,25 @@ def format_validation_error_location(error_object: RenderCVValidationError) -> s
     Returns:
         Human-readable location string for table display.
     """
-    if error_object.schema_location is not None:
-        return ".".join(error_object.schema_location)
+    source = {
+        "main_yaml_file": "",
+        "locale_yaml_file": "locale file, ",
+        "settings_yaml_file": "settings file, ",
+    }[error_object.yaml_source]
+    line = ""
+    if error_object.yaml_location is not None:
+        (start_line, _), (end_line, _) = error_object.yaml_location
+        line = (
+            f"line {start_line}"
+            if start_line == end_line
+            else f"lines {start_line}-{end_line}"
+        )
+    where = f"{source}{line}".strip(", ")
 
-    if error_object.yaml_location is None:
-        return error_object.yaml_source
-
-    (start_line, _), (end_line, _) = error_object.yaml_location
-    if start_line == end_line:
-        return f"{error_object.yaml_source}: line {start_line}"
-    return f"{error_object.yaml_source}: line {start_line} to line {end_line}"
+    if error_object.schema_location:
+        location = ".".join(error_object.schema_location)
+        return f"{location}\n[dim]({where})[/dim]" if where else location
+    return where or "input file"
 
 
 class ProgressPanel(rich.live.Live):
@@ -51,7 +60,7 @@ class ProgressPanel(rich.live.Live):
         quiet: Suppress all terminal output.
     """
 
-    def __init__(self, quiet: bool = False):
+    def __init__(self, quiet: bool = False) -> None:
         self.completed_steps: list[CompletedStep] = []
         super().__init__(
             rich.panel.Panel(

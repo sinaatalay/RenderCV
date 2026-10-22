@@ -10,6 +10,8 @@ Install these two VS Code extensions:
 
 2. [**PDFMore** by wytheglobal](https://marketplace.visualstudio.com/items?itemName=wytheglobal.pdfmore): Allows you to view PDF files directly within VS Code.
 
+If you edit `design.typ` or `entries.typ`, also install [**Tinymist**](https://marketplace.visualstudio.com/items?itemName=myriad-dreamin.tinymist) for Typst syntax highlighting, autocompletion, and documentation on hover.
+
 ## Configure Auto-Save
 
 To enable automatic rendering as you type, you need to configure VS Code to auto-save your files.
@@ -41,7 +43,7 @@ To enable automatic rendering as you type, you need to configure VS Code to auto
     }
     ```
 
-These settings will automatically save your YAML file 10 milliseconds after you stop typing.
+These settings will automatically save your files 10 milliseconds after you stop typing.
 
 ## Start Writing Your CV with Live Preview
 
@@ -55,7 +57,7 @@ Once the extensions are installed and auto-save is configured, follow these step
     rendercv render --watch John_Doe_CV.yaml
     ```
 
-    The `--watch` flag tells RenderCV to monitor the YAML file for changes and automatically re-render the PDF whenever the file is saved.
+    The `--watch` flag tells RenderCV to monitor the YAML file, and `design.typ` and `entries.typ` if you have them, and automatically re-render the PDF whenever one of them is saved.
 
 3. **Arrange your workspace**:
 

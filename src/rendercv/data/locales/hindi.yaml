@@ -1,0 +1,38 @@
+# Hindi locale.
+language: hindi
+iso_code: hi
+direction: ltr
+last_updated: "अंतिम अद्यतन"
+present: "वर्तमान"
+month: "महीना"
+months: "महीने"
+year: "वर्ष"
+years: "वर्ष"
+phrases:
+  degree_with_area: "#area में #degree"
+month_abbreviations:
+  - "जन"
+  - "फर"
+  - "मार"
+  - "अप्र"
+  - "मई"
+  - "जून"
+  - "जुल"
+  - "अग"
+  - "सित"
+  - "अक्ट"
+  - "नव"
+  - "दिस"
+month_names:
+  - "जनवरी"
+  - "फरवरी"
+  - "मार्च"
+  - "अप्रैल"
+  - "मई"
+  - "जून"
+  - "जुलाई"
+  - "अगस्त"
+  - "सितंबर"
+  - "अक्टूबर"
+  - "नवंबर"
+  - "दिसंबर"

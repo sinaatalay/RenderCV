@@ -5,18 +5,18 @@
     - type: contains
       value: "rendercv[full]"
 
-- description: "Separate design file workflow"
+- description: "Shared design file workflow"
   vars:
-    query: "I want to keep my CV content and design in separate YAML files so I can reuse the same design across multiple CVs. How do I set this up?"
+    query: "I want to reuse the same design across multiple CVs. How do I set this up?"
   assert:
     - type: contains
       value: "--design"
     - type: llm-rubric
       value: |
         The response explains:
-        - The main YAML file contains cv content (and optionally locale/settings), but no design
-        - A separate YAML file contains the design configuration under the design: key
-        - Use 'rendercv render cv.yaml --design design.yaml' to combine them
+        - The YAML files contain the content (and optionally locale/settings), never a design
+        - The design is a Typst file (like `design.typ`) that defines `design`, e.g. `#let design = designs.classic(...)`
+        - Use 'rendercv render cv.yaml --design path/to/design.typ' (or `settings.render_command.design`) to use it
 
 - description: "Watch mode for live editing"
   vars:
@@ -27,12 +27,12 @@
 
 - description: "CLI field overrides with dot notation"
   vars:
-    query: "I want to render my CV but temporarily change my name to 'Jane Smith' and switch to the moderncv theme without editing the YAML file. How?"
+    query: "I want to render my CV but temporarily change my name to 'Jane Smith' and try another design file, other.typ, without editing my files. How?"
   assert:
     - type: contains
       value: "--cv.name"
     - type: contains
-      value: "--design.theme"
+      value: "--design other.typ"
 
 - description: "Bold keywords in settings"
   vars:
@@ -40,3 +40,10 @@
   assert:
     - type: contains
       value: "bold_keywords"
+
+- description: "Upgrade a RenderCV 2 file"
+  vars:
+    query: "I have a CV YAML file from RenderCV 2 with a `design:` field, and RenderCV now says the design is not set in the YAML anymore. What do I do?"
+  assert:
+    - type: contains
+      value: "rendercv migrate"

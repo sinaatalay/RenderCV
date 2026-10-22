@@ -1,108 +1,149 @@
-import contextlib
-import os
+import pathlib
+from collections.abc import Callable
 
 import pytest
-import typer
+from click.testing import Result
 
-from rendercv.cli.new_command.new_command import cli_command_new
-from rendercv.schema.rendercv_model_builder import build_rendercv_dictionary_and_model
+from rendercv.cli.new_command.new_command import (
+    build_creation_panel,
+    built_in_design_names,
+)
+from rendercv.schema.sample_generator import get_built_in_design_names
+
+type RunCli = Callable[..., Result]
+
+
+@pytest.fixture
+def project_folder(
+    tmp_path: pathlib.Path, monkeypatch: pytest.MonkeyPatch
+) -> pathlib.Path:
+    monkeypatch.chdir(tmp_path)
+    return tmp_path
 
 
 class TestCliCommandNew:
-    @pytest.mark.parametrize("create_typst_templates", [True, False])
-    @pytest.mark.parametrize("create_markdown_templates", [True, False])
-    @pytest.mark.parametrize("input_file_exists", [True, False])
-    @pytest.mark.parametrize("typst_templates_exist", [True, False])
-    @pytest.mark.parametrize("markdown_templates_exist", [True, False])
-    def test_cli_command_new(
+    @pytest.mark.parametrize(
+        ("options", "expected_files"),
+        [
+            ([], {"John_Doe_CV.yaml"}),
+            (["--design", "moderncv"], {"John_Doe_CV.yaml", "design.typ"}),
+            (["--entries"], {"John_Doe_CV.yaml", "entries.typ"}),
+            (
+                ["--design", "sb2nov", "--entries"],
+                {"John_Doe_CV.yaml", "design.typ", "entries.typ"},
+            ),
+        ],
+    )
+    def test_creates_files(
         self,
-        tmp_path,
-        create_typst_templates,
-        create_markdown_templates,
-        input_file_exists,
-        typst_templates_exist,
-        markdown_templates_exist,
-    ):
-        os.chdir(tmp_path)
+        run_cli: RunCli,
+        project_folder: pathlib.Path,
+        options: list[str],
+        expected_files: set[str],
+    ) -> None:
+        result = run_cli("new", "John Doe", *options)
 
-        full_name = "John Doe"
-        input_file_path = tmp_path / "John_Doe_CV.yaml"
-        typst_folder = tmp_path / "classic"
-        markdown_folder = tmp_path / "markdown"
+        assert result.exit_code == 0, result.output
+        assert {path.name for path in project_folder.iterdir()} == expected_files
+        assert "Welcome to" in result.output
+        assert "Created your YAML input file: ./John_Doe_CV.yaml" in result.output
 
-        # Set up pre-existing files/folders
-        if input_file_exists:
-            input_file_path.write_text("existing content", encoding="utf-8")
-        if typst_templates_exist:
-            typst_folder.mkdir()
-        if markdown_templates_exist:
-            markdown_folder.mkdir()
+    def test_design_file_uses_chosen_design(
+        self, run_cli: RunCli, project_folder: pathlib.Path
+    ) -> None:
+        run_cli("new", "John Doe", "--design", "moderncv")
 
-        cli_command_new(
-            full_name=full_name,
-            create_typst_templates=create_typst_templates,
-            create_markdown_templates=create_markdown_templates,
+        design = (project_folder / "design.typ").read_text(encoding="utf-8")
+        assert "#let design = designs.moderncv(" in design
+
+    def test_yaml_file_uses_given_name_and_locale(
+        self, run_cli: RunCli, project_folder: pathlib.Path
+    ) -> None:
+        result = run_cli("new", "Jane Doe", "--locale", "turkish")
+
+        assert result.exit_code == 0, result.output
+        yaml = (project_folder / "Jane_Doe_CV.yaml").read_text(encoding="utf-8")
+        assert 'name: "Jane Doe"' in yaml
+        assert "language: turkish" in yaml
+
+    def test_created_project_renders(
+        self, run_cli: RunCli, project_folder: pathlib.Path
+    ) -> None:
+        new_result = run_cli("new", "John Doe", "--design", "moderncv", "--entries")
+        render_result = run_cli("render", "John_Doe_CV.yaml", "-nopng", "-nohtml")
+
+        assert new_result.exit_code == 0, new_result.output
+        assert render_result.exit_code == 0, render_result.output
+        output_folder = project_folder / "rendercv_output"
+        assert (output_folder / "John_Doe_CV.pdf").is_file()
+        # The design and entry types next to the YAML file were used:
+        typst_source = (output_folder / "John_Doe_CV.typ").read_text(encoding="utf-8")
+        assert '#import "/design.typ"' in typst_source
+        assert '#import "/entries.typ"' in typst_source
+
+    def test_does_not_overwrite_existing_files(
+        self, run_cli: RunCli, project_folder: pathlib.Path
+    ) -> None:
+        names = ["John_Doe_CV.yaml", "design.typ", "entries.typ"]
+        for name in names:
+            (project_folder / name).write_text("mine", encoding="utf-8")
+
+        result = run_cli("new", "John Doe", "--design", "classic", "--entries")
+
+        assert result.exit_code == 0, result.output
+        for name in names:
+            assert (project_folder / name).read_text(encoding="utf-8") == "mine"
+        assert "Your YAML input file already exists" in result.output
+        assert "Not modified (already exist)" in result.output
+
+    @pytest.mark.parametrize(
+        ("options", "expected_message"),
+        [
+            (["--design", "nonexistent"], "There is no built-in design `nonexistent`"),
+            (["--locale", "nonexistent"], "The locale `nonexistent` is not built in"),
+        ],
+    )
+    def test_rejects_unknown_design_or_locale(
+        self,
+        run_cli: RunCli,
+        project_folder: pathlib.Path,
+        options: list[str],
+        expected_message: str,
+    ) -> None:
+        result = run_cli("new", "John Doe", *options)
+
+        assert result.exit_code == 1
+        assert expected_message in result.output
+        assert "moderncv" in result.output or "english" in result.output
+        # Nothing is created:
+        assert list(project_folder.iterdir()) == []
+
+
+class TestBuildCreationPanel:
+    def test_lists_created_and_existing_files(self) -> None:
+        input_file = pathlib.Path("John_Doe_CV.yaml")
+
+        panel = build_creation_panel(
+            input_file,
+            created_items=[("Your YAML input file", input_file)],
+            existing_items=[("Your design", pathlib.Path("design.typ"))],
         )
 
-        # Input file should always exist after command
-        assert input_file_path.exists()
+        text = str(panel.renderable)
+        assert "Created your YAML input file: [purple]./John_Doe_CV.yaml" in text
+        assert "Not modified (already exist):\n  - Your design: ./design.typ" in text
 
-        # If input file existed before, content should be unchanged
-        if input_file_exists:
-            assert input_file_path.read_text(encoding="utf-8") == "existing content"
-        else:
-            # Make sure it's a valid YAML file
-            yaml_content = input_file_path.read_text(encoding="utf-8")
-            build_rendercv_dictionary_and_model(
-                yaml_content, input_file_path=input_file_path
-            )
+    def test_omits_design_note_when_only_yaml_file_is_involved(self) -> None:
+        input_file = pathlib.Path("John_Doe_CV.yaml")
 
-        # Typst templates
-        if not create_typst_templates:
-            # Should not be created (unless already existed)
-            if not typst_templates_exist:
-                assert not typst_folder.exists()
-        else:
-            # Should exist (created or already existed)
-            assert typst_folder.exists()
-            if typst_templates_exist:
-                assert not (typst_folder / "Header.j2.typ").exists()
-            else:
-                assert (typst_folder / "Header.j2.typ").exists()
+        panel = build_creation_panel(
+            input_file,
+            created_items=[("Your YAML input file", input_file)],
+            existing_items=[],
+        )
 
-        # Markdown templates
-        if not create_markdown_templates:
-            # Should not be created (unless already existed)
-            if not markdown_templates_exist:
-                assert not markdown_folder.exists()
-        else:
-            # Should exist (created or already existed)
-            assert markdown_folder.exists()
-            if markdown_templates_exist:
-                assert not (markdown_folder / "Header.j2.md").exists()
-            else:
-                assert (markdown_folder / "Header.j2.md").exists()
+        assert "design.typ" not in str(panel.renderable)
 
-    def test_errors_for_invalid_theme(self, capsys):
-        with contextlib.suppress(typer.Exit):
-            cli_command_new(
-                full_name="John Doe",
-                theme="invalid_theme",
-                create_typst_templates=False,
-                create_markdown_templates=False,
-            )
 
-            captured = capsys.readouterr()
-            assert "Available themes are:" in captured.out
-
-    def test_errors_for_invalid_locale(self, capsys):
-        with contextlib.suppress(typer.Exit):
-            cli_command_new(
-                full_name="John Doe",
-                locale="invalid_locale",
-                create_typst_templates=False,
-                create_markdown_templates=False,
-            )
-
-            captured = capsys.readouterr()
-            assert "Available locales are:" in captured.out
+def test_built_in_design_names_match_the_typst_package() -> None:
+    assert built_in_design_names == get_built_in_design_names()

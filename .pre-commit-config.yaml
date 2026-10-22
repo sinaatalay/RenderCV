@@ -9,7 +9,7 @@ repos:
     hooks:
       - id: codespell
         args:
-          - --skip=src/rendercv/schema/models/locale/other_locales/*
+          - --skip=src/rendercv/data/locales/*,js/bun.lock
           - --exclude-file=schema.json
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.7
@@ -24,4 +24,4 @@ repos:
         entry: ty check src tests
         pass_filenames: false
         args: [--python=.venv/]
-        additional_dependencies: ["ty>=0.0.24"]
+        additional_dependencies: ["ty==0.0.83"]

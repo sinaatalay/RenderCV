@@ -95,9 +95,11 @@ That's why [`schema.json`](https://github.com/rendercv/rendercv/blob/main/schema
 
 ## How the Schema is Generated?
 
-We don't write `schema.json` by hand. **It's automatically generated from Pydantic models.**
+We don't write `schema.json` by hand. **It's automatically generated from Pydantic models and the standard entry types.**
 
-RenderCV's entire data structure is defined using Pydantic models (see [Understanding RenderCV](understanding_rendercv.md) for details). Pydantic has a built-in feature: `model_json_schema()`, which generates JSON Schema from your models.
+The fixed parts of the YAML (`cv`'s header fields, `locale`, `settings`) are Pydantic models (see [Understanding RenderCV](understanding_rendercv.md) for details). Pydantic has a built-in feature: `model_json_schema()`, which generates JSON Schema from your models.
+
+Entries are different: their types are declared in Typst. [`schema/json_schema_generator.py`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/schema/json_schema_generator.py) reads the standard entry types from RenderCV's Typst package, builds their Pydantic models the same way `rendercv render` does, and adds one definition per entry type (`ExperienceEntry`, `EducationEntry`, ...) to the schema. A user's own entry types in `entries.typ` are not in `schema.json`, because it is one schema for everyone.
 
 Whenever data models change, run:
 
@@ -116,7 +118,7 @@ There are two ways editors discover and use RenderCV's schema:
 Add a special comment at the top of your YAML file:
 
 ```yaml
-# yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.4/schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v3.0.0/schema.json
 
 cv:
   name: John Doe

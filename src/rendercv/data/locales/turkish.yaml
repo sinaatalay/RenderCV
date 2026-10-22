@@ -1,0 +1,38 @@
+# Turkish locale.
+language: turkish
+iso_code: tr
+direction: ltr
+last_updated: "Son güncelleme"
+present: "halen"
+month: "ay"
+months: "ay"
+year: "yıl"
+years: "yıl"
+phrases:
+  degree_with_area: "#area, #degree"
+month_abbreviations:
+  - "Oca"
+  - "Şub"
+  - "Mar"
+  - "Nis"
+  - "May"
+  - "Haz"
+  - "Tem"
+  - "Ağu"
+  - "Eyl"
+  - "Eki"
+  - "Kas"
+  - "Ara"
+month_names:
+  - "Ocak"
+  - "Şubat"
+  - "Mart"
+  - "Nisan"
+  - "Mayıs"
+  - "Haziran"
+  - "Temmuz"
+  - "Ağustos"
+  - "Eylül"
+  - "Ekim"
+  - "Kasım"
+  - "Aralık"
