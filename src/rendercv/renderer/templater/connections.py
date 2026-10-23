@@ -32,6 +32,8 @@ fontawesome_icons = {
     "phone": "phone",
     "website": "link",
     "Reddit": "reddit",
+    "Itch.io": "itch-io",
+    "Devpost": "devpost",
 }
 
 

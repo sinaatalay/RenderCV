@@ -5009,7 +5009,9 @@
         "Leetcode",
         "X",
         "Bluesky",
-        "Reddit"
+        "Reddit",
+        "Itch.io",
+        "Devpost"
       ],
       "type": "string"
     },
