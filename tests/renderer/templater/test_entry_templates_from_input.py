@@ -75,6 +75,7 @@ class TestProcessDate:
             end_date="2021-02-01",
             locale=EnglishLocale(),
             show_time_span=True,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
             single_date_template="MONTH_ABBREVIATION YEAR",
             date_range_template="START_DATE – END_DATE",
@@ -90,6 +91,7 @@ class TestProcessDate:
             end_date="2021-02-01",
             locale=EnglishLocale(),
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
             single_date_template="MONTH_ABBREVIATION YEAR",
             date_range_template="START_DATE – END_DATE",
@@ -106,6 +108,7 @@ class TestProcessDate:
                 end_date=None,
                 locale=EnglishLocale(),
                 show_time_span=True,
+                compact_date_ranges_removing_start_year=False,
                 current_date=Date(2024, 1, 1),
                 single_date_template="MONTH_ABBREVIATION YEAR",
                 date_range_template="START_DATE – END_DATE",
@@ -186,6 +189,7 @@ class TestRenderEntryTemplates:
             templates=Templates(),
             locale=EnglishLocale(),
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -199,6 +203,7 @@ class TestRenderEntryTemplates:
             templates=Templates(),
             locale=EnglishLocale(),
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -218,6 +223,7 @@ class TestRenderEntryTemplates:
             templates=Templates(),
             locale=EnglishLocale(),
             show_time_span=True,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -240,6 +246,7 @@ class TestRenderEntryTemplates:
             ),
             locale=EnglishLocale(),
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -333,6 +340,7 @@ class TestRenderEntryTemplates:
             ),
             locale=EnglishLocale(),
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -362,6 +370,7 @@ class TestRenderEntryTemplates:
             templates=templates_with_phrase,
             locale=EnglishLocale(),
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -388,6 +397,7 @@ class TestRenderEntryTemplates:
             templates=templates_with_phrase,
             locale=french_locale,
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -414,6 +424,7 @@ class TestRenderEntryTemplates:
             templates=templates_with_phrase,
             locale=japanese_locale,
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -436,6 +447,7 @@ class TestRenderEntryTemplates:
             ),
             locale=EnglishLocale(),
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -467,6 +479,7 @@ class TestRenderEntryTemplates:
             templates=Templates(),
             locale=EnglishLocale(),
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -480,6 +493,7 @@ class TestRenderEntryTemplates:
             templates=Templates(),
             locale=EnglishLocale(),
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -499,6 +513,7 @@ class TestRenderEntryTemplates:
             templates=Templates(),
             locale=EnglishLocale(),
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -512,6 +527,7 @@ class TestRenderEntryTemplates:
             templates=Templates(),
             locale=EnglishLocale(),
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -537,6 +553,7 @@ class TestRenderEntryTemplates:
             templates=templates,
             locale=EnglishLocale(),
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -551,6 +568,7 @@ class TestRenderEntryTemplates:
             templates=Templates(),
             locale=EnglishLocale(),
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -752,6 +770,7 @@ class TestRenderEntryTemplatesInternalErrors:
                 templates=Templates(),
                 locale=EnglishLocale(),
                 show_time_span=False,
+                compact_date_ranges_removing_start_year=False,
                 current_date=Date(2024, 1, 1),
             )
 
@@ -788,6 +807,7 @@ class TestRenderEntryTemplatesInternalErrors:
                 templates=Templates(),
                 locale=EnglishLocale(),
                 show_time_span=False,
+                compact_date_ranges_removing_start_year=False,
                 current_date=Date(2024, 1, 1),
             )
 
@@ -918,6 +938,7 @@ class TestRenderEntryTemplatesWithMissingDegree:
             ),
             locale=EnglishLocale(),
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -944,6 +965,7 @@ class TestRenderEntryTemplatesWithMissingDegree:
             ),
             locale=locale_adapter.validate_python({"language": "french"}),
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
@@ -971,6 +993,7 @@ class TestRenderEntryTemplatesWithMissingDegree:
             ),
             locale=EnglishLocale(),
             show_time_span=False,
+            compact_date_ranges_removing_start_year=False,
             current_date=Date(2024, 1, 1),
         )
 
