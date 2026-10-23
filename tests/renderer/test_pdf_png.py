@@ -1,3 +1,4 @@
+import contextlib
 import pathlib
 from unittest.mock import MagicMock, patch
 
@@ -5,6 +6,7 @@ import pytest
 
 from rendercv.exception import RenderCVInternalError
 from rendercv.renderer.pdf_png import (
+    ensure_typst_source_for_compilation,
     generate_pdf,
     generate_png,
     get_package_path,
@@ -175,6 +177,87 @@ class TestGeneratePngCleansUpOldFiles:
 
         assert result is not None
         assert len(result) >= 1
+
+
+class TestEnsureTypstSourceForCompilation:
+    def test_temp_dir_removed_after_successful_use(
+        self, minimal_rendercv_model: RenderCVModel
+    ):
+        with ensure_typst_source_for_compilation(
+            minimal_rendercv_model, None
+        ) as typst_path:
+            assert typst_path.is_file()
+            temp_dir = typst_path.parent
+
+        assert not typst_path.exists()
+        assert not temp_dir.exists()
+
+    def test_temp_dir_removed_after_exception(
+        self, minimal_rendercv_model: RenderCVModel
+    ):
+        temp_dir = None
+        with (  # noqa: PT012
+            pytest.raises(RuntimeError, match="boom"),
+            ensure_typst_source_for_compilation(
+                minimal_rendercv_model, None
+            ) as typst_path,
+        ):
+            temp_dir = typst_path.parent
+            raise RuntimeError("boom")
+
+        assert temp_dir is not None
+        assert not temp_dir.exists()
+
+    def test_persisted_typst_path_is_not_removed(
+        self, tmp_path: pathlib.Path, minimal_rendercv_model: RenderCVModel
+    ):
+        persisted_path = tmp_path / "cv.typ"
+        persisted_path.write_text("content", encoding="utf-8")
+
+        with ensure_typst_source_for_compilation(
+            minimal_rendercv_model, persisted_path
+        ) as typst_path:
+            assert typst_path == persisted_path
+
+        assert persisted_path.exists()
+
+
+def test_generate_pdf_cleans_up_temp_typst_source(
+    tmp_path: pathlib.Path, minimal_rendercv_model: RenderCVModel
+):
+    """Reproduces #730: PDF still compiles when Typst isn't persisted, and the
+    private temp source used for that compilation doesn't leak past the call.
+    """
+    model = RenderCVModel(
+        cv=minimal_rendercv_model.cv,
+        design={"theme": "classic"},
+        locale=minimal_rendercv_model.locale,
+        settings=minimal_rendercv_model.settings,
+    )
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+    model.settings.render_command.pdf_path = output_dir / "John_Doe_CV.pdf"
+
+    captured_temp_dirs = []
+
+    @contextlib.contextmanager
+    def spying_ensure(rendercv_model, typst_path):
+        with ensure_typst_source_for_compilation(
+            rendercv_model, typst_path
+        ) as resolved_path:
+            captured_temp_dirs.append(resolved_path.parent)
+            yield resolved_path
+
+    with patch(
+        "rendercv.renderer.pdf_png.ensure_typst_source_for_compilation",
+        spying_ensure,
+    ):
+        result = generate_pdf(model, None)
+
+    assert result is not None
+    assert result.exists()
+    assert captured_temp_dirs
+    assert not captured_temp_dirs[0].exists()
 
 
 def test_raises_error_when_typst_returns_none_bytes(
