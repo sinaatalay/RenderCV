@@ -49,6 +49,8 @@ Choose boundary cases relevant to the change: missing fields, empty lists, Unico
 
 Renderer tests compare generated files with saved **reference files** in `tests/renderer/testdata/`. These record the output we previously inspected and accepted. A difference in any expected page fails the comparison, which catches layout changes that small assertions can miss.
 
+PDF and PNG reference tests use only bundled fonts, so fonts installed on your computer cannot change the expected output.
+
 When output changes intentionally, run:
 
 ```bash

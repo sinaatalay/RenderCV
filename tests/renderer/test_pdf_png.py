@@ -28,6 +28,7 @@ from rendercv.schema.models.validation_context import ValidationContext
 from rendercv.schema.rendercv_model_builder import build_rendercv_dictionary_and_model
 
 
+@pytest.mark.usefixtures("bundled_fonts_only")
 @pytest.mark.parametrize("theme", available_themes)
 @pytest.mark.parametrize("cv_variant", ["minimal", "full"])
 def test_generate_pdf(
@@ -55,6 +56,7 @@ def test_generate_pdf(
     assert compare_file_with_reference(generate_file, reference_filename)
 
 
+@pytest.mark.usefixtures("bundled_fonts_only")
 @pytest.mark.parametrize("theme", available_themes)
 def test_generate_png(
     compare_file_with_reference,

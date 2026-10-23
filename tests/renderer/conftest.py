@@ -1,4 +1,5 @@
 import filecmp
+import functools
 import itertools
 import pathlib
 import shutil
@@ -9,7 +10,9 @@ from datetime import date as Date
 import pydantic
 import pydantic_extra_types.phone_numbers as pydantic_phone_numbers
 import pytest
+import typst
 
+from rendercv.renderer.pdf_png import get_typst_compiler
 from rendercv.schema.models.cv.cv import Cv
 from rendercv.schema.models.cv.entries.bullet import BulletEntry
 from rendercv.schema.models.cv.entries.education import EducationEntry
@@ -23,6 +26,19 @@ from rendercv.schema.models.cv.section import SubsectionEntry
 from rendercv.schema.models.cv.social_network import SocialNetwork
 from rendercv.schema.models.rendercv_model import RenderCVModel
 from rendercv.schema.models.settings.settings import Settings
+
+
+@pytest.fixture
+def bundled_fonts_only(monkeypatch):
+    """Compare rendered bytes using the same fonts on every machine."""
+    get_typst_compiler.cache_clear()
+    monkeypatch.setattr(
+        typst,
+        "Compiler",
+        functools.partial(typst.Compiler, ignore_system_fonts=True),
+    )
+    yield
+    get_typst_compiler.cache_clear()
 
 
 @pytest.fixture
