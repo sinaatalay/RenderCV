@@ -104,6 +104,7 @@
   [#link("https://example.com/", icon: false, if-underline: false, if-color: false)[example.com]],
   [#link("https://linkedin.com/in/johndoe", icon: false, if-underline: false, if-color: false)[linkedin.com\/in\/johndoe]],
   [#link("https://github.com/johndoe", icon: false, if-underline: false, if-color: false)[github.com\/johndoe]],
+  [#link("https://huggingface.co/johndoe", icon: false, if-underline: false, if-color: false)[huggingface.co\/johndoe]],
   [#link("https://imdb.com/name/nm0000001", icon: false, if-underline: false, if-color: false)[imdb.com\/name\/nm0000001]],
   [#link("https://instagram.com/johndoe", icon: false, if-underline: false, if-color: false)[instagram.com\/johndoe]],
   [#link("https://orcid.org/0000-0000-0000-0000", icon: false, if-underline: false, if-color: false)[orcid.org\/0000-0000-0000-0000]],

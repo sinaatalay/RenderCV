@@ -194,6 +194,7 @@ def full_rendercv_model(testdata_dir: pathlib.Path) -> RenderCVModel:
         social_networks=[
             SocialNetwork(network="LinkedIn", username="johndoe"),
             SocialNetwork(network="GitHub", username="johndoe"),
+            SocialNetwork(network="HuggingFace", username="johndoe"),
             SocialNetwork(network="IMDB", username="nm0000001"),
             SocialNetwork(network="Instagram", username="johndoe"),
             SocialNetwork(network="ORCID", username="0000-0000-0000-0000"),
