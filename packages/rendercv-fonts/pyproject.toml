@@ -1,0 +1,101 @@
+[build-system]
+requires = ["hatchling==1.26.3"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+# In wheel, what do we want to include and exclude?
+packages = ["rendercv_fonts"]
+
+[tool.hatch.version]
+path = "rendercv_fonts/__init__.py"
+
+[project]
+name = 'rendercv-fonts'
+authors = [{ name = 'Sina Atalay', email = 'dev@atalay.biz' }]
+description = 'Some fonts for RenderCV'
+license = "MIT"
+readme = "README.md"
+requires-python = '>=3.10'
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+]
+dynamic = ["version"]
+
+[project.urls]
+Source = 'https://github.com/rendercv/rendercv-fonts'
+
+# ======================================================================================
+# Virtual Environments Below ===========================================================
+# ======================================================================================
+
+[tool.hatch.envs.default]
+installer = "uv"
+python = "3.13"
+dependencies = [
+    "ruff",    # to lint and format the code
+    "black",   # to format the code
+    "ipython", # for ipython shell
+    "pyright", # to check the types
+    "pytest",  # for testing
+]
+[tool.hatch.envs.default.scripts]
+format = "ruff check --fix && ruff format && black rendercv_fonts" # hatch run format
+lint = "ruff check"                                                  # hatch run lint
+check-types = "pyright rendercv_fonts"                             # hatch run check-types
+test = "pytest tests"                                                # hatch run test
+
+[tool.hatch.envs.test]
+template = "default"
+[[tool.hatch.envs.test.matrix]]
+python = ["3.10", "3.11", "3.12", "3.13"]
+
+# ======================================================================================
+# Virtual Environments Above ===========================================================
+# ======================================================================================
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint]
+extend-select = [
+    "B",   # flake8-bugbear
+    "I",   # isort
+    "ARG", # flake8-unused-arguments
+    "C4",  # flake8-comprehensions
+    "EM",  # flake8-errmsg
+    "ICN", # flake8-import-conventions
+    "ISC", # flake8-implicit-str-concat
+    "G",   # flake8-logging-format
+    "PGH", # pygrep-hooks
+    "PIE", # flake8-pie
+    "PL",  # pylint
+    "PT",  # flake8-pytest-style
+    "PTH", # flake8-use-pathlib
+    "RET", # flake8-return
+    "RUF", # Ruff-specific
+    "SIM", # flake8-simplify
+    "T20", # flake8-print
+    "UP",  # pyupgrade
+    "YTT", # flake8-2020
+    "EXE", # flake8-executable
+    "NPY", # NumPy specific rules
+    "PD",  # pandas-vet
+]
+ignore = [
+    "PLR",    # Design related pylint codes
+    "ISC001", # Conflicts with formatter
+    "UP007",  # I like Optional type
+    "PGH003", # It would be nice to not ignore this
+]
+flake8-unused-arguments.ignore-variadic-names = true
+
+[tool.black]
+line-length = 88 # maximum line length
+preview = true # to allow enable-unstable-feature
+enable-unstable-feature = [
+    "string_processing",
+] # to break strings into multiple lines
