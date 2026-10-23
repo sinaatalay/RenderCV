@@ -36,6 +36,9 @@ class TestTypstDimension:
             "100pt",
             "0.1cm",
             "-1cm",
+            ".22pt",
+            ".5cm",
+            "-.5cm",
         ],
     )
     def test_accepts_valid_dimensions(self, valid_dimension):
@@ -57,6 +60,9 @@ class TestTypstDimension:
             "1.5rem",
             "cm1",
             "",
+            ".cm",
+            ".pt",
+            "1.pt",
         ],
     )
     def test_rejects_invalid_dimensions(self, invalid_dimension):
