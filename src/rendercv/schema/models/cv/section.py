@@ -93,13 +93,21 @@ class BaseRenderCVSubsection(BaseModelWithoutExtraKeys):
 
 class BaseRenderCVSection(BaseModelWithoutExtraKeys):
     title: str
+    key: str = pydantic.Field(
+        default="",
+        description="Original YAML section key, preserved for style selectors and locale label lookups.",
+    )
     entry_type: str
     entries: list[Any]
     subsections: list[BaseRenderCVSubsection] | None = None
 
     @property
     def snake_case_title(self) -> str:
-        return self.title.lower().replace(" ", "_")
+        return (
+            self.key.lower().replace(" ", "_")
+            if self.key
+            else self.title.lower().replace(" ", "_")
+        )
 
 
 def create_section_models(
@@ -461,6 +469,7 @@ def get_rendercv_sections(
             # SectionBase is used so that entries are not validated again:
             section = BaseRenderCVSection(
                 title=formatted_title,
+                key=title,
                 entry_type=entry_type_name,
                 entries=flattened_entries,
                 subsections=subsections,
