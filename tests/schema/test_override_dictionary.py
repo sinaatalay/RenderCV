@@ -194,9 +194,20 @@ class TestUpdateValueByLocation:
     @settings(deadline=None)
     @given(items=st.lists(st.text(max_size=10), min_size=1, max_size=5))
     def test_list_index_out_of_bounds_raises(self, items: list[str]) -> None:
-        bad_index = len(items)
+        # Bad index is 1 more than len as exactly equal to len 
+        # means they want to append the array
+        bad_index = len(items) + 1
         with pytest.raises(RenderCVUserError):
             update_value_by_location(items, str(bad_index), "val", str(bad_index))
+
+    @settings(deadline=None)
+    @given(items=st.lists(st.text(max_size=10), min_size=1, max_size=5))
+    def test_list_index_at_len_appends_to_list(self, items: list[str]) -> None:
+        last_index = len(items)
+        result = update_value_by_location(
+            items, str(last_index), "val", str(last_index)
+        )
+        assert result[last_index] == "val"
 
     @settings(deadline=None)
     @given(key=st.from_regex(r"[a-z]{2,8}", fullmatch=True))
