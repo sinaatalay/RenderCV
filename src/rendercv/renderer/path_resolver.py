@@ -1,36 +1,10 @@
 import pathlib
+import re
 
 from rendercv.schema.models.rendercv_model import RenderCVModel
 
-from .templater.date import build_date_placeholders
-from .templater.string_processor import substitute_placeholders
-
-
-def build_name_variants(name: str | None) -> dict[str, str]:
-    """Generate all case/separator variants of a name for placeholder substitution.
-
-    Why:
-        Output file paths use placeholders like NAME_IN_LOWER_SNAKE_CASE.
-        Centralizing variant generation avoids repeating the same
-        null-check-and-transform pattern for each variant.
-
-    Args:
-        name: The CV owner's name, or None.
-
-    Returns:
-        Dictionary mapping placeholder names to their values.
-    """
-    if name is None:
-        return {}
-    return {
-        "NAME": name,
-        "NAME_IN_SNAKE_CASE": name.replace(" ", "_"),
-        "NAME_IN_LOWER_SNAKE_CASE": name.replace(" ", "_").lower(),
-        "NAME_IN_UPPER_SNAKE_CASE": name.replace(" ", "_").upper(),
-        "NAME_IN_KEBAB_CASE": name.replace(" ", "-"),
-        "NAME_IN_LOWER_KEBAB_CASE": name.replace(" ", "-").lower(),
-        "NAME_IN_UPPER_KEBAB_CASE": name.replace(" ", "-").upper(),
-    }
+from .templater.model_processor import build_document_placeholders
+from .templater.segments import substitute_placeholders
 
 
 def resolve_output_folder_placeholder(
@@ -64,6 +38,10 @@ def resolve_output_folder_placeholder(
     return output_folder
 
 
+# Characters that can't be in a file name on some operating system, like `/`:
+invalid_file_name_characters = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
+
+
 def resolve_rendercv_file_path(
     rendercv_model: RenderCVModel, file_path: pathlib.Path
 ) -> pathlib.Path:
@@ -74,7 +52,8 @@ def resolve_rendercv_file_path(
         placeholders for dynamic naming. This function first resolves the
         OUTPUT_FOLDER directory component to the configured output folder, then
         substitutes name and date placeholders in the filename, and finally
-        creates parent directories as needed.
+        creates parent directories as needed. Characters of values that can't
+        be in a file name (`/`, `:`, ...) are replaced by `_`.
 
     Example:
         ```py
@@ -97,12 +76,13 @@ def resolve_rendercv_file_path(
     output_folder = rendercv_model.settings.render_command.output_folder
     file_path = resolve_output_folder_placeholder(file_path, output_folder)
 
-    current_date = rendercv_model.settings._resolved_current_date
-    file_path_placeholders: dict[str, str] = {
-        **build_date_placeholders(current_date, locale=rendercv_model.locale),
-        **build_name_variants(rendercv_model.cv.name),
+    # A value is a part of the file name, whatever it contains (`/` in a name would
+    # make a directory), and the same on every operating system:
+    placeholders = {
+        name: invalid_file_name_characters.sub("_", value)
+        for name, value in build_document_placeholders(rendercv_model).items()
     }
-    file_name = substitute_placeholders(file_path.name, file_path_placeholders)
+    file_name = substitute_placeholders(file_path.name, placeholders)
     resolved_file_path = file_path.parent / file_name
     resolved_file_path.parent.mkdir(parents=True, exist_ok=True)
     return resolved_file_path

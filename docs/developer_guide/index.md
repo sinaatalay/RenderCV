@@ -4,15 +4,19 @@ toc_depth: 1
 
 # Setup
 
+This guide introduces the tools used to develop RenderCV and explains how they work together. Start here to run the project, then follow [Understanding RenderCV](understanding_rendercv.md) to trace a CV from YAML to PDF.
+
 ## Prerequisites
 
-You need two tools to develop RenderCV:
+You need three tools:
 
-- **[`uv`](https://docs.astral.sh/uv/)**: Package and project manager. It also handles Python installations, so you don't need to install Python separately.
-- **[`just`](https://github.com/casey/just)**: Command runner. Development commands are defined in the [`justfile`](https://github.com/rendercv/rendercv/blob/main/justfile), and you need `just` to run them.
+- **[Git](https://git-scm.com/)** downloads the repository and tracks changes to its files.
+- **[`uv`](https://docs.astral.sh/uv/)** installs Python and the packages RenderCV depends on, including development tools. You don't need to install Python separately.
+- **[`just`](https://github.com/casey/just)** runs named commands from the [`justfile`](https://github.com/rendercv/rendercv/blob/main/justfile). For example, `just test` runs the project's test command without requiring you to remember its options.
 
 Install them by following their official installation guides:
 
+- [Install Git](https://git-scm.com/install/)
 - [Install `uv`](https://docs.astral.sh/uv/getting-started/installation/)
 - [Install `just`](https://github.com/casey/just#installation)
 
@@ -21,7 +25,7 @@ Install them by following their official installation guides:
 1. Clone the repository:
 
     ```bash
-    git clone --recursive https://github.com/rendercv/rendercv.git
+    git clone https://github.com/rendercv/rendercv.git
     ```
 
     and change to the repository directory:
@@ -30,33 +34,32 @@ Install them by following their official installation guides:
     cd rendercv
     ```
 
-    > [!NOTE]
-    > The `--recursive` flag clones the [rendercv-skill](https://github.com/rendercv/rendercv-skill) submodule. If you forgot it, run `git submodule update --init` inside the repo.
-
-2. Set up the development environment (creates a virtual environment in `./.venv` with all dependencies):
+2. Install the project's dependencies:
 
     ```bash
     just sync
     ```
 
+    This creates a **virtual environment** in `.venv`: a Python installation and package directory for this project. Keeping them separate from other projects prevents their package versions from interfering. `uv.lock` records the versions to install; see [Project Management](project_management.md).
+
 3. Run `just test` to verify all tests pass and everything is set up correctly.
 
-4. Finally, activate the virtual environment in your integrated development environment (IDE). In Visual Studio Code:
+4. Tell your editor to use this environment so it can find the installed packages. In Visual Studio Code:
 
     - Press `Ctrl+Shift+P`.
     - Type `Python: Select Interpreter`.
     - Select the one in `./.venv`.
 
 
-That's it! You're now ready to start developing RenderCV.
+Run development commands from the repository directory. The `just` recipes use `uv run` to select `.venv` automatically; you do not need to activate it in your terminal.
 
 ## Available Commands
 
 ### Development
 
-- `just sync`: Sync all dependencies (including extras and dev groups)
-- `just format`: Format code with `black` and `ruff`
-- `just check`: Run all checks (`ruff`, `ty`, `pre-commit`)
+- `just sync`: Install the locked dependencies for running and developing RenderCV
+- `just format`: Format code with `ruff`
+- `just check`: Check formatting, code, types, spelling, and configuration
 - `just lock`: Update `uv.lock` file
 
 ### Testing
@@ -72,9 +75,10 @@ That's it! You're now ready to start developing RenderCV.
 
 ### Scripts
 
-- `just update-schema`: Update JSON schema
+- `just update-schema`: Update the JSON Schema used by YAML editors
 - `just update-entry-figures`: Update entry figures for documentation
 - `just update-examples`: Update example files
+- `just update-skill`: Update the published AI agent instructions from their source
 - `just create-executable`: Create standalone executable
 
 ### Utilities

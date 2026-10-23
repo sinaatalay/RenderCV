@@ -63,7 +63,7 @@ def create_variant_pydantic_model[T: pydantic.BaseModel](
     class_name_suffix: str,
     module_name: str,
     require_all_fields: bool = False,
-    optional_fields: set[str] | None = None,
+    optional_fields: frozenset[str] | set[str] = frozenset(),
 ) -> type[T]:
     """Create Pydantic model variant with customized defaults.
 
@@ -94,9 +94,7 @@ def create_variant_pydantic_model[T: pydantic.BaseModel](
         module_name: Module path for the generated class.
         require_all_fields: If True, every field in the base model must be
             present in defaults (checked recursively for nested models).
-        optional_fields: Fields excluded from the `require_all_fields` check.
-            Useful for base-model fields that have sensible defaults and do not
-            need per-locale translation (e.g., `section_labels`).
+        optional_fields: Fields whose defaults need no variant-specific override.
 
     Returns:
         New model class with overrides applied.
@@ -147,7 +145,7 @@ def validate_defaults_against_base(
     variant_name: str,
     *,
     require_all_fields: bool = False,
-    optional_fields: set[str] | None = None,
+    optional_fields: frozenset[str] | set[str] = frozenset(),
 ) -> None:
     """Validate that all fields in defaults exist in the base model.
 
@@ -163,7 +161,7 @@ def validate_defaults_against_base(
             present in defaults. Nested Pydantic model fields are checked
             recursively. Useful for locales where falling back to English
             defaults is incorrect.
-        optional_fields: Fields excluded from the `require_all_fields` check.
+        optional_fields: Top-level fields allowed to inherit their defaults.
     """
     base_fields = base_class.model_fields
 
@@ -176,8 +174,7 @@ def validate_defaults_against_base(
             raise RenderCVInternalError(message)
 
     if require_all_fields:
-        excluded = optional_fields or set()
-        missing_fields = set(base_fields.keys()) - set(defaults.keys()) - excluded
+        missing_fields = set(base_fields) - set(defaults) - optional_fields
         if missing_fields:
             message = (
                 f"Missing fields {sorted(missing_fields)} in defaults for"

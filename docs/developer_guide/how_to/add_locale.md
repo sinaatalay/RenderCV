@@ -1,5 +1,7 @@
 # Add a New Locale
 
+A locale supplies language-specific text and date conventions, such as month names and the word for “present.” It translates RenderCV's generated labels, not the CV text the user wrote. Each locale starts from the English defaults and provides its own values.
+
 1. Create a YAML file in `src/rendercv/schema/models/locale/other_locales/`
 
     ```bash
@@ -18,6 +20,8 @@
       year: "Your translation"
       years: "Your translation"
       present: "Your translation"
+      phrases:
+        degree_with_area: "DEGREE in AREA"
       month_abbreviations:
         - Jan
         - Feb
@@ -45,6 +49,15 @@
         - November
         - December
     ```
+
+    Translate every field, including `phrases.degree_with_area`, preserving the
+    `DEGREE` and `AREA` placeholders. Check month names and abbreviations against
+    [Unicode CLDR](https://github.com/unicode-org/cldr/tree/main/common/main).
+    Use Gregorian **stand-alone** forms for month/year dates, following
+    [CLDR's date guidance](https://cldr.unicode.org/translation/date-time/date-time-patterns),
+    including lowercase letters and punctuation where appropriate. If the language
+    needs more plural forms than singular/plural, use invariant duration
+    abbreviations until the renderer supports those forms.
 
 3. Add ISO 639-1 language code and flag emoji to `english_locale.py`
 

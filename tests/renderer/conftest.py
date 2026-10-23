@@ -19,6 +19,7 @@ from rendercv.schema.models.cv.entries.numbered import NumberedEntry
 from rendercv.schema.models.cv.entries.one_line import OneLineEntry
 from rendercv.schema.models.cv.entries.publication import PublicationEntry
 from rendercv.schema.models.cv.entries.reversed_numbered import ReversedNumberedEntry
+from rendercv.schema.models.cv.section import SubsectionEntry
 from rendercv.schema.models.cv.social_network import SocialNetwork
 from rendercv.schema.models.rendercv_model import RenderCVModel
 from rendercv.schema.models.settings.settings import Settings
@@ -61,10 +62,10 @@ def compare_file_with_reference(
         output_path_input = output_dir / reference_filename
         callable_func(output_path_input)
 
-        reference_paths = list(
+        reference_paths = sorted(
             testdata_dir.glob(f"{output_path_input.stem}*{output_path_input.suffix}")
         )
-        generated_paths = list(
+        generated_paths = sorted(
             output_dir.glob(f"{output_path_input.stem}*{output_path_input.suffix}")
         )
 
@@ -74,6 +75,10 @@ def compare_file_with_reference(
 
         if update_testdata:
             testdata_dir.mkdir(parents=True, exist_ok=True)
+            generated_names = {path.name for path in generated_paths}
+            for reference_path in reference_paths:
+                if reference_path.name not in generated_names:
+                    reference_path.unlink()
             for generated_path in generated_paths:
                 shutil.copy(generated_path, testdata_dir / generated_path.name)
             return True
@@ -93,8 +98,9 @@ def compare_file_with_reference(
             )
             raise FileNotFoundError(msg)
 
-        return any(
-            filecmp.cmp(generated_path, reference_path, shallow=False)
+        return all(
+            generated_path.name == reference_path.name
+            and filecmp.cmp(generated_path, reference_path, shallow=False)
             for generated_path, reference_path in zip(
                 generated_paths, reference_paths, strict=True
             )
@@ -115,57 +121,6 @@ def minimal_rendercv_model() -> RenderCVModel:
         sections={
             "Experience": [
                 "Software Engineer at Company X, 2020-2023",
-            ]
-        },
-    )
-    return RenderCVModel(cv=cv, settings=Settings(current_date=Date(2025, 11, 30)))
-
-
-@pytest.fixture
-def subsections_rendercv_model() -> RenderCVModel:
-    """Create a RenderCVModel with subsection-based sections."""
-    cv = Cv(
-        name="Jane Doe",
-        headline="Research Scientist",
-        sections={
-            "Selected Work": [
-                {
-                    "title": "Career Highlights",
-                    "entries": [
-                        (
-                            "Built a research platform that supports **mixed subsection"
-                            " entry types**."
-                        )
-                    ],
-                },
-                {
-                    "title": "Featured Projects",
-                    "entries": [
-                        NormalEntry(
-                            name="Subsection Support",
-                            summary=(
-                                "Implemented subsection-based sections across schema,"
-                                " rendering, and docs."
-                            ),
-                            date="2024-02",
-                        )
-                    ],
-                },
-                {
-                    "title": "Recent Milestones",
-                    "entries": [
-                        ReversedNumberedEntry(
-                            reversed_number="Rolled out subsection rendering"
-                        ),
-                        ReversedNumberedEntry(
-                            reversed_number="Added schema and snapshot coverage"
-                        ),
-                    ],
-                },
-                {
-                    "title": "Future Work",
-                    "entries": [],
-                },
             ]
         },
     )
@@ -195,6 +150,8 @@ def full_rendercv_model(testdata_dir: pathlib.Path) -> RenderCVModel:
             SocialNetwork(network="LinkedIn", username="johndoe"),
             SocialNetwork(network="GitHub", username="johndoe"),
             SocialNetwork(network="HuggingFace", username="johndoe"),
+            SocialNetwork(network="Itch.io", username="johndoe"),
+            SocialNetwork(network="Devpost", username="johndoe"),
             SocialNetwork(network="IMDB", username="nm0000001"),
             SocialNetwork(network="Instagram", username="johndoe"),
             SocialNetwork(network="ORCID", username="0000-0000-0000-0000"),
@@ -209,8 +166,6 @@ def full_rendercv_model(testdata_dir: pathlib.Path) -> RenderCVModel:
             SocialNetwork(network="X", username="johndoe"),
             SocialNetwork(network="Bluesky", username="johndoe.bsky.social"),
             SocialNetwork(network="Reddit", username="johndoe"),
-            SocialNetwork(network="Itch.io", username="johndoe"),
-            SocialNetwork(network="Devpost", username="johndoe"),
         ],
         sections={
             "Text Entries": [
@@ -258,6 +213,36 @@ def full_rendercv_model(testdata_dir: pathlib.Path) -> RenderCVModel:
             ],
             "A Section & with % Special Characters": [
                 NormalEntry(name="A Section & with % Special Characters")
+            ],
+            "Subsections": [
+                SubsectionEntry(
+                    title="Publication Entries",
+                    entries=[
+                        PublicationEntry(
+                            title="A Paper in a *Subsection*",
+                            authors=["J. Doe", "***H. Tom***"],
+                            journal="IEEE Transactions on Applied Superconductivity",
+                            date="2021-09",
+                        ),
+                        PublicationEntry(title="Another Paper", authors=["J. Doe"]),
+                    ],
+                ),
+                SubsectionEntry(title="An Empty Subsection", entries=[]),
+                SubsectionEntry(
+                    title="Reversed Numbered Entries",
+                    entries=[
+                        ReversedNumberedEntry(
+                            reversed_number="This is a reversed numbered entry."
+                        ),
+                        ReversedNumberedEntry(
+                            reversed_number="This is a reversed numbered entry."
+                        ),
+                    ],
+                ),
+                SubsectionEntry(
+                    title="Text Entries with **Markdown**",
+                    entries=["A text entry in a subsection, with *markdown*."],
+                ),
             ],
             "Empty Section": [],
         },
@@ -382,11 +367,8 @@ def return_value_for_field(field_name: str, field_type: typing.Any) -> typing.An
         return [return_value_for_field(field_name, element_type)]
 
     # 6. Check against type dictionary
-    for field_type, value in field_type_dictionary.items():
-        if field_type is field_type or field_type == field_type:
-            return value
-        # Also check if type is in Union args
-        if args and field_type in args:
+    for candidate_type, value in field_type_dictionary.items():
+        if candidate_type is field_type or candidate_type in args:
             return value
 
     message = f"No value found for field {field_name} of type {field_type}"

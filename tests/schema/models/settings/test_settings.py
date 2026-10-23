@@ -1,4 +1,4 @@
-import datetime
+from datetime import date as Date
 
 import pydantic
 import pytest
@@ -16,19 +16,19 @@ class TestCurrentDate:
         assert settings.current_date == "today"
 
     def test_accepts_date_object(self):
-        date = datetime.date(2024, 6, 15)
+        date = Date(2024, 6, 15)
         settings = Settings(current_date=date)
 
         assert settings.current_date == date
 
     def test_accepts_iso_date_string(self):
-        settings = Settings(current_date="2024-06-15")  # ty: ignore[invalid-argument-type]
+        settings = Settings(current_date="2024-06-15")
 
-        assert settings.current_date == datetime.date(2024, 6, 15)
+        assert settings.current_date == Date(2024, 6, 15)
 
     def test_rejects_invalid_string(self):
         with pytest.raises(pydantic.ValidationError):
-            Settings(current_date="not-a-date")  # ty: ignore[invalid-argument-type]
+            Settings(current_date="not-a-date")
 
 
 class TestSettings:

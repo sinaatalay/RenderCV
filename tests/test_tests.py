@@ -1,4 +1,4 @@
-"""Tests to validate the test directory structure matches the source directory structure."""
+"""Tests that the structure of the test directory matches the source directory."""
 
 import pathlib
 

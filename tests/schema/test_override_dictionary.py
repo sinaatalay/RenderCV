@@ -8,6 +8,7 @@ from hypothesis import strategies as st
 from rendercv.exception import RenderCVUserError
 from rendercv.schema.override_dictionary import (
     apply_overrides_to_dictionary,
+    merge_overlay,
     update_value_by_location,
 )
 
@@ -144,6 +145,7 @@ class TestUpdateValueByLocation:
         [
             ({"items": ["a", "b"]}, "items.5", "items.5"),
             ({"data": [1]}, "data.10", "data.10"),
+            ({"data": [1]}, "data.-1", "data.-1"),
         ],
     )
     def test_index_out_of_range_raises_error(self, initial_dict, key, full_key):
@@ -158,9 +160,7 @@ class TestUpdateValueByLocation:
         ],
     )
     def test_invalid_structure_raises_error(self, initial_dict, key, full_key):
-        with pytest.raises(
-            RenderCVUserError, match="It seems like there's something wrong"
-        ):
+        with pytest.raises(RenderCVUserError, match="not a mapping or list"):
             update_value_by_location(initial_dict, key, "value", full_key)
 
     def test_mutates_original_structure(self):
@@ -194,20 +194,33 @@ class TestUpdateValueByLocation:
     @settings(deadline=None)
     @given(items=st.lists(st.text(max_size=10), min_size=1, max_size=5))
     def test_list_index_out_of_bounds_raises(self, items: list[str]) -> None:
-        # Bad index is 1 more than len as exactly equal to len 
-        # means they want to append the array
         bad_index = len(items) + 1
         with pytest.raises(RenderCVUserError):
             update_value_by_location(items, str(bad_index), "val", str(bad_index))
 
     @settings(deadline=None)
-    @given(items=st.lists(st.text(max_size=10), min_size=1, max_size=5))
-    def test_list_index_at_len_appends_to_list(self, items: list[str]) -> None:
-        last_index = len(items)
-        result = update_value_by_location(
-            items, str(last_index), "val", str(last_index)
+    @given(items=st.lists(st.text(max_size=10), max_size=5))
+    def test_index_after_the_last_item_adds_an_item(self, items: list[str]) -> None:
+        index = len(items)
+        expected = [*items, "val"]
+
+        result = update_value_by_location(items, str(index), "val", str(index))
+
+        assert result == expected
+
+    def test_adds_a_mapping_at_the_index_after_the_last_item(self):
+        data = {"experience": [{"company": "A"}]}
+
+        data = update_value_by_location(
+            data, "experience.1.company", "B", "experience.1.company"
         )
-        assert result[last_index] == "val"
+        data = update_value_by_location(
+            data, "experience.1.position", "C", "experience.1.position"
+        )
+
+        assert data == {
+            "experience": [{"company": "A"}, {"company": "B", "position": "C"}]
+        }
 
     @settings(deadline=None)
     @given(key=st.from_regex(r"[a-z]{2,8}", fullmatch=True))
@@ -346,3 +359,78 @@ class TestApplyOverridesToDictionary:
         result = apply_overrides_to_dictionary(original, {})
         assert result == original
         assert result is not original
+
+
+overlay_values = st.recursive(
+    st.none() | st.booleans() | st.integers() | st.text(max_size=20),
+    lambda children: (
+        st.lists(children, max_size=4)
+        | st.dictionaries(
+            st.sampled_from(["cv", "name", "entries", "a", "b"]), children
+        )
+    ),
+    max_leaves=15,
+)
+overlay_mappings = st.dictionaries(
+    st.sampled_from(["cv", "name", "entries", "a", "b"]), overlay_values, max_size=4
+)
+
+
+class TestMergeOverlay:
+    def test_later_overlays_do_not_modify_earlier_overlays(self):
+        first = {"entries": {}}
+        data = {}
+        merge_overlay(data, first)
+        merge_overlay(data, {"entries": {"cv": None}})
+        assert first == {"entries": {}}
+        assert data == {"entries": {"cv": None}}
+
+    def test_merges_mappings_and_replaces_other_values(self):
+        data = {
+            "cv": {"name": "J", "email": "a@b.c", "sections": {"x": ["a", "b"]}},
+            "design": {"theme": "classic"},
+        }
+
+        merge_overlay(
+            data, {"cv": {"email": "d@e.f", "sections": {"x": ["c"], "y": ["d"]}}}
+        )
+
+        assert data == {
+            "cv": {
+                "name": "J",
+                "email": "d@e.f",
+                "sections": {"x": ["c"], "y": ["d"]},
+            },
+            "design": {"theme": "classic"},
+        }
+
+    def test_replaces_a_value_with_a_mapping(self):
+        data = {"cv": None}
+
+        merge_overlay(data, {"cv": {"name": "J"}})
+
+        assert data == {"cv": {"name": "J"}}
+
+    @given(
+        original=st.lists(st.text(max_size=20), max_size=8),
+        replacement=st.lists(st.text(max_size=20), max_size=8),
+    )
+    def test_lists_replace_in_order_without_aliasing(self, original, replacement):
+        overlay = {"cv": {"sections": {"work": replacement}}}
+        snapshot = copy.deepcopy(overlay)
+        data = {"cv": {"sections": {"work": original, "untouched": ["kept"]}}}
+        merge_overlay(data, overlay)
+        assert data["cv"]["sections"] == {"work": replacement, "untouched": ["kept"]}
+        data["cv"]["sections"]["work"].append("subsequent edit")
+        assert overlay == snapshot
+
+    @given(base=overlay_mappings, first=overlay_mappings, second=overlay_mappings)
+    def test_idempotence_and_sequential_overlay_isolation(self, base, first, second):
+        snapshot = copy.deepcopy(first)
+        data = copy.deepcopy(base)
+        merge_overlay(data, first)
+        once = copy.deepcopy(data)
+        merge_overlay(data, first)
+        assert data == once
+        merge_overlay(data, second)
+        assert first == snapshot

@@ -17,6 +17,8 @@ type SocialNetworkName = Literal[
     "GitHub",
     "GitLab",
     "HuggingFace",
+    "Itch.io",
+    "Devpost",
     "IMDB",
     "Instagram",
     "ORCID",
@@ -31,8 +33,6 @@ type SocialNetworkName = Literal[
     "X",
     "Bluesky",
     "Reddit",
-    "Itch.io",
-    "Devpost",
 ]
 available_social_networks = get_args(SocialNetworkName.__value__)
 url_dictionary: dict[SocialNetworkName, str] = {
@@ -40,6 +40,7 @@ url_dictionary: dict[SocialNetworkName, str] = {
     "GitHub": "https://github.com/",
     "GitLab": "https://gitlab.com/",
     "HuggingFace": "https://huggingface.co/",
+    "Devpost": "https://devpost.com/",
     "IMDB": "https://imdb.com/name/",
     "Instagram": "https://instagram.com/",
     "ORCID": "https://orcid.org/",
@@ -53,7 +54,6 @@ url_dictionary: dict[SocialNetworkName, str] = {
     "X": "https://x.com/",
     "Bluesky": "https://bsky.app/profile/",
     "Reddit": "https://reddit.com/user/",
-    "Devpost": "https://devpost.com/",
 }
 
 
@@ -123,11 +123,46 @@ class SocialNetwork(BaseModelWithoutExtraKeys):
                 if not re.fullmatch(imdb_username_pattern, username):
                     raise pydantic_core.PydanticCustomError(
                         CustomPydanticErrorTypes.other.value,
-                        "IMDB name should be 'nm' followed by at least seven digits"
-                        " (e.g., 'nm0000001').",
+                        "IMDB name should be 'nm' followed by at least seven digits.",
+                    )
+            case "HuggingFace":
+                # The official signup form specifies 2 to 42 characters, single
+                # interior hyphens, and at least one nonnumeric character.
+                if not (
+                    2 <= len(username) <= 42
+                    and re.fullmatch(r"[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*", username)
+                    and not username.isdecimal()
+                ):
+                    raise pydantic_core.PydanticCustomError(
+                        CustomPydanticErrorTypes.other.value,
+                        "HuggingFace username should contain 2–42 letters, digits,"
+                        " or single interior hyphens, and cannot contain only digits.",
+                    )
+            case "Itch.io":
+                # Use the profile subdomain, which can differ from a display name.
+                if not re.fullmatch(
+                    r"[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?", username
+                ):
+                    raise pydantic_core.PydanticCustomError(
+                        CustomPydanticErrorTypes.other.value,
+                        "Itch.io username should be the subdomain of your profile URL:"
+                        " 1–63 letters, digits, or interior hyphens.",
+                    )
+            case "Devpost":
+                # Guard the profile URL segment without guessing undocumented
+                # account length or availability restrictions.
+                if username in {".", ".."} or not re.fullmatch(
+                    r"[a-zA-Z0-9_.-]+", username
+                ):
+                    raise pydantic_core.PydanticCustomError(
+                        CustomPydanticErrorTypes.other.value,
+                        "Devpost username should be the name in your profile URL,"
+                        " using letters, digits, underscores, hyphens, or periods.",
                     )
             case "Bluesky":
-                bluesky_username_pattern = r"^([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$"
+                # Domain labels of up to 63 letters, digits, and inner hyphens:
+                label = r"[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?"
+                bluesky_username_pattern = rf"^({label}\.)+{label}$"
                 if not re.fullmatch(bluesky_username_pattern, username):
                     raise pydantic_core.PydanticCustomError(
                         CustomPydanticErrorTypes.other.value,
@@ -135,15 +170,22 @@ class SocialNetwork(BaseModelWithoutExtraKeys):
                         " 'username.bsky.social' or 'domain.com').",
                     )
             case "WhatsApp":
+                handle = username.removeprefix("@")
+                if re.fullmatch(r"[a-z0-9._]{3,35}", handle) and not handle.isdecimal():
+                    return username
                 try:
+                    if not re.fullmatch(r"\+?[0-9][0-9 ()-]*", username):
+                        raise ValueError("Invalid international phone number")
                     pydantic.TypeAdapter[pydantic_phone_numbers.PhoneNumber](
                         pydantic_phone_numbers.PhoneNumber
-                    ).validate_python(username)
-                except pydantic.ValidationError as e:
+                    ).validate_python("+" + re.sub(r"[^0-9]", "", username))
+                except ValueError as e:
                     raise pydantic_core.PydanticCustomError(
                         CustomPydanticErrorTypes.other.value,
-                        "WhatsApp username should be your phone number with country"
-                        " code in international format (e.g., +1 for USA, +44 for UK).",
+                        "WhatsApp requires an international phone number with country"
+                        " code, or a username of 3–35 lowercase letters, digits,"
+                        " underscores, or periods that is not entirely numeric."
+                        " A username may be prefixed with '@'.",
                     ) from e
             case "Reddit":
                 reddit_username_pattern = r"^[a-zA-Z0-9_-]{3,23}$"
@@ -152,24 +194,6 @@ class SocialNetwork(BaseModelWithoutExtraKeys):
                         CustomPydanticErrorTypes.other.value,
                         "Reddit username should be made up of uppercase/lowercase"
                         " letters, numbers, underscores, and hyphens between 3 and 23"
-                        " characters.",
-                    )
-            case "Itch.io":
-                itch_username_pattern = r"^[a-zA-Z0-9_-]{3,20}$"
-                if not re.fullmatch(itch_username_pattern, username):
-                    raise pydantic_core.PydanticCustomError(
-                        CustomPydanticErrorTypes.other.value,
-                        "Itch.io username should be made up of uppercase/lowercase"
-                        " letters, numbers, underscores, and hyphens between 3 and 20"
-                        " characters.",
-                    )
-            case "Devpost":
-                devpost_username_pattern = r"^[a-zA-Z0-9_-]{3,20}$"
-                if not re.fullmatch(devpost_username_pattern, username):
-                    raise pydantic_core.PydanticCustomError(
-                        CustomPydanticErrorTypes.other.value,
-                        "Devpost username should be made up of uppercase/lowercase"
-                        " letters, numbers, underscores, and hyphens between 3 and 20"
                         " characters.",
                     )
 
@@ -204,7 +228,12 @@ class SocialNetwork(BaseModelWithoutExtraKeys):
             _, username, domain = self.username.split("@")
             url = f"https://{domain}/@{username}"
         elif self.network == "Itch.io":
-            url = f"https://{self.username}.itch.io/"
+            url = f"https://{self.username.lower()}.itch.io/"
+        elif self.network == "WhatsApp":
+            username = self.username.removeprefix("@")
+            if re.fullmatch(r"\+?[0-9][0-9 ()-]*", username):
+                username = re.sub(r"[^0-9]", "", username)
+            url = url_dictionary[self.network] + username
         else:
             url = url_dictionary[self.network] + self.username
 

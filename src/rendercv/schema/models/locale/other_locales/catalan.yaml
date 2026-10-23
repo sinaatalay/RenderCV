@@ -1,12 +1,13 @@
 # yaml-language-server: $schema=../../../../../../schema.json
+# Month forms: Unicode CLDR, Gregorian calendar, stand-alone context.
 locale:
   language: catalan
-  last_updated: Última actualització
-  month: mes
-  months: mesos
-  year: any
-  years: anys
-  present: actualitat
+  last_updated: "Última actualització:"
+  month: "mes"
+  months: "mesos"
+  year: "any"
+  years: "anys"
+  present: "actualitat"
   phrases:
     degree_with_area: DEGREE en AREA
   month_abbreviations:
@@ -35,3 +36,4 @@ locale:
     - octubre
     - novembre
     - desembre
+  day_ordinals: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"]

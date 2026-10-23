@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import pydantic
 import pytest
 
 from rendercv.schema.models.locale.english_locale import EnglishLocale, Phrases
@@ -75,7 +76,8 @@ def test_all_locales_override_all_fields(yaml_file: Path):
     locale_data = read_yaml(yaml_file)["locale"]
 
     # Check top-level fields
-    expected_fields = set(EnglishLocale.model_fields.keys())
+    # Section labels are user-specific, not a fixed catalog of translations.
+    expected_fields = set(EnglishLocale.model_fields) - {"section_labels"}
     actual_fields = set(locale_data.keys())
     missing = expected_fields - actual_fields
     assert not missing, f"{yaml_file.stem}: missing top-level fields {sorted(missing)}"
@@ -87,4 +89,84 @@ def test_all_locales_override_all_fields(yaml_file: Path):
     missing_phrases = expected_phrases_fields - actual_phrases_fields
     assert not missing_phrases, (
         f"{yaml_file.stem}: missing phrases fields {sorted(missing_phrases)}"
+    )
+
+
+@pytest.mark.parametrize("language", available_locales)
+def test_every_locale_accepts_user_section_labels(language):
+    locale = locale_adapter.validate_python(
+        {"language": language, "section_labels": {"research": "Selected Work"}}
+    )
+    assert locale.section_labels == {"research": "Selected Work"}
+
+
+@pytest.mark.parametrize(
+    "value", [{}, {"language": "engilsh"}, {"language": 3}, {"language": []}]
+)
+def test_invalid_selector_points_to_language(value):
+    with pytest.raises(pydantic.ValidationError) as exc:
+        locale_adapter.validate_python(value)
+    assert exc.value.errors()[0]["loc"] == ("language",)
+
+
+@pytest.mark.parametrize("language", available_locales)
+def test_selected_locale_errors_have_no_branch_label(language):
+    with pytest.raises(pydantic.ValidationError) as exc:
+        locale_adapter.validate_python({"language": language, "present": 3})
+    assert exc.value.errors()[0]["loc"] == ("present",)
+
+
+@pytest.mark.parametrize(
+    ("language", "iso", "flag", "present", "names", "abbreviations"),
+    [
+        (
+            "swedish",
+            "sv",
+            "🇸🇪",
+            "nu",
+            (
+                "januari februari mars april maj"
+                " juni juli augusti september"  # codespell:ignore juni,juli
+                " oktober november december"  # codespell:ignore oktober
+            ),
+            (
+                "jan. feb. mars apr. maj"
+                " juni juli aug. sep. okt. nov. dec."  # codespell:ignore juni,juli
+            ),
+        ),
+        (
+            "polish",
+            "pl",
+            "🇵🇱",
+            "obecnie",
+            (
+                "styczeń luty marzec kwiecień maj czerwiec lipiec sierpień wrzesień"
+                " październik listopad grudzień"
+            ),
+            "sty lut mar kwi maj cze lip sie wrz paź lis gru",  # codespell:ignore sie
+        ),
+        (
+            "catalan",
+            "ca",
+            "🇪🇸",
+            "actualitat",
+            (
+                "gener febrer març abril maig juny juliol agost setembre octubre"
+                " novembre desembre"
+            ),
+            "gen. febr. març abr. maig juny jul. ag. set. oct. nov. des.",
+        ),
+    ],
+)
+def test_new_locale_cldr_standalone_months(
+    language: str, iso: str, flag: str, present: str, names: str, abbreviations: str
+) -> None:
+    locale = locale_adapter.validate_python({"language": language})
+    assert locale.language_iso_639_1 == iso
+    assert locale.flag_emoji == flag
+    assert locale.present == present
+    assert locale.month_names == names.split()
+    assert locale.month_abbreviations == abbreviations.split()
+    assert (
+        locale_adapter.validate_json(locale.model_dump_json(warnings="error")) == locale
     )

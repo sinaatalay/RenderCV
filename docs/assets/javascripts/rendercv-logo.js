@@ -1,5 +1,6 @@
 (function () {
-  // Persist cursor state on window so it survives across MkDocs
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  // Persist cursor state on window so it survives across Zensical
   // instant-navigation script re-evaluations.
   var S = window.__rcv;
   if (!S) {

@@ -17,23 +17,26 @@ jobs:
   #     - test
 
   build:
-    name: Build Package
+    name: Build Packages
     needs:
       - test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v10
 
       - name: Check if the release tag matches the version
         uses: samuelcolvin/check-python-version@v5
         with:
           version_file_path: src/rendercv/__init__.py
 
+      - name: Download the Typst packages that RenderCV ships
+        run: uv run --frozen --no-default-groups scripts/download_typst_packages.py
+
       - name: Build
-        run: uv build
+        run: uv build --all-packages
 
       - name: Upload the wheel and source distribution as artifacts
         uses: actions/upload-artifact@v7
@@ -69,14 +72,15 @@ jobs:
           path: dist
 
       - name: Add assets to the GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             rendercv-*/rendercv-linux-ARM64.zip
             rendercv-*/rendercv-linux-x86_64.zip
             rendercv-*/rendercv-macos-ARM64.zip
             rendercv-*/rendercv-windows-x86_64.zip
-            dist/rendercv-*.whl
+            dist/*.whl
+            dist/*.tar.gz
 
   publish_to_pypi:
     name: Publish to PyPI
@@ -93,8 +97,11 @@ jobs:
           name: dist
           path: dist
 
-      - name: Upload package to PyPI
+      - name: Upload packages to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          # Fonts have an independent version and need not change on every release.
+          skip-existing: true
 
   publish_docker_to_ghcr:
     name: Push Docker image to GitHub Container Registry
@@ -108,10 +115,10 @@ jobs:
       id-token: write
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -119,7 +126,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             ghcr.io/${{ github.repository }}

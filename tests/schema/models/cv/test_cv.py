@@ -10,6 +10,17 @@ from rendercv.schema.models.cv.section import available_entry_type_names
 
 
 class TestCv:
+    @pytest.mark.parametrize(
+        "website", ["https://example.com/", ["https://example.com/"]]
+    )
+    def test_websites_serialize_without_warnings(self, website):
+        cv = Cv.model_validate({"website": website})
+        assert cv.model_dump(mode="json", warnings="error")["website"] == website
+        assert (
+            Cv.model_validate_json(cv.model_dump_json(warnings="error")).website
+            == cv.website
+        )
+
     def test_rendercv_sections(self, request: pytest.FixtureRequest):
         entry_type_names = [
             "".join(
@@ -82,49 +93,6 @@ class TestCv:
         assert section.entry_type == "TextEntry"
         assert section.entries == []
 
-    def test_subsection_based_section(self, publication_entry):
-        input_data = {
-            "name": "John Doe",
-            "sections": {
-                "selected_work": [
-                    {
-                        "title": "summary",
-                        "entries": ["A text entry."],
-                    },
-                    {
-                        "title": "journal_articles",
-                        "entries": [publication_entry],
-                    },
-                    {
-                        "title": "conference_proceedings",
-                        "entries": [],
-                    },
-                ]
-            },
-        }
-
-        cv = Cv.model_validate(input_data)
-
-        assert len(cv.rendercv_sections) == 1
-        section = cv.rendercv_sections[0]
-        assert section.title == "Selected Work"
-        assert section.entry_type == "SubsectionEntry"
-        assert len(section.entries) == 2
-        assert section.subsections is not None
-        assert [subsection.title for subsection in section.subsections] == [
-            "Summary",
-            "Journal Articles",
-            "Conference Proceedings",
-        ]
-        assert [subsection.entry_type for subsection in section.subsections] == [
-            "TextEntry",
-            "PublicationEntry",
-            "TextEntry",
-        ]
-        assert section.subsections[0].entries == ["A text entry."]
-        assert len(section.subsections[1].entries) == 1
-        assert section.subsections[2].entries == []
-
     def test_phone_serialization(self):
         input_data = {"name": "John Doe", "phone": "+905419999999"}
         cv = Cv.model_validate(input_data)
@@ -133,18 +101,28 @@ class TestCv:
         assert "tel:" not in serialized["phone"]
         assert serialized["phone"] == "+90-541-999-99-99"
 
-    def test_phone_list_serialization(self):
-        input_data = {
-            "name": "John Doe",
-            "phone": ["+14155552671", "+442071838750"],
-        }
-        cv = Cv.model_validate(input_data)
-        serialized = cv.model_dump()
-
-        assert serialized["phone"] == [
-            "+1-415-555-2671",
-            "+44-20-7183-8750",
-        ]
+    @pytest.mark.parametrize("mode", ["python", "json"])
+    @pytest.mark.parametrize(
+        ("phone", "expected"),
+        [
+            (None, None),
+            ([], []),
+            ("+14155552671", "+1-415-555-2671"),
+            (
+                ["+14155552671", "+442071838750"],
+                ["+1-415-555-2671", "+44-20-7183-8750"],
+            ),
+        ],
+    )
+    def test_phone_shapes_serialize_and_round_trip(self, mode, phone, expected):
+        cv = Cv.model_validate({"phone": phone})
+        serialized = cv.model_dump(mode=mode, warnings="error")
+        assert serialized["phone"] == expected
+        assert Cv.model_validate(serialized).phone == cv.phone
+        assert (
+            Cv.model_validate_json(cv.model_dump_json(warnings="error")).phone
+            == cv.phone
+        )
 
     def test_raises_internal_error_when_field_name_is_none(self):
         mock_info = MagicMock(spec=pydantic.ValidationInfo)

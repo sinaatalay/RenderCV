@@ -1,12 +1,12 @@
 // Import the rendercv function and all the refactored components
-#import "@preview/rendercv:0.3.0": *
+#import "@preview/rendercv:0.4.0": *
 
 // Apply the rendercv template with custom configuration
 #show: rendercv.with(
   name: "John Doe",
   title: "John Doe - CV",
-  footer: context { [#emph[John Doe -- #str(here().page())\/#str(counter(page).final().first())]] },
-  top-note: [ #emph[Last updated in Apr 2026] ],
+  footer: context { [#emph[John Doe -- #str(here().page())/#str(counter(page).final().first())]] },
+  top-note: [ #emph[Last updated in Oct 2026] ],
   locale-catalog-language: "en",
   text-direction: ltr,
   page-size: "us-letter",
@@ -21,6 +21,7 @@
   colors-headline: rgb(0, 79, 144),
   colors-connections: rgb(0, 79, 144),
   colors-section-titles: rgb(0, 79, 144),
+  colors-subsection-titles: rgb(0, 79, 144),
   colors-links: rgb(0, 79, 144),
   colors-footer: rgb(128, 128, 128),
   colors-top-note: rgb(128, 128, 128),
@@ -32,19 +33,23 @@
   typography-font-family-headline: "Source Sans 3",
   typography-font-family-connections: "Source Sans 3",
   typography-font-family-section-titles: "Source Sans 3",
+  typography-font-family-subsection-titles: "Source Sans 3",
   typography-font-size-body: 10pt,
   typography-font-size-name: 30pt,
   typography-font-size-headline: 10pt,
   typography-font-size-connections: 10pt,
   typography-font-size-section-titles: 1.4em,
+  typography-font-size-subsection-titles: 1.1em,
   typography-small-caps-name: false,
   typography-small-caps-headline: false,
   typography-small-caps-connections: false,
   typography-small-caps-section-titles: false,
+  typography-small-caps-subsection-titles: false,
   typography-bold-name: true,
   typography-bold-headline: false,
   typography-bold-connections: false,
   typography-bold-section-titles: true,
+  typography-bold-subsection-titles: true,
   links-underline: false,
   links-show-external-link-icon: false,
   header-alignment: center,
@@ -61,6 +66,8 @@
   section-titles-line-thickness: 0.5pt,
   section-titles-space-above: 0.5cm,
   section-titles-space-below: 0.3cm,
+  subsection-titles-space-above: 0.6cm,
+  subsection-titles-space-below: 0.2cm,
   sections-allow-page-break: true,
   sections-space-between-text-based-entries: 0.3em,
   sections-space-between-regular-entries: 1.2em,
@@ -72,16 +79,16 @@
   entries-degree-width: 1cm,
   entries-summary-space-left: 0cm,
   entries-summary-space-above: 0cm,
-  entries-highlights-bullet:  "•" ,
-  entries-highlights-nested-bullet:  "•" ,
+  entries-highlights-bullet: "•",
+  entries-highlights-nested-bullet: "•",
   entries-highlights-space-left: 0.15cm,
   entries-highlights-space-above: 0cm,
   entries-highlights-space-between-items: 0cm,
   entries-highlights-space-between-bullet-and-text: 0.5em,
   date: datetime(
     year: 2026,
-    month: 4,
-    day: 17,
+    month: 10,
+    day: 22,
   ),
 )
 
@@ -135,7 +142,7 @@ Markdown syntax is supported everywhere. This is #strong[bold], #emph[italic], a
   [
     #strong[Boğaziçi University], Computer Engineering
 
-    - GPA: 3.97\/4.00, Valedictorian
+    - GPA: 3.97/4.00, Valedictorian
 
     - Fulbright Scholarship recipient for Graduate Studies
 
@@ -157,13 +164,13 @@ Markdown syntax is supported everywhere. This is #strong[bold], #emph[italic], a
   [
     #strong[Nexus AI], Co-Founder & CTO
 
-    - Built foundation model infrastructure serving 2M+ monthly API requests with 99.97\% uptime
+    - Built foundation model infrastructure serving 2M+ monthly API requests with 99.97% uptime
 
     - Raised \$18M Series A led by Sequoia Capital, with participation from a16z and Founders Fund
 
     - Scaled engineering team from 3 to 28 across ML research, platform, and applied AI divisions
 
-    - Developed proprietary inference optimization reducing latency by 73\% compared to baseline
+    - Developed proprietary inference optimization reducing latency by 73% compared to baseline
 
   ],
   [
@@ -171,9 +178,7 @@ Markdown syntax is supported everywhere. This is #strong[bold], #emph[italic], a
 
     June 2023 – present
 
-    
-
-    2 years 11 months
+    3 years 5 months
 
   ],
 )
@@ -184,15 +189,13 @@ Markdown syntax is supported everywhere. This is #strong[bold], #emph[italic], a
 
     - Designed sparse attention mechanism reducing transformer memory footprint by 4.2x
 
-    - Co-authored paper accepted at NeurIPS 2022 (spotlight presentation, top 5\% of submissions)
+    - Co-authored paper accepted at NeurIPS 2022 (spotlight presentation, top 5% of submissions)
 
   ],
   [
     Santa Clara, CA
 
     May 2022 – Aug 2022
-
-    
 
     4 months
 
@@ -207,19 +210,17 @@ Markdown syntax is supported everywhere. This is #strong[bold], #emph[italic], a
 
     - Published research at top-tier venues with significant academic impact
 
-    - ICML 2022 main conference paper, cited 340+ times within two years
+      - ICML 2022 main conference paper, cited 340+ times within two years
 
-    - NeurIPS 2022 workshop paper on emergent communication protocols
+      - NeurIPS 2022 workshop paper on emergent communication protocols
 
-    - Invited journal extension in JMLR (2023)
+      - Invited journal extension in JMLR (2023)
 
   ],
   [
     London, UK
 
     May 2021 – Aug 2021
-
-    
 
     4 months
 
@@ -240,8 +241,6 @@ Markdown syntax is supported everywhere. This is #strong[bold], #emph[italic], a
 
     May 2020 – Aug 2020
 
-    
-
     4 months
 
   ],
@@ -253,15 +252,13 @@ Markdown syntax is supported everywhere. This is #strong[bold], #emph[italic], a
 
     - Implemented novel self-supervised learning framework for low-resource language modeling
 
-    - Research integrated into Azure Cognitive Services, reducing training data requirements by 60\%
+    - Research integrated into Azure Cognitive Services, reducing training data requirements by 60%
 
   ],
   [
     Redmond, WA
 
     May 2019 – Aug 2019
-
-    
 
     4 months
 
@@ -293,13 +290,13 @@ Markdown syntax is supported everywhere. This is #strong[bold], #emph[italic], a
 
     #summary[Automated neural network pruning toolkit with differentiable masks]
 
-    - Reduced model size by 90\% with less than 1\% accuracy degradation on ImageNet
+    - Reduced model size by 90% with less than 1% accuracy degradation on ImageNet
 
     - Featured in PyTorch ecosystem tools, 4,200+ GitHub stars
 
   ],
   [
-    Jan 2021
+    2021
 
   ],
 )
@@ -312,7 +309,7 @@ Markdown syntax is supported everywhere. This is #strong[bold], #emph[italic], a
 
     #emph[John Doe], Sarah Williams, David Park
 
-    #link("https://doi.org/10.1234/neurips.2023.1234")[10.1234\/neurips.2023.1234] (NeurIPS 2023)
+    #link("https://doi.org/10.1234/neurips.2023.1234")[10.1234/neurips.2023.1234] (NeurIPS 2023)
 
   ],
   [
@@ -327,7 +324,7 @@ Markdown syntax is supported everywhere. This is #strong[bold], #emph[italic], a
 
     James Liu, #emph[John Doe]
 
-    #link("https://doi.org/10.1234/neurips.2022.5678")[10.1234\/neurips.2022.5678] (NeurIPS 2022, Spotlight)
+    #link("https://doi.org/10.1234/neurips.2022.5678")[10.1234/neurips.2022.5678] (NeurIPS 2022, Spotlight)
 
   ],
   [
@@ -342,7 +339,7 @@ Markdown syntax is supported everywhere. This is #strong[bold], #emph[italic], a
 
     Maria Garcia, #emph[John Doe], Tom Anderson
 
-    #link("https://doi.org/10.1234/icml.2022.9012")[10.1234\/icml.2022.9012] (ICML 2022)
+    #link("https://doi.org/10.1234/icml.2022.9012")[10.1234/icml.2022.9012] (ICML 2022)
 
   ],
   [
@@ -357,7 +354,7 @@ Markdown syntax is supported everywhere. This is #strong[bold], #emph[italic], a
 
     #emph[John Doe], Kevin Wu
 
-    #link("https://doi.org/10.1234/iclr.2021.3456")[10.1234\/iclr.2021.3456] (ICLR 2021, Best Paper Award)
+    #link("https://doi.org/10.1234/iclr.2021.3456")[10.1234/iclr.2021.3456] (ICLR 2021, Best Paper Award)
 
   ],
   [

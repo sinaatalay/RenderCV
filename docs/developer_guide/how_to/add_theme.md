@@ -1,5 +1,7 @@
 # Add a New Theme
 
+A built-in theme is a collection of design defaults: fonts, colors, spacing, and the available layout choices. It inherits the Classic theme's settings, so its YAML file only needs the values that differ. Adding a theme this way reuses the existing renderer; changing the document structure may also require [template changes](../../user_guide/how_to/override_default_templates.md).
+
 1. Create a YAML file in `src/rendercv/schema/models/design/other_themes/`
 
     ```bash

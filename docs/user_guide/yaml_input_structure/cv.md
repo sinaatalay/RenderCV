@@ -35,7 +35,7 @@ cv:
 The `sections` field holds the main content of your CV. It's a dictionary where:
 
 - **Keys** are section titles (displayed as headings). Section titles can be anything.
-- **Values** are usually lists of entries
+- **Values** are lists of entries
 
 ```yaml
 cv:
@@ -68,29 +68,6 @@ cv:
         details: Kubernetes, Terraform, AWS
 ```
 
-Sections can also be grouped into subsections with `SubsectionEntry`:
-
-```yaml
-cv:
-  sections:
-    selected_work:
-      - title: Journal Articles
-        entries:
-          - title: Example Journal Paper
-            authors:
-              - John Doe
-            date: 2024-01
-      - title: Featured Projects
-        entries:
-          - name: RenderCV
-            summary: Support subsection-based sections across the whole CV.
-```
-
-`SubsectionEntry` is a grouping model rather than a standalone rendered entry type:
-
-```yaml
-<< subsection_entry_yaml >>
-```
 
 **Section names are just titles.** You can use any of the << entry_count >> entry types in any section. Choose what works best for your content.
 
@@ -116,10 +93,32 @@ sections:
 ```
 
 
-!!! warning "Keep section structure consistent"
-    Each section must contain only one kind of top-level item: either a flat list of entries or a list of `SubsectionEntry`.
+!!! warning "One entry type per section"
+    Each section must contain only one type of entry. For example, you cannot mix `ExperienceEntry` and `EducationEntry` in the same section.
 
-    Flat sections must contain only one entry type. In subsection-based sections, each subsection must still contain only one entry type, but different subsections can use different entry types.
+### Subsections
+
+A section is a list of entries of one type. A `SubsectionEntry` groups entries under a `title`:
+
+```yaml
+cv:
+  sections:
+    publications:
+      - title: Journal Articles
+        entries:
+          - title: Magneto-Thermal Thin Shell Approximation for 3D Finite Element Analysis
+            authors:
+              - John Doe
+              - Jane Smith
+            journal: IEEE Transactions on Applied Superconductivity
+            date: 2023-12
+      - title: Talks
+        entries:
+          - Invited talk at the Applied Superconductivity Conference, 2024.
+          - Contributed talk at the Magnet Technology Conference, 2023.
+```
+
+Every list contains one entry type, and each subsection chooses its own type. That type can also be `SubsectionEntry`, so groups can nest: Publications → Journal Articles → First Author, for example. Group order stays as written; date sorting applies to the entries within each group. All subsection titles use the `subsection_titles` options of [`design`](design.md).
 
 ## Entry Types
 

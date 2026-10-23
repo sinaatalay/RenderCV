@@ -1,9 +1,4 @@
-"""This script generates the example entry figures and creates an environment for
-documentation templates using `mkdocs-macros-plugin`. For example, the content of the
-example entries found in
-"[Structure of the YAML Input File](https://docs.rendercv.com/user_guide/structure_of_the_yaml_input_file/)"
-are coming from this script.
-"""
+"""Expose model defaults and example entries to Zensical Markdown templates."""
 
 import io
 import pathlib
@@ -21,7 +16,6 @@ from rendercv.schema.models.cv.section import (
     OneLineEntry,
     PublicationEntry,
     ReversedNumberedEntry,
-    SubsectionEntry,
 )
 from rendercv.schema.models.cv.social_network import available_social_networks
 from rendercv.schema.models.design.built_in_design import available_themes
@@ -52,7 +46,6 @@ class SampleEntries(pydantic.BaseModel):
     numbered_entry: NumberedEntry
     reversed_numbered_entry: ReversedNumberedEntry
     text_entry: str
-    subsection_entry: SubsectionEntry
 
 
 def dictionary_to_yaml(dictionary: dict):
@@ -72,13 +65,11 @@ def dictionary_to_yaml(dictionary: dict):
 
 
 def define_env(env):
-    # See https://mkdocs-macros-plugin.readthedocs.io/en/latest/macros/
     sample_entries = read_yaml(
         repository_root / "docs" / "user_guide" / "sample_entries.yaml"
     )
     # validate the parsed dictionary by creating an instance of SampleEntries:
     sample_entries = SampleEntries(**sample_entries).model_dump()
-    subsection_entry = sample_entries.pop("subsection_entry")
 
     entries_showcase = {}
     for entry_name, entry in sample_entries.items():
@@ -100,7 +91,6 @@ def define_env(env):
     env.variables["entry_names"] = [
         f"[{entry_name}](#{entry_name.lower()})" for entry_name in entries_showcase
     ]
-    env.variables["subsection_entry_yaml"] = dictionary_to_yaml(subsection_entry)
 
     # Available themes strings (put available themes between ``)
     themes = [
@@ -116,6 +106,7 @@ def define_env(env):
         for locale in available_locales
     ]
     env.variables["available_locales"] = ", ".join(locales)
+    env.variables["locale_count"] = len(available_locales)
 
     # Available social networks strings (put available social networks between ``)
     social_networks = [

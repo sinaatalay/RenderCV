@@ -1,108 +1,54 @@
 ---
-toc_depth: 3
+toc_depth: 2
 ---
 
-# GitHub Actions
+# GitHub Workflows
 
-## The Problem
+[GitHub Actions](https://docs.github.com/en/actions/about-github-actions/understanding-github-actions) runs commands on GitHub's machines in response to events, such as opening a pull request or publishing a release. A **workflow** is a YAML file describing the event and the work to run. It contains **jobs**, each made of steps such as downloading the source, installing dependencies, and running tests.
 
-Every software project has repetitive tasks that must run consistently:
+Running checks automatically on code changes is called **continuous integration (CI)**. It gives reviewers results from a clean environment without relying only on what the author ran locally. RenderCV's workflows live in [`.github/workflows/`](https://github.com/rendercv/rendercv/tree/main/.github/workflows) and use the same `just` recipes and locked Python dependencies as local development.
 
-- **On every update:** Run tests, redeploy documentation
-- **On every release:** Run tests, update `schema.json` and examples, build executables for 4 platforms, build package, upload to PyPI, publish Docker image
+## Tests
 
-You could do these manually. But manual means:
+[`test.yaml`](https://github.com/rendercv/rendercv/blob/main/.github/workflows/test.yaml) runs on pull requests, pushes to `main`, manual dispatch, and calls from other workflows. It:
 
-- Forgetting steps ("Did I update `schema.json`? Did I build the Windows executable?")
-- Wasted time ("Why am I doing the same 15 steps every release?")
+1. Runs the repository's code and configuration checks and builds the documentation, treating warnings as failures.
+2. Runs tests with coverage on Linux, Windows, and macOS, using Python 3.12 through 3.15.
+3. Combines the coverage reports and publishes a browsable report.
+4. Builds the Docker image and renders a CV without network access.
 
-**What if you could write down these tasks once, and have them run automatically every time?**
+The combinations of operating system and Python version form a **test matrix**. Running the same suite in each combination catches differences such as Windows paths or Python-version behavior. The suite also checks fonts and generated schemas, examples, and the AI agent skill.
 
-That's what **CI/CD (Continuous Integration/Continuous Deployment)** is. And **GitHub Actions** is GitHub's platform for it.
+## Documentation
 
-## What are GitHub Actions?
+[`deploy-docs.yaml`](https://github.com/rendercv/rendercv/blob/main/.github/workflows/deploy-docs.yaml) builds the site with `just build-docs` and deploys it to GitHub Pages on pushes to `main` or manual dispatch. See [Documentation](documentation.md) for the site configuration and preview workflow.
 
-GitHub actions are **automation scripts that run on GitHub's servers when certain events happen**.
+## Executables
 
-You define them in `.github/workflows/*.yaml` files. Each file describes:
+[`create-executables.yaml`](https://github.com/rendercv/rendercv/blob/main/.github/workflows/create-executables.yaml) runs manually or as part of a release. It builds standalone executables with `just create-executable` for Linux x86_64, Linux ARM64, macOS ARM64, and Windows x86_64, then uploads them as workflow artifacts.
 
-1. **When to run:** push to main? Pull request? New release?
-2. **What to do:** Run tests? Build docs? Publish package?
-3. **Where to run:** Linux? Windows? macOS? Multiple versions?
+Users can run these executables without installing Python. A workflow **artifact** is a saved output file that can be downloaded or used by a later job. See [Building distributions](project_management.md#building-distributions) for how the different delivery formats are built.
 
-GitHub reads these files and executes them automatically when the triggering events occur.
+## Releases
 
-**Why GitHub's servers?** Because you don't want to worry about it. Push your code, turn off your computer, you're done. GitHub handles the rest (running tests, deploying docs, building packages) without you having to keep your machine on or manually run anything.
+A GitHub release identifies a published version and holds its release notes and downloadable files. Publishing one triggers [`release.yaml`](https://github.com/rendercv/rendercv/blob/main/.github/workflows/release.yaml):
 
-## RenderCV's Workflows
+1. Run the test workflow.
+2. Build wheels and source distributions for `rendercv` and `rendercv-fonts`, and build the executables.
+3. Attach the distributions and executables to the GitHub release.
+4. Publish the Python distributions to PyPI, where Python installers download packages, skipping versions already published.
+5. Build and publish the Docker image to GitHub Container Registry, where container tools download images.
 
-RenderCV has 4 workflows. Each handles a specific automation task.
+The fonts package has its own version and is published only when that version changes. PyPI's **trusted publisher** configuration authorizes a particular GitHub workflow to upload a package. Before the first release from this repository, configure the fonts publisher for owner `rendercv`, repository `rendercv`, workflow `release.yaml`, and environment `release`.
 
-**How workflows start:** Every workflow begins the same way: clone the repository, install `uv`, install `just`, then run some `just` commands. This recreates the same environment you'd have locally (see [Setup](index.md)).
+After RenderCV 2.9 is released successfully, archive the former `rendercv/rendercv-fonts` repository and point its description to `packages/rendercv-fonts` here. Contributor credits are retained in the integration commit.
 
-### 1. [`test.yaml`](https://github.com/rendercv/rendercv/blob/main/.github/workflows/test.yaml): Run Tests
+Typst Universe publication is separate. Follow [Publish the Typst Package](how_to/publish_typst_package.md).
 
-**When it runs:**
+## Published AI agent skill
 
-- Every push to `main` branch
-- Every pull request
-- Manually (via GitHub UI)
-- When called by other workflows
+[`publish-skill.yaml`](https://github.com/rendercv/rendercv/blob/main/.github/workflows/publish-skill.yaml) mirrors the generated `skills/` directory to [rendercv-skill](https://github.com/rendercv/rendercv-skill) when a GitHub release is published, or on manual dispatch. It uses the `RENDERCV_SKILL_DEPLOY_KEY` repository secret. Regenerate the source with `just update-skill` before release.
 
-**What it does:**
+## Issue and PR assistance
 
-1. Checks out the repository with submodules (the [rendercv-skill](https://github.com/rendercv/rendercv-skill) submodule is needed for generated-file staleness tests)
-2. Runs `just test-coverage` across **9 different environments** (3 operating systems × 3 Python versions: 3.12, 3.13, 3.14)
-3. Combines all coverage reports and uploads them to show the coverage report
-
-### 2. [`deploy-docs.yaml`](https://github.com/rendercv/rendercv/blob/main/.github/workflows/deploy-docs.yaml): Deploy Documentation
-
-**When it runs:**
-
-- Every push to `main` branch
-- Manually (via GitHub UI)
-
-**What it does:**
-
-1. Builds the documentation website using `just build-docs`
-2. Uploads it to GitHub Pages
-3. Documentation is now live at https://docs.rendercv.com
-
-### 3. [`create-executables.yaml`](https://github.com/rendercv/rendercv/blob/main/.github/workflows/create-executables.yaml): Create Executables
-
-**When it runs:**
-
-- Manually (via GitHub UI)
-- When called by the release workflow
-
-**What it does:**
-
-1. Builds standalone executables using `just create-executable` for 4 platforms:
-   - Linux (x86_64 and ARM64)
-   - macOS (ARM64)
-   - Windows (x86_64)
-2. Uploads executables as artifacts
-
-These are single-file executables that users can download and run without installing Python.
-
-### 4. [`release.yaml`](https://github.com/rendercv/rendercv/blob/main/.github/workflows/release.yaml): Publish a Release
-
-**When it runs:**
-
-- When a new GitHub release is published
-
-**What it does:**
-
-This is the complete release pipeline. It orchestrates everything:
-
-1. **Run tests:** Calls `test.yaml` to ensure everything works
-2. **Build package:** Installs `uv`, builds Python wheel and source distribution using `uv build`
-3. **Create executables:** Calls `create-executables.yaml` for all platforms
-4. **Add assets to GitHub release:** Downloads and adds executables and wheel to the release
-5. **Publish to PyPI:** Downloads and uploads package so users can `pip install rendercv`
-6. **Publish Docker image:** Builds and pushes Docker image to GitHub Container Registry
-
-## Learn More
-
-- See [`.github/workflows/`](https://github.com/rendercv/rendercv/tree/main/.github/workflows) for RenderCV's workflow files
-- See [GitHub Actions Documentation](https://docs.github.com/en/actions) for the official documentation.
+The Claude workflows handle issue triage, PR review, and `@claude` requests. They read the same [contribution](contributing.md) and [testing](testing.md) guides as human contributors. They require the Claude GitHub App and the `ANTHROPIC_API_KEY` repository secret. Their triggers and permissions are defined in the individual workflow files.

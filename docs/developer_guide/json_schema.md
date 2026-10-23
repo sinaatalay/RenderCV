@@ -1,141 +1,56 @@
 ---
-toc_depth: 3
+toc_depth: 2
 ---
 
 # JSON Schema
 
-## The Problem
+An editor can recognize valid YAML syntax without knowing what RenderCV's fields mean. It needs a description of the allowed structure to suggest field names, explain them, and flag invalid values.
 
-You may have encountered this before, even if you didn't realize it:
-
-**VS Code settings** (`settings.json`):
-```json
-{
-  "editor.fontSize": 14,
-  "editor.tabSiz": 4  // ← Typo! VS Code highlights it red immediately
-}
-```
-
-**GitHub Actions workflows** (`.github/workflows/test.yaml`):
-```yaml
-on:
-  push:
-    branchs:  # ← Typo! Your editor underlines it, suggests "branches"
-      - main
-```
-
-**These files are completely different (VS Code settings, GitHub workflows). But you get autocomplete and validation in both.** How?
-
-VS Code doesn't just "know" what's valid in `settings.json`. GitHub Actions workflows don't magically get autocomplete.
-
-**Someone had to tell your editor:** "Here are all the valid fields, their types, and what they mean."
-
-That "someone" is [**JSON Schema**](https://json-schema.org).
-
-## What is JSON Schema?
-
-JSON Schema is a **standard way to describe the structure of JSON/YAML documents**.
-
-Think of it as a specification, a formal description of what's valid:
+[JSON Schema](https://json-schema.org/learn/getting-started-step-by-step) is a standard format for that description. This small example describes an object with a required string field called `name`:
 
 ```json
 {
   "type": "object",
   "properties": {
-    "name": {
-      "type": "string",
-      "description": "Your full name"
-    },
-    "age": {
-      "type": "integer",
-      "minimum": 0,
-      "description": "Your age in years"
-    },
-    "email": {
-      "type": "string",
-      "format": "email"
-    }
+    "name": {"type": "string", "description": "Your full name"}
   },
   "required": ["name"]
 }
 ```
 
-This schema says:
+An editor using it can suggest `name`, show its description, and reject a numeric value. The schema is written in JSON, but YAML editors can apply it to the corresponding data structure too.
 
-- A valid document is an object
-- It must have a `name` field (string, required)
-- It can have an `age` field (non-negative integer, optional)
-- It can have an `email` field (string matching email format, optional)
-
-**Why does JSON Schema exist?**
-
-Because JSON and YAML files are **everywhere**: configuration files, API requests/responses, CI/CD workflows, application settings, data files.
-
-You could write documentation on how to write those JSON/YAML files: "The `name` field is required and must be a string. The `age` field is optional and must be a non-negative integer." But **documentation is for humans to read, not machines**.
-
-JSON Schema is the **same information in machine-readable format** so editors can understand it.
-
-Once your editor has a schema, it can provide autocomplete, catch typos, and show inline documentation as you type.
-
-This is why:
-
-- **Microsoft publishes a JSON Schema for VS Code settings:** your editor fetches it and provides autocomplete
-- **GitHub publishes a JSON Schema for Actions workflows:** that's how you get field suggestions
-- **Thousands of tools do the same:** Kubernetes, Docker, Terraform, ESLint, `package.json`, `tsconfig.json`, the list goes on
-
-## RenderCV's JSON Schema
-
-RenderCV has the same problem. Users write their CVs in YAML, and we want them to have a smooth editor experience with autocomplete, typo detection, and inline documentation.
-
-**Solution:** Publish a JSON Schema for RenderCV YAML files.
+RenderCV publishes [`schema.json`](https://github.com/rendercv/rendercv/blob/main/schema.json) for its CV files:
 
 ![JSON Schema of RenderCV](../assets/images/json_schema.gif)
 
-That's why [`schema.json`](https://github.com/rendercv/rendercv/blob/main/schema.json) exists in the repository.
+## Generate the schema
 
-## How the Schema is Generated?
+The field definitions already exist in RenderCV's [Pydantic models](understanding_rendercv.md#validating-the-data). Pydantic's `model_json_schema()` converts them into JSON Schema. Generating it from those definitions avoids maintaining a second handwritten list of fields.
 
-We don't write `schema.json` by hand. **It's automatically generated from Pydantic models.**
-
-RenderCV's entire data structure is defined using Pydantic models (see [Understanding RenderCV](understanding_rendercv.md) for details). Pydantic has a built-in feature: `model_json_schema()`, which generates JSON Schema from your models.
-
-Whenever data models change, run:
+After changing a model, run:
 
 ```bash
 just update-schema
 ```
 
-This runs [`scripts/update_schema.py`](https://github.com/rendercv/rendercv/blob/main/scripts/update_schema.py), which regenerates `schema.json`.
+This applies RenderCV's adjustments for editor use and writes `schema.json`. Commit it with the model change. Tests check that the generated file is current, built-in theme options remain constrained, and custom themes are accepted without loading Python code in the editor.
 
-## How Editors Know to Use RenderCV's Schema?
+The same schema supports standalone CV, design, locale, and settings files, so its top-level fields are optional. Runtime validation still checks the combined input, local resources, custom theme options, and relationships between fields. Editor checks help while writing; they do not replace validation before rendering.
 
-There are two ways editors discover and use RenderCV's schema:
+## Tell the editor which schema to use
 
-### 1. Manual Declaration
-
-Add a special comment at the top of your YAML file:
+`rendercv new` adds a comment pointing to the schema for the installed RenderCV version. For an existing file, place it at the top:
 
 ```yaml
-# yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.4/schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.9/schema.json
 
 cv:
   name: John Doe
 ```
 
-This tells the editor: "Use RenderCV's schema for this file." Note the version tag in the URL, which ensures you get the schema matching your RenderCV version.
+Keep the tag aligned with the CLI version so the editor suggests fields that installation understands. VS Code needs the [YAML extension](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) to interpret the comment.
 
-**Requirements:** Your editor needs to support this. For VS Code, install the [YAML extension](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml).
+[SchemaStore](https://github.com/SchemaStore/schemastore) is a registry that associates filenames with schemas. Editors using it can automatically select RenderCV's schema for names ending in `_CV.yaml`. The explicit comment selects a particular version.
 
-### 2. Schema Store (Automatic)
-
-RenderCV's schema is listed in [SchemaStore](https://github.com/SchemaStore/schemastore), a central registry of schemas that most IDEs use.
-
-In SchemaStore, RenderCV's schema is configured to automatically activate for files ending with `_CV.yaml`. This means:
-
-- If your file is named `John_Doe_CV.yaml`
-- And your editor uses SchemaStore (VS Code with YAML extension does)
-- You get autocomplete automatically, no comment needed
-
-## Learn More
-
-See [Pydantic JSON Schema](https://docs.pydantic.dev/latest/concepts/json_schema/) for how Pydantic generates schemas from models.
+See [Pydantic's JSON Schema documentation](https://docs.pydantic.dev/latest/concepts/json_schema/) for the generation API.
