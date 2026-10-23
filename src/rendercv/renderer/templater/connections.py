@@ -205,15 +205,14 @@ def compute_connections_for_typst(rendercv_model: RenderCVModel) -> list[str]:
     show_icon = rendercv_model.design.header.connections.show_icons
     hyperlink = rendercv_model.design.header.connections.hyperlink
 
-    placeholders = [
-        (
-            f'#connection-with-icon("{connection.fontawesome_icon}")'
-            f"[{markdown_to_typst(connection.body)}]"
-            if show_icon
-            else markdown_to_typst(connection.body)
-        )
-        for connection in connections
-    ]
+    placeholders = []
+    for connection in connections:
+        body = markdown_to_typst(connection.body)
+        if connection.fontawesome_icon == "phone":
+            body = f"#text(dir: ltr)[{body}]"
+        if show_icon:
+            body = f'#connection-with-icon("{connection.fontawesome_icon}")[{body}]'
+        placeholders.append(body)
 
     return [
         (

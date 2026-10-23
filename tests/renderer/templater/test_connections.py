@@ -318,6 +318,14 @@ class TestComputeConnectionsForTypst:
 
         assert "john\\@example.com" in result[0]
 
+    def test_phone_text_is_ltr_isolated(self):
+        cv = create_cv(key_order=["phone"], phone="+14155552671")
+        model = create_rendercv_model(cv)
+
+        result = compute_connections_for_typst(model)
+
+        assert "#text(dir: ltr)[+1 415-555-2671]" in result[0]
+
     def test_custom_connection_without_url_is_not_hyperlinked(self):
         custom_connection = CustomConnection(
             fontawesome_icon="calendar-days",
