@@ -14,15 +14,16 @@ file_path_placeholders_description = """The following placeholders can be used:
 - MONTH_IN_TWO_DIGITS: Month as a number in two digits (e.g., 01)
 - DAY: Day of the month (e.g., 5)
 - DAY_IN_TWO_DIGITS: Day of the month in two digits (e.g., 05)
+- DAY_ORDINAL: Day of the month as an ordinal (e.g., 5th)
 - YEAR: Year as a number (e.g., 2024)
 - YEAR_IN_TWO_DIGITS: Year as a number in two digits (e.g., 24)
 - NAME: The name of the CV owner (e.g., John Doe)
-- NAME_IN_SNAKE_CASE: The name of the CV owner in snake case (e.g., John_Doe)
-- NAME_IN_LOWER_SNAKE_CASE: The name of the CV owner in lower snake case (e.g., john_doe)
-- NAME_IN_UPPER_SNAKE_CASE: The name of the CV owner in upper snake case (e.g., JOHN_DOE)
-- NAME_IN_KEBAB_CASE: The name of the CV owner in kebab case (e.g., John-Doe)
-- NAME_IN_LOWER_KEBAB_CASE: The name of the CV owner in lower kebab case (e.g., john-doe)
-- NAME_IN_UPPER_KEBAB_CASE: The name of the CV owner in upper kebab case (e.g., JOHN-DOE)
+- NAME_IN_SNAKE_CASE: The name in snake case (e.g., John_Doe)
+- NAME_IN_LOWER_SNAKE_CASE: The name in lower snake case (e.g., john_doe)
+- NAME_IN_UPPER_SNAKE_CASE: The name in upper snake case (e.g., JOHN_DOE)
+- NAME_IN_KEBAB_CASE: The name in kebab case (e.g., John-Doe)
+- NAME_IN_LOWER_KEBAB_CASE: The name in lower kebab case (e.g., john-doe)
+- NAME_IN_UPPER_KEBAB_CASE: The name in upper kebab case (e.g., JOHN-DOE)
 """
 
 
@@ -42,6 +43,16 @@ class RenderCommand(BaseModelWithoutExtraKeys):
     locale: ExistingPathRelativeToInput | None = pydantic.Field(
         default=None,
         description="Path to a YAML file containing the `locale` field.",
+    )
+    overlays: list[ExistingPathRelativeToInput] = pydantic.Field(
+        default=[],
+        description=(
+            "Paths to YAML files that are merged over the input file, in order, like"
+            " a part of a CV in another file. An overlay has the structure of an"
+            " input file: its mappings are merged into the input's, and its other"
+            " values (text, lists) replace the input's. Overlays given with"
+            " `--overlay` are merged after these. The default value is `[]`."
+        ),
     )
     typst_path: PlannedPathRelativeToInput = pydantic.Field(
         default=pathlib.Path("OUTPUT_FOLDER/NAME_IN_SNAKE_CASE_CV.typ"),
@@ -84,6 +95,15 @@ class RenderCommand(BaseModelWithoutExtraKeys):
             f"{file_path_placeholders_description}"
         ),
     )
+    svg_path: PlannedPathRelativeToInput = pydantic.Field(
+        default=pathlib.Path("OUTPUT_FOLDER/NAME_IN_SNAKE_CASE_CV.svg"),
+        title="SVG Path",
+        description=(
+            "Output path for SVG files, one per page, relative to the input YAML"
+            " file. The default value is `OUTPUT_FOLDER/NAME_IN_SNAKE_CASE_CV.svg`.\n\n"
+            f"{file_path_placeholders_description}"
+        ),
+    )
     dont_generate_markdown: bool = pydantic.Field(
         default=False,
         title="Don't Generate Markdown",
@@ -101,8 +121,8 @@ class RenderCommand(BaseModelWithoutExtraKeys):
         default=False,
         title="Don't Generate Typst",
         description=(
-            "Skip Typst generation. This also disables PDF and PNG generation. The"
-            " default value is `false`."
+            "Skip saving the Typst source file. PDF, PNG, and SVG generation are"
+            " unaffected. The default value is `false`."
         ),
     )
     dont_generate_pdf: bool = pydantic.Field(
@@ -114,4 +134,9 @@ class RenderCommand(BaseModelWithoutExtraKeys):
         default=False,
         title="Don't Generate PNG",
         description="Skip PNG generation. The default value is `false`.",
+    )
+    dont_generate_svg: bool = pydantic.Field(
+        default=False,
+        title="Don't Generate SVG",
+        description="Skip SVG generation. The default value is `false`.",
     )

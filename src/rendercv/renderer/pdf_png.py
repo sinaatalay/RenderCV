@@ -4,6 +4,7 @@ import pathlib
 import shutil
 import tempfile
 import tomllib
+from typing import Literal
 
 import rendercv_fonts
 import typst
@@ -12,105 +13,149 @@ from rendercv.exception import RenderCVInternalError
 from rendercv.schema.models.rendercv_model import RenderCVModel
 
 from .path_resolver import resolve_rendercv_file_path
+from .typst import copy_photo_next_to_typst_file, render_typst_source
 
 
 def generate_pdf(
-    rendercv_model: RenderCVModel, typst_path: pathlib.Path | None
+    rendercv_model: RenderCVModel, source: str | None = None
 ) -> pathlib.Path | None:
-    """Compile Typst source to PDF using typst-py compiler.
-
-    Why:
-        PDF is the primary output format for CVs. Typst compilation produces
-        high-quality PDFs with proper fonts, layout, and typography from the
-        intermediate Typst markup.
+    """Compile the Typst source of a CV to PDF, unless disabled.
 
     Args:
-        rendercv_model: CV model for path resolution and photo handling.
-        typst_path: Path to Typst source file to compile.
+        rendercv_model: Validated CV model.
+        source: The Typst source, if already rendered.
 
     Returns:
-        Path to generated PDF file, or None if generation disabled.
+        Path to the PDF file, or None if its generation is disabled.
     """
-    if rendercv_model.settings.render_command.dont_generate_pdf or typst_path is None:
+    if rendercv_model.settings.render_command.dont_generate_pdf:
         return None
     pdf_path = resolve_rendercv_file_path(
         rendercv_model, rendercv_model.settings.render_command.pdf_path
     )
-    typst_compiler = get_typst_compiler(
-        rendercv_model._input_file_path, typst_path.parent
-    )
-    copy_photo_next_to_typst_file(rendercv_model, typst_path)
-    typst_compiler.compile(input=typst_path, format="pdf", output=pdf_path)
-
+    (pdf,) = compile_typst(rendercv_model, source, "pdf")
+    pdf_path.write_bytes(pdf)
     return pdf_path
 
 
 def generate_png(
-    rendercv_model: RenderCVModel, typst_path: pathlib.Path | None
+    rendercv_model: RenderCVModel, source: str | None = None
 ) -> list[pathlib.Path] | None:
-    """Compile Typst source to PNG images using typst-py compiler.
+    """Compile the Typst source of a CV to one PNG file per page, unless disabled.
 
     Why:
-        PNG format enables CV preview in web applications and README files.
-        Multi-page CVs produce multiple PNG files with sequential numbering.
+        PNG previews serve web pages and READMEs.
 
     Args:
-        rendercv_model: CV model for path resolution and photo handling.
-        typst_path: Path to Typst source file to compile.
+        rendercv_model: Validated CV model.
+        source: The Typst source, if already rendered.
 
     Returns:
-        List of paths to generated PNG files, or None if generation disabled.
+        Paths to the PNG files, or None if their generation is disabled.
     """
-    if rendercv_model.settings.render_command.dont_generate_png or typst_path is None:
+    command = rendercv_model.settings.render_command
+    if command.dont_generate_png:
         return None
-    png_path = resolve_rendercv_file_path(
-        rendercv_model, rendercv_model.settings.render_command.png_path
+    return write_pages(
+        compile_typst(rendercv_model, source, "png"),
+        resolve_rendercv_file_path(rendercv_model, command.png_path),
     )
 
-    pattern = f"{png_path.stem}_*.png"
-    for existing_png_file in png_path.parent.glob(pattern):
-        if existing_png_file.is_file():
-            existing_png_file.unlink()
 
-    typst_compiler = get_typst_compiler(
-        rendercv_model._input_file_path, typst_path.parent
-    )
-    copy_photo_next_to_typst_file(rendercv_model, typst_path)
-    png_files_bytes = typst_compiler.compile(input=typst_path, format="png")
-
-    if not isinstance(png_files_bytes, list):
-        png_files_bytes = [png_files_bytes]
-
-    png_files = []
-    for i, png_file_bytes in enumerate(png_files_bytes):
-        if png_file_bytes is None:
-            raise RenderCVInternalError("Typst compiler returned None for PNG bytes")
-        png_file = png_path.parent / (png_path.stem + f"_{i + 1}.png")
-        png_file.write_bytes(png_file_bytes)
-        png_files.append(png_file)
-
-    return png_files if png_files else None
-
-
-def copy_photo_next_to_typst_file(
-    rendercv_model: RenderCVModel, typst_path: pathlib.Path
-) -> None:
-    """Copy CV photo to Typst file directory for compilation.
+def generate_svg(
+    rendercv_model: RenderCVModel, source: str | None = None
+) -> list[pathlib.Path] | None:
+    """Compile the Typst source of a CV to one SVG file per page, unless disabled.
 
     Why:
-        Typst compiler resolves image paths relative to source file location.
-        Copying photo ensures compilation succeeds regardless of original
-        photo location.
+        SVG previews are vector images, sharp at any size on web pages.
 
     Args:
-        rendercv_model: CV model containing photo path.
-        typst_path: Path to Typst source file.
+        rendercv_model: Validated CV model.
+        source: The Typst source, if already rendered.
+
+    Returns:
+        Paths to the SVG files, or None if their generation is disabled.
     """
-    photo_path = rendercv_model.cv.photo
-    if isinstance(photo_path, pathlib.Path):
-        copy_to = typst_path.parent / photo_path.name
-        if photo_path != copy_to:
-            shutil.copy(photo_path, copy_to)
+    command = rendercv_model.settings.render_command
+    if command.dont_generate_svg:
+        return None
+    return write_pages(
+        compile_typst(rendercv_model, source, "svg"),
+        resolve_rendercv_file_path(rendercv_model, command.svg_path),
+    )
+
+
+def write_pages(pages: list[bytes], path: pathlib.Path) -> list[pathlib.Path]:
+    """Write the pages of a document to numbered files.
+
+    Why:
+        The pages of `NAME_CV.png` are `NAME_CV_1.png`, `NAME_CV_2.png`, and so on.
+        The pages of a previous render are replaced, so that none is left over from
+        a longer CV, and other files are left alone.
+
+    Args:
+        pages: The pages.
+        path: Path of the document, which the files of its pages are named after.
+
+    Returns:
+        Paths to the files of the pages.
+    """
+    prefix = f"{path.stem}_"
+    for existing in path.parent.iterdir():
+        if (
+            existing.is_file()
+            and existing.suffix == path.suffix
+            and existing.stem.startswith(prefix)
+            and existing.stem.removeprefix(prefix).isdigit()
+        ):
+            existing.unlink()
+
+    files = []
+    for number, page in enumerate(pages, start=1):
+        file = path.parent / f"{path.stem}_{number}{path.suffix}"
+        file.write_bytes(page)
+        files.append(file)
+    return files
+
+
+def compile_typst(
+    rendercv_model: RenderCVModel,
+    source: str | None,
+    output_format: Literal["pdf", "png", "svg"],
+) -> list[bytes]:
+    """Compile the Typst source of a CV in memory.
+
+    Why:
+        The source is compiled as if it were saved: in the directory of the Typst
+        file, with the photo next to it. So RenderCV and `typst compile` produce
+        the same document from it.
+
+    Args:
+        rendercv_model: Validated CV model.
+        source: The Typst source, rendered if None.
+        output_format: `"pdf"`, `"png"`, or `"svg"`.
+
+    Returns:
+        The compiled document, one item per page for PNG and SVG.
+    """
+    if source is None:
+        source = render_typst_source(rendercv_model)
+    directory = resolve_rendercv_file_path(
+        rendercv_model, rendercv_model.settings.render_command.typst_path
+    ).parent
+    copy_photo_next_to_typst_file(rendercv_model, directory)
+    compiler = get_typst_compiler(rendercv_model._input_file_path, directory)
+    standards = rendercv_model.settings.pdf_standards if output_format == "pdf" else []
+    result = compiler.compile(
+        input=source.encode("utf-8"), format=output_format, pdf_standards=standards
+    )
+    pages = result if isinstance(result, list) else [result]
+    compiled = [page for page in pages if page is not None]
+    if len(compiled) != len(pages) or not compiled:
+        message = f"Typst returned no {output_format.upper()} output."
+        raise RenderCVInternalError(message)
+    return compiled
 
 
 def read_version_from_typst_toml(typst_toml_path: pathlib.Path) -> str:
@@ -163,11 +208,11 @@ def install_bundled_typst_package(
 
 @functools.lru_cache(maxsize=1)
 def get_package_path() -> pathlib.Path:
-    """Set up local Typst package resolution from bundled Typst packages.
+    """Set up local Typst package resolution from the bundled rendercv package.
 
     Why:
-        Bundled Typst packages (rendercv, fontawesome) are shipped inside the
-        Python package so that PDF compilation works without downloading from
+        The rendercv Typst package is shipped inside the Python package so that
+        PDF compilation uses this version of it instead of downloading one from
         Typst Universe. The Typst compiler expects packages in a directory
         structure of preview/{name}/{version}/, so this creates a temporary
         directory with that layout.
@@ -187,18 +232,6 @@ def get_package_path() -> pathlib.Path:
         typ_files=["lib.typ"],
     )
 
-    install_bundled_typst_package(
-        bundled_path=renderer_dir / "typst_fontawesome",
-        package_name="fontawesome",
-        temp_dir=temp_dir,
-        typ_files=[
-            "lib.typ",
-            "lib-impl.typ",
-            "lib-gen-func.typ",
-            "lib-gen-map.typ",
-        ],
-    )
-
     return temp_dir
 
 
@@ -214,7 +247,10 @@ def get_typst_compiler(
         all compilations. The source file is passed per compile() call, so
         the compiler survives output filename changes (e.g., when cv.name
         changes). Font paths include package fonts and optional user fonts
-        from input file directory.
+        from input file directory. The Typst packages that the rendercv package
+        imports (fontawesome) are downloaded at build time into the
+        typst_packages directory and shipped with RenderCV, so compilation works
+        offline; Typst downloads them there itself if they are missing.
 
     Args:
         input_file_path: Original input file path for relative font resolution.
@@ -234,4 +270,5 @@ def get_typst_compiler(
             ),
         ],
         package_path=get_package_path(),
+        package_cache_path=pathlib.Path(__file__).parent / "typst_packages",
     )

@@ -1,7 +1,9 @@
 import pathlib
 
 import pydantic
+import pydantic_core
 
+from ..template_validation import validate_templates
 from .base import BaseModelWithoutExtraKeys
 from .cv.cv import Cv
 from .design.classic_theme import ClassicTheme
@@ -68,4 +70,53 @@ class RenderCVModel(BaseModelWithoutExtraKeys):
             Model instance with _input_file_path set.
         """
         self._input_file_path = get_input_file_path(info)
+        return self
+
+    @pydantic.model_validator(mode="after")
+    def validate_document(self) -> "RenderCVModel":
+        """Validate requirements that depend on more than one top-level field.
+
+        Returns:
+            The validated document.
+        """
+        if (
+            not self.settings.render_command.dont_generate_pdf
+            and "ua-1" in self.settings.pdf_standards
+            and not (self.cv.name and self.cv.name.strip())
+        ):
+            raise pydantic.ValidationError.from_exception_data(
+                type(self).__name__,
+                [
+                    {
+                        "type": pydantic_core.PydanticCustomError(
+                            "rendercv_other_error",
+                            "PDF/UA-1 requires a main heading. Add `cv.name`, or set"
+                            " `settings.pdf_standards` to `[]` for an unnamed PDF.",
+                        ),
+                        "loc": ("cv", "name"),
+                        "input": self.cv.name,
+                    }
+                ],
+            )
+        directory = (
+            self._input_file_path.parent
+            if self._input_file_path
+            else pathlib.Path.cwd()
+        )
+        command = self.settings.render_command
+        formats: set[str] = set()
+        if not all(
+            (
+                command.dont_generate_typst,
+                command.dont_generate_pdf,
+                command.dont_generate_png,
+                command.dont_generate_svg,
+            )
+        ):
+            formats.add("typst")
+        if not command.dont_generate_markdown:
+            formats.add("markdown")
+            if not command.dont_generate_html:
+                formats.add("html")
+        validate_templates(directory, self.design.theme, formats)
         return self

@@ -4,72 +4,73 @@ toc_depth: 2
 
 # Testing
 
-Tests check if your code does what it's supposed to do. Every time you change something, you need to verify it still works. Instead of manually checking everything, you can write test code once and rerun it after each change.
+A test runs code and checks its result against an expectation. This records how the code should behave and catches changes that break that behavior. RenderCV uses [pytest](https://docs.pytest.org/) to find and run functions named `test_...` in `tests/`, whose paths mirror `src/rendercv/`.
 
-Here's a simple example:
+For example, this test expresses the rule that an overlay replaces a whole list:
 
 ```python
-def sum(a, b):
-    return a + b
+from rendercv.schema.override_dictionary import merge_overlay
 
-def test_sum():
-    assert sum(2, 3) == 5
-    assert sum(-1, 1) == 0
-    assert sum(0, 0) == 0
+
+def test_overlay_replaces_a_list():
+    data = {"items": ["first", "second"]}
+    merge_overlay(data, {"items": ["replacement"]})
+    assert data["items"] == ["replacement"]
 ```
 
-If you change something in `sum`, you can run `test_sum` again to see if it's still working.
+The `assert` fails if the actual result differs. For a bug fix, first make a test fail on the reported input, then change the implementation. That confirms the test can detect the bug and protects against its return: a **regression**.
 
-All of the tests of RenderCV are written in [`tests/`](https://github.com/rendercv/rendercv/tree/main/tests) directory.
-
-## [`pytest`](https://github.com/pytest-dev/pytest): Testing Framework
-
-`pytest` is a Python library that provides utilities to write and run tests.
-
-**How does it work?** When you run `pytest`, it searches for files matching `test_*.py` in the `tests/` directory and executes all functions starting with `test_`.
-
-## Running RenderCV Tests
-
-Whenever you make changes to RenderCV's source code, run the tests to ensure everything still works. If all tests pass, your changes didn't break anything.
+## Run the tests
 
 ```bash
 just test
+just test-coverage
 ```
 
-## Reference File Comparison
+**Coverage** measures which statements ran during testing. Open `htmlcov/index.html` to find code the tests did not execute. Executing a line does not establish that its result was checked correctly, so coverage helps locate gaps but does not prove correctness.
 
-Some tests in [`tests/renderer/`](https://github.com/rendercv/rendercv/tree/main/tests/renderer) (specifically [`test_pdf_png.py`](https://github.com/rendercv/rendercv/blob/main/tests/renderer/test_pdf_png.py), [`test_typst.py`](https://github.com/rendercv/rendercv/blob/main/tests/renderer/test_typst.py), [`test_markdown.py`](https://github.com/rendercv/rendercv/blob/main/tests/renderer/test_markdown.py), and [`test_html.py`](https://github.com/rendercv/rendercv/blob/main/tests/renderer/test_html.py)) use reference file comparison:
+While developing, run the relevant file and stop at its first failure with `-x`:
 
-1. Tests generate output files by running RenderCV
-2. Generated files are compared against reference files in `tests/renderer/testdata/`
-3. If they match exactly, the test passes. Any difference fails the test.
+```bash
+uv run --frozen --all-extras pytest tests/renderer/templater/test_date.py -x
+```
 
-### Updating Reference Files
+## Write behavior tests
 
-You fix a bug that changes RenderCV's output. Tests fail because the new output doesn't match old reference files.
+Assert the expected result or error, rather than the sequence of internal calls. Prefer real parsing, validation, and rendering. A **mock** replaces a dependency with a controlled substitute; use one for an external service when the test should not make a network request. Test file operations with temporary files.
 
-**This is expected.** You intentionally changed the output. You need to update the reference files:
+A pytest **fixture** supplies setup through a test's arguments. For example, `tmp_path` supplies a separate temporary directory for each test. Put shared fixtures in the nearest common `conftest.py`, which pytest discovers automatically. Keep simple values inline.
+
+Name a single test after the function or class it exercises. Group multiple tests under `TestFunctionName` or `TestClassName`, with method names describing expected behavior. Use `pytest.mark.parametrize` to run the same test with several input/expected-result pairs.
+
+Choose boundary cases relevant to the change: missing fields, empty lists, Unicode, multiline content, nested entries, or paths outside the working directory. Pipeline tests should check that invalid input fails during validation and unexpected renderer failures propagate.
+
+## Compare rendered output
+
+Renderer tests compare generated files with saved **reference files** in `tests/renderer/testdata/`. These record the output we previously inspected and accepted. A difference in any expected page fails the comparison, which catches layout changes that small assertions can miss.
+
+PDF and PNG reference tests use only bundled fonts, so fonts installed on your computer cannot change the expected output.
+
+When output changes intentionally, run:
 
 ```bash
 just update-testdata
 ```
 
-!!! warning
-    **Manually verify new reference files before committing.** These become the source of truth. If you commit broken reference files, tests will pass even when RenderCV produces bad output. Always check generated PDFs and PNGs carefully.
+Inspect the changed Typst, Markdown, HTML, PDFs, and images before committing them. Updating references accepts the new output, so doing it without inspection could accept a bug. Keep focused regression assertions alongside these broad comparisons.
 
-## [`pytest-cov`](https://github.com/pytest-dev/pytest-cov): Coverage Plugin for `pytest`
+Tests also check that generated schemas, examples, and the AI agent skill match their source. Regenerate the artifacts affected by your change.
 
-Coverage is a measure of which code lines are executed when tests run. If tests execute a line, it's included in coverage. If tests execute all lines in `src/rendercv/`, coverage is 100%.
+## Test properties across many inputs
 
-**Why does it matter?** Coverage reports show you which parts of your code aren't tested yet, so you know where to write more tests.
+An example test checks particular values. A **property-based test** checks a rule across generated inputs. For example, applying keyword bolding twice should have the same result as applying it once.
 
-Run tests with coverage:
+[Hypothesis](https://hypothesis.readthedocs.io/) generates cases from rules called strategies. If it finds a failure, it tries to reduce the input to a smaller example that still fails. RenderCV's strategies combine formatting, links, code, Typst expressions, lists, multiline values, and missing placeholders, revealing interactions that hand-picked examples can miss.
+
+`just test` uses the normal profile. For content-pipeline changes, use the stress profile:
 
 ```bash
-just test-coverage
+HYPOTHESIS_PROFILE=stress uv run --frozen --all-extras pytest tests/renderer/templater
 ```
 
-This generates two outputs:
-
-- **Terminal:** Overall coverage percentage
-- **HTML report:** Open `htmlcov/index.html` to see exactly which lines are covered (green) and which aren't (red)
+It requests 1,500 examples per property; finite input sets can run out sooner. Preserve useful failing examples as focused regression tests after fixing the bug.

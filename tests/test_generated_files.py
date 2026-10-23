@@ -9,7 +9,6 @@ Why:
 
 import pathlib
 import subprocess
-import sys
 
 import pytest
 
@@ -29,9 +28,6 @@ def run_just(recipe: str) -> None:
     )
 
 
-@pytest.mark.skipif(
-    sys.platform == "win32", reason="Schema generation differs on Windows"
-)
 def test_schema_json_is_up_to_date() -> None:
     schema_path = repository_root / "schema.json"
     before = schema_path.read_text(encoding="utf-8")
@@ -67,33 +63,37 @@ def test_example_yaml_is_up_to_date(theme: str) -> None:
     )
 
 
-def test_skill_md_is_up_to_date() -> None:
-    skill_path = (
-        repository_root
-        / ".claude"
-        / "skills"
-        / "rendercv-skill"
-        / "skills"
-        / "rendercv"
-        / "SKILL.md"
-    )
-    before = skill_path.read_text(encoding="utf-8")
+skill_path = repository_root / "skills" / "rendercv" / "SKILL.md"
 
-    llms_txt_path = repository_root / "docs" / "llms.txt"
-    llms_before = llms_txt_path.read_text(encoding="utf-8")
+
+def test_skill_is_up_to_date() -> None:
+    generated_files = [
+        skill_path,
+        repository_root / "skills" / "README.md",
+        repository_root / "docs" / "llms.txt",
+    ]
+    before = [path.read_text(encoding="utf-8") for path in generated_files]
 
     run_just("update-skill")
 
-    skill_after = skill_path.read_text(encoding="utf-8")
-    llms_after = llms_txt_path.read_text(encoding="utf-8")
-
+    after = [path.read_text(encoding="utf-8") for path in generated_files]
     # Restore original content
-    skill_path.write_text(before, encoding="utf-8")
-    llms_txt_path.write_text(llms_before, encoding="utf-8")
+    for path, content in zip(generated_files, before, strict=True):
+        path.write_text(content, encoding="utf-8")
 
-    assert before == skill_after, (
-        "skills/rendercv/SKILL.md is stale. Run `just update-skill` to regenerate."
-    )
-    assert llms_before == llms_after, (
-        "docs/llms.txt is stale. Run `just update-skill` to regenerate."
-    )
+    for path, old, new in zip(generated_files, before, after, strict=True):
+        assert old == new, (
+            f"{path.relative_to(repository_root)} is stale. Run `just update-skill`"
+            " to regenerate."
+        )
+
+
+def test_skill_lists_every_available_theme() -> None:
+    skill = skill_path.read_text(encoding="utf-8")
+
+    for theme in available_themes:
+        assert f"`{theme}`" in skill
+
+
+def test_skill_has_no_repository_relative_schema_paths() -> None:
+    assert "$schema=../" not in skill_path.read_text(encoding="utf-8")

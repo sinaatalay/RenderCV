@@ -1,315 +1,110 @@
 ---
-toc_depth: 3
+toc_depth: 2
 ---
 
 # Understanding RenderCV
 
-This guide walks you through how RenderCV works, explaining each step and the tools we use.
-
-## The Core Workflow
-
-RenderCV does more than this (Markdown, HTML, PNG outputs, watching files, etc.), but at its core, what happens is:
+RenderCV turns a description of a CV into a typeset document. The user writes the content in YAML; RenderCV checks it and generates Typst code; Typst lays out the pages and produces the PDF.
 
 ```mermaid
 flowchart LR
-    A[YAML file] --> B[Typst file]
-    B --> C[PDF]
+    A[YAML text] --> B[Python dictionary]
+    B --> C[Validated model]
+    C --> D[Content and templates]
+    D --> E[Typst source]
+    E --> F[PDF, PNG, SVG]
+    D --> G[Markdown]
+    G --> H[HTML]
 ```
 
-Read a YAML file, generate a Typst file, compile it to PDF. Everything else is built on top of this foundation.
+Each step changes the representation of the same CV. Keeping those steps separate lets us change a layout without changing how dates are validated, for example.
 
-## What is Typst?
+## Reading YAML
 
-Before we dive into the steps, let's understand what [Typst](https://typst.app/) is.
-
-Typst is a computer language. Just like Python, HTML, or JavaScript. You write Typst code to describe what a page should look like and what content it contains. You save it as a text file (`.typ` extension). When you compile a `*.typ` file with Typst compiler, you get a PDF.
-
-RenderCV generates a Typst file from your YAML and compiles it with the Typst compiler to produce your CV as a PDF.
-
-## Step 1: Reading the YAML File
-
-When a user gives us a YAML file like this:
+YAML is a text format for structured data. Indentation groups fields, and a dash introduces a list item. A **parser** reads that text and turns it into values a program can use. For example:
 
 ```yaml
 cv:
   name: John Doe
-  location: San Francisco, CA
-  sections:
-    education:
-      - institution: MIT
-        degree: PhD
-        start_date: 2020-09
-        end_date: 2024-05
+  location: London
 ```
 
-We need to:
-
-1. Parse the YAML into Python dictionaries
-2. Validate the data (Does `start_date` come before `end_date`? Is `name` actually provided and is it a string?)
-
-### [`ruamel.yaml`](https://github.com/pycontribs/ruamel-yaml): YAML Parser
-
-Python doesn't have a built-in YAML library. To read YAML files, you need a library. **We use `ruamel.yaml`**, one of the best YAML parsers available.
-
-What does it do? Simple: **converts YAML text into Python dictionaries.**
-
-**YAML file** (`cv.yaml`):
-```yaml
-cv:
-  name: John Doe
-  location: San Francisco, CA
-  sections:
-    education:
-      - institution: MIT
-        degree: PhD
-        start_date: 2020-09
-```
-
-**After parsing with `ruamel.yaml`:**
-```python
-from ruamel.yaml import YAML
-
-yaml = YAML()
-data = yaml.load(open("cv.yaml"))
-
-# Now data is a Python dictionary:
-{
-    "cv": {
-        "name": "John Doe",
-        "location": "San Francisco, CA",
-        "sections": {
-            "education": [
-                {
-                    "institution": "MIT",
-                    "degree": "PhD",
-                    "start_date": "2020-09"
-                }
-            ]
-        }
-    }
-}
-
-# You can access it like any Python dict:
-data["cv"]["name"]  # "John Doe"
-data["cv"]["sections"]["education"][0]["institution"]  # "MIT"
-```
-
-That's it. YAML text becomes a Python dictionary we can work with.
-
-`ruamel.yaml` is being called in [`src/rendercv/schema/yaml_reader.py`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/schema/yaml_reader.py).
-
-### [`pydantic`](https://github.com/pydantic/pydantic): Python Dictionary Validator
-
-Now we have a dictionary. We need to validate it. Without a library, you'd write:
+becomes a Python dictionary:
 
 ```python
-if "name" not in data["cv"]:
-    raise ValueError("Missing 'name' field")
-
-if not isinstance(data["cv"]["name"], str):
-    raise ValueError("name must be a string")
-
-if "sections" in data["cv"]:
-    for section_name, entries in data["cv"]["sections"].items():
-        for entry in entries:
-            if "start_date" in entry and "end_date" in entry:
-                # Parse dates, compare them...
-                # This is already hundreds of lines and we're barely started
+{"cv": {"name": "John Doe", "location": "London"}}
 ```
 
-With `pydantic`, we can define the structure once:
+Python has no built-in YAML parser. RenderCV uses [ruamel.yaml](https://yaml.dev/doc/ruamel.yaml/) in [`yaml_reader.py`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/schema/yaml_reader.py). It also retains the original line numbers, so an error can point to the value in the user's file.
+
+The model builder then combines the main CV with any separate design, locale, settings, and overlay files, followed by command-line overrides. An overlay changes selected values: dictionaries merge by key; lists and individual values replace earlier ones. Validation happens after this combination, so it checks the data that will actually be rendered.
+
+## Validating the data
+
+Parsing establishes what the YAML says. **Validation** checks whether those values make sense for RenderCV: a name must be text, a date must be valid, and an end date cannot precede its start date.
+
+[Pydantic](https://docs.pydantic.dev/latest/) lets us describe a data structure with Python classes and type annotations. Here is a small example, separate from RenderCV's full model:
 
 ```python
 from pydantic import BaseModel
-from datetime import date as Date
 
-class Education(BaseModel):
-    institution: str
-    start_date: Date
-    end_date: Date
 
-    @pydantic.model_validator(mode="after")
-    def check_dates(self):
-        if self.start_date > self.end_date:
-            raise ValueError("start_date cannot be after end_date")
-        return self
-
-class Cv(BaseModel):
+class Person(BaseModel):
     name: str
     location: str | None = None
-    education: list[Education]
+
+
+person = Person.model_validate({"name": "John Doe"})
+assert person.name == "John Doe"
+assert person.location is None
 ```
 
-Then validate:
+`name: str` requires a string. `location: str | None = None` permits a string or no value and supplies a default. Calling `model_validate` checks the dictionary and returns an object whose fields can be accessed as attributes. Invalid input raises a validation error that identifies the field. Additional validator functions express rules involving values, such as the order of two dates.
 
-```python
-# This dictionary (from ruamel.yaml):
-data = {
-    "name": "John Doe",
-    "location": "San Francisco",
-    "education": [
-        {
-            "institution": "MIT",
-            "start_date": "2020-09",
-            "end_date": "2024-05"
-        }
-    ]
-}
+RenderCV's [`RenderCVModel`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/schema/models/rendercv_model.py) has four fields: `cv`, `design`, `locale`, and `settings`. Each contains further Pydantic models, so validation follows the structure down to individual entries and settings. Rules involving several top-level fields belong on `RenderCVModel`.
 
-# Becomes this validated object:
-cv = Cv.model_validate(data)
+Validation also prepares input resources: it checks local photos, downloads remote photos, and checks custom template syntax. Paths in YAML resolve from the main CV file's directory; explicit command-line paths resolve from the directory where the command runs.
 
-# Now you have clean, validated objects:
-cv.name  # "John Doe"
-cv.education[0].institution  # "MIT"
-cv.education[0].start_date  # "2020-09", guaranteed dates are valid
-```
+This is the boundary between input handling and rendering. Invalid input gets a useful diagnostic during validation. Afterward, the renderer should produce the requested files; an unexpected exception remains a bug to investigate, rather than being presented as another input error.
 
-That's the power. Dictionary goes in, `pydantic` checks everything, clean Python object comes out.
+## Understanding formatted content
 
-![Strict Validation Feature of RenderCV](../assets/images/validation.gif)
+A field can contain Markdown such as `**Published** [three papers](https://example.com)`. Typst uses different syntax, so copying that string directly would not preserve its meaning.
 
-**RenderCV's entire data model is `pydantic` models all the way down:**
+RenderCV uses [markdown-it-py](https://markdown-it-py.readthedocs.io/) to parse the formatting. Its [`markup.py`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/renderer/templater/markup.py) represents the result as a tree: a bold node contains the word “Published”; a link node contains its text and destination. The nodes are immutable, meaning a transformation creates new nodes instead of changing the old ones. Custom parser rules also recognize Typst expressions and `$$math$$`.
 
-```python
-class RenderCVModel(BaseModel):
-    cv: Cv              # ← pydantic model
-    design: Design      # ← pydantic model
-    locale: Locale      # ← pydantic model
-    settings: Settings  # ← pydantic model
-```
+Working with this structure lets keyword bolding change visible words without changing a link's URL or a code example. It also lets entry templates substitute fields: `**COMPANY**, POSITION` combines two values, while a missing position removes its connecting comma.
 
-Each field is another `pydantic` model. `Cv` contains more `pydantic` models like `EducationEntry`, `ExperienceEntry`, etc. It's nested validation: when you validate `RenderCVModel`, `pydantic` automatically validates every nested model too. One `model_validate()` call checks the entire structure.
+A writer then converts the tree into Typst or Markdown syntax. It **escapes** characters that should appear literally, so punctuation in a name is not accidentally treated as formatting. [`model_processor.py`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/renderer/templater/model_processor.py) prepares a copy of the model for each output format, including dates, labels, and these formatted fields.
 
-See [`src/rendercv/schema/models/rendercv_model.py`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/schema/models/rendercv_model.py) for the top-level model.
+## Assembling a document with templates
 
-## Step 2: Generating the Typst File
+A template is text with places for values and instructions for optional or repeated parts. [Jinja](https://jinja.palletsprojects.com/) fills those places. For example, this simplified template:
 
-Now we need to generate a Typst file:
-
-```typst
-= John Doe
-San Francisco, CA
-
-== Education
-#strong[MIT] #h(1fr) 2020 – 2024
-PhD in Computer Science
-```
-
-You could try string concatenation:
-
-```python
-typst = f"= {cv.name}\n"
-if cv.location:
-    typst += f"{cv.location}\n"
-typst += "\n"
-
-for section_title, entries in cv.sections.items():
-    typst += f"== {section_title}\n"
-    for entry in entries:
-        typst += f"#strong[{entry.institution}]"
-        # What about optional fields? Spacing? Line breaks?
-        # Multiple themes with different layouts?
-        # This is impossible to maintain!
-```
-
-This doesn't work. You're building hundreds of lines of string concatenation logic, handling conditionals, managing whitespace. It's unworkable.
-
-This is why **templating engines were invented**. When you need to programmatically generate complex text files, you need templates.
-
-### [`jinja2`](https://github.com/pallets/jinja): Templating Engine
-
-`jinja2` is the most famous templating engine for Python.
-
-**Template file** (`Header.j2.typ`):
 ```jinja2
 = {{ cv.name }}
 {% if cv.location %}
 {{ cv.location }}
 {% endif %}
-
-{% if cv.email %}
-#link("mailto:{{ cv.email }}")
-{% endif %}
 ```
 
-**Python code:**
-```python
-template = jinja2_env.get_template("Header.j2.typ")
-output = template.render(cv=cv)
-```
+produces this text when the supplied name is John Doe and location is London:
 
-**Result:**
 ```typst
 = John Doe
-San Francisco, CA
-
-#link("mailto:john@example.com")
+London
 ```
 
-Clean separation: templates define layout, Python code provides data. Users can override templates to customize their CV without touching Python code.
+`{{ ... }}` inserts a value; `{% if ... %}` includes text only when the condition holds. Python prepares the values, while the templates describe their arrangement.
 
-Typst templates live in [`src/rendercv/renderer/templater/templates/typst/`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/renderer/templater/templates/typst/).
+RenderCV's [`templater.py`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/renderer/templater/templater.py) assembles the document setup, header, sections, and entries. A subsection uses the section renderer at the next heading level. The loader looks for user templates beside the input before falling back to built-in ones, allowing [custom layouts](../user_guide/how_to/override_default_templates.md) without editing the installed package.
 
-`jinja2` is being called in [`src/rendercv/renderer/templater/templater.py`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/renderer/templater/templater.py).
+HTML needs its own escaping: `<` in a title must remain text. Jinja escapes those values automatically. The already-generated HTML body uses the `safe` filter so its tags remain markup. That filter skips escaping; it does not check whether arbitrary HTML is safe.
 
-### [`markdown`](https://github.com/Python-Markdown/markdown): Markdown to Typst
+## Turning Typst code into pages
 
-Users want to write Markdown in their YAML:
+[Typst](https://typst.app/) is a language for typesetting documents. Its source describes content, styles, and layout; its **compiler** calculates page positions and produces the output. The `= John Doe` line above, for example, describes a heading.
 
-```yaml
-highlights:
-  - "**Published** [3 papers](https://example.com) on neural networks"
-  - "Collaborated with *Professor Smith*"
-```
+The `typst` Python package lets Python call that compiler. [`pdf_png.py`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/renderer/pdf_png.py) passes it generated source and the fonts and Typst packages needed to render it. The source can stay in memory, so disabling the saved `.typ` file does not disable PDF output. PNG and SVG contain one image per page. HTML is generated from the Markdown output instead.
 
-But Typst doesn't understand `**bold**` or `[links](url)`. We need Typst syntax: `#strong[bold]` and `#link("url")[text]`.
-
-**We use the `markdown` library.** It parses Markdown into an XML tree. Then we walk the tree and convert each element to Typst:
-
-```python
-match element.tag:
-    case "strong":
-        return f"#strong[{content}]"
-    case "em":
-        return f"#emph[{content}]"
-    case "a":
-        href = element.get("href")
-        return f'#link("{href}")[{content}]'
-```
-
-Result: `#strong[Published] #link("https://example.com")[3 papers]`
-
-See [`src/rendercv/renderer/templater/markdown_parser.py`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/renderer/templater/markdown_parser.py). The `markdown_to_typst()` function does this conversion.
-
-## Step 3: Compiling to PDF
-
-### [`typst`](https://github.com/messense/typst-py): Typst Compiler
-
-`typst` library is the Python bindings for the Typst compiler.
-
-```python
-from typst import compile
-compile("cv.typ", output="cv.pdf")
-```
-
-Done. Typst file has been compiled to PDF.
-
-`typst` is being called in [`src/rendercv/renderer/pdf_png.py`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/renderer/pdf_png.py).
-
-## The Complete Pipeline
-
-When you run `rendercv render cv.yaml`:
-
-1. **Parse** - `ruamel.yaml` reads YAML → Python dict
-2. **Validate** - `pydantic` validates dict → `RenderCVModel` object
-3. **Generate** - `jinja2` renders templates with data → Typst file
-4. **Compile** - `typst` compiles Typst → PDF
-
-Everything else (Markdown support, watch mode, PNG output, HTML export) builds on this core.
-
-## Learn More
-
-- [`src/rendercv/cli/render_command/run_rendercv.py`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/cli/render_command/run_rendercv.py): The complete flow
-- [`src/rendercv/schema/models/rendercv_model.py`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/schema/models/rendercv_model.py): The top-level Pydantic model
-- [`src/rendercv/renderer/templater/templater.py`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/renderer/templater/templater.py): Template rendering
+[`run_rendercv.py`](https://github.com/rendercv/rendercv/blob/main/src/rendercv/cli/render_command/run_rendercv.py) coordinates these steps and reports progress. Watch mode runs them again when an input file changes. Follow that function to see how the pieces connect; the [testing guide](testing.md) explains how we check their behavior.

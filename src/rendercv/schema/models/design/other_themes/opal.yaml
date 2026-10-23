@@ -17,12 +17,14 @@ design:
       headline: Lato
       connections: Lato
       section_titles: Lato
+      subsection_titles: Lato
     font_size:
       body: 10pt
       name: 26pt
       headline: 10pt
       connections: 9pt
       section_titles: 1.2em
+      subsection_titles: 1.05em
     small_caps:
       name: false
       headline: true
@@ -38,6 +40,7 @@ design:
     headline: rgb(0, 80, 72)
     connections: rgb(0, 80, 72)
     section_titles: rgb(0, 100, 90)
+    subsection_titles: rgb(0, 100, 90)
     links: rgb(0, 100, 90)
     footer: rgb(100, 140, 135)
     top_note: rgb(100, 140, 135)
@@ -78,11 +81,11 @@ design:
   templates:
     education_entry:
       main_column: "**INSTITUTION** -- LOCATION\nDEGREE_WITH_AREA\nSUMMARY\nHIGHLIGHTS"
-      date_and_location_column: DATE
+      date_and_location_column: "DATE\nTIME_SPAN"
       degree_column: null
     normal_entry:
       main_column: "**NAME** -- LOCATION\nSUMMARY\nHIGHLIGHTS"
-      date_and_location_column: DATE
+      date_and_location_column: "DATE\nTIME_SPAN"
     experience_entry:
       main_column: "**COMPANY**, *POSITION* -- LOCATION\nSUMMARY\nHIGHLIGHTS"
-      date_and_location_column: DATE
+      date_and_location_column: "DATE\nTIME_SPAN"

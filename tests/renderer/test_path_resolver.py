@@ -1,12 +1,11 @@
-import datetime
 import pathlib
+from datetime import date as Date
 
 import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from rendercv.renderer.path_resolver import (
-    build_name_variants,
     resolve_output_folder_placeholder,
     resolve_rendercv_file_path,
 )
@@ -29,57 +28,57 @@ class TestResolveRendercvFilePath:
             ("NAME_IN_LOWER_KEBAB_CASE.pdf", "John Doe", None, "john-doe.pdf"),
             ("NAME_IN_UPPER_KEBAB_CASE.pdf", "John Doe", None, "JOHN-DOE.pdf"),
             # Date placeholders
-            ("MONTH_NAME.pdf", "John Doe", datetime.date(2024, 3, 15), "March.pdf"),
+            ("MONTH_NAME.pdf", "John Doe", Date(2024, 3, 15), "March.pdf"),
             (
                 "MONTH_ABBREVIATION.pdf",
                 "John Doe",
-                datetime.date(2024, 3, 15),
+                Date(2024, 3, 15),
                 "Mar.pdf",
             ),
-            ("MONTH.pdf", "John Doe", datetime.date(2024, 3, 15), "3.pdf"),
+            ("MONTH.pdf", "John Doe", Date(2024, 3, 15), "3.pdf"),
             (
                 "MONTH_IN_TWO_DIGITS.pdf",
                 "John Doe",
-                datetime.date(2024, 3, 15),
+                Date(2024, 3, 15),
                 "03.pdf",
             ),
-            ("YEAR.pdf", "John Doe", datetime.date(2024, 3, 15), "2024.pdf"),
+            ("YEAR.pdf", "John Doe", Date(2024, 3, 15), "2024.pdf"),
             (
                 "YEAR_IN_TWO_DIGITS.pdf",
                 "John Doe",
-                datetime.date(2024, 3, 15),
+                Date(2024, 3, 15),
                 "24.pdf",
             ),
             # Different months
-            ("MONTH_NAME.pdf", "John Doe", datetime.date(2024, 1, 1), "January.pdf"),
+            ("MONTH_NAME.pdf", "John Doe", Date(2024, 1, 1), "January.pdf"),
             (
                 "MONTH_ABBREVIATION.pdf",
                 "John Doe",
-                datetime.date(2024, 1, 1),
+                Date(2024, 1, 1),
                 "Jan.pdf",
             ),
-            ("MONTH_NAME.pdf", "John Doe", datetime.date(2024, 6, 1), "June.pdf"),
+            ("MONTH_NAME.pdf", "John Doe", Date(2024, 6, 1), "June.pdf"),
             (
                 "MONTH_ABBREVIATION.pdf",
                 "John Doe",
-                datetime.date(2024, 6, 1),
+                Date(2024, 6, 1),
                 "June.pdf",
             ),
-            ("MONTH_NAME.pdf", "John Doe", datetime.date(2024, 12, 1), "December.pdf"),
+            ("MONTH_NAME.pdf", "John Doe", Date(2024, 12, 1), "December.pdf"),
             (
                 "MONTH_ABBREVIATION.pdf",
                 "John Doe",
-                datetime.date(2024, 12, 1),
+                Date(2024, 12, 1),
                 "Dec.pdf",
             ),
             # Day placeholders
-            ("DAY.pdf", "John Doe", datetime.date(2024, 3, 15), "15.pdf"),
-            ("DAY_IN_TWO_DIGITS.pdf", "John Doe", datetime.date(2024, 3, 5), "05.pdf"),
+            ("DAY.pdf", "John Doe", Date(2024, 3, 15), "15.pdf"),
+            ("DAY_IN_TWO_DIGITS.pdf", "John Doe", Date(2024, 3, 5), "05.pdf"),
             # Multiple placeholders
             (
                 "NAME_IN_SNAKE_CASE_CV_YEAR-MONTH_IN_TWO_DIGITS.pdf",
                 "John Doe",
-                datetime.date(2024, 3, 15),
+                Date(2024, 3, 15),
                 "John_Doe_CV_2024-03.pdf",
             ),
             # No placeholders
@@ -91,7 +90,7 @@ class TestResolveRendercvFilePath:
         tmp_path: pathlib.Path,
         file_path_template: str,
         cv_name: str,
-        current_date: datetime.date | None,
+        current_date: Date | None,
         expected_filename: str,
     ):
         if current_date is not None:
@@ -103,6 +102,26 @@ class TestResolveRendercvFilePath:
 
         file_path = tmp_path / file_path_template
         result = resolve_rendercv_file_path(model, file_path)
+
+        assert result.name == expected_filename
+        assert result.parent == tmp_path
+
+    @pytest.mark.parametrize(
+        ("cv_name", "expected_filename"),
+        [
+            ("AC/DC", "AC_DC_CV.pdf"),
+            ("../../evil", ".._.._evil_CV.pdf"),
+            ('Jane: "J" <Doe>', "Jane___J___Doe__CV.pdf"),
+        ],
+    )
+    def test_keeps_values_in_the_file_name(
+        self, tmp_path: pathlib.Path, cv_name: str, expected_filename: str
+    ):
+        model = RenderCVModel(cv=Cv(name=cv_name))
+
+        result = resolve_rendercv_file_path(
+            model, tmp_path / "NAME_IN_SNAKE_CASE_CV.pdf"
+        )
 
         assert result.name == expected_filename
         assert result.parent == tmp_path
@@ -234,62 +253,3 @@ class TestResolveOutputFolderPlaceholder:
             pathlib.Path(path), pathlib.Path(output_folder)
         )
         assert "OUTPUT_FOLDER" not in result.parts
-
-
-class TestBuildNameVariants:
-    def test_none_returns_empty_dict(self) -> None:
-        assert build_name_variants(None) == {}
-
-    @settings(deadline=None)
-    @given(name=st.text(min_size=1, max_size=50))
-    def test_always_7_keys(self, name: str) -> None:
-        result = build_name_variants(name)
-        assert len(result) == 7
-
-    @settings(deadline=None)
-    @given(name=st.text(min_size=1, max_size=50))
-    def test_snake_case_has_no_spaces(self, name: str) -> None:
-        result = build_name_variants(name)
-        assert " " not in result["NAME_IN_SNAKE_CASE"]
-        assert " " not in result["NAME_IN_LOWER_SNAKE_CASE"]
-        assert " " not in result["NAME_IN_UPPER_SNAKE_CASE"]
-
-    @settings(deadline=None)
-    @given(name=st.text(min_size=1, max_size=50))
-    def test_kebab_case_has_no_spaces(self, name: str) -> None:
-        result = build_name_variants(name)
-        assert " " not in result["NAME_IN_KEBAB_CASE"]
-        assert " " not in result["NAME_IN_LOWER_KEBAB_CASE"]
-        assert " " not in result["NAME_IN_UPPER_KEBAB_CASE"]
-
-    @settings(deadline=None)
-    @given(name=st.text(min_size=1, max_size=50))
-    def test_lower_variants_are_lowercase(self, name: str) -> None:
-        result = build_name_variants(name)
-        assert (
-            result["NAME_IN_LOWER_SNAKE_CASE"]
-            == result["NAME_IN_LOWER_SNAKE_CASE"].lower()
-        )
-        assert (
-            result["NAME_IN_LOWER_KEBAB_CASE"]
-            == result["NAME_IN_LOWER_KEBAB_CASE"].lower()
-        )
-
-    @settings(deadline=None)
-    @given(name=st.text(min_size=1, max_size=50))
-    def test_upper_variants_are_uppercase(self, name: str) -> None:
-        result = build_name_variants(name)
-        assert (
-            result["NAME_IN_UPPER_SNAKE_CASE"]
-            == result["NAME_IN_UPPER_SNAKE_CASE"].upper()
-        )
-        assert (
-            result["NAME_IN_UPPER_KEBAB_CASE"]
-            == result["NAME_IN_UPPER_KEBAB_CASE"].upper()
-        )
-
-    @settings(deadline=None)
-    @given(name=st.text(min_size=1, max_size=50))
-    def test_original_name_preserved(self, name: str) -> None:
-        result = build_name_variants(name)
-        assert result["NAME"] == name

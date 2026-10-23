@@ -1,8 +1,14 @@
+import pathlib
+import re
 from typing import Literal, get_args
 
 import pydantic
 import pytest
+import rendercv_fonts
+import typst
+from fontTools.ttLib import TTFont
 
+import rendercv.renderer
 from rendercv.exception import RenderCVInternalError
 from rendercv.renderer.templater.connections import (
     compute_connections,
@@ -71,7 +77,7 @@ def create_rendercv_model(
 ) -> RenderCVModel:
     """Create a test RenderCVModel with specified connection formatting options.
 
-    Used to test different connection rendering configurations (icons, links, phone format).
+    Used to test connection rendering configurations (icons, links, phone format).
     """
     return RenderCVModel(
         cv=cv,
@@ -437,3 +443,37 @@ class TestParseConnectionsInternalErrors:
 
         with pytest.raises(RenderCVInternalError):
             parse_connections(model)
+
+
+def test_every_icon_has_a_glyph():
+    """Every icon RenderCV shows is in the Typst icon map and in the bundled fonts.
+
+    Why:
+        A name missing from the map is typeset as its letters instead of an
+        icon, and a code point missing from the fonts renders as an empty box.
+    """
+    renderer = pathlib.Path(rendercv.renderer.__file__).parent
+    lib = renderer / "rendercv_typst" / "lib.typ"
+    (version,) = re.findall(
+        r'"@preview/fontawesome:([^"]+)"', lib.read_text(encoding="utf-8")
+    )
+    packages = renderer / "typst_packages"
+    # Typst downloads the Font Awesome package that lib.typ imports, if missing:
+    typst.compile(lib, package_cache_path=packages)
+    icon_map_path = packages / "preview" / "fontawesome" / version / "lib-gen-map.typ"
+    icon_map = dict(
+        re.findall(
+            r'"([^"]+)": "\\u\{([0-9a-f]+)\}"',
+            icon_map_path.read_text(encoding="utf-8"),
+        )
+    )
+    code_points: set[int] = set()
+    for font_path in rendercv_fonts.path_of["Font Awesome 7"].glob("*.otf"):
+        with TTFont(font_path) as font:
+            cmap = font.getBestCmap()
+            assert cmap is not None
+            code_points |= cmap.keys()
+
+    for icon in fontawesome_icons.values():
+        assert icon in icon_map
+        assert int(icon_map[icon], 16) in code_points

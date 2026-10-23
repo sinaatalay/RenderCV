@@ -7,7 +7,7 @@ description: >-
   detail: colors, fonts, margins, spacing, section title styles, entry layouts,
   and more. {{ available_themes | length }} built-in themes with unlimited
   customization. Any language supported ({{ available_locales | length }} built-in, or define your own). Outputs
-  PDF, PNG, HTML, and Markdown. Use when the user wants to create, edit,
+  PDF, PNG, SVG, HTML, and Markdown. Use when the user wants to create, edit,
   customize, or render a CV or resume.
 ---
 
@@ -26,14 +26,14 @@ uv tool install "rendercv[full]"
 rendercv new "John Doe"
 rendercv new "John Doe" --theme moderncv --locale german
 
-# Render to PDF (also generates Typst, Markdown, HTML, PNG by default)
+# Render to PDF (also generates Typst, Markdown, HTML, PNG, and SVG by default)
 rendercv render John_Doe_CV.yaml
 
 # Watch mode: auto-re-render whenever the YAML file changes
 rendercv render John_Doe_CV.yaml --watch
 
 # Render only PNG (useful for previewing or checking page count)
-rendercv render John_Doe_CV.yaml --dont-generate-pdf --dont-generate-html --dont-generate-markdown
+rendercv render John_Doe_CV.yaml --dont-generate-pdf --dont-generate-html --dont-generate-markdown --dont-generate-svg
 
 # Override fields from the CLI without editing the YAML
 rendercv render cv.yaml --cv.name "Jane Doe" --design.theme "moderncv"
@@ -137,6 +137,22 @@ cv:
       - This is a free-form paragraph about me.
 ```
 
+**Subsections:** instead of entries, a section can have a list of subsections, each with a `title` and its own `entries`. Each subsection uses a single entry type, but subsections of a section can use different types. A section can't mix entries and subsections, and subsections can't be nested (an entry with an `entries` key is a subsection).
+
+```yaml
+cv:
+  sections:
+    publications:
+      - title: Journal Articles
+        entries:         # list of PublicationEntry
+          - title: A Paper
+            authors:
+              - John Doe
+      - title: Talks
+        entries:         # list of TextEntry
+          - Invited talk at a conference, 2024.
+```
+
 Entries also accept arbitrary extra keys (silently ignored during rendering). A typo in a field name will NOT cause an error.
 
 ### Design (`design`)
@@ -151,7 +167,7 @@ Set `locale.language` to a built-in locale name to use it. Override any field to
 
 ### Settings (`settings`)
 
-Key fields: `bold_keywords` (list of strings to auto-bold), `current_date` (override today's date), `render_command.*` (output paths, generation flags).
+Key fields: `bold_keywords` (list of strings to auto-bold), `sort_entries` (`none`, `reverse-chronological`, or `chronological` order of entries by date), `current_date` (override today's date), `render_command.*` (output paths, generation flags, overlays).
 
 ## Important Patterns
 
@@ -190,7 +206,7 @@ phone: "555-123-4567"
 phone: "+15551234567"
 ```
 
-If the user provides a local number without country code, ask which country, or omit the phone field.
+For a local number without a country code, ask which country it belongs to. Never guess the code or omit the number without explicit permission.
 
 ### Text formatting
 
@@ -232,10 +248,12 @@ Generate a starter YAML file.
 | `--theme THEME` | | Theme to use (default: `classic`) |
 | `--locale LOCALE` | | Locale to use (default: `english`) |
 | `--create-typst-templates` | | Also create editable Typst template files for full design control |
+| `--create-markdown-templates` | | Also create editable Markdown template files |
+| `--quiet` | `-q` | Suppress all output messages |
 
 ### `rendercv render <input.yaml>`
 
-Generate PDF, Typst, Markdown, HTML, and PNG from a YAML file.
+Generate PDF, Typst, Markdown, HTML, PNG, and SVG from a YAML file.
 
 | Option | Short | What it does |
 |---|---|---|
@@ -244,9 +262,10 @@ Generate PDF, Typst, Markdown, HTML, and PNG from a YAML file.
 | `--design FILE` | `-d` | Load design section from a separate YAML file |
 | `--locale-catalog FILE` | `-lc` | Load locale section from a separate YAML file |
 | `--settings FILE` | `-s` | Load settings section from a separate YAML file |
+| `--overlay FILE` | | Merge a YAML file over the input (repeatable), e.g. private contact details over a public CV |
 | `--output-folder DIR` | `-o` | Custom output directory |
 
-Per-format controls: `--{format}-path PATH` sets custom output path, `--dont-generate-{format}` skips generation. Formats: `pdf`, `typst`, `markdown`, `html`, `png`.
+Per-format controls: `--{format}-path PATH` sets custom output path, `--dont-generate-{format}` skips generation. Formats: `pdf`, `typst`, `markdown`, `html`, `png`, `svg`.
 
 **Override any YAML field from the CLI** using dot notation (overrides without editing the file):
 
@@ -254,6 +273,8 @@ Per-format controls: `--{format}-path PATH` sets custom output path, `--dont-gen
 rendercv render CV.yaml --cv.name "Jane Doe" --design.theme "moderncv"
 rendercv render CV.yaml --cv.sections.education.0.institution "MIT"
 ```
+
+List indices start at 0, and the index after the last item adds an item (`--cv.sections.skills.2.label "Languages"` adds a third skill to a section of two).
 
 ### `rendercv create-theme "theme-name"`
 
@@ -285,7 +306,7 @@ This shows every available design field with its default value. All themes share
 
 ### Other Theme Overrides
 
-Other themes only override specific fields from the classic defaults above. To use a theme, set `design.theme` and optionally override any field. Each theme also customizes `design.templates` (entry layout patterns) — see the classic sample above for the full template structure. The override YAMLs below omit templates for brevity.
+Other themes only override specific fields from the classic defaults above. To use a theme, set `design.theme` and optionally override any field. Each theme also customizes `design.templates` (entry layout patterns) — see the classic sample above for the full template structure. To keep this skill compact, the override examples below cover a representative subset of themes and omit templates for brevity.
 
 {% for theme, yaml in theme_overrides.items() %}
 #### {{ theme }}

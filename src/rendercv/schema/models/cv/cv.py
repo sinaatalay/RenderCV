@@ -1,5 +1,5 @@
 import functools
-from typing import Any, Self
+from typing import Annotated, Any, Self
 
 import pydantic
 import pydantic_extra_types.phone_numbers as pydantic_phone_numbers
@@ -7,7 +7,8 @@ import pydantic_extra_types.phone_numbers as pydantic_phone_numbers
 from rendercv.exception import RenderCVInternalError
 
 from ..base import BaseModelWithoutExtraKeys
-from ..path import ExistingPathRelativeToInput
+from ..custom_error_types import invalid_input
+from ..path import ExistingImagePathRelativeToInput, resolve_photo
 from .custom_connection import CustomConnection
 from .section import BaseRenderCVSection, Section, get_rendercv_sections
 from .social_network import SocialNetwork
@@ -21,10 +22,18 @@ websites_validator = pydantic.TypeAdapter[list[pydantic.HttpUrl]](
     list[pydantic.HttpUrl]
 )
 phone_validator = pydantic.TypeAdapter[pydantic_phone_numbers.PhoneNumber](
-    pydantic_phone_numbers.PhoneNumber
+    Annotated[
+        pydantic_phone_numbers.PhoneNumber,
+        invalid_input("rendercv_phone_number", "This is not a valid phone number."),
+    ]
 )
 phones_validator = pydantic.TypeAdapter[list[pydantic_phone_numbers.PhoneNumber]](
-    list[pydantic_phone_numbers.PhoneNumber]
+    list[
+        Annotated[
+            pydantic_phone_numbers.PhoneNumber,
+            invalid_input("rendercv_phone_number", "This is not a valid phone number."),
+        ]
+    ]
 )
 
 
@@ -49,7 +58,10 @@ class Cv(BaseModelWithoutExtraKeys):
             ["john.doe.1@example.com", "john.doe.2@example.com"],
         ],
     )
-    photo: ExistingPathRelativeToInput | pydantic.HttpUrl | None = pydantic.Field(
+    photo: Annotated[
+        ExistingImagePathRelativeToInput | pydantic.HttpUrl | None,
+        pydantic.AfterValidator(resolve_photo),
+    ] = pydantic.Field(
         default=None,
         union_mode="left_to_right",
         description="Photo file path (relative to the YAML file) or a URL.",
@@ -105,7 +117,8 @@ class Cv(BaseModelWithoutExtraKeys):
         description=(
             "The sections of your CV. Keys are section titles (e.g., Experience,"
             " Education), and values are lists of entries. Entry types are"
-            " automatically detected based on their fields."
+            " automatically detected based on their fields. A section can also be a"
+            " list of subsections, each with a `title` and its `entries`."
         ),
         examples=[
             {
@@ -139,7 +152,7 @@ class Cv(BaseModelWithoutExtraKeys):
         """
         return get_rendercv_sections(self.sections)
 
-    @pydantic.model_validator(mode="wrap")  # ty: ignore[invalid-argument-type]
+    @pydantic.model_validator(mode="wrap")
     @classmethod
     def capture_input_order(
         cls, data: Any, handler: pydantic.ModelWrapValidatorHandler[Self]
@@ -170,11 +183,11 @@ class Cv(BaseModelWithoutExtraKeys):
 
         # Set the private attribute on the instance:
         # If the values of those keys are None, remove the key from the key_order
-        instance._key_order = [key for key in key_order if data.get(key) is not None]  # ty: ignore[invalid-assignment]
+        instance._key_order = [key for key in key_order if data.get(key) is not None]
 
         return instance
 
-    @pydantic.field_validator("website", "email", "phone", mode="plain")
+    @pydantic.field_validator("website", "email", "phone", mode="before")
     @classmethod
     def validate_list_or_scalar_fields(
         cls, value: Any, info: pydantic.ValidationInfo
@@ -191,7 +204,7 @@ class Cv(BaseModelWithoutExtraKeys):
 
         Why:
             Users provide either `email: "x@y.com"` or `email: ["x@y.com", "a@b.com"]`.
-            Plain mode validator detects list vs scalar first, enabling specific error
+            A before validator detects list vs scalar first, enabling specific error
             messages like "invalid email in list" instead of generic validation errors.
 
         Args:
@@ -230,8 +243,13 @@ class Cv(BaseModelWithoutExtraKeys):
 
     @pydantic.field_serializer("phone")
     def serialize_phone(
-        self, phone: pydantic_phone_numbers.PhoneNumber | None
-    ) -> str | None:
+        self,
+        phone: (
+            pydantic_phone_numbers.PhoneNumber
+            | list[pydantic_phone_numbers.PhoneNumber]
+            | None
+        ),
+    ) -> str | list[str] | None:
         """Remove tel: prefix from phone number for clean serialization.
 
         Why:
@@ -242,9 +260,11 @@ class Cv(BaseModelWithoutExtraKeys):
             phone: Validated phone number with tel: prefix.
 
         Returns:
-            Phone string without tel: prefix, or None.
+            Phone string or list without tel: prefixes, or None.
         """
+        if isinstance(phone, list):
+            return [number.removeprefix("tel:") for number in phone]
         if phone is not None:
-            return phone.replace("tel:", "")
+            return phone.removeprefix("tel:")
 
         return phone

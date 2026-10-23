@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Generate the distributable AI agent skill SKILL.md from a Jinja2 template.
+"""Generate the distributable AI agent skill from Jinja2 templates.
 
 Why:
-    The SKILL.md file contains dynamic data (themes, locales, Pydantic model
-    source code, etc.) that must stay in sync with the rendercv package. This
-    script extracts that data and renders the Jinja2 template to produce an
-    always-current skill file.
+    The skill contains dynamic data (themes, locales, Pydantic model source code,
+    etc.) that must stay in sync with the rendercv package. This script extracts
+    that data and renders the templates into `skills/`, which a workflow mirrors to
+    the rendercv/rendercv-skill distribution repository.
 """
 
 import ast
@@ -18,14 +18,16 @@ import jinja2
 import ruamel.yaml
 
 from rendercv import __version__
+from rendercv.schema.models.design.built_in_design import available_themes
 from rendercv.schema.models.locale.locale import available_locales
 from rendercv.schema.sample_generator import (
     create_sample_cv_file,
     create_sample_design_file,
 )
 
-# Only include a subset of themes in the skill to keep context size manageable.
-SKILL_THEMES: list[str] = [
+# Detailed overrides of a subset of themes keep the skill compact. All available
+# themes are still listed.
+THEMES_WITH_DETAILED_OVERRIDES: list[str] = [
     "classic",
     "harvard",
     "engineeringresumes",
@@ -37,15 +39,10 @@ SKILL_THEMES: list[str] = [
 repository_root = pathlib.Path(__file__).parent.parent.parent
 script_directory = pathlib.Path(__file__).parent
 template_path = script_directory / "skill_template.j2.md"
-output_path = (
-    repository_root
-    / ".claude"
-    / "skills"
-    / "rendercv-skill"
-    / "skills"
-    / "rendercv"
-    / "SKILL.md"
-)
+readme_template_path = script_directory / "readme_template.j2.md"
+skills_directory = repository_root / "skills"
+output_path = skills_directory / "rendercv" / "SKILL.md"
+readme_path = skills_directory / "README.md"
 llms_txt_path = repository_root / "docs" / "llms.txt"
 skill_zip_path = repository_root / "docs" / "assets" / "rendercv_skill.zip"
 
@@ -274,13 +271,15 @@ def build_template_context() -> dict:
     # (noted once in the skill template instead).
     other_themes_dir = models_dir / "design" / "other_themes"
     theme_overrides: dict[str, str] = {}
-    for theme in SKILL_THEMES:
+    for theme in THEMES_WITH_DETAILED_OVERRIDES:
         if theme == "classic":
             continue
         yaml_path = other_themes_dir / f"{theme}.yaml"
         if yaml_path.exists():
             yaml = ruamel.yaml.YAML()
             data = yaml.load(yaml_path.read_text(encoding="utf-8"))
+            # The file's relative schema path is only valid inside the repository:
+            data.ca.comment = None
             if "design" in data and "templates" in data["design"]:
                 del data["design"]["templates"]
             stream = io.StringIO()
@@ -295,7 +294,7 @@ def build_template_context() -> dict:
 
     return {
         "version": __version__,
-        "available_themes": SKILL_THEMES,
+        "available_themes": available_themes,
         "available_locales": available_locales,
         "model_sources": model_sources,
         "sample_cv": sample_cv,
@@ -305,20 +304,21 @@ def build_template_context() -> dict:
 
 
 def generate_skill_file() -> None:
-    """Render the Jinja2 template and write SKILL.md, docs/llms.txt, and ZIP."""
+    """Render the templates and write SKILL.md, its README, llms.txt, and the ZIP."""
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(script_directory),
         keep_trailing_newline=True,
         trim_blocks=True,
         lstrip_blocks=True,
     )
-    template = env.get_template(template_path.name)
     context = build_template_context()
 
-    rendered = template.render(context)
+    rendered = env.get_template(template_path.name).render(context)
+    readme = env.get_template(readme_template_path.name).render(context)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(rendered, encoding="utf-8")
+    readme_path.write_text(readme, encoding="utf-8")
     llms_txt_path.write_text(rendered, encoding="utf-8")
 
     # Generate ZIP for Claude Desktop skill upload

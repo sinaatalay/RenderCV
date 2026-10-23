@@ -1,86 +1,38 @@
 ---
-toc_depth: 3
+toc_depth: 2
 ---
 
 # Documentation
 
-## The Goal
+[Zensical](https://zensical.org/docs/) is a **static site generator**: it reads the Markdown pages in `docs/` and builds HTML, stylesheets, and JavaScript for a browser. Contributors edit text files; Zensical supplies navigation, search, and the visual theme. GitHub Pages serves the generated files at [docs.rendercv.com](https://docs.rendercv.com), so it does not need to run Python for each visitor.
 
-We want documentation at `docs.rendercv.com`, a proper website with navigation, search, theming, and interactive features.
-
-**What is a website?** A collection of HTML, CSS, and JavaScript files. Browsers download these files and render them as the pages you see. To have a website, you need:
-
-1. HTML/CSS/JavaScript files
-2. A server hosting those files
-3. A domain (e.g. `docs.rendercv.com`) pointing to that server
-
-**The problem:** We don't want to develop a web app (writing HTML/CSS/JavaScript). We just want to put some content online.
-
-What if we could write content in Markdown and use some software to automatically generate HTML/CSS/JavaScript files from it?
-
-**The solution:** [MkDocs](https://github.com/mkdocs/mkdocs) with [Material theme](https://github.com/squidfunk/mkdocs-material). You write Markdown in `docs/`, MkDocs generates HTML/CSS/JavaScript, and GitHub Pages hosts it at `docs.rendercv.com`.
-
-Tools like MkDocs exist because documentation sites follow a stable, well-understood pattern. They aren’t open-ended web applications with unique interfaces or behaviors; they’re a specific kind of website with predictable needs: structured pages, cross-page navigation, search, consistent styling, and readable content.
-
-Once a pattern becomes that well defined, entire ecosystems form around it. Just as you reach for Python rather than designing a new programming language, you reach for MkDocs rather than hand-assembling HTML, CSS, and JavaScript files for a documentation site.
-
-## Configuration: [`mkdocs.yaml`](https://github.com/rendercv/rendercv/blob/main/mkdocs.yaml)
-
-`mkdocs.yaml` controls how MkDocs builds the website:
-
-- **Site metadata:** name, description, repository
-- **Theme:** Material theme with colors and features
-- **Navigation:** sidebar structure
-- **Plugins:** see below
-
-## Plugins
-
-MkDocs plugins extend functionality beyond Markdown → HTML conversion.
-
-### [`mkdocstrings`](https://github.com/mkdocstrings/mkdocstrings): API Reference
-
-Generates the API reference from Python docstrings. The entire [API Reference](../api_reference/index.md) section is auto-generated from `src/rendercv/`.
-
-### [`mkdocs-macros-plugin`](https://mkdocs-macros-plugin.readthedocs.io/): Dynamic Content
-
-Lets you inject code-generated values into Markdown. [`docs/docs_templating.py`](https://github.com/rendercv/rendercv/blob/main/docs/docs_templating.py) runs during the build. It imports values directly from RenderCV's code and exposes them as variables. It's heavily used in [YAML Input Structure: `cv` Field](../user_guide/yaml_input_structure/cv.md) page.
-
-## Entry Type Figures
-
-The [YAML Input Structure: `cv` Field](../user_guide/yaml_input_structure/cv.md) page shows example images of each entry type rendered in each theme.
-
-These are auto-generated PNG images. Run `just update-entry-figures` to regenerate them from [`docs/user_guide/sample_entries.yaml`](https://github.com/rendercv/rendercv/blob/main/docs/user_guide/sample_entries.yaml).
-
-## Local Preview
+## Preview and build
 
 ```bash
 just serve-docs
-```
-
-Starts a local server at `http://127.0.0.1:8000` with live reload. Edit Markdown files and see changes instantly.
-
-```bash
 just build-docs
 ```
 
-Generates the final website in the `site/` directory. Mainly used by GitHub workflows for final deployment (see [GitHub Workflows](github_workflows.md)).
+`just serve-docs` starts a local preview at `http://localhost:8000` and updates it as files change. `just build-docs` writes the complete site to `site/`. It runs in strict mode, where warnings fail the build, so broken documentation is caught before deployment.
+
+## Configuration and appearance
+
+[`zensical.toml`](https://github.com/rendercv/rendercv/blob/main/zensical.toml) defines the navigation, extensions, metadata, and Zensical's modern theme. Add new pages to its `project.nav` list.
+
+An **override** replaces one of the theme's templates with our own file. Overrides give us control but must be maintained when Zensical changes, so keep them small. Brand colors and the logo animation live in `docs/assets/`; custom icons live in `docs/overrides/.icons/`. Header, navigation tabs, and logo rendering use Zensical's own templates.
+
+The remaining `toc-item.html` override limits the table of contents using `toc_depth`. This setting appears in **front matter**, the YAML block between `---` lines at the top of a page. A value of `2` includes headings down to level two.
+
+When changing an override, compare it with the matching template in [Zensical UI](https://github.com/zensical/ui). Zensical uses MiniJinja for theme templates; use its supported filters and tests rather than Python methods. Follow the [customization guide](https://zensical.org/docs/customization/), and check desktop and mobile navigation, search, and both color schemes after a theme upgrade.
+
+## Generated content
+
+The **macros extension** lets a page insert Python values or call functions while it is built. The native `zensical.extensions.macros` extension loads [`docs/docs_templating.py`](https://github.com/rendercv/rendercv/blob/main/docs/docs_templating.py), which supplies model defaults and examples directly from RenderCV. For example, the theme list comes from the code's theme registry, so adding a theme updates that list automatically. Custom delimiters distinguish these insertions from ordinary Jinja examples. A failure fails the build.
+
+The [API Reference](../api_reference/index.md) describes Python functions and classes. Its text comes from **docstrings**, the descriptions written inside their definitions. The native `zensical.extensions.mkdocstrings` extension and its Python handler render them; Zensical's built-in `api-autonav` support creates the module pages and navigation. Edit the source docstrings to update these descriptions.
+
+The [entry figures](../user_guide/yaml_input_structure/cv.md) come from `docs/user_guide/sample_entries.yaml`. Run `just update-entry-figures` to render them directly to PNG with Typst. Each preview uses an automatically sized page, so no PDF cropping or image conversion tools are needed.
 
 ## Deployment
 
-Every push to `main` triggers automatic deployment.
-
-**The workflow** ([`.github/workflows/deploy-docs.yaml`](https://github.com/rendercv/rendercv/blob/main/.github/workflows/deploy-docs.yaml)):
-
-1. **Trigger:** Runs on every push to `main`
-2. **Build step:**
-      - Installs `uv` and `just`
-      - Runs `just build-docs` to generate the website
-      - Uploads the `site/` directory as an artifact
-3. **Deploy step:**
-      - Takes the uploaded artifact
-      - Deploys it to GitHub Pages (a free static website hosting service)
-      - Makes it available at `docs.rendercv.com`
-
-## Learn More
-
-See the [MkDocs Material documentation](https://squidfunk.github.io/mkdocs-material/) for more information.
+The [documentation workflow](https://github.com/rendercv/rendercv/blob/main/.github/workflows/deploy-docs.yaml) runs on pushes to `main` and manual dispatch. It builds the site, uploads `site/` as an artifact, and deploys that artifact to GitHub Pages.

@@ -1,0 +1,13 @@
+# Binary assets: never diff, merge, or convert line endings.
+*.pdf binary
+*.png binary
+*.otf binary
+*.ttf binary
+*.zip binary
+
+# Generated files: collapsed in GitHub diffs (regenerate them instead of editing).
+schema.json linguist-generated
+docs/llms.txt linguist-generated
+examples/** linguist-generated
+tests/**/testdata/** linguist-generated
+src/rendercv/renderer/rendercv_typst/examples/** linguist-generated

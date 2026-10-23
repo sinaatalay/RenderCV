@@ -1,191 +1,152 @@
-import pathlib
-import urllib.error
-import urllib.parse
-import urllib.request
-from collections.abc import Callable
-from typing import Literal
-
-from rendercv.exception import RenderCVUserError
-from rendercv.schema.models.cv.section import Entry
+from rendercv.schema.models.cv.section import BaseRenderCVSection
 from rendercv.schema.models.rendercv_model import RenderCVModel
 
 from .connections import compute_connections
-from .date import build_date_placeholders, date_object_to_string
+from .date import build_date_placeholders, date_object_to_string, sort_entries
 from .entry_templates_from_input import render_entry_templates
-from .footer_and_top_note import render_footer_template, render_top_note_template
-from .markdown_parser import markdown_to_typst
-from .string_processor import (
-    apply_string_processors,
-    make_keywords_bold,
-    substitute_placeholders,
+from .footer_and_top_note import (
+    fill_document_template,
+    render_footer_template,
+    render_top_note_template,
 )
+from .markup import Format, Node, bold_keywords, emit, parse_content, plain_text
 
 
-def download_photo_from_url(rendercv_model: RenderCVModel) -> None:
-    """Download photo from URL to output directory and update model to local path.
+def build_name_variants(name: str | None) -> dict[str, str]:
+    """Generate all case/separator variants of a name for placeholder substitution.
 
     Why:
-        Templates and Typst compiler require cv.photo to be a local pathlib.Path.
-        When user provides a URL, this downloads the image before template
-        rendering, preserving the local-path invariant for all downstream code.
+        Output file paths use placeholders like NAME_IN_LOWER_SNAKE_CASE.
+        Centralizing variant generation avoids repeating the same
+        null-check-and-transform pattern for each variant.
 
     Args:
-        rendercv_model: CV model whose photo URL will be downloaded in-place.
+        name: The CV owner's name, or None.
+
+    Returns:
+        Dictionary mapping placeholder names to their values, which are empty if
+        there is no name.
     """
-    if rendercv_model.cv.photo is None or isinstance(
-        rendercv_model.cv.photo, pathlib.Path
-    ):
-        return
+    name = name or ""
+    return {
+        "NAME": name,
+        "NAME_IN_SNAKE_CASE": name.replace(" ", "_"),
+        "NAME_IN_LOWER_SNAKE_CASE": name.replace(" ", "_").lower(),
+        "NAME_IN_UPPER_SNAKE_CASE": name.replace(" ", "_").upper(),
+        "NAME_IN_KEBAB_CASE": name.replace(" ", "-"),
+        "NAME_IN_LOWER_KEBAB_CASE": name.replace(" ", "-").lower(),
+        "NAME_IN_UPPER_KEBAB_CASE": name.replace(" ", "-").upper(),
+    }
 
-    url_str = str(rendercv_model.cv.photo)
 
-    parsed = urllib.parse.urlparse(url_str)
-    filename = pathlib.PurePosixPath(parsed.path).name
-    if not filename or "." not in filename:
-        filename = "photo.jpg"
+def build_document_placeholders(rendercv_model: RenderCVModel) -> dict[str, str]:
+    """Build the placeholders of the document's file names, title, footer, and top note.
 
-    output_dir = rendercv_model.settings.render_command.output_folder
-    output_dir.mkdir(parents=True, exist_ok=True)
-    destination = output_dir / filename
+    Why:
+        These are all about the same document, so they share one vocabulary: the
+        CV owner's name (in several cases) and the current date.
 
-    if not destination.exists():
-        try:
-            with urllib.request.urlopen(url_str, timeout=30) as response:
-                destination.write_bytes(response.read())
-        except (urllib.error.URLError, OSError) as e:
-            raise RenderCVUserError(
-                message=f"Failed to download photo from {url_str}: {e}"
-            ) from e
+    Args:
+        rendercv_model: CV model.
 
-    rendercv_model.cv.photo = destination
+    Returns:
+        Placeholder names mapped to their values.
+    """
+    current_date = rendercv_model.settings._resolved_current_date
+    locale = rendercv_model.locale
+    return {
+        "CURRENT_DATE": date_object_to_string(
+            current_date,
+            locale=locale,
+            single_date_template=rendercv_model.design.templates.single_date,
+        ),
+        **build_date_placeholders(current_date, locale=locale),
+        **build_name_variants(rendercv_model.cv.name),
+    }
 
 
 def process_model(
-    rendercv_model: RenderCVModel, file_type: Literal["typst", "markdown"]
+    rendercv_model: RenderCVModel, output_format: Format
 ) -> RenderCVModel:
-    """Pre-process CV model for template rendering with format-specific transformations.
+    """Render the content of a CV model in the output format, for its templates.
 
     Why:
-        Templates need processed data, not raw model. This applies markdown
-        parsing, keyword bolding, connection formatting, date rendering, and
-        entry template expansion before templates execute.
+        Jinja templates lay out content that is already rendered: names,
+        headlines, connections, section titles, and entries are converted from
+        Markdown to the output format, with keywords bolded, exactly once.
 
     Args:
-        rendercv_model: Validated CV model.
-        file_type: Target format for format-specific processors.
+        rendercv_model: Validated CV model. It is not modified.
+        output_format: `"typst"` or `"markdown"`.
 
     Returns:
-        Processed model ready for templates.
+        A copy of the model whose content is rendered in the output format.
     """
     rendercv_model = rendercv_model.model_copy(deep=True)
+    cv = rendercv_model.cv
+    design = rendercv_model.design
+    locale = rendercv_model.locale
+    settings = rendercv_model.settings
+    keywords = settings.bold_keywords
+    current_date = settings._resolved_current_date
+    placeholders = build_document_placeholders(rendercv_model)
 
-    string_processors: list[Callable[[str], str]] = [
-        lambda string: make_keywords_bold(string, rendercv_model.settings.bold_keywords)
-    ]
-    if file_type == "typst":
-        string_processors.extend([markdown_to_typst])
+    def render(content: tuple[Node, ...]) -> str:
+        return emit(bold_keywords(content, keywords), output_format)
 
-    rendercv_model.cv._plain_name = rendercv_model.cv.name
-    rendercv_model.cv.name = apply_string_processors(
-        rendercv_model.cv.name, string_processors
-    )
-    rendercv_model.cv.headline = apply_string_processors(
-        rendercv_model.cv.headline, string_processors
-    )
-    rendercv_model.cv._connections = compute_connections(rendercv_model, file_type)
-    rendercv_model.cv._top_note = render_top_note_template(
-        rendercv_model.design.templates.top_note,
-        locale=rendercv_model.locale,
-        current_date=rendercv_model.settings._resolved_current_date,
-        name=rendercv_model.cv.name,
-        single_date_template=rendercv_model.design.templates.single_date,
-        string_processors=string_processors,
-    )
-
-    rendercv_model.cv._footer = render_footer_template(
-        rendercv_model.design.templates.footer,
-        locale=rendercv_model.locale,
-        current_date=rendercv_model.settings._resolved_current_date,
-        name=rendercv_model.cv.name,
-        single_date_template=rendercv_model.design.templates.single_date,
-        string_processors=string_processors,
-    )
-
-    pdf_title_placeholders: dict[str, str] = {
-        "CURRENT_DATE": date_object_to_string(
-            rendercv_model.settings._resolved_current_date,
-            locale=rendercv_model.locale,
-            single_date_template=rendercv_model.design.templates.single_date,
-        ),
-        "NAME": rendercv_model.cv._plain_name or "",
-        **build_date_placeholders(
-            rendercv_model.settings._resolved_current_date, locale=rendercv_model.locale
-        ),
-    }
-    rendercv_model.settings.pdf_title = substitute_placeholders(
-        rendercv_model.settings.pdf_title, pdf_title_placeholders
-    )
-
-    if rendercv_model.cv.sections is None:
-        return rendercv_model
-
-    for section in rendercv_model.cv.rendercv_sections:
-        section.title = apply_string_processors(section.title, string_processors)
-        show_time_span = (
-            section.snake_case_title
-            in rendercv_model.design.sections.show_time_spans_in
+    cv._plain_name = cv.name
+    if cv.name is not None:
+        cv.name = render(parse_content(cv.name))
+    if cv.headline is not None:
+        cv.headline = render(parse_content(cv.headline))
+    cv._connections = compute_connections(rendercv_model, output_format)
+    cv._top_note = render(
+        render_top_note_template(
+            design.templates.top_note,
+            placeholders=placeholders,
+            last_updated=locale.last_updated,
         )
-        for i, entry in enumerate(section.entries):
-            processed_entry = render_entry_templates(
-                entry,
-                templates=rendercv_model.design.templates,
-                locale=rendercv_model.locale,
-                show_time_span=show_time_span,
-                current_date=rendercv_model.settings._resolved_current_date,
+    )
+    footer = render(
+        render_footer_template(design.templates.footer, placeholders=placeholders)
+    )
+    # Page numbers are known only in the context of each page:
+    cv._footer = f"context {{ [{footer}] }}" if output_format == "typst" else footer
+    settings.pdf_title = plain_text(
+        fill_document_template(settings.pdf_title, placeholders)
+    )
+
+    def process_section(section: BaseRenderCVSection, *, show_time_span: bool) -> None:
+        section.title = render(parse_content(section.title))
+        if section.entry_type == "SubsectionEntry":
+            for subsection in section.entries:
+                process_section(subsection, show_time_span=show_time_span)
+            return
+        if settings.sort_entries != "none":
+            section.entries = sort_entries(
+                section.entries, order=settings.sort_entries, current_date=current_date
             )
-            section.entries[i] = process_fields(processed_entry, string_processors)
+        section.entries = [
+            render_entry_templates(
+                entry,
+                templates=design.templates,
+                locale=locale,
+                show_time_span=show_time_span,
+                current_date=current_date,
+                keywords=keywords,
+                output_format=output_format,
+            )
+            for entry in section.entries
+        ]
+
+    for section in cv.rendercv_sections:
+        section.title = locale.section_labels.get(section.key, section.title)
+        # A subsection shows time spans if its section does:
+        process_section(
+            section,
+            show_time_span=(
+                section.snake_case_title in design.sections.show_time_spans_in
+            ),
+        )
 
     return rendercv_model
-
-
-def process_fields(
-    entry: Entry, string_processors: list[Callable[[str], str]]
-) -> Entry:
-    """Apply string processors to all entry fields except skipped technical fields.
-
-    Why:
-        Entry fields need markdown parsing and formatting, but dates, DOIs, and
-        URLs must remain unprocessed for correct linking and formatting. Field-
-        level processing enables selective transformation.
-
-    Args:
-        entry: Entry to process (model or string).
-        string_processors: Transformation functions to apply.
-
-    Returns:
-        Entry with processed fields.
-    """
-    skipped = {"start_date", "end_date", "doi", "url"}
-
-    if isinstance(entry, str):
-        return apply_string_processors(entry, string_processors)
-
-    data = entry.model_dump(exclude_none=True)
-    for field, value in data.items():
-        if field in skipped or field.startswith("_"):
-            continue
-
-        if isinstance(value, str):
-            setattr(entry, field, apply_string_processors(value, string_processors))
-        elif isinstance(value, list):
-            setattr(
-                entry,
-                field,
-                [apply_string_processors(v, string_processors) for v in value],
-            )
-        else:
-            setattr(
-                entry, field, apply_string_processors(str(value), string_processors)
-            )
-
-    return entry

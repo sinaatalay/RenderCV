@@ -43,12 +43,13 @@ The skill works with any AI agent that supports the [skills standard](https://sk
 
     ```bash
     git clone https://github.com/rendercv/rendercv-skill.git
+    mkdir -p ~/.claude/skills
     cp -r rendercv-skill/skills/rendercv ~/.claude/skills/
     ```
 
 ## Auto-Generated and Evaluated
 
-The skill is auto-generated from RenderCV's source code. A [build script](https://github.com/rendercv/rendercv/blob/main/scripts/rendercv_skill/generate.py) parses the Pydantic models via AST, strips them down to schema-relevant fields, generates sample CVs and design configs, and renders everything into a single SKILL.md through a Jinja2 template. This keeps the skill always in sync with the latest RenderCV version.
+The skill is auto-generated from RenderCV's source code into [`skills/`](https://github.com/rendercv/rendercv/tree/main/skills), which is mirrored to [rendercv/rendercv-skill](https://github.com/rendercv/rendercv-skill) with each release. A [build script](https://github.com/rendercv/rendercv/blob/main/scripts/rendercv_skill/generate.py) parses the Pydantic models via AST, strips them down to schema-relevant fields, generates sample CVs and design configs, and renders everything into a single SKILL.md through a Jinja2 template. This keeps the skill always in sync with the latest RenderCV version.
 
 We maintain a [promptfoo eval suite](https://github.com/rendercv/rendercv/tree/main/scripts/rendercv_skill/evals) that validates the skill's quality. The evals cover CV generation (software engineers, academics, fresh graduates, non-English locales), design customization, CLI workflows, and parsing messy CV text into clean YAML. Each generated YAML is validated through RenderCV's own Pydantic pipeline, the same validation `rendercv render` uses, so schema violations are caught deterministically, not just with LLM-as-judge.
 
@@ -57,8 +58,8 @@ We maintain a [promptfoo eval suite](https://github.com/rendercv/rendercv/tree/m
 The skill gives your AI agent:
 
 - Full knowledge of RenderCV's YAML input structure
-- All 6 built-in themes and their design options
-- Complete locale and language support (20 built-in languages)
+- All << theme_count >> built-in themes and their design options
+- Complete locale and language support (<< locale_count >> built-in languages)
 - CLI commands and their options
 - Pydantic model schemas for precise field types and defaults
 - A complete sample CV as a reference

@@ -51,6 +51,7 @@ design:
     headline: rgb(0, 79, 144)
     connections: rgb(0, 79, 144)
     section_titles: rgb(0, 79, 144)
+    subsection_titles: rgb(0, 79, 144)
     links: rgb(0, 79, 144)
     footer: rgb(128, 128, 128)
     top_note: rgb(128, 128, 128)
@@ -65,22 +66,26 @@ design:
       headline: Source Sans 3
       connections: Source Sans 3
       section_titles: Source Sans 3
+      subsection_titles: Source Sans 3
     font_size:
       body: 10pt
       name: 30pt
       headline: 10pt
       connections: 10pt
       section_titles: 1.4em
+      subsection_titles: 1.1em
     small_caps:
       name: false
       headline: false
       connections: false
       section_titles: false
+      subsection_titles: false
     bold:
       name: true
       headline: false
       connections: false
       section_titles: true
+      subsection_titles: true
 
   links:
     underline: false
@@ -108,6 +113,10 @@ design:
     line_thickness: 0.5pt
     space_above: 0.5cm
     space_below: 0.3cm
+
+  subsection_titles: # (12)!
+    space_above: 0.6cm
+    space_below: 0.2cm
 
   sections:
     allow_page_break: true
@@ -138,6 +147,7 @@ design:
     top_note: '*LAST_UPDATED CURRENT_DATE*'
     single_date: MONTH_ABBREVIATION YEAR
     date_range: START_DATE – END_DATE
+    shorten_date_ranges: false # (13)!
     time_span: HOW_MANY_YEARS YEARS HOW_MANY_MONTHS MONTHS
     one_line_entry:
       main_column: '**LABEL:** DETAILS'
@@ -150,6 +160,7 @@ design:
       date_and_location_column: |-
         LOCATION
         DATE
+        TIME_SPAN
     normal_entry:
       main_column: |-
         **NAME**
@@ -158,6 +169,7 @@ design:
       date_and_location_column: |-
         LOCATION
         DATE
+        TIME_SPAN
     experience_entry:
       main_column: |-
         **COMPANY**, POSITION
@@ -166,6 +178,7 @@ design:
       date_and_location_column: |-
         LOCATION
         DATE
+        TIME_SPAN
     publication_entry:
       main_column: |-
         **TITLE**
@@ -180,11 +193,13 @@ design:
 3. **Header alignment:** << available_alignments >>
 4. **Section title styles:** << available_section_title_types >>
    `with_partial_line` adds a line next to the title, `with_full_line` spans the page, `without_line` has no line, `moderncv` uses ModernCV style, `centered_without_line` centers the title with no line, `centered_with_partial_line` centers with baseline partial lines on both sides, `centered_with_centered_partial_line` centers with middle-aligned lines on both sides, `centered_with_full_line` centers with a full line underneath
-5. **Show time spans:** Specify which sections should display duration calculations (e.g., "2 years 3 months")
+5. **Show time spans:** Specify which sections should display duration calculations (e.g., "2 years 3 months"). The `TIME_SPAN` placeholder of the entries of these sections is filled; it is empty elsewhere.
 6. **Bullet characters:** << available_bullets >>
 7. **Phone number formats:** << available_phone_number_formats >>
    `national` formats for domestic use, `international` includes country code, `E164` is the standard international format
 8. **Photo position:** `left` or `right` of the header text
 9. **Available fonts:** << available_font_families >>. Also, any system font can be used. Custom fonts can be used as well. See [Custom Fonts](../how_to/custom_fonts.md) for more information.
-10. **Templates:** Advanced customization - define how each entry type is rendered using placeholders like NAME, COMPANY, DATE, etc.
+10. **Templates:** Advanced customization - define how each entry type is rendered using placeholders like NAME, COMPANY, DATE, TIME_SPAN, etc. A placeholder without a value is removed together with what only existed for it: formatting (`**COMPANY**`), brackets (`(JOURNAL)`), and the words and punctuation that connect it to its neighbors (`DEGREE in AREA` becomes `AREA` without a degree).
 11. **Font family shorthand:** You can specify `font_family: "Latin Modern Roman"` directly instead of using nested options to apply the same font everywhere
+12. **Subsection titles:** The titles of [subsections](cv.md#subsections). The space above a subsection title separates it from the entries above it, so the first subsection of a section is right below the section title.
+13. **Shorter date ranges:** Write the parts that the dates of a range share once, where `single_date` places them: `Mar – Jun 2023` instead of `Mar 2023 – Jun 2023`, `5 – 20 Mar 2023` with `DAY MONTH_ABBREVIATION YEAR`, or `2023-03 – 06` with `YEAR-MONTH_IN_TWO_DIGITS`. A range whose dates are displayed the same, like `Mar 2023 – Mar 2023`, is always written as one date.

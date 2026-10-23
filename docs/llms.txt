@@ -2,19 +2,19 @@
 name: rendercv
 description: >-
   Create professional CVs and resumes with perfect typography using RenderCV
-  (v2.8). Users write content in YAML, and RenderCV produces
+  (v2.9). Users write content in YAML, and RenderCV produces
   publication-quality PDFs via Typst typesetting. Full control over every visual
   detail: colors, fonts, margins, spacing, section title styles, entry layouts,
-  and more. 6 built-in themes with unlimited
-  customization. Any language supported (22 built-in, or define your own). Outputs
-  PDF, PNG, HTML, and Markdown. Use when the user wants to create, edit,
+  and more. 9 built-in themes with unlimited
+  customization. Any language supported (25 built-in, or define your own). Outputs
+  PDF, PNG, SVG, HTML, and Markdown. Use when the user wants to create, edit,
   customize, or render a CV or resume.
 ---
 
 ## Quick Start
 
-**Available themes:** `classic`, `harvard`, `engineeringresumes`, `engineeringclassic`, `sb2nov`, `moderncv`
-**Available locales:** `english`, `arabic`, `danish`, `dutch`, `french`, `german`, `hebrew`, `hindi`, `hungarian`, `indonesian`, `italian`, `japanese`, `korean`, `mandarin_chinese`, `norwegian_bokmål`, `norwegian_nynorsk`, `persian`, `portuguese`, `russian`, `spanish`, `turkish`, `vietnamese`
+**Available themes:** `classic`, `ember`, `engineeringclassic`, `engineeringresumes`, `harvard`, `ink`, `moderncv`, `opal`, `sb2nov`
+**Available locales:** `english`, `arabic`, `catalan`, `danish`, `dutch`, `french`, `german`, `hebrew`, `hindi`, `hungarian`, `indonesian`, `italian`, `japanese`, `korean`, `mandarin_chinese`, `norwegian_bokmål`, `norwegian_nynorsk`, `persian`, `polish`, `portuguese`, `russian`, `spanish`, `swedish`, `turkish`, `vietnamese`
 
 These are starting points — every aspect of the design and locale can be fully customized in the YAML file.
 
@@ -26,14 +26,14 @@ uv tool install "rendercv[full]"
 rendercv new "John Doe"
 rendercv new "John Doe" --theme moderncv --locale german
 
-# Render to PDF (also generates Typst, Markdown, HTML, PNG by default)
+# Render to PDF (also generates Typst, Markdown, HTML, PNG, and SVG by default)
 rendercv render John_Doe_CV.yaml
 
 # Watch mode: auto-re-render whenever the YAML file changes
 rendercv render John_Doe_CV.yaml --watch
 
 # Render only PNG (useful for previewing or checking page count)
-rendercv render John_Doe_CV.yaml --dont-generate-pdf --dont-generate-html --dont-generate-markdown
+rendercv render John_Doe_CV.yaml --dont-generate-pdf --dont-generate-html --dont-generate-markdown --dont-generate-svg
 
 # Override fields from the CLI without editing the YAML
 rendercv render cv.yaml --cv.name "Jane Doe" --design.theme "moderncv"
@@ -89,7 +89,7 @@ class Cv(BaseModelWithoutExtraKeys):
     headline: str | None = pydantic.Field(default=None, examples=['Software Engineer', 'Data Scientist', 'Product Manager'])
     location: str | None = pydantic.Field(default=None, examples=['New York, NY', 'London, UK', 'Istanbul, Türkiye'])
     email: pydantic.EmailStr | list[pydantic.EmailStr] | None = pydantic.Field(default=None, examples=['john.doe@example.com', ['john.doe.1@example.com', 'john.doe.2@example.com']])
-    photo: ExistingPathRelativeToInput | pydantic.HttpUrl | None = pydantic.Field(default=None, union_mode='left_to_right', examples=['photo.jpg', 'images/profile.png', 'https://example.com/photo.jpg'])
+    photo: Annotated[ExistingImagePathRelativeToInput | pydantic.HttpUrl | None, pydantic.AfterValidator(resolve_photo)] = pydantic.Field(default=None, union_mode='left_to_right', examples=['photo.jpg', 'images/profile.png', 'https://example.com/photo.jpg'])
     phone: pydantic_phone_numbers.PhoneNumber | list[pydantic_phone_numbers.PhoneNumber] | None = pydantic.Field(default=None, examples=['+1-234-567-8900', ['+1-234-567-8900', '+44 20 1234 5678']])
     website: pydantic.HttpUrl | list[pydantic.HttpUrl] | None = pydantic.Field(default=None, examples=['https://johndoe.com', ['https://johndoe.com', 'https://www.janesmith.dev']])
     social_networks: list[SocialNetwork] | None = pydantic.Field(default=None)
@@ -99,7 +99,7 @@ class Cv(BaseModelWithoutExtraKeys):
 ```
 
 ```python
-type SocialNetworkName = Literal['LinkedIn', 'GitHub', 'GitLab', 'IMDB', 'Instagram', 'ORCID', 'Mastodon', 'StackOverflow', 'ResearchGate', 'YouTube', 'Google Scholar', 'Telegram', 'WhatsApp', 'Leetcode', 'X', 'Bluesky', 'Reddit']
+type SocialNetworkName = Literal['LinkedIn', 'GitHub', 'GitLab', 'HuggingFace', 'Itch.io', 'Devpost', 'IMDB', 'Instagram', 'ORCID', 'Mastodon', 'StackOverflow', 'ResearchGate', 'YouTube', 'Google Scholar', 'Telegram', 'WhatsApp', 'Leetcode', 'X', 'Bluesky', 'Reddit']
 
 available_social_networks = get_args(SocialNetworkName.__value__)
 
@@ -113,7 +113,7 @@ class SocialNetwork(BaseModelWithoutExtraKeys):
 class CustomConnection(BaseModelWithoutExtraKeys):
     fontawesome_icon: str
     placeholder: str
-    url: pydantic.HttpUrl | None
+    url: pydantic.HttpUrl | None = None
 
 ```
 
@@ -164,6 +164,22 @@ cv:
       - This is a free-form paragraph about me.
 ```
 
+**Subsections:** instead of entries, a section can have a list of subsections, each with a `title` and its own `entries`. Each subsection uses a single entry type, but subsections of a section can use different types. A section can't mix entries and subsections, and subsections can't be nested (an entry with an `entries` key is a subsection).
+
+```yaml
+cv:
+  sections:
+    publications:
+      - title: Journal Articles
+        entries:         # list of PublicationEntry
+          - title: A Paper
+            authors:
+              - John Doe
+      - title: Talks
+        entries:         # list of TextEntry
+          - Invited talk at a conference, 2024.
+```
+
 Entries also accept arbitrary extra keys (silently ignored during rendering). A typo in a field name will NOT cause an error.
 
 ### Design (`design`)
@@ -172,13 +188,13 @@ All built-in themes share the same structure — they only differ in default val
 
 ### Locale (`locale`)
 
-Built-in locales: `english`, `arabic`, `danish`, `dutch`, `french`, `german`, `hebrew`, `hindi`, `hungarian`, `indonesian`, `italian`, `japanese`, `korean`, `mandarin_chinese`, `norwegian_bokmål`, `norwegian_nynorsk`, `persian`, `portuguese`, `russian`, `spanish`, `turkish`, `vietnamese`
+Built-in locales: `english`, `arabic`, `catalan`, `danish`, `dutch`, `french`, `german`, `hebrew`, `hindi`, `hungarian`, `indonesian`, `italian`, `japanese`, `korean`, `mandarin_chinese`, `norwegian_bokmål`, `norwegian_nynorsk`, `persian`, `polish`, `portuguese`, `russian`, `spanish`, `swedish`, `turkish`, `vietnamese`
 
 Set `locale.language` to a built-in locale name to use it. Override any field to customize translations. Set `language` to any string and provide all translations for a fully custom locale.
 
 ### Settings (`settings`)
 
-Key fields: `bold_keywords` (list of strings to auto-bold), `current_date` (override today's date), `render_command.*` (output paths, generation flags).
+Key fields: `bold_keywords` (list of strings to auto-bold), `sort_entries` (`none`, `reverse-chronological`, or `chronological` order of entries by date), `current_date` (override today's date), `render_command.*` (output paths, generation flags, overlays).
 
 ## Important Patterns
 
@@ -217,7 +233,7 @@ phone: "555-123-4567"
 phone: "+15551234567"
 ```
 
-If the user provides a local number without country code, ask which country, or omit the phone field.
+For a local number without a country code, ask which country it belongs to. Never guess the code or omit the number without explicit permission.
 
 ### Text formatting
 
@@ -259,10 +275,12 @@ Generate a starter YAML file.
 | `--theme THEME` | | Theme to use (default: `classic`) |
 | `--locale LOCALE` | | Locale to use (default: `english`) |
 | `--create-typst-templates` | | Also create editable Typst template files for full design control |
+| `--create-markdown-templates` | | Also create editable Markdown template files |
+| `--quiet` | `-q` | Suppress all output messages |
 
 ### `rendercv render <input.yaml>`
 
-Generate PDF, Typst, Markdown, HTML, and PNG from a YAML file.
+Generate PDF, Typst, Markdown, HTML, PNG, and SVG from a YAML file.
 
 | Option | Short | What it does |
 |---|---|---|
@@ -271,9 +289,10 @@ Generate PDF, Typst, Markdown, HTML, and PNG from a YAML file.
 | `--design FILE` | `-d` | Load design section from a separate YAML file |
 | `--locale-catalog FILE` | `-lc` | Load locale section from a separate YAML file |
 | `--settings FILE` | `-s` | Load settings section from a separate YAML file |
+| `--overlay FILE` | | Merge a YAML file over the input (repeatable), e.g. private contact details over a public CV |
 | `--output-folder DIR` | `-o` | Custom output directory |
 
-Per-format controls: `--{format}-path PATH` sets custom output path, `--dont-generate-{format}` skips generation. Formats: `pdf`, `typst`, `markdown`, `html`, `png`.
+Per-format controls: `--{format}-path PATH` sets custom output path, `--dont-generate-{format}` skips generation. Formats: `pdf`, `typst`, `markdown`, `html`, `png`, `svg`.
 
 **Override any YAML field from the CLI** using dot notation (overrides without editing the file):
 
@@ -281,6 +300,8 @@ Per-format controls: `--{format}-path PATH` sets custom output path, `--dont-gen
 rendercv render CV.yaml --cv.name "Jane Doe" --design.theme "moderncv"
 rendercv render CV.yaml --cv.sections.education.0.institution "MIT"
 ```
+
+List indices start at 0, and the index after the last item adds an item (`--cv.sections.skills.2.label "Languages"` adds a third skill to a section of two).
 
 ### `rendercv create-theme "theme-name"`
 
@@ -291,7 +312,7 @@ Scaffold a custom theme directory with editable Typst templates for complete des
 For YAML editor autocompletion and validation:
 
 ```yaml
-# yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.8/schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/rendercv/rendercv/refs/tags/v2.9/schema.json
 ```
 
 ## Complete Example
@@ -456,6 +477,7 @@ design:
     headline: rgb(0, 79, 144)
     connections: rgb(0, 79, 144)
     section_titles: rgb(0, 79, 144)
+    subsection_titles: rgb(0, 79, 144)
     links: rgb(0, 79, 144)
     footer: rgb(128, 128, 128)
     top_note: rgb(128, 128, 128)
@@ -469,22 +491,26 @@ design:
       headline: Source Sans 3
       connections: Source Sans 3
       section_titles: Source Sans 3
+      subsection_titles: Source Sans 3
     font_size:
       body: 10pt
       name: 30pt
       headline: 10pt
       connections: 10pt
       section_titles: 1.4em
+      subsection_titles: 1.1em
     small_caps:
       name: false
       headline: false
       connections: false
       section_titles: false
+      subsection_titles: false
     bold:
       name: true
       headline: false
       connections: false
       section_titles: true
+      subsection_titles: true
   links:
     underline: false
     show_external_link_icon: false
@@ -509,6 +535,9 @@ design:
     line_thickness: 0.5pt
     space_above: 0.5cm
     space_below: 0.3cm
+  subsection_titles:
+    space_above: 0.6cm
+    space_below: 0.2cm
   sections:
     allow_page_break: true
     space_between_regular_entries: 1.2em
@@ -537,6 +566,7 @@ design:
     top_note: '*LAST_UPDATED CURRENT_DATE*'
     single_date: MONTH_ABBREVIATION YEAR
     date_range: START_DATE – END_DATE
+    shorten_date_ranges: false
     time_span: HOW_MANY_YEARS YEARS HOW_MANY_MONTHS MONTHS
     one_line_entry:
       main_column: '**LABEL:** DETAILS'
@@ -549,6 +579,7 @@ design:
       date_and_location_column: |-
         LOCATION
         DATE
+        TIME_SPAN
     normal_entry:
       main_column: |-
         **NAME**
@@ -557,6 +588,7 @@ design:
       date_and_location_column: |-
         LOCATION
         DATE
+        TIME_SPAN
     experience_entry:
       main_column: |-
         **COMPANY**, POSITION
@@ -565,6 +597,7 @@ design:
       date_and_location_column: |-
         LOCATION
         DATE
+        TIME_SPAN
     publication_entry:
       main_column: |-
         **TITLE**
@@ -577,12 +610,11 @@ design:
 
 ### Other Theme Overrides
 
-Other themes only override specific fields from the classic defaults above. To use a theme, set `design.theme` and optionally override any field. Each theme also customizes `design.templates` (entry layout patterns) — see the classic sample above for the full template structure. The override YAMLs below omit templates for brevity.
+Other themes only override specific fields from the classic defaults above. To use a theme, set `design.theme` and optionally override any field. Each theme also customizes `design.templates` (entry layout patterns) — see the classic sample above for the full template structure. To keep this skill compact, the override examples below cover a representative subset of themes and omit templates for brevity.
 
 #### harvard
 
 ```yaml
-# yaml-language-server: $schema=../../../../../../schema.json
 design:
   theme: harvard
   page:
@@ -596,6 +628,7 @@ design:
     headline: rgb(0,0,0)
     connections: rgb(0,0,0)
     section_titles: rgb(0,0,0)
+    subsection_titles: rgb(0,0,0)
     links: rgb(0,0,0)
   typography:
     font_family:
@@ -604,10 +637,12 @@ design:
       headline: XCharter
       connections: XCharter
       section_titles: XCharter
+      subsection_titles: XCharter
     font_size:
       name: 25pt
       connections: 9pt
       section_titles: 1.3em
+      subsection_titles: 1.05em
   header:
     space_below_name: 0.5cm
     space_below_headline: 0.5cm
@@ -629,7 +664,6 @@ design:
 #### engineeringresumes
 
 ```yaml
-# yaml-language-server: $schema=../../../../../../schema.json
 design:
   theme: engineeringresumes
   page:
@@ -641,9 +675,13 @@ design:
       headline: XCharter
       connections: XCharter
       section_titles: XCharter
+      subsection_titles: XCharter
     font_size:
       name: 25pt
       section_titles: 1.2em
+      subsection_titles: 1.05em
+    small_caps:
+      subsection_titles: true
     bold:
       name: false
   header:
@@ -656,6 +694,7 @@ design:
     connections: rgb(0,0,0)
     headline: rgb(0,0,0)
     section_titles: rgb(0,0,0)
+    subsection_titles: rgb(0,0,0)
     links: rgb(0,0,0)
   links:
     underline: true
@@ -685,7 +724,6 @@ design:
 #### engineeringclassic
 
 ```yaml
-# yaml-language-server: $schema=../../../../../../schema.json
 design:
   theme: engineeringclassic
   typography:
@@ -695,6 +733,7 @@ design:
       headline: Raleway
       connections: Raleway
       section_titles: Raleway
+      subsection_titles: Raleway
     bold:
       name: false
       section_titles: false
@@ -719,7 +758,6 @@ design:
 #### sb2nov
 
 ```yaml
-# yaml-language-server: $schema=../../../../../../schema.json
 design:
   theme: sb2nov
   typography:
@@ -729,10 +767,16 @@ design:
       headline: New Computer Modern
       connections: New Computer Modern
       section_titles: New Computer Modern
+      subsection_titles: New Computer Modern
+    font_size:
+      subsection_titles: 1.05em
+    small_caps:
+      subsection_titles: true
   colors:
     name: rgb(0,0,0)
     connections: rgb(0,0,0)
     section_titles: rgb(0,0,0)
+    subsection_titles: rgb(0,0,0)
     headline: rgb(0,0,0)
     links: rgb(0,0,0)
   links:
@@ -758,7 +802,6 @@ design:
 #### moderncv
 
 ```yaml
-# yaml-language-server: $schema=../../../../../../schema.json
 design:
   theme: moderncv
   typography:
@@ -769,12 +812,15 @@ design:
       headline: Fontin
       connections: Fontin
       section_titles: Fontin
+      subsection_titles: Fontin
     font_size:
       name: 25pt
       section_titles: 1.4em
+      subsection_titles: 1.15em
     bold:
       name: false
       section_titles: false
+      subsection_titles: false
   header:
     alignment: left
     photo_width: 4.15cm

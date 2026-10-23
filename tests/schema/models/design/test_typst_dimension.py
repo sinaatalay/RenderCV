@@ -36,6 +36,10 @@ class TestTypstDimension:
             "100pt",
             "0.1cm",
             "-1cm",
+            ".5cm",
+            "-.5cm",
+            ".01in",
+            "-.25pt",
         ],
     )
     def test_accepts_valid_dimensions(self, valid_dimension):
@@ -57,6 +61,8 @@ class TestTypstDimension:
             "1.5rem",
             "cm1",
             "",
+            ".cm",
+            "-.cm",
         ],
     )
     def test_rejects_invalid_dimensions(self, invalid_dimension):
@@ -77,7 +83,7 @@ class TestTypstDimension:
         assert result == dimension
 
     @settings(deadline=None)
-    @given(dim=typst_dimensions())  # ty: ignore[missing-argument]
+    @given(dim=typst_dimensions())
     def test_accepts_random_valid_dimensions(self, dim: str) -> None:
         assert validate_typst_dimension(dim) == dim
 
