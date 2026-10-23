@@ -18,14 +18,16 @@ import jinja2
 import ruamel.yaml
 
 from rendercv import __version__
+from rendercv.schema.models.design.built_in_design import available_themes
 from rendercv.schema.models.locale.locale import available_locales
 from rendercv.schema.sample_generator import (
     create_sample_cv_file,
     create_sample_design_file,
 )
 
-# Only include a subset of themes in the skill to keep context size manageable.
-SKILL_THEMES: list[str] = [
+# Only include detailed overrides for a subset of themes to keep context size
+# manageable. All available theme names are still advertised in the skill.
+THEMES_WITH_DETAILED_OVERRIDES: list[str] = [
     "classic",
     "harvard",
     "engineeringresumes",
@@ -274,7 +276,7 @@ def build_template_context() -> dict:
     # (noted once in the skill template instead).
     other_themes_dir = models_dir / "design" / "other_themes"
     theme_overrides: dict[str, str] = {}
-    for theme in SKILL_THEMES:
+    for theme in THEMES_WITH_DETAILED_OVERRIDES:
         if theme == "classic":
             continue
         yaml_path = other_themes_dir / f"{theme}.yaml"
@@ -295,7 +297,7 @@ def build_template_context() -> dict:
 
     return {
         "version": __version__,
-        "available_themes": SKILL_THEMES,
+        "available_themes": available_themes,
         "available_locales": available_locales,
         "model_sources": model_sources,
         "sample_cv": sample_cv,

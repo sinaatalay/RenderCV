@@ -57,7 +57,7 @@ We maintain a [promptfoo eval suite](https://github.com/rendercv/rendercv/tree/m
 The skill gives your AI agent:
 
 - Full knowledge of RenderCV's YAML input structure
-- All 6 built-in themes and their design options
+- All built-in themes, with detailed design overrides for a representative subset
 - Complete locale and language support (20 built-in languages)
 - CLI commands and their options
 - Pydantic model schemas for precise field types and defaults

@@ -5,7 +5,7 @@ description: >-
   (v2.8). Users write content in YAML, and RenderCV produces
   publication-quality PDFs via Typst typesetting. Full control over every visual
   detail: colors, fonts, margins, spacing, section title styles, entry layouts,
-  and more. 6 built-in themes with unlimited
+  and more. 9 built-in themes with unlimited
   customization. Any language supported (22 built-in, or define your own). Outputs
   PDF, PNG, HTML, and Markdown. Use when the user wants to create, edit,
   customize, or render a CV or resume.
@@ -13,7 +13,7 @@ description: >-
 
 ## Quick Start
 
-**Available themes:** `classic`, `harvard`, `engineeringresumes`, `engineeringclassic`, `sb2nov`, `moderncv`
+**Available themes:** `classic`, `ember`, `engineeringclassic`, `engineeringresumes`, `harvard`, `ink`, `moderncv`, `opal`, `sb2nov`
 **Available locales:** `english`, `arabic`, `danish`, `dutch`, `french`, `german`, `hebrew`, `hindi`, `hungarian`, `indonesian`, `italian`, `japanese`, `korean`, `mandarin_chinese`, `norwegian_bokmål`, `norwegian_nynorsk`, `persian`, `portuguese`, `russian`, `spanish`, `turkish`, `vietnamese`
 
 These are starting points — every aspect of the design and locale can be fully customized in the YAML file.
@@ -581,7 +581,7 @@ design:
 
 ### Other Theme Overrides
 
-Other themes only override specific fields from the classic defaults above. To use a theme, set `design.theme` and optionally override any field. Each theme also customizes `design.templates` (entry layout patterns) — see the classic sample above for the full template structure. The override YAMLs below omit templates for brevity.
+Other themes only override specific fields from the classic defaults above. To use a theme, set `design.theme` and optionally override any field. Each theme also customizes `design.templates` (entry layout patterns) — see the classic sample above for the full template structure. To keep this skill compact, the selected override examples below cover a representative subset of themes and omit templates for brevity.
 
 #### harvard
 
