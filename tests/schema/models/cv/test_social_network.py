@@ -29,11 +29,9 @@ class TestSocialNetwork:
             ("StackOverflow", "invalidusername/invalid"),
             ("YouTube", "@invalidusername"),
             ("NONAME", "@invalidusername"),
-            ("WhatsApp", "invalidphone"),
+            ("WhatsApp", "+123"),
             ("Bluesky", "invalidusername"),
             ("Reddit", "invalid~username"),
-            ("Itch.io", "invalid~username"),
-            ("Devpost", "invalid~username"),
         ],
     )
     def test_rejects_invalid_networks_and_usernames(self, network, username):
@@ -45,8 +43,16 @@ class TestSocialNetwork:
         [
             ("LinkedIn", "myusername", "https://linkedin.com/in/myusername"),
             ("GitHub", "myusername", "https://github.com/myusername"),
-            ("HuggingFace", "myusername", "https://huggingface.co/myusername"),
             ("IMDB", "nm0000001", "https://imdb.com/name/nm0000001"),
+            ("IMDB", "nm12345678", "https://imdb.com/name/nm12345678"),
+            ("IMDB", "nm123456789012", "https://imdb.com/name/nm123456789012"),
+            ("HuggingFace", "julien-c", "https://huggingface.co/julien-c"),
+            ("HuggingFace", "A2va", "https://huggingface.co/A2va"),
+            ("Itch.io", "fasterthanlime", "https://fasterthanlime.itch.io/"),
+            ("Itch.io", "DevolverDigital", "https://devolverdigital.itch.io/"),
+            ("Itch.io", "my-games", "https://my-games.itch.io/"),
+            ("Devpost", "test_devpost", "https://devpost.com/test_devpost"),
+            ("Devpost", "my-name", "https://devpost.com/my-name"),
             ("Instagram", "myusername", "https://instagram.com/myusername"),
             ("ORCID", "0000-0000-0000-0000", "https://orcid.org/0000-0000-0000-0000"),
             ("Mastodon", "@myusername@test.org", "https://test.org/@myusername"),
@@ -83,8 +89,13 @@ class TestSocialNetwork:
             (
                 "WhatsApp",
                 "+14155552671",
-                "https://wa.me/+14155552671",
+                "https://wa.me/14155552671",
             ),
+            ("WhatsApp", "+1 (415) 555-2671", "https://wa.me/14155552671"),
+            ("WhatsApp", "14155552671", "https://wa.me/14155552671"),
+            ("WhatsApp", "john.doe_123", "https://wa.me/john.doe_123"),
+            ("WhatsApp", "@john.doe_123", "https://wa.me/john.doe_123"),
+            ("WhatsApp", "a" * 35, "https://wa.me/" + "a" * 35),
             (
                 "X",
                 "myusername",
@@ -96,13 +107,52 @@ class TestSocialNetwork:
                 "https://bsky.app/profile/myusername.bsky.social",
             ),
             ("Reddit", "myusername", "https://reddit.com/user/myusername"),
-            ("Itch.io", "myusername", "https://myusername.itch.io/"),
-            ("Devpost", "myusername", "https://devpost.com/myusername"),
         ],
     )
     def test_url(self, network, username, expected_url):
         social_network = SocialNetwork(network=network, username=username)
         assert str(social_network.url) == expected_url
+
+    @pytest.mark.parametrize(
+        ("network", "usernames"),
+        [
+            ("IMDB", ["nm123456", "nm1234567x", "nm12345678\n"]),
+            (
+                "HuggingFace",
+                ["a", "a" * 43, "123", "-name", "name-", "a--b", "a_b", "a.b"],
+            ),
+            ("Itch.io", ["", "my.name", "my_name", "-name", "name-", "a" * 64]),
+            (
+                "Devpost",
+                [
+                    "",
+                    ".",
+                    "..",
+                    "my name",
+                    "name/project",
+                    "name?query",
+                    "name#fragment",
+                ],
+            ),
+            (
+                "WhatsApp",
+                [
+                    "ab",
+                    "a" * 36,
+                    "JohnDoe",
+                    "john-doe",
+                    "123",
+                    "+1-800-FLOWERS",
+                    "+14155552671 ext 1",
+                    "@@john",
+                ],
+            ),
+        ],
+    )
+    def test_platform_username_rules(self, network, usernames):
+        for username in usernames:
+            with pytest.raises(pydantic.ValidationError):
+                SocialNetwork(network=network, username=username)
 
     @settings(deadline=None)
     @given(
