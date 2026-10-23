@@ -190,7 +190,7 @@ phone: "555-123-4567"
 phone: "+15551234567"
 ```
 
-If the user provides a local number without country code, ask which country, or omit the phone field.
+For a local number without a country code, ask which country it belongs to. Never guess the code or omit the number without explicit permission.
 
 ### Text formatting
 
